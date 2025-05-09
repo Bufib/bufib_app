@@ -39,3 +39,4 @@ export type News = {
   external_url?: string[];
   internal_url?: string[];
 };
+

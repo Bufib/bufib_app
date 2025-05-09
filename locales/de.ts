@@ -5,6 +5,10 @@ export const de = {
    //NewsArticles
    newsArticles: "Artikel",
    externalLink: "Externer Link",
+
+   // General
+   retry: "Wiederholen",
+   errorLoadingData: "Es gab einen Fehler beim laden der Daten"
 } as const;
 
 export default de;

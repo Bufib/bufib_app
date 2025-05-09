@@ -13,9 +13,10 @@ export const Colors = {
     text: "#11181C",
     background: "#f2f2f2",
     contrast: "#fff",
+    loadingIndicator: "#000",
+    error: "#d32f2f",
   },
 
-  
   dark: {
     // Navigation
     tint: tintColorDark,
@@ -27,6 +28,8 @@ export const Colors = {
     text: "#ECEDEE",
     background: "#242c40",
     contrast: "#34495e",
+    loadingIndicator: "#fff",
+    error: "#f44336",
   },
   universal: {
     primary: "#93C024",
