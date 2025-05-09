@@ -29,6 +29,7 @@ export default function HomeScreen() {
     isLoading,
     isError,
     refetch,
+    error,
   } = useNewsArticles();
 
   return (
@@ -40,12 +41,12 @@ export default function HomeScreen() {
           <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
         )}
 
-        {!isError && (
+        {isError && (
           <View style={styles.errorContainer}>
             <Text
               style={[styles.errorText, { color: Colors[colorScheme].error }]}
             >
-              {t("errorLoadingData")}
+              {error?.message ?? t("errorLoadingData")}
             </Text>
             <RetryButton onPress={() => refetch()} />
           </View>
@@ -53,6 +54,7 @@ export default function HomeScreen() {
 
         {!isLoading && !isError && (
           <FlatList
+            contentContainerStyle={styles.flatListContentContainer}
             horizontal
             data={articles}
             keyExtractor={(item: NewsArticlesType) => item.id.toString()}
@@ -89,6 +91,9 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 20,
+  },
+  flatListContentContainer: {
+    gap: 10,
   },
   newsContainer: {
     flex: 1,
