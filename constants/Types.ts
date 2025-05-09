@@ -12,27 +12,23 @@ export type UseGradientOptionsType = {
 };
 
 // NewsArticle
-export type NewsArticlePreviewType = {
+export type NewsArticlesPreviewType = {
   title: string;
   externalLink: boolean;
 };
 
-export type NewsArticleType = {
+export type NewsArticlesType = {
   id: number;
-  created_at: string;
-  title_arabic?: string;
-  content_arabic?: string;
-  title_english?: string;
-  content_english?: string;
-  title_german: string;
-  content_german: string;
-  external_link: boolean;
+  createdAt: string;
+  title: string;
+  content: string;
+  externalLink: boolean;
 };
 
 // News
 export type News = {
   id: number;
-  created_at: string;
+  createdAt: string;
   images_url?: string[];
   title_arabic?: string;
   content_arabic?: string;
