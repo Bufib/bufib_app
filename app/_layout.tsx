@@ -1,39 +1,62 @@
-import "@/utils/i18n";
+// app/_layout.tsx
+import "@/utils/i18n"; // initialize i18next
+import React, { useEffect } from "react";
 import {
+  ThemeProvider,
   DarkTheme,
   DefaultTheme,
-  ThemeProvider,
 } from "@react-navigation/native";
-import { SplashScreen, Stack } from "expo-router";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import { useTranslation } from "react-i18next";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const queryClient = new QueryClient()
-export default function RootLayout() {
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
+import LanguageSelection from "@/components/LanguageSelectionScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const queryClient = new QueryClient();
+
+function AppContent() {
   const colorScheme = useColorScheme();
-  const { ready } = useTranslation();
+  const { ready, language } = useLanguage();
 
   useEffect(() => {
     if (ready) {
-      // when translations are loaded, hide the splash
       SplashScreen.hideAsync();
-      return;
     }
   }, [ready]);
 
+  // keep native splash visible until i18n + storage are ready
+  if (!ready) {
+    return null;
+  }
+
+  // on first run, show the picker
+  if (!language) {
+    return <LanguageSelection />;
+  }
+
+  // language chosen → render your app
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <QueryClientProvider client={queryClient}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
-      </ThemeProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }

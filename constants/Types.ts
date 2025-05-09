@@ -1,6 +1,6 @@
 
 // Language
-type LanguageContextType = {
+export type LanguageContextType = {
   language: string | null;
   setAppLanguage: (lng: string) => Promise<void>;
   ready: boolean;

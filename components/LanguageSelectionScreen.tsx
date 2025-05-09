@@ -16,9 +16,7 @@ export default function LanguageSelection() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        {t("chooseLanguage", "Choose a language")}
-      </Text>
+      <Text style={styles.title}>{t("chooseLanguage")}</Text>
       {LANGUAGES.map(({ code, label }) => (
         <View key={code} style={styles.button}>
           <Button title={label} onPress={() => setAppLanguage(code)} />

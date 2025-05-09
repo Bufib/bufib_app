@@ -4,9 +4,9 @@ import { initReactI18next } from "react-i18next";
 import * as Localization from "expo-localization";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import de from "@/locales/de.json";
-import ar from "@/locales/ar.json";
-import en from "@/locales/en.json";
+import de from "@/locales/de";
+import ar from "@/locales/ar";
+import en from "@/locales/en";
 
 // simple sync detector using getLocales()
 const languageDetector = {
