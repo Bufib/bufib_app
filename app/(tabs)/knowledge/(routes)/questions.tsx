@@ -1,22 +1,27 @@
 import React, { useState } from "react";
-import { View, StyleSheet, useWindowDimensions, FlatList } from "react-native";
+import {
+  View,
+  StyleSheet,
+  useWindowDimensions,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { router } from "expo-router";
 import { Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-// import LatestQuestions from "./LatestQuestions";
+import LatestQuestions from "@/components/LatestQuestions";
 import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { categories } from "@/utils/categories";
 import { Colors } from "@/constants/Colors";
 import { returnSize } from "@/utils/sizes";
-
+import { useTranslation } from "react-i18next";
 export default function QuestionLinks() {
-
   const { width, height } = useWindowDimensions();
-
+  const { t } = useTranslation();
   // Dynamically calculate the size of each element based on screen width
   const { elementSize, fontSize, iconSize, imageSize, gap } = returnSize(
     width,
@@ -24,99 +29,46 @@ export default function QuestionLinks() {
   );
 
   // For square to change color on pressed
-  const [pressedIndex, setPressedIndex] = useState<number | null>(null);
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() || "light";
 
+  // <Pressable
+  //       style={[styles.searchContainer]}
+  //       onPress={() => router.push("/(search)")}
+  //       android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }} // Add ripple effect for better feedback
+  //     >
+  //       <View style={styles.searchInputContainer}>
+  //         <TextInput
+  //           placeholder="Suche nach einer Frage"
+  //           editable={false}
+  //           style={styles.searchInput}
+  //           pointerEvents="none" // This ensures the parent Pressable handles the touch
+  //         />
+  //         <Ionicons name="search" size={20} style={{ marginLeft: 8 }} />
+  //       </View>
+  //     </Pressable>
 
   return (
-    <SafeAreaView
-      edges={["top"]}
-      style={[
-        styles.container,
-        { gap: gap },
-      ]}
-    >
-      <View
-        style={[styles.headerContainer, { marginTop: height > 750 ? 10 : 0 }]}
-      >
-        {/* <Image
-          source={require("@/assets/images/headerImage.png")}
-          style={[styles.imageHeader, { width: imageSize }]}
-          contentFit="contain"
-        /> */}
-      </View>
-
-      <Pressable
-        style={[styles.searchContainer]}
-        onPress={() => router.push("/(search)")}
-        android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }} // Add ripple effect for better feedback
-      >
-        <View style={styles.searchInputContainer}>
-          <TextInput
-            placeholder="Suche nach einer Frage"
-            editable={false}
-            style={styles.searchInput}
-            pointerEvents="none" // This ensures the parent Pressable handles the touch
-          />
-          <Ionicons
-            name="search"
-            size={20}
-            style={{ marginLeft: 8 }}
-          />
-        </View>
-      </Pressable>
-
-      <View style={styles.bodyContainer}>
-        <View style={styles.categoryContainer}>
-          <ThemedText
-            style={[
-              styles.bodyContainerText,
-              {
-                fontSize: fontSize * 1.8,
-                fontWeight: "500",
-                lineHeight: 32,
-              },
-            ]}
-          >
-            Kategorien (6)
-          </ThemedText>
-          <Ionicons
-            name="chevron-forward"
-            size={25}
-            style={{ paddingRight: 15 }}
-            color={colorScheme === "dark" ? "#d0d0c0" : "#000"}
-          />
-        </View>
-
-        <FlatList
-          contentContainerStyle={styles.flatListContent}
-          style={styles.flatListStyles}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={categories}
-          keyExtractor={(_, index) => index.toString()}
-          decelerationRate="fast"
-          renderItem={({ item: category, index }) => (
-            <Pressable
+    <View style={styles.container}>
+      <View style={styles.categoriesContainer}>
+        <ThemedText style={[styles.categoriesContainerText, {}]}>
+          {t("categories")} (7)
+        </ThemedText>
+        <View style={styles.categories}>
+          {categories.map((category, index) => (
+            <TouchableOpacity
               onPress={() => {
                 router.push({
                   pathname: "/(tabs)/home/category",
                   params: { category: category.name },
                 });
               }}
-              onPressIn={() => setPressedIndex(index)}
-              onPressOut={() => setPressedIndex(null)}
               style={[
                 styles.element,
                 {
+                  backgroundColor: Colors[colorScheme].contrast,
                   width: elementSize,
                   height: elementSize,
                 },
-                pressedIndex === index &&
-                  styles.categoryPressed && {
-                    backgroundColor:
-                      colorScheme === "dark" ? "#242c40" : "#E8E8E8",
-                  },
               ]}
             >
               <View
@@ -145,9 +97,10 @@ export default function QuestionLinks() {
                   </ThemedText>
                 </View>
               </View>
-            </Pressable>
-          )}
-        />
+            </TouchableOpacity>
+          ))}
+          
+        </View>
       </View>
 
       <View style={styles.footerContainer}>
@@ -167,20 +120,18 @@ export default function QuestionLinks() {
             color={colorScheme === "dark" ? "#d0d0c0" : "#000"}
           />
         </View>
-        {/* <LatestQuestions /> */}
+        <LatestQuestions />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
+    margin: 20,
   },
-  headerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
+
   searchContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -204,15 +155,20 @@ const styles = StyleSheet.create({
   bodyContainer: {
     flexDirection: "column",
   },
-  categoryContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  categoriesContainer: {
+    flexDirection: "column",
+    gap: 10,
   },
 
-  bodyContainerText: {
+  categoriesContainerText: {
+    fontSize: 25,
     fontWeight: "500",
-    marginHorizontal: 15,
-    marginBottom: 10,
+  },
+  categories: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 20,
   },
 
   imageHeader: {

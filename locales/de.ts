@@ -1,3 +1,4 @@
+
 export const de = {
   //LanguageSelectionScreen
   chooseLanguage: "Wähle deine Sprache aus",
@@ -32,6 +33,9 @@ export const de = {
   updateAvailable: "Update Verfügbar",
   newAppVersionAvailable: "Eine neue version ist im App-Store verfügbar!",
   dataBaseUpdated: "Die Frage und Antworten wurden aktualsiert!",
+
+  // Questions
+  categories: "Kategorien"
 } as const;
 
 export default de;

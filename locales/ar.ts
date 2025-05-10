@@ -32,6 +32,8 @@ export const ar = {
   newAppVersionAvailable: "إصدار جديد من التطبيق متوفّر في متجر التطبيقات!",
   dataBaseUpdated: "تم تحديث الأسئلة والأجوبة",
 
+   // Questions
+  categories: "فئات"
 } as const;
 
 export default ar;

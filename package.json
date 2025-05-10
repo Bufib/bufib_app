@@ -58,7 +58,8 @@
     "use-debounce": "^10.0.4",
     "zustand": "^5.0.4",
     "expo-device": "~7.1.4",
-    "expo-store-review": "~8.1.5"
+    "expo-store-review": "~8.1.5",
+    "@expo/ui": "~0.1.1-alpha.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

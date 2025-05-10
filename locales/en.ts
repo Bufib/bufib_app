@@ -32,6 +32,8 @@ export const en = {
   newAppVersionAvailable:  "A new version of the app is available in the App Store!",
   dataBaseUpdated: "The questions and answers has been updated",
 
+    // Questions
+  categories: "Categories"
 } as const;
 
 export default en;

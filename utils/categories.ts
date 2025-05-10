@@ -23,4 +23,5 @@
       name: "Ratschläge",
       image: require("@/assets/images/ratschlaege.png"),
     },
+    
   ];
