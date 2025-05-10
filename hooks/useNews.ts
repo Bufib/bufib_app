@@ -1,71 +1,72 @@
 import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/utils/supabase";
-import { News } from "@/constants/Types";
-import { mapLanguageToTable } from "@/utils/mapLanguageToTable";
+import { NewsType } from "@/constants/Types";
 import {
   useInfiniteQuery,
   useQueryClient,
   InfiniteData,
+  QueryFunctionContext,
 } from "@tanstack/react-query";
 
-const PAGE_SIZE = 1;
+const PAGE_SIZE = 10; // adjust as needed
 
-/**
- * Fetch and subscribe to paginated news items from the `news` table,
- * selecting the correct title/content columns based on the current language.
- */
 export function useNews() {
   const { language } = useLanguage();
-  const lang: string = language ?? "de";
-  const tableName = mapLanguageToTable[lang];
+  const lang = language ?? "de";
   const queryClient = useQueryClient();
-  const queryKey = ["news", lang] as const;
+  const queryKey = ["news", lang];
 
   const selectCols = `
     id,
     created_at,
-    images_url,
-    ${tableName.title},
-    ${tableName.content},
-    external_url,
-    internal_url
+    title,
+    content,
+    external_urls,
+    internal_urls,
+    images_url
   `;
 
-  const infiniteQuery = useInfiniteQuery<News[], Error>({
+  const infiniteQuery = useInfiniteQuery<NewsType[], Error>({
     queryKey,
     enabled: Boolean(language),
     staleTime: 5 * 60 * 1000,
     retry: 1,
     initialPageParam: 0,
 
-    queryFn: async ({ pageParam = 0 }) => {
+    // tell TS that pageParam is a number
+    queryFn: async ({ pageParam = 0 }: { pageParam: any }) => {
       const from = pageParam * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
       const { data, error } = await supabase
         .from("news")
         .select(selectCols)
+        .eq("language_code", lang)
         .order("created_at", { ascending: false })
         .range(from, to);
 
       if (error) throw error;
 
-      return (data ?? []).map((row: any) => ({
-        id: Number(row.id),
-        createdAt: row.created_at,
-        title: row.title ?? "",
-        content: row.content ?? "",
-        imagesUrl: row.images_url ?? [],
-        externalUrls: row.external_urls ?? [],
-        internalUrls: row.internal_urls ?? [],
-      }));
+      return (data ?? []).map(
+        (row: any): NewsType => ({
+          id: Number(row.id),
+          createdAt: row.created_at,
+          title: row.title ?? "",
+          content: row.content ?? "",
+          externalUrls: row.external_urls ?? [],
+          internalUrls: row.internal_urls ?? [],
+          imagesUrl: row.images_url ?? [],
+          languageCode: row.language_code,
+        })
+      );
     },
 
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === PAGE_SIZE ? allPages.length : undefined,
   });
 
+  // real-time subscription for this language
   useEffect(() => {
     if (!language) return;
 
@@ -73,32 +74,33 @@ export function useNews() {
       .channel(`news_${lang}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "news" },
+        {
+          event: "*",
+          schema: "public",
+          table: "news",
+          filter: `language_code=eq.${lang}`,
+        },
         (payload) => {
           const { eventType, new: newRec, old: oldRec } = payload;
 
-          queryClient.setQueryData<InfiniteData<News[]>>(
+          queryClient.setQueryData<InfiniteData<NewsType[]>>(
             queryKey,
             (oldData) => {
               if (!oldData) return oldData;
 
-              const mapRow = (row: any): News => ({
+              const mapRow = (row: any): NewsType => ({
                 id: Number(row.id),
                 createdAt: row.created_at,
-                title: row[tableName.title] ?? "",
-                content: row[tableName.content] ?? "",
-                imagesUrl: row.images_url ?? [],
+                title: row.title ?? "",
+                content: row.content ?? "",
                 externalUrls: row.external_urls ?? [],
                 internalUrls: row.internal_urls ?? [],
+                imagesUrl: row.images_url ?? [],
+                languageCode: row.language_code,
               });
 
               const newPages = oldData.pages.map((page) => {
                 switch (eventType) {
-                  case "INSERT": {
-                    // prepend into first page
-                    const inserted = mapRow(newRec!);
-                    return [inserted, ...page];
-                  }
                   case "UPDATE": {
                     const updated = mapRow(newRec!);
                     return page.map((item) =>
@@ -114,6 +116,11 @@ export function useNews() {
                 }
               });
 
+              if (eventType === "INSERT") {
+                const inserted = mapRow(newRec!);
+                newPages[0] = [inserted, ...newPages[0]];
+              }
+
               return { ...oldData, pages: newPages };
             }
           );
@@ -124,7 +131,7 @@ export function useNews() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [language, lang, queryClient, queryKey, tableName]);
+  }, [language, lang, queryClient, queryKey]);
 
   return infiniteQuery;
 }

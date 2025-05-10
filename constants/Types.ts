@@ -27,7 +27,7 @@ export type NewsArticlesType = {
 };
 
 // News
-export type News = {
+export type NewsType = {
   id: number;
   createdAt: string;
   languageCode: string
@@ -36,4 +36,10 @@ export type News = {
   imagesUrl?: string[];
   externalUrls?: string[];
   internalUrls?: string[];
+};
+
+export type NewsCardType = {
+  title: string;
+  content: string;
+  createdAt: string; 
 };

@@ -20,6 +20,7 @@ import { Colors } from "@/constants/Colors";
 import handleOpenExternalUrl from "@/utils/handleExternalLink";
 import { router } from "expo-router";
 import { useNews } from "@/hooks/useNews";
+import NewsCard from "@/components/NewsCard";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -67,6 +68,7 @@ export default function HomeScreen() {
           </View>
         )}
 
+        {/* //!----------- News articles ----------- */}
         {!newsArticlesIsLoading && !newsArticlesIsError && (
           <FlatList
             horizontal
@@ -108,7 +110,9 @@ export default function HomeScreen() {
         )}
       </View>
 
-      {/* <View style={styles.newsContainer}>
+
+      {/* //!----------- News articles ----------- */}
+      <View style={styles.newsContainer}>
         {newsIsLoading && (
           <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
         )}
@@ -126,14 +130,14 @@ export default function HomeScreen() {
 
         {!newsIsLoading && !newsIsError && (
           <FlatList
-            horizontal
             contentContainerStyle={styles.flatListContentContainer}
             data={articles}
             keyExtractor={(item: NewsArticlesType) => item.id.toString()}
             renderItem={({ item }: { item: NewsArticlesType }) => (
-              <NewsArticlePreviewCard
+              <NewsCard
                 title={item.title}
-                isExternalLink={item.isExternalLink}
+                content={item.content}
+                createdAt={item.createdAt}
               />
             )}
             showsHorizontalScrollIndicator={false}
@@ -148,7 +152,7 @@ export default function HomeScreen() {
             }
           />
         )}
-      </View> */}
+      </View>
     </SafeAreaView>
   );
 }

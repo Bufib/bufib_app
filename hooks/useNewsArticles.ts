@@ -159,7 +159,7 @@ export function useNewsArticles() {
     staleTime: 5 * 60 * 1000,
     retry: 1,
     initialPageParam: 0,
-    queryFn: async ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam = 0 }: { pageParam: any }) => {
       const from = pageParam * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
@@ -178,8 +178,7 @@ export function useNewsArticles() {
         content: row.content ?? "",
         isExternalLink: row.is_external_link,
         externalLink: row.external_link_url,
-        languageCode: row.language_code
-
+        languageCode: row.language_code,
       }));
     },
     getNextPageParam: (lastPage, allPages) =>
@@ -215,7 +214,7 @@ export function useNewsArticles() {
                 content: row.content ?? "",
                 isExternalLink: row.is_external_link,
                 externalLink: row.external_link_url,
-                languageCode: row.language_code
+                languageCode: row.language_code,
               });
 
               const newPages = oldData.pages.map((page) => {
