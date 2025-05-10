@@ -6,7 +6,6 @@ import {
   useInfiniteQuery,
   useQueryClient,
   InfiniteData,
-  QueryFunctionContext,
 } from "@tanstack/react-query";
 
 const PAGE_SIZE = 10; // adjust as needed
@@ -45,7 +44,6 @@ export function useNews() {
         .eq("language_code", lang)
         .order("created_at", { ascending: false })
         .range(from, to);
-
       if (error) throw error;
 
       return (data ?? []).map(

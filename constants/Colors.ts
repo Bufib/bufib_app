@@ -13,6 +13,8 @@ export const Colors = {
     text: "#11181C",
     background: "#f2f2f2",
     contrast: "#fff",
+    border: "#000",
+    shadow: "#000",
     loadingIndicator: "#000",
     error: "#d32f2f",
   },
@@ -28,11 +30,14 @@ export const Colors = {
     text: "#ECEDEE",
     background: "#242c40",
     contrast: "#34495e",
+    border: "#fff",
+    shadow: "#fff",
     loadingIndicator: "#fff",
     error: "#f44336",
   },
   universal: {
     primary: "#93C024",
     secondary: "#1D3E53",
+    grayedOut: "#888",
   },
 };

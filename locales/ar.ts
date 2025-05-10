@@ -3,8 +3,11 @@ export const ar = {
   chooseLanguage: "اختر لغتك",
 
   //NewsArticles
-  newsArticles: "شرط",
+  newsArticlesTitle: "شرط",
   isExternalLink: "رابط خارجي",
+
+  // News
+  newsTitle: "أخبار",
 
   // General
   retry: "إعادة المحاولة",

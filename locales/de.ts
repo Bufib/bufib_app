@@ -2,10 +2,13 @@ export const de = {
   //LanguageSelectionScreen
   chooseLanguage: "Wähle deine Sprache aus",
 
-   //NewsArticles
-   newsArticles: "Artikel",
+   // NewsArticles
+   newsArticlesTitle: "Artikel",
    isExternalLink: "Externer Link",
 
+   // News
+   newsTitle: "Neuigkeiten",
+   
    // General
    retry: "Wiederholen",
    errorLoadingData: "Es gab einen Fehler beim laden der Daten",

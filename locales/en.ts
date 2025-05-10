@@ -3,8 +3,11 @@ export const en = {
   chooseLanguage: "Choose a language",
 
   //NewsArticles
-  newsArticles: "Articls",
+  newsArticlesTitle: "Articls",
   isExternalLink: "External Link",
+
+  // News
+  newsTitle: "News",
 
   // General
   retry: "Retry",

@@ -2,27 +2,57 @@ import React from "react";
 import { StyleSheet, Text, View, useColorScheme } from "react-native";
 import { NewsCardType } from "@/constants/Types";
 import { formattedDate, formattedTime } from "@/utils/formate";
+import { Colors } from "@/constants/Colors";
+import { ThemedText } from "./ThemedText";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const NewsCard: React.FC<NewsCardType> = ({ title, content, createdAt }) => {
-  const isDark = useColorScheme() === "dark";
-
+  const colorScheme = useColorScheme() || "light";
+  const { language } = useLanguage();
   return (
-    <View style={[styles.card, isDark && styles.cardDark]}>
-      <Text
-        style={[styles.title, isDark && styles.titleDark]}
-        numberOfLines={2}
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: Colors[colorScheme].contrast,
+          shadowColor: Colors[colorScheme].shadow,
+          borderColor: Colors[colorScheme].border,
+        },
+      ]}
+    >
+      <ThemedText
+        style={[
+          styles.title,
+          {
+            textAlign: language === "ar" ? "right" : "left",
+          },
+        ]}
+        type="title"
       >
         {title}
-      </Text>
-      <Text
-        style={[styles.content, isDark && styles.contentDark]}
-        numberOfLines={4}
+      </ThemedText>
+      <ThemedText
+        style={[
+          styles.content,
+          {
+            textAlign: language === "ar" ? "right" : "left",
+          },
+        ]}
+        type="default"
       >
         {content}
-      </Text>
-      <Text style={[styles.date, isDark && styles.dateDark]}>
+      </ThemedText>
+      <ThemedText
+        style={[
+          styles.date,
+          {
+            color: Colors.universal.grayedOut,
+            textAlign: language === "ar" ? "left" : "right",
+          },
+        ]}
+      >
         {formattedDate(createdAt)} · {formattedTime(createdAt)}
-      </Text>
+      </ThemedText>
     </View>
   );
 };
@@ -31,22 +61,20 @@ export default NewsCard;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFF",
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    shadowColor: "#000",
+    flexDirection: "column",
+    gap: 10,
+    borderWidth: 0.2,
+    borderRadius: 10,
+    padding: 15,
+    paddingTop: 20,
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
   },
-  cardDark: { backgroundColor: "#1E1E1E" },
-  title: { fontSize: 18, fontWeight: "700", color: "#222", marginBottom: 8 },
-  titleDark: { color: "#EEE" },
-  content: { fontSize: 14, color: "#444", marginBottom: 12 },
-  contentDark: { color: "#CCC" },
-  date: { fontSize: 12, color: "#888", textAlign: "right" },
-  dateDark: { color: "#AAA" },
+  title: {},
+  content: {},
+  date: {
+    fontSize: 12,
+  },
 });

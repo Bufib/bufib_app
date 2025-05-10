@@ -6,11 +6,16 @@ import { useGradient } from "../hooks/useGradient";
 import { NewsArticlesPreviewType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const NewsArticlePreviewCard = ({ title, isExternalLink }: NewsArticlesPreviewType) => {
+const NewsArticlePreviewCard = ({
+  title,
+  isExternalLink,
+}: NewsArticlesPreviewType) => {
   // Use the custom hook to handle all gradient logic
   const { gradientColors } = useGradient();
   const { t } = useTranslation();
+  const { language } = useLanguage();
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -21,12 +26,21 @@ const NewsArticlePreviewCard = ({ title, isExternalLink }: NewsArticlesPreviewTy
       >
         {isExternalLink && (
           <View style={styles.externalLinkBadge}>
-            <Text style={styles.externalLinkBadgeText}>
+            <Text style={[styles.externalLinkBadgeText, {
+               alignSelf: language === "ar" ? "flex-start" : "flex-end" ,
+            }]}>
               {t("isExternalLink")}
             </Text>
           </View>
         )}
-        <Text style={styles.newsTitle} numberOfLines={2} ellipsizeMode="tail">
+        <Text
+          style={[
+            styles.newsTitle,
+            { textAlign: language === "ar" ? "right" : "left" },
+          ]}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
           {title}
         </Text>
       </LinearGradient>
@@ -49,7 +63,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   externalLinkBadge: {
-    alignSelf: "flex-end",
     borderWidth: 1.5,
     borderRadius: 10,
     padding: 5,

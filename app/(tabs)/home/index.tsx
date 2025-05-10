@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import NewsArticlePreviewCard from "@/components/NewsArticlePreviewCard";
 import { ThemedText } from "@/components/ThemedText";
 import { useNewsArticles } from "@/hooks/useNewsArticles";
-import { NewsArticlesType } from "@/constants/Types";
+import { NewsArticlesType, NewsType } from "@/constants/Types";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import RetryButton from "@/components/RetryButton";
 import { Colors } from "@/constants/Colors";
@@ -45,13 +45,15 @@ export default function HomeScreen() {
     hasNextPage: newHasNextPage,
     isFetchingNextPage: newsIsFetchingNextPage,
   } = useNews();
+
   // flatten paginated data
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];
+  const news: NewsType[] = newsData?.pages.flat() ?? [];
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.newsArticleContainer}>
-        <ThemedText type="title">{t("newsArticles")}</ThemedText>
+        <ThemedText type="title">{t("newsArticlesTitle")}</ThemedText>
 
         {newsArticlesIsLoading && (
           <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
@@ -110,9 +112,9 @@ export default function HomeScreen() {
         )}
       </View>
 
-
       {/* //!----------- News articles ----------- */}
       <View style={styles.newsContainer}>
+        <ThemedText type="title">{t("newsTitle")}</ThemedText>
         {newsIsLoading && (
           <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
         )}
@@ -131,9 +133,9 @@ export default function HomeScreen() {
         {!newsIsLoading && !newsIsError && (
           <FlatList
             contentContainerStyle={styles.flatListContentContainer}
-            data={articles}
-            keyExtractor={(item: NewsArticlesType) => item.id.toString()}
-            renderItem={({ item }: { item: NewsArticlesType }) => (
+            data={news}
+            keyExtractor={(item: NewsType) => item.id.toString()}
+            renderItem={({ item }: { item: NewsType }) => (
               <NewsCard
                 title={item.title}
                 content={item.content}
@@ -160,7 +162,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: 15,
   },
   newsArticleContainer: {
     flex: 1,
@@ -177,7 +179,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   newsContainer: {
-    flex: 1,
-    marginTop: 20,
+    flex: 3,
+    gap: 20,
   },
 });
