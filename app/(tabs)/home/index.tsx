@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
+    marginTop: 10,
   },
   newsArticleContainer: {
     flex: 1,
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   newsContainer: {
-    flex: 3,
+    flex: 2,
     gap: 20,
   },
 });

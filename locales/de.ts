@@ -5,6 +5,7 @@ export const de = {
    // NewsArticles
    newsArticlesTitle: "Artikel",
    isExternalLink: "Externer Link",
+   errorLoadingArticle: "Es ist ein Fehler beim Laden des Artikels aufgetreten!",
 
    // News
    newsTitle: "Neuigkeiten",
@@ -15,7 +16,10 @@ export const de = {
    openingLink: "Link wird geöffnet",
    urlNotSupported: "URL wird nicht unterstützt",
    errorOpeningUrl:  "Fehler beim Öffnen der URL",
-   back: "Zurück"
+   back: "Zurück",
+   small: "Klein",
+   medium: "Mittel",
+   large: "Groß",
 } as const;
 
 export default de;

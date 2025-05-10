@@ -5,6 +5,7 @@ export const en = {
   //NewsArticles
   newsArticlesTitle: "Articls",
   isExternalLink: "External Link",
+  errorLoadingArticle: "There was an error loading the article!",
 
   // News
   newsTitle: "News",
@@ -15,8 +16,10 @@ export const en = {
   openingLink: "Opening Link",
   urlNotSupported: "URL is not supported",
   errorOpeningUrl: "Error opening URL",
-  back: "Back"
-
+  back: "Back",
+  small: "small",
+  medium: "medium",
+  large: "large",
 } as const;
 
 export default en;

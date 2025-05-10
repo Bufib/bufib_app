@@ -24,6 +24,7 @@ export type NewsArticlesType = {
   content: string;
   isExternalLink: boolean;
   externalLink?: string;
+  readTime?: string
 };
 
 // News

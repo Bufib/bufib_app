@@ -5,6 +5,7 @@ export const ar = {
   //NewsArticles
   newsArticlesTitle: "شرط",
   isExternalLink: "رابط خارجي",
+  errorLoadingArticle: "حدث خطأ أثناء تحميل المقالة",
 
   // News
   newsTitle: "أخبار",
@@ -16,7 +17,9 @@ export const ar = {
   urlNotSupported: "عنوان URL غير مدعوم",
   errorOpeningUrl: "خطأ في فتح الرابط",
   back: "العودة",
-
+  small: "صغير",
+  medium: "واسطة",
+  large: "كبير",
 } as const;
 
 export default ar;

@@ -141,7 +141,7 @@ const PAGE_SIZE = 1;
 
 export function useNewsArticles() {
   const { language } = useLanguage();
-  const lang = language ?? "DE";
+  const lang = language ?? "de";
   const queryClient = useQueryClient();
   const queryKey = ["newsArticles", lang];
 
@@ -152,7 +152,8 @@ export function useNewsArticles() {
     content,
     is_external_link,
     external_link_url,
-    language_code 
+    language_code,
+    read_time
   `; // Added language_code to selectCols for single article fetch
 
   const mapRowToNewsArticle = (row: any): NewsArticlesType => ({
@@ -162,7 +163,8 @@ export function useNewsArticles() {
     content: row.content ?? "",
     isExternalLink: row.is_external_link,
     externalLink: row.external_link_url,
-    languageCode: row.language_code, // Ensure this is mapped
+    languageCode: row.language_code,
+    readTime: row.read_time,
   });
 
   const infiniteQuery = useInfiniteQuery<NewsArticlesType[], Error>({
