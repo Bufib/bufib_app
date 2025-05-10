@@ -51,7 +51,13 @@ export default function HomeScreen() {
   const news: NewsType[] = newsData?.pages.flat() ?? [];
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
+      edges={["top"]}
+    >
       <View style={styles.newsArticleContainer}>
         <ThemedText type="title">{t("newsArticlesTitle")}</ThemedText>
 
@@ -163,7 +169,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    marginTop: 10,
   },
   newsArticleContainer: {
     flex: 1,

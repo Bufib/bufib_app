@@ -18,7 +18,7 @@ import { router } from "expo-router";
 import { useAuthStore } from "@/stores/authStore";
 import { useLogout } from "@/utils/useLogout";
 import { getQuestionCount } from "@/utils/initializeDatabase";
-import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
+import handleOpenExternalUrl from "@/utils/handleExternalLink";
 import { Image } from "expo-image";
 import DeleteUserModal from "@/components/DeleteUserModal";
 import Toast from "react-native-toast-message";
@@ -29,9 +29,8 @@ import { NoInternet } from "@/components/NoInternet";
 import Constants from "expo-constants";
 
 const Settings = () => {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
-  const themeStyles = CoustomTheme();
   const clearSession = useAuthStore.getState().clearSession;
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const isAdmin = useAuthStore((state) => state.isAdmin);
@@ -39,12 +38,12 @@ const Settings = () => {
   const [version, setVersion] = useState<string | null>("");
   const [questionCount, setQuestionCount] = useState<number | null>(0);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const { getNotifications, toggleGetNotifications, permissionStatus } = useNotificationStore();
+  const { getNotifications, toggleGetNotifications, permissionStatus } =
+    useNotificationStore();
   const dbInitialized = useInitializeDatabase();
   const hasInternet = useConnectionStatus();
   const logout = useLogout();
   const effectiveEnabled = getNotifications && permissionStatus === "granted";
-
 
   const handleDeleteSuccess = () => {
     clearSession(); // SignOut and remove session
@@ -95,7 +94,10 @@ const Settings = () => {
 
   return (
     <SafeAreaView
-      style={[styles.container, themeStyles.defaultBackgorundColor]}
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
       edges={["top"]}
     >
       <View style={styles.header}>
@@ -144,9 +146,7 @@ const Settings = () => {
                 false: Colors.light.trackColor,
                 true: Colors.dark.trackColor,
               }}
-              thumbColor={
-                isDarkMode ? Colors.light.thumbColor : Colors.dark.thumbColor
-              }
+              thumbColor={Colors[colorScheme].thumbColor}
             />
           </View>
           {isLoggedIn && (

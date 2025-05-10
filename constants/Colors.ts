@@ -22,6 +22,10 @@ export const Colors = {
     shadow: "#000",
     loadingIndicator: "#000",
     error: "#d32f2f",
+
+    // Switch
+    trackColor: "#767577",
+    thumbColor: "#f4f3f4",
   },
 
   dark: {
@@ -44,10 +48,16 @@ export const Colors = {
     shadow: "#fff",
     loadingIndicator: "#fff",
     error: "#f44336",
+
+    // Switch 
+    trackColor: "#057958",
+    thumbColor: "#f4f3f4",
   },
   universal: {
     primary: "#93C024",
     secondary: "#1D3E53",
     grayedOut: "#888",
+    link: "#0a84ff",
+
   },
 };
