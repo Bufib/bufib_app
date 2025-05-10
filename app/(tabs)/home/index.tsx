@@ -108,7 +108,7 @@ export default function HomeScreen() {
         )}
       </View>
 
-      <View style={styles.newsContainer}>
+      {/* <View style={styles.newsContainer}>
         {newsIsLoading && (
           <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
         )}
@@ -148,7 +148,7 @@ export default function HomeScreen() {
             }
           />
         )}
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }

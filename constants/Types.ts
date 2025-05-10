@@ -19,6 +19,7 @@ export type NewsArticlesPreviewType = {
 export type NewsArticlesType = {
   id: number;
   createdAt: string;
+  languageCode: string
   title: string;
   content: string;
   isExternalLink: boolean;
@@ -29,9 +30,10 @@ export type NewsArticlesType = {
 export type News = {
   id: number;
   createdAt: string;
-  imagesUrl: string[];
+  languageCode: string
   title: string;
   content: string;
+  imagesUrl?: string[];
   externalUrls?: string[];
   internalUrls?: string[];
 };
