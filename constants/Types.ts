@@ -44,3 +44,14 @@ export type NewsCardType = {
   content: string;
   createdAt: string; 
 };
+
+
+// General
+
+export type Sizes = {
+  elementSize: number;
+  fontSize: number;
+  iconSize: number;
+  imageSize: number;
+  gap: number;
+}

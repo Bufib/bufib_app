@@ -39,6 +39,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: i18n.t("settings"),
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="gear.circle" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

@@ -23,6 +23,7 @@ export const en = {
 
   // Navigation
   knowledge: "Knowledge",
+  settings: "Settings",
   questionScreenTitle: "Questions and Answers",
   prayerScreenTitle: "Prayers and more",
 } as const;

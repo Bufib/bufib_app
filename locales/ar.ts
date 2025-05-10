@@ -23,6 +23,7 @@ export const ar = {
 
   // Navigation
   knowledge: "معرفة",
+  settings: "إعدادات",
   questionScreenTitle: "أسئلة وأجوبة",
   prayerScreenTitle: "صلاة وأكثر",
 } as const;
