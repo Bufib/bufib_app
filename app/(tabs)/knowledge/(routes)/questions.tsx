@@ -19,6 +19,9 @@ import { categories } from "@/utils/categories";
 import { Colors } from "@/constants/Colors";
 import { returnSize } from "@/utils/sizes";
 import { useTranslation } from "react-i18next";
+import Entypo from "@expo/vector-icons/Entypo";
+import AntDesign from "@expo/vector-icons/AntDesign";
+
 export default function QuestionLinks() {
   const { width, height } = useWindowDimensions();
   const { t } = useTranslation();
@@ -50,16 +53,25 @@ export default function QuestionLinks() {
   return (
     <View style={styles.container}>
       <View style={styles.categoriesContainer}>
-        <ThemedText style={[styles.categoriesContainerText, {}]}>
-          {t("categories")} (7)
-        </ThemedText>
+        <View style={styles.categoriesHeaderContainer}>
+          <ThemedText style={[styles.categoriesContainerText]}>
+            {t("categories")} (7)
+          </ThemedText>
+          <AntDesign
+            name="search1"
+            size={30}
+            color="black"
+            style={{ marginRight: 6 }}
+          />
+        </View>
         <View style={styles.categories}>
           {categories.map((category, index) => (
             <TouchableOpacity
+              key={index}
               onPress={() => {
                 router.push({
                   pathname: "/(tabs)/home/category",
-                  params: { category: category.name },
+                  params: { category: category.value },
                 });
               }}
               style={[
@@ -89,7 +101,7 @@ export default function QuestionLinks() {
                     contentFit="contain"
                   />
                 </View>
-                <View style={styles.elementTextContainer}>
+                <View>
                   <ThemedText
                     style={[styles.elementText, { fontSize: fontSize }]}
                   >
@@ -99,26 +111,50 @@ export default function QuestionLinks() {
               </View>
             </TouchableOpacity>
           ))}
-          
+          <TouchableOpacity
+            onPress={() => {
+              router.push({
+                pathname: "/(tabs)/home/category",
+                params: { category: "Videos" },
+              });
+            }}
+            style={[
+              styles.element,
+              {
+                backgroundColor: Colors[colorScheme].contrast,
+                width: "100%",
+                height: elementSize / 1.5,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.categoryButtonContainer,
+                { gap: iconSize / 10 - 1 },
+              ]}
+            >
+              <View style={styles.videoTextContainer}>
+                <Entypo
+                  name="folder-video"
+                  size={33}
+                  color={Colors.universal.questionLinksIcon}
+                />
+                <ThemedText
+                  style={[styles.elementText, { fontSize: fontSize * 1.8 }]}
+                >
+                  {t("videos")}
+                </ThemedText>
+              </View>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.footerContainer}>
         <View style={styles.footerHeaderContainer}>
-          <ThemedText
-            style={[
-              styles.footerHeaderContainerText,
-              { fontSize: fontSize * 1.8, fontWeight: "500", lineHeight: 32 },
-            ]}
-          >
-            Neue Fragen (10)
+          <ThemedText style={[styles.footerHeaderContainerText]}>
+            {t("newQuestions")}
           </ThemedText>
-          <Ionicons
-            name="chevron-down"
-            size={25}
-            style={{ paddingRight: 15 }}
-            color={colorScheme === "dark" ? "#d0d0c0" : "#000"}
-          />
         </View>
         <LatestQuestions />
       </View>
@@ -130,34 +166,18 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     margin: 20,
+    gap: 30,
   },
 
-  searchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginHorizontal: 15,
-    borderRadius: 10,
-    height: 40,
-    paddingHorizontal: 10,
-    borderWidth: 0.2,
-  },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    height: "100%",
-  },
-  bodyContainer: {
-    flexDirection: "column",
-  },
   categoriesContainer: {
     flexDirection: "column",
-    gap: 10,
+    marginTop: 10,
+  },
+  categoriesHeaderContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
   },
 
   categoriesContainerText: {
@@ -187,7 +207,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 7,
+    borderRadius: 13,
 
     // iOS Shadow
     shadowColor: "#000",
@@ -218,9 +238,13 @@ const styles = StyleSheet.create({
     borderRadius: 90,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.universal.primary,
+    backgroundColor: Colors.universal.questionLinksIcon,
   },
-  elementTextContainer: {},
+  videoTextContainer: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "center",
+  },
 
   elementIcon: {
     height: "auto",
@@ -239,7 +263,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   footerHeaderContainerText: {
+    fontSize: 25,
     fontWeight: "500",
-    marginLeft: 15,
   },
 });

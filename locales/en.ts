@@ -29,11 +29,22 @@ export const en = {
 
   // Database
   updateAvailable: "New update available",
-  newAppVersionAvailable:  "A new version of the app is available in the App Store!",
+  newAppVersionAvailable:
+    "A new version of the app is available in the App Store!",
   dataBaseUpdated: "The questions and answers has been updated",
 
-    // Questions
-  categories: "Categories"
+  // Questions
+  categories: "Categories",
+  newQuestions: "New questions",
+  
+  // Questionslinks
+  rechtsfragen: "Legal questions",
+  quran: "Quran",
+  geschichte: "History",
+  glaubensfragen: "Questions of faith",
+  ethik: "Ethics",
+  ratschlaege: "Advice",
+  videos: "Videos",
 } as const;
 
 export default en;

@@ -1,4 +1,4 @@
-const tintColorLight = "#93C024";
+const tintColorLight = "#2ea853";
 const tintColorDark = "#fff";
 
 export const Colors = {
@@ -54,10 +54,11 @@ export const Colors = {
     thumbColor: "#f4f3f4",
   },
   universal: {
-    primary: "#93C024",
+    primary: "#2ea853",
     secondary: "#1D3E53",
     grayedOut: "#888",
     link: "#0a84ff",
+    questionLinksIcon: "#2ea853"
 
   },
 };

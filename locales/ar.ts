@@ -32,8 +32,18 @@ export const ar = {
   newAppVersionAvailable: "إصدار جديد من التطبيق متوفّر في متجر التطبيقات!",
   dataBaseUpdated: "تم تحديث الأسئلة والأجوبة",
 
-   // Questions
-  categories: "فئات"
+  // Questions
+  categories: "فئات",
+  newQuestions: "أسئلة جديدة",
+
+  // Questionslinks
+  rechtsfragen: "مسائل قانونية",
+  quran: "قرآن",
+  geschichte: "تاريخ",
+  glaubensfragen: "مسائل دينية / أسئلة إيمانية",
+  ethik: "أخلاق",
+  ratschlaege: "نصائح",
+  videos: "أشرطة الفيديو",
 } as const;
 
 export default ar;

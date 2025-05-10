@@ -1,4 +1,3 @@
-
 export const de = {
   //LanguageSelectionScreen
   chooseLanguage: "Wähle deine Sprache aus",
@@ -35,7 +34,17 @@ export const de = {
   dataBaseUpdated: "Die Frage und Antworten wurden aktualsiert!",
 
   // Questions
-  categories: "Kategorien"
+  categories: "Kategorien",
+  newQuestions: "Neue Fragen",
+  
+  // Questionslinks
+  rechtsfragen: "Rechtsfragen",
+  quran: "Quran",
+  geschichte: "Geschichte",
+  glaubensfragen: "Glaubensfragen",
+  ethik: "Ethik",
+  ratschlaege: "Ratschläge",
+  videos: "Videos"
 } as const;
 
 export default de;
