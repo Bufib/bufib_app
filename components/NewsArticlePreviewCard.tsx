@@ -7,7 +7,7 @@ import { NewsArticlesPreviewType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 
-const NewsArticle = ({ title, externalLink }: NewsArticlesPreviewType) => {
+const NewsArticlePreviewCard = ({ title, isExternalLink }: NewsArticlesPreviewType) => {
   // Use the custom hook to handle all gradient logic
   const { gradientColors } = useGradient();
   const { t } = useTranslation();
@@ -19,10 +19,10 @@ const NewsArticle = ({ title, externalLink }: NewsArticlesPreviewType) => {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        {externalLink && (
+        {isExternalLink && (
           <View style={styles.externalLinkBadge}>
             <Text style={styles.externalLinkBadgeText}>
-              {t("externalLink")}
+              {t("isExternalLink")}
             </Text>
           </View>
         )}
@@ -34,7 +34,7 @@ const NewsArticle = ({ title, externalLink }: NewsArticlesPreviewType) => {
   );
 };
 
-export default NewsArticle;
+export default NewsArticlePreviewCard;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/utils/supabase";
-import { NewsArticlesType } from "@/constants/Types";
+import { News } from "@/constants/Types";
 import { mapLanguageToTable } from "@/utils/mapLanguageToTable";
 import {
   useInfiniteQuery,
@@ -11,47 +11,54 @@ import {
 
 const PAGE_SIZE = 1;
 
-export function useNewsArticles() {
+/**
+ * Fetch and subscribe to paginated news items from the `news` table,
+ * selecting the correct title/content columns based on the current language.
+ */
+export function useNews() {
   const { language } = useLanguage();
-  const lang = language ?? "de";
+  const lang: string = language ?? "de";
   const tableName = mapLanguageToTable[lang];
   const queryClient = useQueryClient();
-  const queryKey = ["newsArticles", lang];
+  const queryKey = ["news", lang] as const;
 
   const selectCols = `
     id,
     created_at,
+    images_url,
     ${tableName.title},
     ${tableName.content},
-    is_external_link,
-    external_link
+    external_url,
+    internal_url
   `;
 
-  // 1️⃣ Infinite query for pagination
-  const infiniteQuery = useInfiniteQuery<NewsArticlesType[], Error>({
+  const infiniteQuery = useInfiniteQuery<News[], Error>({
     queryKey,
     enabled: Boolean(language),
     staleTime: 5 * 60 * 1000,
     retry: 1,
     initialPageParam: 0,
+
     queryFn: async ({ pageParam = 0 }) => {
       const from = pageParam * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
       const { data, error } = await supabase
-        .from("news_articles")
+        .from("news")
         .select(selectCols)
         .order("created_at", { ascending: false })
         .range(from, to);
 
       if (error) throw error;
+
       return (data ?? []).map((row: any) => ({
         id: Number(row.id),
         createdAt: row.created_at,
-        title: row[tableName.title] ?? "",
-        content: row[tableName.content] ?? "",
-        isExternalLink: row.is_external_link,
-        externalLink: row.external_link
+        title: row.title ?? "",
+        content: row.content ?? "",
+        imagesUrl: row.images_url ?? [],
+        externalUrls: row.external_urls ?? [],
+        internalUrls: row.internal_urls ?? [],
       }));
     },
 
@@ -59,36 +66,39 @@ export function useNewsArticles() {
       lastPage.length === PAGE_SIZE ? allPages.length : undefined,
   });
 
-  // 2️⃣ Real-time subscription that updates the infinite cache
   useEffect(() => {
     if (!language) return;
 
     const channel = supabase
-      .channel(`news_articles_${lang}`)
+      .channel(`news_${lang}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "news_articles" },
+        { event: "*", schema: "public", table: "news" },
         (payload) => {
           const { eventType, new: newRec, old: oldRec } = payload;
 
-          queryClient.setQueryData<InfiniteData<NewsArticlesType[]>>(
+          queryClient.setQueryData<InfiniteData<News[]>>(
             queryKey,
             (oldData) => {
               if (!oldData) return oldData;
 
-              // helper to map a raw row to your type
-              const mapRow = (row: any): NewsArticlesType => ({
+              const mapRow = (row: any): News => ({
                 id: Number(row.id),
                 createdAt: row.created_at,
                 title: row[tableName.title] ?? "",
                 content: row[tableName.content] ?? "",
-                isExternalLink: row.is_external_link,
-                externalLink: row.external_link
+                imagesUrl: row.images_url ?? [],
+                externalUrls: row.external_urls ?? [],
+                internalUrls: row.internal_urls ?? [],
               });
 
-              // update pages array
               const newPages = oldData.pages.map((page) => {
                 switch (eventType) {
+                  case "INSERT": {
+                    // prepend into first page
+                    const inserted = mapRow(newRec!);
+                    return [inserted, ...page];
+                  }
                   case "UPDATE": {
                     const updated = mapRow(newRec!);
                     return page.map((item) =>
@@ -103,12 +113,6 @@ export function useNewsArticles() {
                     return page;
                 }
               });
-
-              if (eventType === "INSERT") {
-                // prepend new item into first page
-                const inserted = mapRow(newRec!);
-                newPages[0] = [inserted, ...newPages[0]];
-              }
 
               return { ...oldData, pages: newPages };
             }

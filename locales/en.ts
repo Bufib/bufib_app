@@ -4,12 +4,14 @@ export const en = {
 
   //NewsArticles
   newsArticles: "Articls",
-  externalLink: "External Link",
+  isExternalLink: "External Link",
 
-   // General
-   retry: "Retry",
-   errorLoadingData: "There was an error loading the data",
-
+  // General
+  retry: "Retry",
+  errorLoadingData: "There was an error loading the data",
+  openingLink: "Opening Link",
+  urlNotSupported: "URL is not supported",
+  errorOpeningUrl: "Error opening URL",
 } as const;
 
 export default en;
