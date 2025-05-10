@@ -44,6 +44,7 @@ export function useNews() {
         .eq("language_code", lang)
         .order("created_at", { ascending: false })
         .range(from, to);
+        
       if (error) throw error;
 
       return (data ?? []).map(

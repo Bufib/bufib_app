@@ -15,6 +15,8 @@ export const en = {
   openingLink: "Opening Link",
   urlNotSupported: "URL is not supported",
   errorOpeningUrl: "Error opening URL",
+  back: "Back"
+
 } as const;
 
 export default en;

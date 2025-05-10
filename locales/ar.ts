@@ -15,6 +15,8 @@ export const ar = {
   openingLink: "جاري فتح الرابط",
   urlNotSupported: "عنوان URL غير مدعوم",
   errorOpeningUrl: "خطأ في فتح الرابط",
+  back: "العودة",
+
 } as const;
 
 export default ar;

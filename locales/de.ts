@@ -14,7 +14,8 @@ export const de = {
    errorLoadingData: "Es gab einen Fehler beim laden der Daten",
    openingLink: "Link wird geöffnet",
    urlNotSupported: "URL wird nicht unterstützt",
-   errorOpeningUrl:  "Fehler beim Öffnen der URL"
+   errorOpeningUrl:  "Fehler beim Öffnen der URL",
+   back: "Zurück"
 } as const;
 
 export default de;
