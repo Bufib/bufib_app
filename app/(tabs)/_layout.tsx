@@ -7,6 +7,7 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import i18n from "@/utils/i18n";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -30,9 +31,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="knowledge"
         options={{
-          title: "Explore",
+          title: i18n.t("knowledge"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book" color={color} />
           ),

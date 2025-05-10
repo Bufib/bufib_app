@@ -9,6 +9,11 @@ export const Colors = {
     tabIconDefault: "#687076",
     tabIconSelected: tintColorLight,
 
+    // TabView
+    indicatorColor: "#000",
+    inactiveLabelColor: "#000",
+    activeLabelColor: "#555",
+
     // General
     text: "#11181C",
     background: "#f2f2f2",
@@ -25,6 +30,11 @@ export const Colors = {
     icon: "#9BA1A6",
     tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
+
+    // TabView
+    indicatorColor: "#fff",
+    inactiveLabelColor: "#fff",
+    activeLabelColor: "#aaa",
 
     // General
     text: "#ECEDEE",

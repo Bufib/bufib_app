@@ -20,6 +20,11 @@ export const ar = {
   small: "صغير",
   medium: "واسطة",
   large: "كبير",
+
+  // Navigation
+  knowledge: "معرفة",
+  questionScreenTitle: "أسئلة وأجوبة",
+  prayerScreenTitle: "صلاة وأكثر",
 } as const;
 
 export default ar;

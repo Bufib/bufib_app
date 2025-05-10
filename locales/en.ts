@@ -20,6 +20,11 @@ export const en = {
   small: "small",
   medium: "medium",
   large: "large",
+
+  // Navigation
+  knowledge: "Knowledge",
+  questionScreenTitle: "Questions and Answers",
+  prayerScreenTitle: "Prayers and more",
 } as const;
 
 export default en;

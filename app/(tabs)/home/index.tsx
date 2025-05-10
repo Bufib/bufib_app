@@ -112,7 +112,7 @@ export default function HomeScreen() {
         )}
       </View>
 
-      {/* //!----------- News articles ----------- */}
+      {/* //!----------- News ----------- */}
       <View style={styles.newsContainer}>
         <ThemedText type="title">{t("newsTitle")}</ThemedText>
         {newsIsLoading && (
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   newsArticleContainer: {
     flex: 1,
-    gap: 10,
+    gap: 20,
   },
   errorContainer: {
     alignItems: "center",
