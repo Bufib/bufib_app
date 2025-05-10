@@ -5,7 +5,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { useColorScheme } from "react-native";
-import { getQuestion } from "@/utils/initializeDatabase";
+import { getQuestion } from "@/utils/bufibDatabase";
 import { useState, useEffect } from "react";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import AntDesign from "@expo/vector-icons/AntDesign";

@@ -17,7 +17,7 @@ import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
 import { useAuthStore } from "@/stores/authStore";
 import { useLogout } from "@/utils/useLogout";
-import { getQuestionCount } from "@/utils/initializeDatabase";
+import { getQuestionCount } from "@/utils/bufibDatabase";
 import handleOpenExternalUrl from "@/utils/handleExternalLink";
 import { Image } from "expo-image";
 import DeleteUserModal from "@/components/DeleteUserModal";

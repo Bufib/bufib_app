@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
-import { initializeDatabase } from "@/utils/initializeDatabase";
+import { initializeDatabase } from "@/utils/bufibDatabase";
 import useNotificationStore from "@/stores/notificationStore";
 
 const REFETCH_THRESHOLD = 5 * 60 * 1000; // 5 minutes

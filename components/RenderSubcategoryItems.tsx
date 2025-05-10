@@ -6,7 +6,7 @@ import { ThemedView } from "@/components/ThemedView";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useColorScheme } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { getQuestionsForSubcategory } from "../utils/initializeDatabase";
+import { getQuestionsForSubcategory } from "../utils/bufibDatabase";
 import { QuestionType } from "@/utils/types";
 import { Colors } from "@/constants/Colors";
 

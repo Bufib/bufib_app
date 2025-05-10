@@ -20,12 +20,18 @@ export const ar = {
   small: "صغير",
   medium: "واسطة",
   large: "كبير",
-
+  error: "خطأ",
   // Navigation
   knowledge: "معرفة",
   settings: "إعدادات",
   questionScreenTitle: "أسئلة وأجوبة",
   prayerScreenTitle: "صلاة وأكثر",
+
+  // Database
+  updateAvailable: "تحديث جديد متوفر",
+  newAppVersionAvailable: "إصدار جديد من التطبيق متوفّر في متجر التطبيقات!",
+  dataBaseUpdated: "تم تحديث الأسئلة والأجوبة",
+
 } as const;
 
 export default ar;

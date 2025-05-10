@@ -132,7 +132,7 @@
 // }
 
 import { useState, useEffect } from "react";
-import { initializeDatabase } from "@/utils/initializeDatabase";
+import { initializeDatabase } from "@/utils/bufibDatabase";
 
 export function useInitializeDatabase() {
   const [initialized, setInitialized] = useState(false);

@@ -7,7 +7,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useColorScheme } from "react-native";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
-import { getFavoriteQuestions } from "../utils/initializeDatabase";
+import { getFavoriteQuestions } from "../utils/bufibDatabase";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { QuestionType } from "@/utils/types";
 

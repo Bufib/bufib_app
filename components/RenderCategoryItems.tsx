@@ -7,7 +7,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useColorScheme } from "react-native";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
-import { getSubcategoriesForCategory } from "../utils/initializeDatabase";
+import { getSubcategoriesForCategory } from "../utils/bufibDatabase";
 
 function RenderCategoryItems({ category }: { category: string }) {
   const [subcategories, setSubcategories] = useState<string[]>([]);

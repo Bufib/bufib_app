@@ -1,6 +1,70 @@
+// // app/_layout.tsx
+// import "@/utils/i18n"; // initialize i18next
+// import React, { useEffect } from "react";
+// import {
+//   ThemeProvider,
+//   DarkTheme,
+//   DefaultTheme,
+// } from "@react-navigation/native";
+// import { Stack } from "expo-router";
+// import * as SplashScreen from "expo-splash-screen";
+// import { StatusBar } from "expo-status-bar";
+// import "react-native-reanimated";
+// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+// import { useColorScheme } from "@/hooks/useColorScheme";
+// import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
+// import LanguageSelection from "@/components/LanguageSelectionScreen";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import Toast from "react-native-toast-message";
+
+// const queryClient = new QueryClient();
+
+// function AppContent() {
+//   const colorScheme = useColorScheme();
+//   const { ready, language } = useLanguage();
+
+//   useEffect(() => {
+//     if (ready) {
+//       SplashScreen.hideAsync();
+//     }
+//   }, [ready]);
+
+//   // keep native splash visible until i18n + storage are ready
+//   if (!ready) {
+//     return null;
+//   }
+
+//   // on first run, show the picker
+//   if (!language) {
+//     return <LanguageSelection />;
+//   }
+
+//   // language chosen → render your app
+//   return (
+//     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+//       <QueryClientProvider client={queryClient}>
+//         <Stack>
+//           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+//           <Stack.Screen name="+not-found" />
+//         </Stack>
+//         <StatusBar style="auto" />
+//       </QueryClientProvider>
+//       <Toast />
+//     </ThemeProvider>
+//   );
+// }
+
+// export default function RootLayout() {
+//   return (
+//     <LanguageProvider>
+//       <AppContent />
+//     </LanguageProvider>
+//   );
+// }
+
 // app/_layout.tsx
-import "@/utils/i18n"; // initialize i18next
-import React, { useEffect } from "react";
+import "@/utils/i18n"; // initialize i18next (from Code 2)
+import React, { useEffect, useState } from "react";
 import {
   ThemeProvider,
   DarkTheme,
@@ -11,50 +75,311 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
-import LanguageSelection from "@/components/LanguageSelectionScreen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
+import { useColorScheme } from "@/hooks/useColorScheme"; // Used by both
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext"; // From Code 2
+import LanguageSelection from "@/components/LanguageSelectionScreen"; // From Code 2
+import Toast from "react-native-toast-message"; // Used by both
+import {
+  ActivityIndicator,
+  Appearance,
+  Platform,
+  View,
+  Text,
+} from "react-native"; // From Code 1 & general RN
 
+// Imports from Code 1
+import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
+import { SQLiteProvider } from "expo-sqlite";
+import { Storage } from "expo-sqlite/kv-store"; // For theme persistence
+import { useAuthStore } from "@/stores/authStore";
+import { NoInternet } from "@/components/NoInternet";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { SupabaseRealtimeProvider } from "@/components/SupabaseRealtimeProvider";
+import useNotificationStore from "@/stores/notificationStore";
+import { useFontSizeStore } from "@/stores/fontSizeStore";
+import ReMountManager from "@/components/ReMountManager";
+import { useConnectionStatus } from "@/hooks/useConnectionStatus";
+import { Colors } from "@/constants/Colors"; // For loading screen
+import AppReviewPrompt from "@/components/AppReviewPrompt";
+
+// Prevent the splash screen from auto-hiding before asset loading is complete. (From Code 1)
+SplashScreen.preventAutoHideAsync();
+
+// Query client (defined at module level like in Code 2)
 const queryClient = new QueryClient();
 
 function AppContent() {
   const colorScheme = useColorScheme();
-  const { ready, language } = useLanguage();
+  const { ready: languageContextReady, language } = useLanguage(); // Renamed 'ready' to avoid conflict
 
+  // State and hooks from Code 1
+  const dbInitialized = useInitializeDatabase();
+  const restoreSession = useAuthStore((state) => state.restoreSession);
+  const [isSessionRestored, setIsSessionRestored] = useState(false);
+  const hasInternet = useConnectionStatus();
+  const { expoPushToken, notification } = usePushNotifications(); // Kept for completeness, original was commented
+  const [storesHydrated, setStoresHydrated] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+
+  // Effect to set color theme from Storage (from Code 1)
   useEffect(() => {
-    if (ready) {
-      SplashScreen.hideAsync();
-    }
-  }, [ready]);
+    const setColorTheme = () => {
+      try {
+        const savedColorScheme = Storage.getItemSync("isDarkMode");
+        if (savedColorScheme === "true") {
+          Appearance.setColorScheme("dark");
+        } else if (savedColorScheme === "false") {
+          Appearance.setColorScheme("light");
+        }
+        // If null or undefined, it will use system default or whatever Appearance.setColorScheme(null) does.
+      } catch (error) {
+        console.error("Failed to set color scheme from storage:", error);
+      }
+    };
+    setColorTheme();
+  }, []);
 
-  // keep native splash visible until i18n + storage are ready
-  if (!ready) {
+  // Effect to hydrate stores (from Code 1)
+  useEffect(() => {
+    const hydrateStores = async () => {
+      try {
+        await Promise.all([
+          useAuthStore.persist.rehydrate(),
+          useFontSizeStore.persist.rehydrate(),
+          useNotificationStore.persist.rehydrate(),
+        ]);
+        // Call checkPermissions after notification store is rehydrated
+        await useNotificationStore.getState().checkPermissions();
+        setStoresHydrated(true);
+      } catch (error) {
+        console.error("Failed to hydrate stores:", error);
+        setStoresHydrated(true); // Still set to true to allow app to proceed
+      }
+    };
+
+    hydrateStores();
+  }, []);
+
+  // Effect for iOS notification permission request (from Code 1)
+  useEffect(() => {
+    if (storesHydrated && Platform.OS === "ios") {
+      const { getNotifications, permissionStatus, toggleGetNotifications } =
+        useNotificationStore.getState();
+      if (!getNotifications && permissionStatus === "undetermined") {
+        toggleGetNotifications(); // This likely triggers the permission prompt
+      }
+    }
+  }, [storesHydrated]);
+
+  // Effect for session restoration (from Code 1)
+  useEffect(() => {
+    const initSession = async () => {
+      if (storesHydrated) {
+        // Ensure stores are hydrated before restoring session
+        await restoreSession();
+        setIsSessionRestored(true);
+      }
+    };
+    if (storesHydrated) {
+      // Only run if stores are hydrated
+      initSession();
+    }
+  }, [storesHydrated, restoreSession]);
+
+  // Debounce showing the loadingScreen for DB initialization (from Code 1)
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    // Show loading screen only if DB is not initialized, we have internet,
+    // and other essential services (language, stores, session) are ready.
+    if (
+      languageContextReady &&
+      storesHydrated &&
+      isSessionRestored &&
+      !dbInitialized &&
+      hasInternet
+    ) {
+      timer = setTimeout(() => {
+        setShowLoadingScreen(true);
+      }, 2000); // 2-second delay
+    } else {
+      setShowLoadingScreen(false); // Hide if conditions are not met or change
+    }
+
+    return () => clearTimeout(timer);
+  }, [
+    languageContextReady,
+    storesHydrated,
+    isSessionRestored,
+    dbInitialized,
+    hasInternet,
+  ]);
+
+  // Combined SplashScreen hiding logic
+  useEffect(() => {
+    const allAppReady =
+      languageContextReady &&
+      storesHydrated &&
+      isSessionRestored &&
+      dbInitialized;
+
+    if (allAppReady) {
+      SplashScreen.hideAsync();
+    } else if (!hasInternet && languageContextReady && storesHydrated) {
+      // If critical initializations (language, stores) are done but there's no internet,
+      // and DB might be pending or session restoration.
+      SplashScreen.hideAsync();
+      Toast.show({
+        type: "error",
+        text1: "Keine Internetverbindung", // TODO: Consider using i18n for this message
+        text2: "Einige Funktionen sind möglicherweise nicht verfügbar.", // TODO: i18n
+        visibilityTime: 5000,
+      });
+    }
+    // If not all ready but hasInternet, splash remains visible.
+    // The specific DB loading screen will appear if dbInitialized is false after timeout.
+  }, [
+    languageContextReady,
+    storesHydrated,
+    isSessionRestored,
+    dbInitialized,
+    hasInternet,
+  ]);
+
+  // //! Store push token (from Code 1, kept commented)
+  // useEffect(() => {
+  //   if (expoPushToken?.data) {
+  //     console.log("Push Token:", expoPushToken.data);
+  //   }
+  // }, [expoPushToken]);
+
+  // //! Handle notifications (from Code 1, kept commented)
+  // useEffect(() => {
+  //   if (notification) {
+  //     console.log("Received notification:", notification);
+  //   }
+  // }, [notification]);
+
+  // Conditional rendering based on loading states
+  // 1. Wait for language context, store hydration, and session restoration
+  if (!languageContextReady || !storesHydrated || !isSessionRestored) {
+    // Minimal loading state or null (keeps splash screen visible until ready)
     return null;
   }
 
-  // on first run, show the picker
+  // 2. If language not yet selected (after initial readiness)
   if (!language) {
     return <LanguageSelection />;
   }
 
-  // language chosen → render your app
+  // 3. Show specific DB loading screen (from Code 1)
+  // This screen shows if DB is not ready, after a delay, and internet is available.
+  if (!dbInitialized && showLoadingScreen && hasInternet) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.dark.background
+              : Colors.light.background, // Adapts to theme
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 20,
+          gap: 30,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 28, // Slightly adjusted
+            color:
+              colorScheme === "dark" ? Colors.dark.text : Colors.light.text,
+            fontWeight: "700",
+            textAlign: "center",
+          }}
+        >
+          Fragen werden geladen! {/* TODO: i18n */}
+        </Text>
+        <ActivityIndicator
+          size={"large"}
+          color={colorScheme === "dark" ? Colors.dark.tint : Colors.light.tint}
+        />
+        <Text
+          style={{
+            fontSize: 16,
+            textAlign: "center",
+            color:
+              colorScheme === "dark" ? Colors.dark.text : Colors.light.text,
+          }}
+        >
+          Je nach Internetverbindung kann das einen Augenblick dauern.{" "}
+          {/* TODO: i18n */}
+        </Text>
+        <Toast /> {/* Local Toast for this specific screen if needed */}
+      </View>
+    );
+  }
+
+  // 4. If essential data (like DB) is still not ready, but the specific loading screen isn't shown
+  // (e.g. timeout not elapsed, or no internet and splash already handled),
+  // returning null will keep the splash screen visible or show a blank screen if splash was hidden due to no internet.
+  // This prevents rendering the main app structure prematurely.
+  if (!dbInitialized && hasInternet) {
+    // If still waiting for DB with internet, and not showing the specific loader.
+    return null; // Keep splash or show blank
+  }
+
+  // Main app content
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <QueryClientProvider client={queryClient}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </QueryClientProvider>
-      <Toast />
+      <ReMountManager>
+        {/* NoInternet component for handling ongoing connectivity issues */}
+        {/* showToast={true} might be redundant if initial splash effect handles it, adjust as needed */}
+        <NoInternet showUI={!hasInternet} showToast={true} />
+        <QueryClientProvider client={queryClient}>
+          <SupabaseRealtimeProvider>
+            <SQLiteProvider databaseName="islam-fragen.db" useSuspense={false}>
+              {/* Set useSuspense={false} for SQLiteProvider if not using React Suspense for DB loading */}
+              {/* Or handle suspense boundary if dbInitialized is used with it */}
+              <Stack
+                screenOptions={{
+                  headerTintColor: colorScheme === "dark" ? "#d0d0c0" : "#000", // From Code 1
+                }}
+              >
+                {/* Merged Stack Screens */}
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(search)"
+                  options={{
+                    headerShown: true,
+                    headerBackTitle: "Zurück", // TODO: i18n
+                    headerTitle: "Suche", // TODO: i18n
+                  }}
+                />
+                <Stack.Screen
+                  name="(question)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(askQuestion)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <AppReviewPrompt />
+              <StatusBar style="auto" />
+            </SQLiteProvider>
+          </SupabaseRealtimeProvider>
+        </QueryClientProvider>
+        <Toast /> {/* Global Toast container */}
+      </ReMountManager>
     </ThemeProvider>
   );
 }
 
 export default function RootLayout() {
+  // Root layout structure from Code 2
   return (
     <LanguageProvider>
       <AppContent />

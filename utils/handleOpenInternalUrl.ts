@@ -1,4 +1,4 @@
-import { getQuestionInternalURL } from "./initializeDatabase";
+import { getQuestionInternalURL } from "./bufibDatabase";
 import { router } from "expo-router";
 
 // Internal urls are the title (unique!) of the questions

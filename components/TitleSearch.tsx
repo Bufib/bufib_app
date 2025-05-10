@@ -299,7 +299,7 @@ import {
   useColorScheme,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { searchQuestions } from "@/utils/initializeDatabase";
+import { searchQuestions } from "@/utils/bufibDatabase";
 import Feather from "@expo/vector-icons/Feather";
 import { Colors } from "@/constants/Colors";
 

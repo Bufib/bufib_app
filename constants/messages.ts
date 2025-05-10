@@ -1,5 +1,6 @@
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
+import i18n from "@/utils/i18n";
 
 // Internet
 export const noInternetHeader = "Keine Internetverbindung!";
@@ -120,12 +121,11 @@ export const askQuestionQuestionSendSuccess = () => {
   });
 };
 
-// questions
-
-export const questionsDatabaseUpate = () => {
+// Database update
+export const databaseUpdate = () => {
   return Toast.show({
     type: "success",
-    text1: "Die Frage und Antworten wurden aktualsiert!",
+    text1: i18n.t("dataBaseUpdated"),
     text1Style: { fontWeight: "500" },
     topOffset: 60,
   });

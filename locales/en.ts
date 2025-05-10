@@ -20,12 +20,18 @@ export const en = {
   small: "small",
   medium: "medium",
   large: "large",
-
+  error: "Error",
   // Navigation
   knowledge: "Knowledge",
   settings: "Settings",
   questionScreenTitle: "Questions and Answers",
   prayerScreenTitle: "Prayers and more",
+
+  // Database
+  updateAvailable: "New update available",
+  newAppVersionAvailable:  "A new version of the app is available in the App Store!",
+  dataBaseUpdated: "The questions and answers has been updated",
+
 } as const;
 
 export default en;

@@ -15,7 +15,7 @@ import { ThemedText } from "./ThemedText";
 import { useColorScheme, Pressable } from "react-native";
 import { CoustomTheme } from "../utils/coustomTheme";
 import Feather from "@expo/vector-icons/Feather";
-import { searchQuestions } from "../utils/initializeDatabase";
+import { searchQuestions } from "../utils/bufibDatabase";
 import { router } from "expo-router";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { Colors } from "@/constants/Colors";
