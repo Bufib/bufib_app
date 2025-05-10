@@ -10,7 +10,7 @@ const handleOpenExternalUrl = async (url: string) => {
     // show an “opening link” toast
     Toast.show({
       type: "info",
-      text1: i18n.t("toast.openingLink"),
+      text1: i18n.t("openingLink"),
       position: "bottom",
       visibilityTime: 1000,
     });
@@ -23,15 +23,15 @@ const handleOpenExternalUrl = async (url: string) => {
       // unsupported URL
       Toast.show({
         type: "error",
-        text1: i18n.t("toast.urlNotSupported"),
+        text1: i18n.t("urlNotSupported"),
         position: "bottom",
       });
     }
   } catch (error) {
-    console.error(i18n.t("toast.errorOpeningUrl"), error);
+    console.error(i18n.t("errorOpeningUrl"), error);
     Toast.show({
       type: "error",
-      text1: i18n.t("toast.errorOpeningUrl"),
+      text1: i18n.t("errorOpeningUrl"),
       position: "bottom",
     });
   }

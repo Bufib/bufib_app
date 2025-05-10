@@ -10,12 +10,12 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelection from "@/components/LanguageSelectionScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +49,7 @@ function AppContent() {
         </Stack>
         <StatusBar style="auto" />
       </QueryClientProvider>
+      <Toast />
     </ThemeProvider>
   );
 }

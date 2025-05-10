@@ -17,34 +17,37 @@ const NewsArticlePreviewCard = ({
   const { t } = useTranslation();
   const { language } = useLanguage();
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        style={styles.linearGradient}
-        colors={gradientColors}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        {isExternalLink && (
-          <View style={styles.externalLinkBadge}>
-            <Text style={[styles.externalLinkBadgeText, {
-               alignSelf: language === "ar" ? "flex-start" : "flex-end" ,
-            }]}>
-              {t("isExternalLink")}
-            </Text>
-          </View>
-        )}
-        <Text
+    <LinearGradient
+      style={styles.container}
+      colors={gradientColors}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      {isExternalLink && (
+        <View
           style={[
-            styles.newsTitle,
-            { textAlign: language === "ar" ? "right" : "left" },
+            styles.externalLinkBadge,
+            {
+              alignSelf: language === "ar" ? "flex-start" : "flex-end",
+            },
           ]}
-          numberOfLines={2}
-          ellipsizeMode="tail"
         >
-          {title}
-        </Text>
-      </LinearGradient>
-    </View>
+          <Text style={styles.externalLinkBadgeText}>
+            {t("isExternalLink")}
+          </Text>
+        </View>
+      )}
+      <Text
+        style={[
+          styles.newsTitle,
+          { textAlign: language === "ar" ? "right" : "left" },
+        ]}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
+        {title}
+      </Text>
+    </LinearGradient>
   );
 };
 
@@ -52,14 +55,12 @@ export default NewsArticlePreviewCard;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  linearGradient: {
     justifyContent: "flex-start",
     gap: 20,
-    width: 300,
     height: 150,
+    width: 300,
     padding: 15,
+    borderWidth: 1,
     borderRadius: 15,
   },
   externalLinkBadge: {
