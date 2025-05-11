@@ -7,7 +7,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useColorScheme } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { getQuestionsForSubcategory } from "../utils/bufibDatabase";
-import { QuestionType } from "@/utils/types";
+import { QuestionType } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 
 function RenderSubcategoryItems() {
@@ -19,7 +19,7 @@ function RenderSubcategoryItems() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const themeStyle = CoustomTheme();
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() || "light";
 
   useEffect(() => {
     const loadQuestions = async () => {
@@ -54,7 +54,10 @@ function RenderSubcategoryItems() {
   if (error && !isLoading && questions.length === 0) {
     return (
       <ThemedView style={styles.centeredContainer}>
-        <ThemedText style={styles.error} type="subtitle">
+        <ThemedText
+          style={{ color: Colors[colorScheme].error }}
+          type="subtitle"
+        >
           {error}
         </ThemedText>
       </ThemedView>
@@ -83,7 +86,7 @@ function RenderSubcategoryItems() {
           <Pressable
             onPress={() =>
               router.push({
-                pathname: "/(question)",
+                pathname: "/(displayQuestion)",
                 params: {
                   category,
                   subcategory,
@@ -123,7 +126,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   error: {
-    color: Colors.universal.error,
   },
   flatListStyle: {
     paddingTop: 10,

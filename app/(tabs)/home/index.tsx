@@ -86,8 +86,8 @@ export default function HomeScreen() {
             renderItem={({ item }: { item: NewsArticlesType }) => (
               <TouchableOpacity
                 onPress={() =>
-                  item.isExternalLink
-                    ? handleOpenExternalUrl(item.externalLink || "")
+                  item.is_external_link
+                    ? handleOpenExternalUrl(item.external_link || "")
                     : router.push({
                         pathname: "/(tabs)/home/newsArticle",
                         params: {
@@ -98,7 +98,7 @@ export default function HomeScreen() {
               >
                 <NewsArticlePreviewCard
                   title={item.title}
-                  isExternalLink={item.isExternalLink}
+                  is_external_link={item.is_external_link}
                 />
               </TouchableOpacity>
             )}
@@ -145,7 +145,7 @@ export default function HomeScreen() {
               <NewsCard
                 title={item.title}
                 content={item.content}
-                createdAt={item.createdAt}
+                created_at={item.created_at}
               />
             )}
             showsHorizontalScrollIndicator={false}

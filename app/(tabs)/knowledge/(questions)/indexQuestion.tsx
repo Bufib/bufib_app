@@ -1,9 +1,9 @@
 import React from "react";
 import QuestionLinks from "@/components/QuestionLinks";
 
-const questions = () => {
+const indexQuestion = () => {
   return <QuestionLinks />;
 };
 
-export default questions;
+export default indexQuestion;
 

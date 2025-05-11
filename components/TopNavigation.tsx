@@ -1,16 +1,16 @@
 import * as React from "react";
 import { useWindowDimensions, useColorScheme } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import prayers from "@/app/(tabs)/knowledge/(prayer)/prayers";
-import questions from "@/app/(tabs)/knowledge/(questions)/questions";
+import indexPrayer from "@/app/(tabs)/knowledge/(prayer)/indexPrayer";
+import indexQuestion from "@/app/(tabs)/knowledge/(questions)/indexQuestion";
 import i18n from "@/utils/i18n";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 const renderScene = SceneMap({
-  questionsScreen: questions,
-  prayerScreen: prayers,
+  questionsScreen: indexQuestion,
+  prayerScreen: indexPrayer,
 });
 
 export default function TopNavigation() {

@@ -13,7 +13,7 @@ import * as Clipboard from "expo-clipboard";
 import Feather from "@expo/vector-icons/Feather";
 import Markdown from "react-native-markdown-display";
 import { NoInternet } from "./NoInternet";
-import { QuestionType } from "@/utils/types";
+import { QuestionType } from "@/constants/Types";
 type RenderQuestionProps = {
   category: string;
   subcategory: string;

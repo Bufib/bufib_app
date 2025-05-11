@@ -10,7 +10,7 @@ const _layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
     <Stack>
-      <Stack.Screen name="questions" options={{ headerShown: false }} />
+      <Stack.Screen name="indexQuestion" options={{ headerShown: false }} />
       <Stack.Screen
         name="categories"
         options={{

@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const prayers = () => {
+const indexPrayer = () => {
   return (
     <View>
-      <Text>prayers</Text>
+      <Text>indexPrayer</Text>
     </View>
   )
 }
 
-export default prayers
+export default indexPrayer
 
 const styles = StyleSheet.create({})

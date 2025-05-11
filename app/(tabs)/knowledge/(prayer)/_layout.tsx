@@ -5,7 +5,7 @@ import i18n from "@/utils/i18n";
 const _layout = () => {
   return (
     <Stack>
-      <Stack.Screen name="prayer" options={{ headerShown: true }} />
+      <Stack.Screen name="indexPrayer" options={{ headerShown: true }} />
     </Stack>
   );
 };

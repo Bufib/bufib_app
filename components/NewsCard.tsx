@@ -6,7 +6,7 @@ import { Colors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const NewsCard: React.FC<NewsCardType> = ({ title, content, createdAt }) => {
+const NewsCard: React.FC<NewsCardType> = ({ title, content, created_at }) => {
   const colorScheme = useColorScheme() || "light";
   const { language } = useLanguage();
   return (
@@ -51,7 +51,7 @@ const NewsCard: React.FC<NewsCardType> = ({ title, content, createdAt }) => {
           },
         ]}
       >
-        {formattedDate(createdAt)} · {formattedTime(createdAt)}
+        {formattedDate(created_at)} · {formattedTime(created_at)}
       </ThemedText>
     </View>
   );

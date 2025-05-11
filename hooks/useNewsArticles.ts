@@ -156,17 +156,6 @@ export function useNewsArticles() {
     read_time
   `; // Added language_code to selectCols for single article fetch
 
-  const mapRowToNewsArticle = (row: any): NewsArticlesType => ({
-    id: Number(row.id),
-    createdAt: row.created_at,
-    title: row.title ?? "",
-    content: row.content ?? "",
-    isExternalLink: row.is_external_link,
-    externalLink: row.external_link_url,
-    languageCode: row.language_code,
-    readTime: row.read_time,
-  });
-
   const infiniteQuery = useInfiniteQuery<NewsArticlesType[], Error>({
     queryKey,
     enabled: Boolean(language),
@@ -185,7 +174,7 @@ export function useNewsArticles() {
         .range(from, to);
 
       if (error) throw error;
-      return (data ?? []).map(mapRowToNewsArticle);
+      return data ?? [];
     },
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === PAGE_SIZE ? allPages.length : undefined,
@@ -214,28 +203,24 @@ export function useNewsArticles() {
 
               const newPages = oldData.pages.map((page) => {
                 switch (eventType) {
-                  case "UPDATE": {
-                    const updated = mapRowToNewsArticle(newRec!);
+                  case "UPDATE":
                     return page.map((item) =>
-                      item.id === updated.id ? updated : item
+                      item.id === newRec!.id
+                        ? (newRec as NewsArticlesType)
+                        : item
                     );
-                  }
-                  case "DELETE": {
-                    const deleted = mapRowToNewsArticle(oldRec!);
-                    return page.filter((item) => item.id !== deleted.id);
-                  }
+                  case "DELETE":
+                    return page.filter((item) => item.id !== oldRec!.id);
                   default:
                     return page;
                 }
               });
 
               if (eventType === "INSERT") {
-                const inserted = mapRowToNewsArticle(newRec!);
-                // Ensure the first page exists before trying to prepend to it
+                const inserted = newRec as NewsArticlesType;
                 if (newPages.length > 0) {
                   newPages[0] = [inserted, ...newPages[0]];
                 } else {
-                  // If there are no pages, create the first page with the inserted item
                   newPages.push([inserted]);
                 }
               }
@@ -284,15 +269,7 @@ export function useNewsArticles() {
       return null; // Or handle not found case
     }
 
-    const article = mapRowToNewsArticle(data);
-
-    // Optionally, update the TanStack Query cache with this single article
-    // This is a bit more complex if you want to fit it into the infinite query structure
-    // For simplicity, we're just returning it here.
-    // If you need to integrate it into the main list's cache,
-    // you might consider if it's already there via the infinite load or subscription.
-
-    return article;
+    return data as NewsArticlesType;
   };
 
   return { ...infiniteQuery, fetchNewsArticleById };

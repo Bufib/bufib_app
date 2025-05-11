@@ -14,7 +14,7 @@ function RenderCategoryItems({ category }: { category: string }) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const themeStyle = CoustomTheme();
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() || "light";
 
   useEffect(() => {
     const loadSubcategories = async () => {
@@ -45,7 +45,10 @@ function RenderCategoryItems({ category }: { category: string }) {
   if (error && !isLoading && subcategories.length === 0) {
     return (
       <ThemedView style={styles.centeredContainer}>
-        <ThemedText style={styles.error} type="subtitle">
+        <ThemedText
+          style={{ color: Colors[colorScheme].error }}
+          type="subtitle"
+        >
           {error}
         </ThemedText>
       </ThemedView>
@@ -74,7 +77,7 @@ function RenderCategoryItems({ category }: { category: string }) {
           <Pressable
             onPress={() =>
               router.push({
-                pathname: "/(tabs)/home/subcategory",
+                pathname: "/(tabs)/knowledge/(questions)/subcategories",
                 params: { category: category, subcategory: item },
               })
             }
@@ -104,7 +107,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   error: {
-    color: Colors.universal.error,
   },
   flatListStyle: {
     paddingTop: 10,

@@ -101,7 +101,7 @@ export default function QuestionLinks() {
               {
                 backgroundColor: Colors[colorScheme].contrast,
                 width: "100%",
-                height: elementSize / 1.5,
+                height: elementSize / 2,
               },
             ]}
           >
@@ -114,11 +114,11 @@ export default function QuestionLinks() {
               <View style={styles.videoTextContainer}>
                 <Entypo
                   name="folder-video"
-                  size={33}
+                  size={28}
                   color={Colors.universal.questionLinksIcon}
                 />
                 <ThemedText
-                  style={[styles.elementText, { fontSize: fontSize * 1.8 }]}
+                  style={[styles.elementText, { fontSize: fontSize * 1.7 }]}
                 >
                   {t("videos")}
                 </ThemedText>

@@ -44,21 +44,10 @@ export function useNews() {
         .eq("language_code", lang)
         .order("created_at", { ascending: false })
         .range(from, to);
-        
+
       if (error) throw error;
 
-      return (data ?? []).map(
-        (row: any): NewsType => ({
-          id: Number(row.id),
-          createdAt: row.created_at,
-          title: row.title ?? "",
-          content: row.content ?? "",
-          externalUrls: row.external_urls ?? [],
-          internalUrls: row.internal_urls ?? [],
-          imagesUrl: row.images_url ?? [],
-          languageCode: row.language_code,
-        })
-      );
+      return data ?? [];
     },
 
     getNextPageParam: (lastPage, allPages) =>
@@ -87,40 +76,25 @@ export function useNews() {
             (oldData) => {
               if (!oldData) return oldData;
 
-              const mapRow = (row: any): NewsType => ({
-                id: Number(row.id),
-                createdAt: row.created_at,
-                title: row.title ?? "",
-                content: row.content ?? "",
-                externalUrls: row.external_urls ?? [],
-                internalUrls: row.internal_urls ?? [],
-                imagesUrl: row.images_url ?? [],
-                languageCode: row.language_code,
-              });
-
-              const newPages = oldData.pages.map((page) => {
+              const pages = oldData.pages.map((page) => {
                 switch (eventType) {
-                  case "UPDATE": {
-                    const updated = mapRow(newRec!);
+                  case "UPDATE":
                     return page.map((item) =>
-                      item.id === updated.id ? updated : item
+                      item.id === newRec!.id ? (newRec as NewsType) : item
                     );
-                  }
-                  case "DELETE": {
-                    const deleted = mapRow(oldRec!);
-                    return page.filter((item) => item.id !== deleted.id);
-                  }
+                  case "DELETE":
+                    return page.filter((item) => item.id !== oldRec!.id);
                   default:
                     return page;
                 }
               });
 
+              // insert at front on INSERT
               if (eventType === "INSERT") {
-                const inserted = mapRow(newRec!);
-                newPages[0] = [inserted, ...newPages[0]];
+                pages[0] = [newRec as NewsType, ...pages[0]];
               }
 
-              return { ...oldData, pages: newPages };
+              return { ...oldData, pages };
             }
           );
         }

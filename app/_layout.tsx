@@ -358,7 +358,7 @@ function AppContent() {
                   }}
                 />
                 <Stack.Screen
-                  name="(question)"
+                  name="(displayQuestion)"
                   options={{ headerShown: false }}
                 />
                 <Stack.Screen

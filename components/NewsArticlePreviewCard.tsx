@@ -10,7 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const NewsArticlePreviewCard = ({
   title,
-  isExternalLink,
+  is_external_link,
 }: NewsArticlesPreviewType) => {
   // Use the custom hook to handle all gradient logic
   const { gradientColors } = useGradient();
@@ -23,7 +23,7 @@ const NewsArticlePreviewCard = ({
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      {isExternalLink && (
+      {is_external_link && (
         <View
           style={[
             styles.externalLinkBadge,
