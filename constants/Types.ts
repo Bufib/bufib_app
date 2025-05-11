@@ -1,13 +1,16 @@
 // Language
 export type LanguageContextType = {
-  language: string | null;
-  set_app_language: (lng: string) => Promise<void>;
+  language: string;
+  setAppLanguage: (lng: string) => Promise<void>;
   ready: boolean;
 };
+
+export type LanguageCode = "de" | "ar" | "en";
+
 // Gradient
 export type UseGradientOptionsType = {
-  custom_gradients?: string[][];
-  default_index?: number;
+  customGradients?: string[][];
+  defaultIndex?: number;
 };
 
 // NewsArticle
@@ -207,4 +210,81 @@ export type VersionType = {
   id: number;
   database_version: string;
   appVersion: string;
+};
+
+// Prayer
+
+export type prayerCategoriesType = {
+  id: number;
+  title: string;
+  parent_id?: number;
+};
+
+export type PrayerType = {
+  id: number;
+  name: string;
+  arabic_title?: string;
+  category_id?: number;
+  created_at: Date;
+  updated_at: Date;
+  translated_languages?: string[];
+  arabic_text?: string;
+  arabic_notes?: string;
+  transliteration_text?: string;
+  source?: string;
+  arabic_introduction?: string;
+};
+
+export type PrayerTranslationType = {
+  id: number;
+  prayer_id: number;
+  language_code: string;
+  translated_introduction?: string;
+  translated_text?: string;
+  source?: string;
+  created_at: Date;
+  updated_at: Date;
+  translated_notes?: string;
+};
+
+// ToDoList
+
+export type TodoItemType = {
+  id: number;
+  text: string;
+  completed: boolean;
+};
+
+export type TodoListType = {
+  todos: TodoItemType[] | undefined;
+  dayIndex: number;
+  onToggleTodo: (dayIndex: number, todoId: number) => void;
+  onShowDeleteModal: (dayIndex: number, todoId: number) => void;
+  addTodo: (day: number, text: string) => void;
+  onShowAddModal: () => void
+};
+
+export type WeeklyTodosType = {
+  [day: number]: TodoItemType[];
+};
+
+export type UseWeeklyTodosResult = {
+  todosByDay: WeeklyTodosType;
+  loading: boolean;
+  toggleTodo: (day: number, id: number) => void;
+  addTodo: (day: number, text: string) => void;
+  deleteTodo: (day: number, id: number) => void;
+  undoAllForDay: (day: number) => void;
+};
+
+export type WeeklyCalendarSectionType = {
+  weeklyTodos: TodoItemType[];
+  isLoadingTodos: boolean;
+  selectedDay: number | null;
+  currentDayIndex: number; // Need current day for DaySelector styling
+  onSelectDay: (dayIndex: number) => void;
+  onToggleTodo: (dayIndex: number, todoId: number) => void;
+  onShowAddModal: () => void;
+  onShowDeleteModal: (dayIndex: number, todoId: number) => void;
+  onUndoAll: (dayIndex: number) => void;
 };

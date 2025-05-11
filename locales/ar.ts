@@ -44,6 +44,44 @@ export const ar = {
   ethik: "أخلاق",
   ratschlaege: "نصائح",
   videos: "أشرطة الفيديو",
+
+  // Prayer categories
+  dua: "دعاء",
+  ziyarat: "زيارة",
+  salat: "صلاة",
+  munajat: "مناجاة",
+  tasbih: "تسبيح",
+  special: "خاصة",
+  names: "أسْماءُ الحُسْنَى",
+
+  // Weekly calendar
+  weeklyToDo: "خطة الأسبوع",
+  addWeekly: "إضافة",
+  addForDay: "إضافة ل",
+  enterPrayer: "أدخل الصلاة...",
+  add: "إضافة",
+  cancel: "إلغاء",
+  noPrayersForDay: "لا توجد صلوات لهذا اليوم",
+  undo: "الغاء الكل",
+
+  // Days of week
+  days: {
+    short: ["إث", "ثل", "أر", "خم", "جم", "سب", "أح"],
+    full: [
+      "الإثنين",
+      "الثلاثاء",
+      "الأربعاء",
+      "الخميس",
+      "الجمعة",
+      "السبت",
+      "الأحد",
+    ],
+  },
+
+  // Delete confirmation
+  confirmDelete: "تأكيد الحذف",
+  deleteQuestion: "هل أنت متأكد أنك تريد حذف هذه الصلاة؟",
+  delete: "حذف",
 } as const;
 
 export default ar;

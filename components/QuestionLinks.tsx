@@ -10,7 +10,7 @@ import { Image } from "expo-image";
 import { useColorScheme } from "react-native";
 import LatestQuestions from "@/components/LatestQuestions";
 import { ThemedText } from "@/components/ThemedText";
-import { categories } from "@/utils/categories";
+import { questionCategories } from "@/utils/categories";
 import { Colors } from "@/constants/Colors";
 import { returnSize } from "@/utils/sizes";
 import { useTranslation } from "react-i18next";
@@ -44,7 +44,7 @@ export default function QuestionLinks() {
           />
         </View>
         <View style={styles.categories}>
-          {categories.map((category, index) => (
+          {questionCategories.map((category, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => {
@@ -119,7 +119,7 @@ export default function QuestionLinks() {
                 <Entypo
                   name="folder-video"
                   size={28}
-                  color={Colors.universal.questionLinksIcon}
+                  color={Colors.universal.questionLinks}
                 />
                 <ThemedText
                   style={[styles.elementText, { fontSize: fontSize * 1.7 }]}
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     borderRadius: 90,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.universal.questionLinksIcon,
+    backgroundColor: Colors.universal.questionLinks,
   },
   videoTextContainer: {
     flexDirection: "row",

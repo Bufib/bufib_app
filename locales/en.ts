@@ -36,7 +36,7 @@ export const en = {
   // Questions
   categories: "Categories",
   newQuestions: "New questions",
-  
+
   // Questionslinks
   rechtsfragen: "Legal questions",
   quran: "Quran",
@@ -45,6 +45,44 @@ export const en = {
   ethik: "Ethics",
   ratschlaege: "Advice",
   videos: "Videos",
+
+  // Prayer categories
+  dua: "Dua",
+  ziyarat: "Ziyarat",
+  salat: "Salat",
+  munajat: "Munajat",
+  tasbih: "Tasbih",
+  special: "Special",
+  names: "Asma-ul-Husna",
+
+  // Weekly calender
+  weeklyToDo: "Weekly Schedule",
+  addWeekly: "Add",
+  addForDay: "Add for",
+  enterPrayer: "Enter prayer...",
+  add: "Add",
+  cancel: "Cancel",
+  noPrayersForDay: "No prayers for this day",
+  undo: "Undo all",
+
+  // Days of week
+  days: {
+    short: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    full: [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ],
+  },
+
+  // Delete confirmation
+  confirmDelete: "Confirm Deletion",
+  deleteQuestion: "Are you sure you want to delete this prayer?",
+  delete: "Delete",
 } as const;
 
 export default en;

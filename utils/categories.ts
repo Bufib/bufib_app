@@ -1,6 +1,6 @@
 import i18n from "./i18n";
 
-export const categories = [
+export const questionCategories = [
   {
     name: i18n.t("rechtsfragen"),
     image: require("@/assets/images/rechtsfragen.png"),
@@ -30,5 +30,47 @@ export const categories = [
     name: i18n.t("ratschlaege"),
     image: require("@/assets/images/ratschlaege.png"),
     value: "Ratschläge",
+  },
+];
+
+// Prayer categories using translations
+export const prayerCategories = [
+  {
+    id: 0,
+    name: i18n.t("dua"),
+    image: require("@/assets/images/dua.png"),
+    value: "Dua",
+  },
+  {
+    id: 1,
+    name: i18n.t("salat"),
+    image: require("@/assets/images/salat.png"),
+    value: "Salat",
+  },
+  {
+    id: 2,
+    name: i18n.t("ziyarat"),
+    image: require("@/assets/images/ziyarat.png"),
+    value: "Ziyarat",
+  },
+
+  {
+    id: 3,
+    name: i18n.t("munajat"),
+    image: require("@/assets/images/munajat.png"),
+    value: "Munajat",
+  },
+  {
+    id: 4,
+    name: i18n.t("special"),
+    image: require("@/assets/images/special.png"),
+    value: "Special",
+  },
+
+  {
+    id: 5,
+    name: i18n.t("names"),
+    image: require("@/assets/images/names.png"),
+    value: "Names",
   },
 ];

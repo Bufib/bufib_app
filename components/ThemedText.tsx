@@ -11,7 +11,8 @@ export type ThemedTextProps = TextProps & {
     | "titleSmall"
     | "defaultSemiBold"
     | "subtitle"
-    | "link";
+    | "link"
+    | "layoutNavigationText";
 };
 
 export function ThemedText({
@@ -33,6 +34,9 @@ export function ThemedText({
         type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
         type === "subtitle" ? styles.subtitle : undefined,
         type === "link" ? styles.link : undefined,
+        type === "layoutNavigationText"
+          ? styles.layoutNavigationText
+          : undefined,
         style,
       ]}
       {...rest}
@@ -68,5 +72,9 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontSize: 16,
     color: "#0a7ea4",
+  },
+  layoutNavigationText: {
+    fontSize: 17,
+    fontWeight: "600",
   },
 });

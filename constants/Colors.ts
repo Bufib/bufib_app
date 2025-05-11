@@ -58,7 +58,8 @@ export const Colors = {
     secondary: "#1D3E53",
     grayedOut: "#888",
     link: "#0a84ff",
-    questionLinksIcon: "#2ea853",
+    questionLinks: "#2ea853",
+    prayerLinks: "#84CEEB",
     externalLinkIcon: "#057958",
   },
 };

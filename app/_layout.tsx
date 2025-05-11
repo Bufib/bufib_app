@@ -332,8 +332,7 @@ function AppContent() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <ReMountManager>
-        {/* NoInternet component for handling ongoing connectivity issues */}
-        {/* showToast={true} might be redundant if initial splash effect handles it, adjust as needed */}
+       
         <NoInternet showUI={!hasInternet} showToast={true} />
         <QueryClientProvider client={queryClient}>
           <SupabaseRealtimeProvider>

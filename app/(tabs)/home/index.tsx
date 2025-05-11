@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   flatListContentContainer: {
-    gap: 10,
+    gap: 20,
   },
   newsContainer: {
     flex: 2,

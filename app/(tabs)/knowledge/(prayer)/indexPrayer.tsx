@@ -1,14 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet } from "react-native";
+import React from "react";
+import PrayerLinks from "@/components/PrayerLinks";
 
 const indexPrayer = () => {
-  return (
-    <View>
-      <Text>indexPrayer</Text>
-    </View>
-  )
-}
+  return <PrayerLinks />;
+};
 
-export default indexPrayer
-
-const styles = StyleSheet.create({})
+export default indexPrayer;
