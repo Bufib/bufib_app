@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useWindowDimensions, useColorScheme } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import prayers from "@/app/(tabs)/knowledge/(routes)/prayers";
-import questions from "@/app/(tabs)/knowledge/(routes)/questions";
+import prayers from "@/app/(tabs)/knowledge/(prayer)/prayers";
+import questions from "@/app/(tabs)/knowledge/(questions)/questions";
 import i18n from "@/utils/i18n";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";

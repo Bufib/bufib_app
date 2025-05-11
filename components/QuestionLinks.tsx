@@ -1,127 +1,64 @@
-import React, { useState } from "react";
-import { View, StyleSheet, useWindowDimensions, FlatList } from "react-native";
+import React from "react";
+import {
+  View,
+  StyleSheet,
+  useWindowDimensions,
+  TouchableOpacity,
+} from "react-native";
 import { router } from "expo-router";
-import { Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useColorScheme } from "react-native";
-import { CoustomTheme } from "../utils/coustomTheme";
-import { SafeAreaView } from "react-native-safe-area-context";
-import LatestQuestions from "./LatestQuestions";
-import { TextInput } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { ThemedText } from "./ThemedText";
+import LatestQuestions from "@/components/LatestQuestions";
+import { ThemedText } from "@/components/ThemedText";
 import { categories } from "@/utils/categories";
 import { Colors } from "@/constants/Colors";
 import { returnSize } from "@/utils/sizes";
+import { useTranslation } from "react-i18next";
+import Entypo from "@expo/vector-icons/Entypo";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function QuestionLinks() {
-  const themeStyles = CoustomTheme();
   const { width, height } = useWindowDimensions();
-
+  const { t } = useTranslation();
   // Dynamically calculate the size of each element based on screen width
   const { elementSize, fontSize, iconSize, imageSize, gap } = returnSize(
     width,
     height
   );
 
-  // For square to change color on pressed
-  const [pressedIndex, setPressedIndex] = useState<number | null>(null);
-  const colorScheme = useColorScheme();
-
+  const colorScheme = useColorScheme() || "light";
 
   return (
-    <SafeAreaView
-      edges={["top"]}
-      style={[
-        styles.container,
-        themeStyles.defaultBackgorundColor,
-        { gap: gap },
-      ]}
-    >
-      <View
-        style={[styles.headerContainer, { marginTop: height > 750 ? 10 : 0 }]}
-      >
-        <Image
-          source={require("@/assets/images/headerImage.png")}
-          style={[styles.imageHeader, { width: imageSize }]}
-          contentFit="contain"
-        />
-      </View>
-
-      <Pressable
-        style={[styles.searchContainer, themeStyles.contrast]}
-        onPress={() => router.push("/(search)")}
-        android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }} // Add ripple effect for better feedback
-      >
-        <View style={styles.searchInputContainer}>
-          <TextInput
-            placeholder="Suche nach einer Frage"
-            editable={false}
-            style={styles.searchInput}
-            placeholderTextColor={themeStyles.placeholder.color}
-            pointerEvents="none" // This ensures the parent Pressable handles the touch
-          />
-          <Ionicons
-            name="search"
-            size={20}
-            color={themeStyles.placeholder.color}
-            style={{ marginLeft: 8 }}
-          />
-        </View>
-      </Pressable>
-
-      <View style={styles.bodyContainer}>
-        <View style={styles.categoryContainer}>
-          <ThemedText
-            style={[
-              styles.bodyContainerText,
-              {
-                fontSize: fontSize * 1.8,
-                fontWeight: "500",
-                lineHeight: 32,
-              },
-            ]}
-          >
-            Kategorien (6)
+    <View style={styles.container}>
+      <View style={styles.categoriesContainer}>
+        <View style={styles.categoriesHeaderContainer}>
+          <ThemedText style={[styles.categoriesContainerText]}>
+            {t("categories")} (7)
           </ThemedText>
-          <Ionicons
-            name="chevron-forward"
-            size={25}
-            style={{ paddingRight: 15 }}
-            color={colorScheme === "dark" ? "#d0d0c0" : "#000"}
+          <AntDesign
+            name="search1"
+            size={30}
+            color="black"
+            style={{ marginRight: 6 }}
           />
         </View>
-
-        <FlatList
-          contentContainerStyle={styles.flatListContent}
-          style={styles.flatListStyles}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={categories}
-          keyExtractor={(_, index) => index.toString()}
-          decelerationRate="fast"
-          renderItem={({ item: category, index }) => (
-            <Pressable
+        <View style={styles.categories}>
+          {categories.map((category, index) => (
+            <TouchableOpacity
+              key={index}
               onPress={() => {
                 router.push({
-                  pathname: "/(tabs)/home/category",
-                  params: { category: category.name },
+                  pathname: "/(tabs)/knowledge/(questions)/categories",
+                  params: { category: category.value, categoryName: category.name },
                 });
               }}
-              onPressIn={() => setPressedIndex(index)}
-              onPressOut={() => setPressedIndex(null)}
               style={[
                 styles.element,
                 {
+                  backgroundColor: Colors[colorScheme].contrast,
                   width: elementSize,
                   height: elementSize,
                 },
-                themeStyles.contrast,
-                pressedIndex === index &&
-                  styles.categoryPressed && {
-                    backgroundColor:
-                      colorScheme === "dark" ? "#242c40" : "#E8E8E8",
-                  },
               ]}
             >
               <View
@@ -142,7 +79,7 @@ export default function QuestionLinks() {
                     contentFit="contain"
                   />
                 </View>
-                <View style={styles.elementTextContainer}>
+                <View>
                   <ThemedText
                     style={[styles.elementText, { fontSize: fontSize }]}
                   >
@@ -150,74 +87,86 @@ export default function QuestionLinks() {
                   </ThemedText>
                 </View>
               </View>
-            </Pressable>
-          )}
-        />
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity
+            onPress={() => {
+              router.push({
+                pathname: "/(tabs)/knowledge/(questions)/categories",
+                params: { category: "Videos", categoryName: t("videos") },
+              });
+            }}
+            style={[
+              styles.element,
+              {
+                backgroundColor: Colors[colorScheme].contrast,
+                width: "100%",
+                height: elementSize / 1.5,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.categoryButtonContainer,
+                { gap: iconSize / 10 - 1 },
+              ]}
+            >
+              <View style={styles.videoTextContainer}>
+                <Entypo
+                  name="folder-video"
+                  size={33}
+                  color={Colors.universal.questionLinksIcon}
+                />
+                <ThemedText
+                  style={[styles.elementText, { fontSize: fontSize * 1.8 }]}
+                >
+                  {t("videos")}
+                </ThemedText>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.footerContainer}>
         <View style={styles.footerHeaderContainer}>
-          <ThemedText
-            style={[
-              styles.footerHeaderContainerText,
-              { fontSize: fontSize * 1.8, fontWeight: "500", lineHeight: 32 },
-            ]}
-          >
-            Neue Fragen (10)
+          <ThemedText style={[styles.footerHeaderContainerText]}>
+            {t("newQuestions")}
           </ThemedText>
-          <Ionicons
-            name="chevron-down"
-            size={25}
-            style={{ paddingRight: 15 }}
-            color={colorScheme === "dark" ? "#d0d0c0" : "#000"}
-          />
         </View>
         <LatestQuestions />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
+    margin: 20,
+    gap: 30,
   },
-  headerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  searchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginHorizontal: 15,
-    borderRadius: 10,
-    height: 40,
-    paddingHorizontal: 10,
-    borderWidth: 0.2,
-  },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    height: "100%",
-  },
-  bodyContainer: {
+
+  categoriesContainer: {
     flexDirection: "column",
+    marginTop: 10,
   },
-  categoryContainer: {
+  categoriesHeaderContainer: {
+    flex: 1,
     flexDirection: "row",
+    alignItems: "flex-start",
     justifyContent: "space-between",
   },
 
-  bodyContainerText: {
+  categoriesContainerText: {
+    fontSize: 25,
     fontWeight: "500",
-    marginHorizontal: 15,
-    marginBottom: 10,
+  },
+  categories: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 20,
   },
 
   imageHeader: {
@@ -236,7 +185,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 7,
+    borderRadius: 13,
 
     // iOS Shadow
     shadowColor: "#000",
@@ -267,9 +216,13 @@ const styles = StyleSheet.create({
     borderRadius: 90,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.universal.primary,
+    backgroundColor: Colors.universal.questionLinksIcon,
   },
-  elementTextContainer: {},
+  videoTextContainer: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "center",
+  },
 
   elementIcon: {
     height: "auto",
@@ -288,7 +241,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   footerHeaderContainerText: {
+    fontSize: 25,
     fontWeight: "500",
-    marginLeft: 15,
   },
 });
