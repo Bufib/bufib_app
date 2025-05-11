@@ -49,7 +49,7 @@ export const Colors = {
     loadingIndicator: "#fff",
     error: "#f44336",
 
-    // Switch 
+    // Switch
     trackColor: "#057958",
     thumbColor: "#f4f3f4",
   },
@@ -58,7 +58,7 @@ export const Colors = {
     secondary: "#1D3E53",
     grayedOut: "#888",
     link: "#0a84ff",
-    questionLinksIcon: "#2ea853"
-
+    questionLinksIcon: "#2ea853",
+    externalLinkIcon: "#057958",
   },
 };

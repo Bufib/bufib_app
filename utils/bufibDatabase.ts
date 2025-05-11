@@ -9,7 +9,7 @@ import {
 } from "./checkNetwork";
 import debounce from "lodash.debounce";
 import { Alert, Platform } from "react-native";
-import handleOpenExternalUrl from "./handleExternalLink";
+import handleOpenExternalUrl from "./handleOpenExternalUrl";
 import Constants from "expo-constants";
 import { QuestionType, SearchResultQAType } from "@/constants/Types";
 import i18n from "./i18n";

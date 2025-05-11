@@ -16,6 +16,7 @@ import { returnSize } from "@/utils/sizes";
 import { useTranslation } from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { ThemedView } from "./ThemedView";
 
 export default function QuestionLinks() {
   const { width, height } = useWindowDimensions();
@@ -29,7 +30,7 @@ export default function QuestionLinks() {
   const colorScheme = useColorScheme() || "light";
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <View style={styles.categoriesContainer}>
         <View style={styles.categoriesHeaderContainer}>
           <ThemedText style={[styles.categoriesContainerText]}>
@@ -49,7 +50,10 @@ export default function QuestionLinks() {
               onPress={() => {
                 router.push({
                   pathname: "/(tabs)/knowledge/(questions)/categories",
-                  params: { category: category.value, categoryName: category.name },
+                  params: {
+                    category: category.value,
+                    categoryName: category.name,
+                  },
                 });
               }}
               style={[
@@ -130,21 +134,21 @@ export default function QuestionLinks() {
 
       <View style={styles.footerContainer}>
         <View style={styles.footerHeaderContainer}>
-          <ThemedText style={[styles.footerHeaderContainerText]}>
+          <ThemedText type="titleSmall" style={styles.footerHeaderContainerText}>
             {t("newQuestions")}
           </ThemedText>
         </View>
         <LatestQuestions />
       </View>
-    </View>
+    </ThemedView>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    margin: 20,
-    gap: 30,
+    padding: 20,
+    gap: 40,
   },
 
   categoriesContainer: {
@@ -240,8 +244,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  footerHeaderContainerText: {
-    fontSize: 25,
-    fontWeight: "500",
-  },
+  footerHeaderContainerText: {},
 });

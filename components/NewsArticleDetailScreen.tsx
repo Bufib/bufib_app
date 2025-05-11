@@ -133,7 +133,7 @@ export default function NewsArticleDetailScreen({
                 size={24}
                 color={colorScheme === "dark" ? "#fff" : "#000"}
               />
-              <ThemedText>{formattedDate(article.createdAt)}</ThemedText>
+              <ThemedText>{formattedDate(article.created_at)}</ThemedText>
             </View>
             <View style={styles.titleIconText}>
               <AntDesign
@@ -141,7 +141,7 @@ export default function NewsArticleDetailScreen({
                 size={24}
                 color={colorScheme === "dark" ? "#fff" : "#000"}
               />
-              <ThemedText>{article.readTime} min</ThemedText>
+              <ThemedText>{article.read_time} min</ThemedText>
             </View>
           </View>
         </View>

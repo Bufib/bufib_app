@@ -4,7 +4,7 @@ import { ThemedText } from "@/components/ThemedText";
 import Feather from "@expo/vector-icons/Feather";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "react-native";
-import handleOpenExternalUrl from "@/utils/handleExternalLink";
+import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import handleOpenInternallUrl from "../utils/handleOpenInternalUrl";
 
 type RenderLinkNewsItemProps = {

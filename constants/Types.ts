@@ -23,7 +23,7 @@ export type NewsArticlesType = {
   title: string;
   content: string;
   is_external_link: boolean;
-  external_link?: string;
+  external_link_url?: string;
   read_time?: string;
 };
 

@@ -18,7 +18,7 @@ import { router } from "expo-router";
 import { useAuthStore } from "@/stores/authStore";
 import { useLogout } from "@/utils/useLogout";
 import { getQuestionCount } from "@/utils/bufibDatabase";
-import handleOpenExternalUrl from "@/utils/handleExternalLink";
+import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import { Image } from "expo-image";
 import DeleteUserModal from "@/components/DeleteUserModal";
 import Toast from "react-native-toast-message";

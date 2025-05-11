@@ -50,7 +50,7 @@ const LatestQuestions: React.FC = () => {
           </ThemedText>
           <View style={styles.categoryContainer}>
             <ThemedText style={styles.categoryText}>
-              {item.categoryName} {">"} {item.subcategoryName}
+              {item.category_name} {">"} {item.subcategory_name}
             </ThemedText>
           </View>
         </View>
@@ -94,10 +94,10 @@ const LatestQuestions: React.FC = () => {
       item={item}
       onPress={() =>
         router.push({
-          pathname: "/(question)",
+          pathname: "/(displayQuestion)",
           params: {
-            category: item.categoryName,
-            subcategory: item.subcategoryName,
+            category: item.category_name,
+            subcategory: item.subcategory_name,
             questionId: item.id.toString(),
             questionTitle: item.title,
           },

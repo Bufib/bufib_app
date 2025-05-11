@@ -7,7 +7,7 @@ import { NewsArticlesPreviewType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
-
+import Feather from "@expo/vector-icons/Feather";
 const NewsArticlePreviewCard = ({
   title,
   is_external_link,
@@ -32,9 +32,11 @@ const NewsArticlePreviewCard = ({
             },
           ]}
         >
-          <Text style={styles.externalLinkBadgeText}>
-            {t("isExternalLink")}
-          </Text>
+          <Feather
+            name="external-link"
+            size={27}
+            color={Colors.universal.externalLinkIcon}
+          />
         </View>
       )}
       <Text
@@ -63,12 +65,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 15,
   },
-  externalLinkBadge: {
-    borderWidth: 1.5,
-    borderRadius: 10,
-    padding: 5,
-    backgroundColor: Colors.universal.primary,
-  },
+  externalLinkBadge: {},
   externalLinkBadgeText: {
     fontSize: 12,
     fontWeight: 600,

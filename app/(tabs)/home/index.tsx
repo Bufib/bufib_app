@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-
+import Feather from "@expo/vector-icons/Feather";
 import NewsArticlePreviewCard from "@/components/NewsArticlePreviewCard";
 import { ThemedText } from "@/components/ThemedText";
 import { useNewsArticles } from "@/hooks/useNewsArticles";
@@ -17,7 +17,7 @@ import { NewsArticlesType, NewsType } from "@/constants/Types";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import RetryButton from "@/components/RetryButton";
 import { Colors } from "@/constants/Colors";
-import handleOpenExternalUrl from "@/utils/handleExternalLink";
+import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import { router } from "expo-router";
 import { useNews } from "@/hooks/useNews";
 import NewsCard from "@/components/NewsCard";
@@ -59,7 +59,7 @@ export default function HomeScreen() {
       edges={["top"]}
     >
       <View style={styles.newsArticleContainer}>
-        <ThemedText type="title">{t("newsArticlesTitle")}</ThemedText>
+        <ThemedText type="titleSmall">{t("newsArticlesTitle")}</ThemedText>
 
         {newsArticlesIsLoading && (
           <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
@@ -87,7 +87,7 @@ export default function HomeScreen() {
               <TouchableOpacity
                 onPress={() =>
                   item.is_external_link
-                    ? handleOpenExternalUrl(item.external_link || "")
+                    ? handleOpenExternalUrl(item.external_link_url || "")
                     : router.push({
                         pathname: "/(tabs)/home/newsArticle",
                         params: {
@@ -120,7 +120,7 @@ export default function HomeScreen() {
 
       {/* //!----------- News ----------- */}
       <View style={styles.newsContainer}>
-        <ThemedText type="title">{t("newsTitle")}</ThemedText>
+        <ThemedText type="titleSmall">{t("newsTitle")}</ThemedText>
         {newsIsLoading && (
           <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
         )}
