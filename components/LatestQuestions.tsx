@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { getLatestQuestions } from "@/utils/bufibDatabase";
-import { QuestionType } from "@/utils/types";
+import { QuestionType } from "@/constants/Types";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "./ThemedText";
 import { useColorScheme } from "react-native";
@@ -50,7 +50,7 @@ const LatestQuestions: React.FC = () => {
           </ThemedText>
           <View style={styles.categoryContainer}>
             <ThemedText style={styles.categoryText}>
-              {item.category_name} {">"} {item.subcategory_name}
+              {item.categoryName} {">"} {item.subcategoryName}
             </ThemedText>
           </View>
         </View>
@@ -96,8 +96,8 @@ const LatestQuestions: React.FC = () => {
         router.push({
           pathname: "/(question)",
           params: {
-            category: item.category_name,
-            subcategory: item.subcategory_name,
+            category: item.categoryName,
+            subcategory: item.subcategoryName,
             questionId: item.id.toString(),
             questionTitle: item.title,
           },
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    padding: 15,
+    marginTop: 15,
     gap: 12,
   },
   questionItem: {

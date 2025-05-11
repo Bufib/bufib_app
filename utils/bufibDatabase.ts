@@ -40,8 +40,8 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         answer           TEXT,
         answer_sistani   TEXT,
         answer_khamenei  TEXT,
-        category_name    TEXT    REFERENCES category(category_name),
-        subcategory_name TEXT    REFERENCES subcategory(subcategory_name),
+        category_name    TEXT    REFERENCES categories(category_name),
+        subcategory_name TEXT    REFERENCES subcategories(subcategory_name),
         created_at       TEXT    DEFAULT CURRENT_TIMESTAMP,
         language_code    Text    NOT NULL
       );
