@@ -1,22 +1,23 @@
 import { View, StyleSheet } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
-import RenderCategoryItems from "@/components/RenderCategoryItems";
 import { Stack } from "expo-router";
+import RenderQuestionSubCategoryItems from "@/components/RenderQuestionSubCategoryItems";
 
-export default function Categories() {
-  const { category, categoryName } = useLocalSearchParams<{
-    category: string;
-    categoryName: string;
-  }>();
+type params = {
+  subcategory: string;
+};
+export default function QuestionSubcategories() {
+  const { subcategory } = useLocalSearchParams<params>();
+
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          headerTitle: categoryName,
+          headerTitle: subcategory,
         }}
       />
-      <RenderCategoryItems category={category} />
+      <RenderQuestionSubCategoryItems />
     </View>
   );
 }

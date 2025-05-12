@@ -9,7 +9,7 @@ import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { getSubcategoriesForCategory } from "../utils/bufibDatabase";
 
-function RenderCategoryItems({ category }: { category: string }) {
+function RenderQuestionCategoryItems({ category }: { category: string }) {
   const [subcategories, setSubcategories] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,7 +77,7 @@ function RenderCategoryItems({ category }: { category: string }) {
           <Pressable
             onPress={() =>
               router.push({
-                pathname: "/(tabs)/knowledge/(questions)/subcategories",
+                pathname: "/knowledge/questionSubcategories",
                 params: { category: category, subcategory: item },
               })
             }
@@ -126,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RenderCategoryItems;
+export default RenderQuestionCategoryItems;

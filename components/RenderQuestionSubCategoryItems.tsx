@@ -10,7 +10,7 @@ import { getQuestionsForSubcategory } from "../utils/bufibDatabase";
 import { QuestionType } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 
-function RenderSubcategoryItems() {
+function RenderQuestionSubCategoryItems() {
   const { category, subcategory } = useLocalSearchParams<{
     category: string;
     subcategory: string;
@@ -34,12 +34,12 @@ function RenderSubcategoryItems() {
           setQuestions(questions);
           setError(null);
         } else {
-          console.log("Fehler in RenderSubcategoryItems");
+          console.log("Fehler in RenderQuestionSubCategoryItems");
           setQuestions([]);
           setError("Fragen konnten nicht geladen werden!");
         }
       } catch (error) {
-        console.log("Fehler in RenderSubcategoryItems " + error);
+        console.log("Fehler in RenderQuestionSubCategoryItems " + error);
         setQuestions([]);
         setError("Fragen konnten nicht geladen werden!");
       } finally {
@@ -156,4 +156,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RenderSubcategoryItems;
+export default RenderQuestionSubCategoryItems;

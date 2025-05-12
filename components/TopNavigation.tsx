@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useWindowDimensions, useColorScheme } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import indexPrayer from "@/app/(tabs)/knowledge/(prayer)/indexPrayer";
+import indexPrayer from "@/app/(tabs)/knowledge/(prayers)/indexPrayer";
 import indexQuestion from "@/app/(tabs)/knowledge/(questions)/indexQuestion";
 import i18n from "@/utils/i18n";
 import { SafeAreaView } from "react-native-safe-area-context";

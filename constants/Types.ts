@@ -56,6 +56,13 @@ export type Sizes = {
   gap: number;
 };
 
+// Prayer and Question ButtonLinks
+export type PrayerQuestionLinksType = {
+  id: number;
+  name: string;
+  image: any;
+  value: string;
+};
 // Answers table
 export type AnswerType = {
   id: number;
@@ -126,6 +133,14 @@ export type QuestionType = {
   subcategory_name: string;
   language_code: string;
   created_at: string;
+};
+
+// PrayerLinks
+export type QuestionCategoriesType = {
+  id: number;
+  name: string;
+  image: any;
+  value: string;
 };
 
 export type SearchResultQAType = {
@@ -213,13 +228,6 @@ export type VersionType = {
 };
 
 // Prayer
-
-export type prayerCategoriesType = {
-  id: number;
-  title: string;
-  parent_id?: number;
-};
-
 export type PrayerType = {
   id: number;
   name: string;
@@ -235,7 +243,7 @@ export type PrayerType = {
   arabic_introduction?: string;
 };
 
-export type PrayerTranslationType = {
+export type PrayerWithTranslationType = {
   id: number;
   prayer_id: number;
   language_code: string;
@@ -245,6 +253,10 @@ export type PrayerTranslationType = {
   created_at: Date;
   updated_at: Date;
   translated_notes?: string;
+};
+
+export type FullPrayer = PrayerType & {
+  translations: PrayerWithTranslationType[];
 };
 
 // ToDoList
@@ -288,15 +300,14 @@ export type WeeklyCalendarSectionType = {
   onSelectDay: (day: number) => void;
 };
 
-
-export type AddTodoModalType =  {
+export type AddTodoModalType = {
   visible: boolean;
   onClose: () => void;
   onAdd: (text: string) => void;
   selectedDayName: string;
-}
+};
 
 export type TodoToDeleteType = {
   dayIndex: number | null;
   todoId: number | null;
-}
+};

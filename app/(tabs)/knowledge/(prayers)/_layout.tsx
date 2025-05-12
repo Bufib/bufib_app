@@ -1,18 +1,16 @@
-import { StyleSheet, Text, useColorScheme, View } from "react-native";
+import { Platform, StyleSheet, Text, useColorScheme, View } from "react-native";
 import React from "react";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import i18n from "@/utils/i18n";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
-import { Platform } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 const _layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
     <Stack>
-      <Stack.Screen name="indexQuestion" options={{ headerShown: false }} />
+      <Stack.Screen name="indexPrayer" options={{ headerShown: true }} />
       <Stack.Screen
-        name="questionCategories"
+        name="names"
         options={{
           headerShown: true,
           headerLeft: () => {
@@ -38,7 +36,9 @@ const _layout = () => {
           },
         }}
       />
-      <Stack.Screen name="questionSubcategories" options={{ headerShown: true }} />
+
+      <Stack.Screen name="special" options={{ headerShown: true }} />
+      <Stack.Screen name="tasbih" options={{ headerShown: true }} />
     </Stack>
   );
 };

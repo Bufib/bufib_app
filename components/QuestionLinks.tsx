@@ -49,7 +49,7 @@ export default function QuestionLinks() {
               key={index}
               onPress={() => {
                 router.push({
-                  pathname: "/(tabs)/knowledge/(questions)/categories",
+                  pathname: "/knowledge/questionCategories",
                   params: {
                     category: category.value,
                     categoryName: category.name,
@@ -96,7 +96,7 @@ export default function QuestionLinks() {
           <TouchableOpacity
             onPress={() => {
               router.push({
-                pathname: "/(tabs)/knowledge/(questions)/categories",
+                pathname: "/knowledge/questionCategories",
                 params: { category: "Videos", categoryName: t("videos") },
               });
             }}
@@ -134,7 +134,10 @@ export default function QuestionLinks() {
 
       <View style={styles.footerContainer}>
         <View style={styles.footerHeaderContainer}>
-          <ThemedText type="titleSmall" style={styles.footerHeaderContainerText}>
+          <ThemedText
+            type="titleSmall"
+            style={styles.footerHeaderContainerText}
+          >
             {t("newQuestions")}
           </ThemedText>
         </View>

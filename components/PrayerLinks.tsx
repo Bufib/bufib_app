@@ -14,7 +14,7 @@ import { useColorScheme } from "react-native";
 import { CoustomTheme } from "../utils/coustomTheme";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { prayerCategories } from "@/utils/categories";
+import { prayerCategories, tasbihCategory } from "@/utils/categories";
 import { useWeeklyTodos } from "@/hooks/useWeeklyTodos";
 import { getFullDayName } from "@/utils/dayNames";
 import { WeeklyCalendarSection } from "@/components/WeeklyCalendarSection";
@@ -27,7 +27,7 @@ import { Image } from "expo-image";
 import { ThemedText } from "./ThemedText";
 import { AntDesign } from "@expo/vector-icons";
 import i18n from "@/utils/i18n";
-import { TodoToDeleteType } from "@/constants/Types";
+import { prayerQuestionLinksType, TodoToDeleteType } from "@/constants/Types";
 
 const PrayerLinks = () => {
   const colorScheme: ColorSchemeName = useColorScheme() || "light";
@@ -94,13 +94,35 @@ const PrayerLinks = () => {
     setTodoToDelete({ dayIndex: null, todoId: null });
   }, []);
 
-  const handleUndoAll = useCallback(
-    (dayIndex: number): void => {
-      // The check for null selectedDay happens inside WeeklyCalendarSection now
-      // or keep it here if needed: if (selectedDay !== null && dayIndex === selectedDay) { ... }
-      undoAllForDay(dayIndex);
+  // const handleUndoAll = useCallback(
+  //   (dayIndex: number): void => {
+  //     // The check for null selectedDay happens inside WeeklyCalendarSection now
+  //     // or keep it here if needed: if (selectedDay !== null && dayIndex === selectedDay) { ... }
+  //     undoAllForDay(dayIndex);
+  //   },
+  //   [undoAllForDay]
+  // );
+
+  const handleCategoryPress = useCallback(
+    (prayerLink: prayerQuestionLinksType) => {
+      router.push(
+        prayerLink.value === "Tasbih"
+          ? {
+              pathname: "/(tabs)/knowledge/(prayers)/tasbih",
+              params: { prayerLink: prayerLink.value },
+            }
+          : prayerLink.value === "Names"
+          ? {
+              pathname: "/(tabs)/knowledge/(prayers)/names",
+              params: { prayerLink: prayerLink.value },
+            }
+          : {
+              pathname: "/[prayer]",
+              params: { prayer: prayerLink.value },
+            }
+      );
     },
-    [undoAllForDay]
+    []
   );
 
   const handleSelectDay = useCallback((dayIndex: number): void => {
@@ -137,13 +159,7 @@ const PrayerLinks = () => {
             <TouchableOpacity
               key={index}
               onPress={() => {
-                router.push({
-                  pathname: "/(tabs)/knowledge/(questions)/categories",
-                  params: {
-                    category: category.value,
-                    categoryName: category.name,
-                  },
-                });
+                handleCategoryPress(category);
               }}
               style={[
                 styles.element,
@@ -184,10 +200,7 @@ const PrayerLinks = () => {
           ))}
           <TouchableOpacity
             onPress={() => {
-              router.push({
-                pathname: "/(tabs)/knowledge/(questions)/categories",
-                params: { category: "Tasbih", categoryName: t("tasbih") },
-              });
+              handleCategoryPress(tasbihCategory);
             }}
             style={[
               styles.element,
