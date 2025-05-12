@@ -171,7 +171,20 @@ export default function HomeScreen() {
               contentContainerStyle={styles.flatListContentContainer}
               data={podcasts}
               keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => <PodcastPreviewCard podcast={item} />}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/home/podcast",
+                      params: {
+                        podcast: JSON.stringify(item),
+                      },
+                    })
+                  }
+                >
+                  <PodcastPreviewCard podcast={item} />
+                </TouchableOpacity>
+              )}
               showsVerticalScrollIndicator={false}
               onEndReached={() => {
                 if (podcastsHasNextPage && !podcastsIsFetchingNextPage) {
@@ -234,7 +247,7 @@ export default function HomeScreen() {
           {!newsIsLoading && !newsIsError && (
             <View style={styles.flatListContentContainer}>
               {/* Render each item */}
-              {news.map((item, idx) => (
+              {news.map((item, index) => (
                 <NewsCard
                   key={item.id.toString()}
                   title={item.title}
