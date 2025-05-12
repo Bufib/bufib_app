@@ -7,7 +7,7 @@ import { PodcastPlayer } from "@/components/PodcastPlayer";
 export default function PodcastScreen() {
   // pull in the raw JSON string
   const { podcast: podcastString } = useLocalSearchParams<{ podcast: string }>();
-
+  
   let podcast;
   try {
     podcast = JSON.parse(podcastString);

@@ -329,7 +329,7 @@ export interface PodcastType {
   id: number;
   title: string;
   language_code: string;
-  summary: string;
+  description: string;
   sound_path: string;
 }
 

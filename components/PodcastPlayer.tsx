@@ -1,6 +1,12 @@
 // components/PodcastPlayer.tsx
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, Button, ActivityIndicator, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { PodcastType } from "@/constants/Types";
 import { supabase } from "@/utils/supabase";
@@ -11,87 +17,64 @@ interface PodcastPlayerProps {
 }
 
 export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
-  // Local state for the current audio source URI
   const [sourceUri, setSourceUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
 
-  // Expo Audio player hook
-  // Pass sourceUri as { uri: sourceUri } or null
+  // The hook will load the URI you pass in and keep status in sync
   const player = useAudioPlayer(
     sourceUri ? { uri: sourceUri } : null,
-    /* updateInterval */ 500
+    /* updateIntervalMs */ 500
   );
-
-  // Playback status (loaded, playing, buffering, etc)
   const status = useAudioPlayerStatus(player);
 
-  // Download mutation from your hook
   const downloadMutation = useDownloadPodcastSound();
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (player) {
-        player.remove();
-      }
-    };
-  }, [player]);
-
-  // Stream from Supabase
+  // STREAMING
   const handleStream = useCallback(async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.storage
         .from("podcasts")
-        .createSignedUrl(podcast.soundPath, 60 * 60);
+        .createSignedUrl(podcast.sound_path, 60 * 60);
       if (error) throw error;
       setSourceUri(data.signedUrl);
-      // expo-audio hook will auto-load; once loaded, call play
-      // Wait until loaded:
-      const waitForLoad = () =>
-        new Promise<void>((resolve) => {
-          const subscription = Audio.PLAYBACK_STATUS_UPDATE.subscribe((st) => {
-            if (st.isLoaded) {
-              subscription.remove();
-              resolve();
-            }
-          });
-        });
-      await waitForLoad();
-      player.play();
+      // once the hook loads it, status.isLoaded will flip true
+      // so watch status.isLoaded below and auto-play
     } catch (e) {
       console.error("Streaming error", e);
     } finally {
       setLoading(false);
     }
-  }, [podcast.soundPath, player]);
+  }, [podcast.sound_path]);
 
-  // Download to local FS
+  // DOWNLOAD & PLAY WITH PROGRESS
   const handleDownloadAndPlay = useCallback(async () => {
     setLoading(true);
+    setDownloadProgress(0);
     try {
-      const localUri = await downloadMutation.mutateAsync(podcast.soundPath);
+      const localUri = await downloadMutation.mutateAsync({
+        soundPath: podcast.sound_path,
+        onProgress: (frac) => setDownloadProgress(frac),
+      });
+
       setSourceUri(localUri);
-      // same load & play logic
-      const waitForLoad = () =>
-        new Promise<void>((resolve) => {
-          const subscription = Audio.PLAYBACK_STATUS_UPDATE.subscribe((st) => {
-            if (st.isLoaded) {
-              subscription.remove();
-              resolve();
-            }
-          });
-        });
-      await waitForLoad();
-      player.play();
+      // same: let the hook load, then watch status
     } catch (e) {
       console.error("Download error", e);
     } finally {
       setLoading(false);
     }
-  }, [downloadMutation, podcast.soundPath, player]);
+  }, [downloadMutation, podcast.sound_path]);
 
-  // Toggle play / pause
+  // Auto-play whenever we have a sourceUri and it's loaded
+  useEffect(() => {
+    if (sourceUri && status.isLoaded && !status.playing) {
+      player.play();
+    }
+  }, [sourceUri, status.isLoaded]);
+
+  // Play/pause toggle
   const togglePlayPause = () => {
     if (!status.isLoaded) return;
     status.playing ? player.pause() : player.play();
@@ -102,7 +85,25 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
       <Text style={styles.title}>{podcast.title}</Text>
       <Text style={styles.desc}>{podcast.description}</Text>
 
-      {loading && <ActivityIndicator style={styles.loader} />}
+      {/* initial spinner */}
+      {loading && !sourceUri && <ActivityIndicator style={styles.loader} />}
+
+      {/* download progress bar */}
+      {downloadMutation.isLoading && (
+        <>
+          <View style={styles.progressContainer}>
+            <View
+              style={[
+                styles.progressBar,
+                { width: `${Math.round(downloadProgress * 100)}%` },
+              ]}
+            />
+          </View>
+          <Text style={styles.progressText}>
+            {Math.round(downloadProgress * 100)}%
+          </Text>
+        </>
+      )}
 
       {!sourceUri ? (
         <>
@@ -140,19 +141,26 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  desc: {
-    fontSize: 14,
-    color: "#666",
+  title: { fontSize: 18, fontWeight: "600" },
+  desc: { fontSize: 14, color: "#666", marginVertical: 8 },
+  loader: { marginVertical: 8 },
+  spacer: { height: 8 },
+
+  progressContainer: {
+    width: "100%",
+    height: 4,
+    backgroundColor: "#e0e0e0",
+    borderRadius: 2,
+    overflow: "hidden",
     marginVertical: 8,
   },
-  loader: {
-    marginVertical: 8,
+  progressBar: {
+    height: "100%",
+    backgroundColor: "#3b82f6",
   },
-  spacer: {
-    height: 8,
+  progressText: {
+    textAlign: "right",
+    fontSize: 12,
+    marginBottom: 8,
   },
 });

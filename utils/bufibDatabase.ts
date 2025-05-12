@@ -34,10 +34,10 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
       PRAGMA foreign_keys = ON;
 
       -- Question tables
-      CREATE TABLE IF NOT EXISTS categories (
+      CREATE TABLE IF NOT EXISTS question_categories (
         category_name TEXT PRIMARY KEY
       );
-      CREATE TABLE IF NOT EXISTS subcategories (
+      CREATE TABLE IF NOT EXISTS question_subcategories (
         subcategory_name TEXT PRIMARY KEY
       );
       CREATE TABLE IF NOT EXISTS questions (
@@ -47,8 +47,8 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         answer           TEXT,
         answer_sistani   TEXT,
         answer_khamenei  TEXT,
-        category_name    TEXT    REFERENCES categories(category_name),
-        subcategory_name TEXT    REFERENCES subcategories(subcategory_name),
+        question_subcategories_name    TEXT    REFERENCES question_categories(category_name),
+        question_subcategories_name TEXT    REFERENCES question_subcategories(subcategory_name),
         created_at       TEXT    DEFAULT CURRENT_TIMESTAMP,
         language_code    TEXT    NOT NULL
       );
