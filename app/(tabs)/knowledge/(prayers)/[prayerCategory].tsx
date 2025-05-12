@@ -11,13 +11,13 @@ import {
   Platform,
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
-import { CategoryType, PrayerWithCategory } from "@/utils/types";
+import { PrayerCategoryType, PrayerWithCategory } from "@/constants/Types";
 import {
   getChildCategories,
   getPrayersForCategory,
   getCategoryByTitle,
   getAllPrayersForArabic,
-} from "@/utils/initializeDatabase";
+} from "@/utils/bufibDatabase";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -35,29 +35,31 @@ const categoryIcons: { [key: string]: string } = {
   salat: "people-outline",
   munajat: "book-outline",
   tasibeh: "star-outline",
-  default: "leaf-outline", // Default fallback
+  default: "leaf-outline",
 };
 
 export default function CategoryScreen() {
-  const { category } = useLocalSearchParams<{ category: string }>();
+  const { prayerCategory } = useLocalSearchParams<{ prayerCategory: string }>();
   const colorScheme = useColorScheme() || "light";
   const themeStyles = CoustomTheme();
   const { t } = useTranslation();
   const { language } = useLanguage();
   const isRTL = language === "AR";
-  console.log(category);
-  const [childCategories, setChildCategories] = useState<CategoryType[]>([]);
+
+  const [childCategories, setChildCategories] = useState<PrayerCategoryType[]>(
+    []
+  );
   const [allPrayers, setAllPrayers] = useState<PrayerWithCategory[]>([]);
   const [filteredPrayers, setFilteredPrayers] = useState<PrayerWithCategory[]>(
     []
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [fadeAnim] = useState(new Animated.Value(0));
-  const [currentCategory, setCurrentCategory] = useState<CategoryType | null>(
-    null
-  );
+  const [currentCategory, setCurrentCategory] =
+    useState<PrayerCategoryType | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] =
-    useState<CategoryType | null>(null);
+    useState<PrayerCategoryType | null>(null);
+
   // Helper function to get icon for category
   const getCategoryIcon = (name: string): string => {
     const lowercaseName = name.toLowerCase();
@@ -75,12 +77,10 @@ export default function CategoryScreen() {
         setLoading(true);
         setSelectedSubcategory(null);
 
-        // Fetch category by title (e.g., "Ziyarat")
-        const categoryData = await getCategoryByTitle(category);
-        console.log("Category found:", categoryData);
-
+        // Fetch prayerCategory by title
+        const categoryData = await getCategoryByTitle(prayerCategory);
         if (!categoryData) {
-          console.error("Category not found");
+          console.error("prayerCategory not found");
           return;
         }
         setCurrentCategory(categoryData);
@@ -89,23 +89,18 @@ export default function CategoryScreen() {
         const categoryRows = await getChildCategories(categoryData.id);
         setChildCategories(categoryRows);
 
-        // IMPORTANT: Fetch prayers via the new function that uses the join table.
-        // Use the main category's id to get both prayers from the main and extra associations.
-
+        // Fetch prayers depending on language
         if (language.toUpperCase() === "AR") {
-          const prayerRows = await getAllPrayersForArabic(
-            categoryData.id
-          );
-          console.log(prayerRows);
+          const prayerRows = await getAllPrayersForArabic(categoryData.id);
           setAllPrayers(prayerRows);
-          setFilteredPrayers(prayerRows); // Initially show all prayers
+          setFilteredPrayers(prayerRows);
         } else {
           const prayerRows = await getPrayersForCategory(
             categoryData.id,
             language.toUpperCase()
           );
           setAllPrayers(prayerRows);
-          setFilteredPrayers(prayerRows); // Initially show all prayers
+          setFilteredPrayers(prayerRows);
         }
 
         // Fade in animation
@@ -122,37 +117,30 @@ export default function CategoryScreen() {
     };
 
     fetchData();
-  }, [category, language]);
+  }, [prayerCategory, language]);
 
-  // Function to handle subcategory selection and filter prayers
-  const handleSubcategoryPress = async (cat: CategoryType) => {
+  // Handle subcategory selection
+  const handleSubcategoryPress = async (cat: PrayerCategoryType) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // Toggle selection if already selected
-    if (selectedSubcategory && selectedSubcategory.id === cat.id) {
+    if (selectedSubcategory?.id === cat.id) {
       setSelectedSubcategory(null);
       setFilteredPrayers(allPrayers);
       return;
     }
 
     setSelectedSubcategory(cat);
-
     try {
-      // IMPORTANT: Fetch prayers for this subcategory using the new join-based function.
-      // Pass the subcategory's id.
       const subcategoryPrayers = await getPrayersForCategory(
         cat.id,
         language.toUpperCase()
       );
       setFilteredPrayers(subcategoryPrayers);
-    } catch (error) {
-      console.error("Error fetching subcategory prayers:", error);
-      // Fallback filtering logic if needed
+    } catch {
       const filtered = allPrayers.filter(
-        (prayer) =>
-          prayer.category_id === cat.id || prayer.category_title === cat.title
+        (prayer) => prayer.category_id === cat.id
       );
-      setFilteredPrayers(filtered.length > 0 ? filtered : allPrayers);
+      setFilteredPrayers(filtered.length ? filtered : allPrayers);
     }
   };
 
@@ -180,14 +168,16 @@ export default function CategoryScreen() {
     <SafeAreaView
       style={[styles.container, themeStyles.defaultBackgorundColor]}
     >
-      <Stack.Screen options={{ title: category, headerBackTitle: t("back") }} />
+      <Stack.Screen
+        options={{ title: prayerCategory, headerBackTitle: t("back") }}
+      />
 
       <Animated.ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         style={{ opacity: fadeAnim }}
       >
-        {/* Simple Clean Header */}
+        {/* Header */}
         <View style={styles.headerContainer}>
           <View
             style={[
@@ -199,17 +189,17 @@ export default function CategoryScreen() {
             ]}
           >
             <Ionicons
-              name={getCategoryIcon(category)}
+              name={getCategoryIcon(prayerCategory)}
               size={24}
               color={Colors.universal.primary}
             />
           </View>
           <ThemedText style={[styles.header, isRTL && { textAlign: "right" }]}>
-            {category} ({allPrayers.length})
+            {prayerCategory} ({allPrayers.length})
           </ThemedText>
         </View>
 
-        {/* Subcategories Section - Simple chips */}
+        {/* Subcategories */}
         {childCategories.length > 0 && (
           <View style={styles.sectionContainer}>
             <View
@@ -264,13 +254,8 @@ export default function CategoryScreen() {
                     style={[
                       styles.chipText,
                       selectedSubcategory?.id === cat.id
-                        ? {
-                            color: "#fff",
-                            fontWeight: "600",
-                          }
-                        : {
-                            color: colorScheme === "dark" ? "#fff" : "#000",
-                          },
+                        ? { color: "#fff", fontWeight: "600" }
+                        : { color: colorScheme === "dark" ? "#fff" : "#000" },
                     ]}
                   >
                     {cat.title}
@@ -281,7 +266,7 @@ export default function CategoryScreen() {
           </View>
         )}
 
-        {/* Prayers Section */}
+        {/* Prayers */}
         <View style={styles.sectionContainer}>
           <View
             style={[
@@ -295,11 +280,7 @@ export default function CategoryScreen() {
               {t("prayers")}
               {selectedSubcategory && ` • ${selectedSubcategory.title}`}
             </ThemedText>
-            <ThemedText
-              style={{
-                fontSize: 14,
-              }}
-            >
+            <ThemedText style={{ fontSize: 14 }}>
               {allPrayers.length}
             </ThemedText>
           </View>
@@ -311,9 +292,7 @@ export default function CategoryScreen() {
                   key={prayer.id}
                   style={[
                     styles.prayerCard,
-                    {
-                      backgroundColor: Colors[colorScheme].contrast,
-                    },
+                    { backgroundColor: Colors[colorScheme].contrast },
                   ]}
                   onPress={() => handlePrayerPress(prayer)}
                 >
@@ -334,9 +313,7 @@ export default function CategoryScreen() {
                     <Text
                       style={[
                         styles.prayerText,
-                        {
-                          color: Colors[colorScheme].grayedOut,
-                        },
+                        { color: Colors.universal.grayedOut },
                         isRTL && { textAlign: "right" },
                       ]}
                       numberOfLines={2}
@@ -353,9 +330,7 @@ export default function CategoryScreen() {
                     <Text
                       style={[
                         styles.readMore,
-                        {
-                          color: Colors.universal.secondary,
-                        },
+                        { color: Colors.universal.secondary },
                       ]}
                     >
                       {t("readMore")}
@@ -417,19 +392,10 @@ export default function CategoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 30,
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  // Clean Header styles
+  container: { flex: 1 },
+  scrollContent: { padding: 20, paddingBottom: 30 },
+  loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -445,34 +411,19 @@ const styles = StyleSheet.create({
     marginRight: 14,
     borderWidth: 1,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: "700",
-  },
-  // Section styles
-  sectionContainer: {
-    marginBottom: 24,
-  },
+  header: { fontSize: 24, fontWeight: "700" },
+
+  sectionContainer: { marginBottom: 24 },
   sectionHeaderRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  showAllButton: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-  },
-  // Simple chip styles for subcategories
-  chipContainer: {
-    flexDirection: "row",
-    paddingBottom: 8,
-    paddingTop: 4,
-  },
+  sectionTitle: { fontSize: 18, fontWeight: "600" },
+  showAllButton: { paddingVertical: 4, paddingHorizontal: 10 },
+
+  chipContainer: { flexDirection: "row", paddingBottom: 8, paddingTop: 4 },
   chip: {
     flexDirection: "row",
     alignItems: "center",
@@ -489,22 +440,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 2,
       },
-      android: {
-        elevation: 1,
-      },
+      android: { elevation: 1 },
     }),
   },
-  chipIcon: {
-    marginRight: 6,
-  },
-  chipText: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  // Clean prayer card styles
-  prayerList: {
-    gap: 16,
-  },
+  chipText: { fontSize: 14, fontWeight: "500" },
+
+  prayerList: { gap: 16 },
   prayerCard: {
     borderRadius: 12,
     padding: 16,
@@ -515,9 +456,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.08,
         shadowRadius: 4,
       },
-      android: {
-        elevation: 2,
-      },
+      android: { elevation: 2 },
     }),
   },
   prayerHeader: {
@@ -525,44 +464,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  prayerTitleContainer: {
-    flex: 1,
-  },
-  prayerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  prayerText: {
-    fontSize: 15,
-    marginBottom: 18,
-  },
-  prayerFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  readMore: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginRight: 4,
-  },
-  // Empty state
+  prayerTitleContainer: { flex: 1 },
+  prayerTitle: { fontSize: 18, fontWeight: "600" },
+  prayerText: { fontSize: 15, marginBottom: 18 },
+  prayerFooter: { flexDirection: "row", alignItems: "center" },
+  readMore: { fontSize: 14, fontWeight: "600", marginRight: 4 },
+
   emptyState: {
     padding: 30,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,
   },
-  emptyStateIcon: {
-    marginBottom: 12,
-  },
-  emptyStateText: {
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  resetButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 50,
-  },
+  emptyStateIcon: { marginBottom: 12 },
+  emptyStateText: { fontSize: 16, textAlign: "center", marginBottom: 16 },
+  resetButton: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 50 },
 });

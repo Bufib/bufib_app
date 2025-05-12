@@ -27,7 +27,7 @@ import { Image } from "expo-image";
 import { ThemedText } from "./ThemedText";
 import { AntDesign } from "@expo/vector-icons";
 import i18n from "@/utils/i18n";
-import { prayerQuestionLinksType, TodoToDeleteType } from "@/constants/Types";
+import { PrayerQuestionLinksType, TodoToDeleteType } from "@/constants/Types";
 
 const PrayerLinks = () => {
   const colorScheme: ColorSchemeName = useColorScheme() || "light";
@@ -104,7 +104,7 @@ const PrayerLinks = () => {
   // );
 
   const handleCategoryPress = useCallback(
-    (prayerLink: prayerQuestionLinksType) => {
+    (prayerLink: PrayerQuestionLinksType) => {
       router.push(
         prayerLink.value === "Tasbih"
           ? {
@@ -117,8 +117,8 @@ const PrayerLinks = () => {
               params: { prayerLink: prayerLink.value },
             }
           : {
-              pathname: "/[prayer]",
-              params: { prayer: prayerLink.value },
+              pathname: "/(tabs)/knowledge/(prayers)/[prayerCategory]",
+              params: { prayerCategory: prayerLink.value },
             }
       );
     },

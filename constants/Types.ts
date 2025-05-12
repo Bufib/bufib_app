@@ -84,7 +84,7 @@ export type AnswerStatusType = {
 };
 
 // Categories
-export type CategoryType = {
+export type QuestionCategoryType = {
   id: number;
   category_name: string;
   created_at: string;
@@ -129,8 +129,8 @@ export type QuestionType = {
   answer?: string;
   answer_sistani?: string;
   answer_khamenei?: string;
-  category_name: string;
-  subcategory_name: string;
+  question_category_name: string;
+  question_subcategory_name: string;
   language_code: string;
   created_at: string;
 };
@@ -178,7 +178,7 @@ export type StatusForQuestionType = {
 };
 
 // Subcategories
-export type SubcategoryType = {
+export type QuestionSubcategoryType = {
   id: number;
   subcategory_name: string;
   created_at: string;
@@ -259,6 +259,19 @@ export type FullPrayer = PrayerType & {
   translations: PrayerWithTranslationType[];
 };
 
+
+export type PrayerCategoryType = {
+  id: number;
+  title: string;
+  parent_id?: number[];
+};
+
+export type PrayerWithCategory = {
+  id: number;
+  title: string;
+  prayer_text: string;
+  category_id: number;
+};
 // ToDoList
 
 export type TodoItemType = {

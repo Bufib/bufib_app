@@ -13,7 +13,9 @@ import handleOpenExternalUrl from "./handleOpenExternalUrl";
 import Constants from "expo-constants";
 import {
   FullPrayer,
+  PrayerCategoryType,
   PrayerType,
+  PrayerWithCategory,
   PrayerWithTranslationType,
   QuestionType,
   SearchResultQAType,
@@ -665,4 +667,80 @@ export async function getPrayerWithTranslations(
   } as FullPrayer;
 }
 
+export async function getCategoryByTitle(
+  title: string
+): Promise<PrayerCategoryType | null> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<PrayerCategoryType>(
+    `SELECT id, title
+     FROM prayer_categories
+     WHERE title = ?
+     LIMIT 1;`,
+    [title]
+  );
+  return row ?? null;
+}
 
+/**
+ * Return all direct children (subcategories) of a given parent category ID.
+ * Uses SQLite’s JSON1 extension to explode the `parent_id` JSON array.
+ */
+export async function getChildCategories(
+  parentId: number
+): Promise<PrayerCategoryType[]> {
+  const db = await getDatabase();
+  return await db.getAllAsync<PrayerCategoryType>(
+    `SELECT pc.id, pc.title
+     FROM prayer_categories pc,
+          json_each(pc.parent_id) AS j
+     WHERE j.value = ?
+     ORDER BY pc.title;`,
+    [parentId]
+  );
+}
+
+/**
+ * Fetch all prayers in one category, returning either the translated text
+ * (if available) or falling back to the Arabic text.
+ */
+export async function getPrayersForCategory(
+  categoryId: number,
+  languageCode: string
+): Promise<PrayerWithCategory[]> {
+  const db = await getDatabase();
+  return await db.getAllAsync<PrayerWithCategory>(
+    `SELECT
+       p.id,
+       p.name,
+       COALESCE(t.translated_text, p.arabic_text, '') AS prayer_text,
+       p.category_id
+     FROM prayers p
+     LEFT JOIN prayer_translations t
+       ON p.id = t.prayer_id
+       AND t.language_code = ?
+     WHERE p.category_id = ?
+     ORDER BY p.name;`,
+    [languageCode, categoryId]
+  );
+}
+
+/**
+ * Fetch all prayers in one category, but always return the Arabic text.
+ * Useful when the UI’s language is Arabic.
+ */
+export async function getAllPrayersForArabic(
+  categoryId: number
+): Promise<PrayerWithCategory[]> {
+  const db = await getDatabase();
+  return await db.getAllAsync<PrayerWithCategory>(
+    `SELECT
+       id,
+       name,
+       arabic_text AS prayer_text,
+       category_id
+     FROM prayers
+     WHERE category_id = ?
+     ORDER BY name;`,
+    [categoryId]
+  );
+}
