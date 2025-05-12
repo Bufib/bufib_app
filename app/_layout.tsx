@@ -332,49 +332,59 @@ function AppContent() {
   // Main app content
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <ReMountManager>
-        <NoInternet showUI={!hasInternet} showToast={true} />
-        <QueryClientProvider client={queryClient}>
-          <SupabaseRealtimeProvider>
-            <SQLiteProvider databaseName="islam-fragen.db" useSuspense={false}>
-              {/* Set useSuspense={false} for SQLiteProvider if not using React Suspense for DB loading */}
-              {/* Or handle suspense boundary if dbInitialized is used with it */}
-              <Stack
-                screenOptions={{
-                  headerTintColor: colorScheme === "dark" ? "#d0d0c0" : "#000", // From Code 1
-                }}
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <ReMountManager>
+          <NoInternet showUI={!hasInternet} showToast={true} />
+          <QueryClientProvider client={queryClient}>
+            <SupabaseRealtimeProvider>
+              <SQLiteProvider
+                databaseName="islam-fragen.db"
+                useSuspense={false}
               >
-                {/* Merged Stack Screens */}
-                <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="(search)"
-                  options={{
-                    headerShown: true,
-                    headerBackTitle: "Zurück", // TODO: i18n
-                    headerTitle: "Suche", // TODO: i18n
+                {/* Set useSuspense={false} for SQLiteProvider if not using React Suspense for DB loading */}
+                {/* Or handle suspense boundary if dbInitialized is used with it */}
+                <Stack
+                  screenOptions={{
+                    headerTintColor:
+                      colorScheme === "dark" ? "#d0d0c0" : "#000", // From Code 1
                   }}
-                />
-                <Stack.Screen
-                  name="(displayQuestion)"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="(askQuestion)"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-              <AppReviewPrompt />
-              <StatusBar style="auto" />
-            </SQLiteProvider>
-          </SupabaseRealtimeProvider>
-        </QueryClientProvider>
-        <Toast /> {/* Global Toast container */}
-      </ReMountManager>
-    </ThemeProvider>
+                >
+                  {/* Merged Stack Screens */}
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(auth)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(search)"
+                    options={{
+                      headerShown: true,
+                      headerBackTitle: "Zurück", // TODO: i18n
+                      headerTitle: "Suche", // TODO: i18n
+                    }}
+                  />
+                  <Stack.Screen
+                    name="(displayQuestion)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(askQuestion)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+                <AppReviewPrompt />
+                <StatusBar style="auto" />
+              </SQLiteProvider>
+            </SupabaseRealtimeProvider>
+          </QueryClientProvider>
+          <Toast />
+        </ReMountManager>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }
