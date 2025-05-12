@@ -10,6 +10,9 @@ export const de = {
   // News
   newsTitle: "Neuigkeiten",
 
+  // Podcasts
+  podcastsTitle: "Podcast",
+
   // General
   retry: "Wiederholen",
   errorLoadingData: "Es gab einen Fehler beim laden der Daten",

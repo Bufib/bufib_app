@@ -26,6 +26,18 @@ export const Colors = {
     // Switch
     trackColor: "#767577",
     thumbColor: "#f4f3f4",
+
+    // Prayer viewer colors
+    prayerHeaderBackground: "#1F6E8C",
+    prayerArabicText: "#0D4D6C",
+    prayerTransliterationText: "#525252",
+    prayerButtonBackground: "rgba(31, 110, 140, 0.15)",
+    prayerButtonBackgroundActive: "#1F6E8C",
+    prayerButtonText: "#1F6E8C",
+    prayerButtonTextActive: "#FFFFFF",
+    prayerIntroductionBackground: "#84CEEB",
+    prayerLoadingIndicator: "#1F6E8C",
+    prayerBookmark: "#B3D7EC",
   },
 
   dark: {
@@ -52,6 +64,20 @@ export const Colors = {
     // Switch
     trackColor: "#057958",
     thumbColor: "#f4f3f4",
+
+    // Prayer viewer colors
+    prayerHeaderBackground: "#0F5A78",
+    prayerArabicText: "#64B5F6",
+    prayerTransliterationText: "#B0BEC5",
+    prayerTranslationText: "#E2F0F9",
+    prayerButtonBackground: "rgba(31, 110, 140, 0.3)",
+    prayerButtonBackgroundActive: "#1F6E8C",
+    prayerButtonText: "#84CEEB",
+    prayerButtonTextActive: "#E2F0F9",
+    prayerIntroductionBackground: "#1D3E53",
+    prayerLoadingIndicator: "#84CEEB",
+    prayerBookmark: "#4B7E94",
+    grayedOut: "#B0BEC5",
   },
   universal: {
     primary: "#2ea853",

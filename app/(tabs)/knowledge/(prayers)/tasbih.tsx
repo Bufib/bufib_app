@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import i18n from "@/utils/i18n";
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
 // Make initial Dhikr Types immutable-like for safer resets
 const initialDhikrTypes = Object.freeze([
   {
@@ -318,13 +319,7 @@ export default function tasbih() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
   return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        { backgroundColor: Colors[colorScheme].background },
-      ]}
-      edges={["top"]}
-    >
+    <ThemedView style={styles.container}>
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={{ flexGrow: 1, gap: 10, paddingBottom: 20 }}
@@ -620,7 +615,7 @@ export default function tasbih() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ThemedView>
   );
 }
 

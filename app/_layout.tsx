@@ -101,6 +101,7 @@ import ReMountManager from "@/components/ReMountManager";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { Colors } from "@/constants/Colors"; // For loading screen
 import AppReviewPrompt from "@/components/AppReviewPrompt";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete. (From Code 1)
 SplashScreen.preventAutoHideAsync();
@@ -330,6 +331,7 @@ function AppContent() {
 
   // Main app content
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <ReMountManager>
         <NoInternet showUI={!hasInternet} showToast={true} />
@@ -373,6 +375,7 @@ function AppContent() {
         <Toast /> {/* Global Toast container */}
       </ReMountManager>
     </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
 

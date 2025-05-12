@@ -124,7 +124,8 @@ export const WeeklyCalendarSection: React.FC<
 };
 
 const styles = StyleSheet.create({
-  calendarSection: {},
+  calendarSection: {
+  },
 
   loadingContainer: {
     minHeight: 200,
@@ -152,6 +153,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   weekPlanerContainer: {
+    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

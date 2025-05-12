@@ -259,7 +259,6 @@ export type FullPrayer = PrayerType & {
   translations: PrayerWithTranslationType[];
 };
 
-
 export type PrayerCategoryType = {
   id: number;
   title: string;
@@ -324,3 +323,14 @@ export type TodoToDeleteType = {
   dayIndex: number | null;
   todoId: number | null;
 };
+
+// Podcasts
+export interface PodcastType {
+  id: number;
+  title: string;
+  language_code: string;
+  summary: string;
+  sound_path: string;
+}
+
+export type PodcastProps = { podcast: PodcastType };

@@ -10,6 +10,9 @@ export const ar = {
   // News
   newsTitle: "أخبار",
 
+   // Podcasts
+   podcastsTitle: "بودكاست",
+
   // General
   retry: "إعادة المحاولة",
   errorLoadingData: "حدث خطأ أثناء تحميل البيانات",

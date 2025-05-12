@@ -109,7 +109,7 @@ const PrayerLinks = () => {
         prayerLink.value === "Tasbih"
           ? {
               pathname: "/(tabs)/knowledge/(prayers)/tasbih",
-              params: { prayerLink: prayerLink.value },
+         
             }
           : prayerLink.value === "Names"
           ? {
@@ -200,7 +200,7 @@ const PrayerLinks = () => {
           ))}
           <TouchableOpacity
             onPress={() => {
-              handleCategoryPress(tasbihCategory);
+              handleCategoryPress(tasbihCategory[0]);
             }}
             style={[
               styles.element,
