@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
+  ScrollView,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { Ionicons } from "@expo/vector-icons";
@@ -44,7 +45,7 @@ export const TodoList = ({
             styles.emptyDayAddButton,
             { backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0" },
           ]}
-          onPress={onShowAddModal} 
+          onPress={onShowAddModal}
         >
           <ThemedText style={styles.emptyDayAddText}>
             {t("addWeekly")}
@@ -55,7 +56,10 @@ export const TodoList = ({
   }
 
   return (
-    <View style={styles.todosForDay}>
+    <ScrollView
+      contentContainerStyle={styles.scrollContent}
+      style={styles.scrollStyle}
+    >
       {todos.map((todo) => (
         <View
           key={todo.id}
@@ -109,15 +113,16 @@ export const TodoList = ({
           </TouchableOpacity>
         </View>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  todosForDay: {
+  scrollStyle: {},
+  scrollContent: {
     gap: 10,
-    minHeight: 200,
   },
+
   todoItem: {
     flexDirection: "row",
     alignItems: "center",

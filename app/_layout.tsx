@@ -109,7 +109,7 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function AppContent() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() || "light";
   const { ready: languageContextReady, language } = useLanguage(); // Renamed 'ready' to avoid conflict
 
   // State and hooks from Code 1
@@ -281,7 +281,7 @@ function AppContent() {
           backgroundColor:
             colorScheme === "dark"
               ? Colors.dark.background
-              : Colors.light.background, // Adapts to theme
+              : Colors.light.background,
           justifyContent: "center",
           alignItems: "center",
           padding: 20,
@@ -311,7 +311,7 @@ function AppContent() {
               colorScheme === "dark" ? Colors.dark.text : Colors.light.text,
           }}
         >
-          Je nach Internetverbindung kann das einen Augenblick dauern.{" "}
+          Je nach Internetverbindung kann das einen Augenblick dauern.
           {/* TODO: i18n */}
         </Text>
         <Toast /> {/* Local Toast for this specific screen if needed */}
@@ -332,7 +332,6 @@ function AppContent() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <ReMountManager>
-       
         <NoInternet showUI={!hasInternet} showToast={true} />
         <QueryClientProvider client={queryClient}>
           <SupabaseRealtimeProvider>

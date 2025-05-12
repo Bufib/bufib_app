@@ -22,7 +22,6 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
   onSelectDay,
 }) => {
   const dayNames = getDayNames();
-  console.log(dayNames);
   const colorScheme = useColorScheme() || "light";
  
   const { t } = useTranslation();

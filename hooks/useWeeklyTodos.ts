@@ -5,6 +5,7 @@ import i18n from "@/utils/i18n";
 import {
   TodoItemType,
   WeeklyTodosType,
+  WeeklyCalendarSectionType,
   UseWeeklyTodosResult,
 } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";

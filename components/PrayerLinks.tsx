@@ -14,12 +14,9 @@ import { useColorScheme } from "react-native";
 import { CoustomTheme } from "../utils/coustomTheme";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { TodoToDelete } from "@/utils/types";
 import { prayerCategories } from "@/utils/categories";
 import { useWeeklyTodos } from "@/hooks/useWeeklyTodos";
 import { getFullDayName } from "@/utils/dayNames";
-
-// Import the new components
 import { WeeklyCalendarSection } from "@/components/WeeklyCalendarSection";
 import { AddTodoModal } from "@/components/AddTodoModal";
 import { DeleteTodoModal } from "@/components/DeleteTodoModal";
@@ -30,28 +27,26 @@ import { Image } from "expo-image";
 import { ThemedText } from "./ThemedText";
 import { AntDesign } from "@expo/vector-icons";
 import i18n from "@/utils/i18n";
+import { TodoToDeleteType } from "@/constants/Types";
 
 const PrayerLinks = () => {
   const colorScheme: ColorSchemeName = useColorScheme() || "light";
   const { t } = useTranslation();
   const { language } = useLanguage();
 
-
-  // --- Hooks ---
   const {
-    weeklyTodos,
-    isLoadingTodos,
+    todosByDay,
+    loading,
     toggleTodo,
     addTodo,
     deleteTodo,
-    undoAllTodosForDay,
+    undoAllForDay,
   } = useWeeklyTodos();
 
-  // --- State ---
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
-  const [todoToDelete, setTodoToDelete] = useState<TodoToDelete>({
+  const [todoToDelete, setTodoToDelete] = useState<TodoToDeleteType>({
     dayIndex: null,
     todoId: null,
   });
@@ -103,26 +98,15 @@ const PrayerLinks = () => {
     (dayIndex: number): void => {
       // The check for null selectedDay happens inside WeeklyCalendarSection now
       // or keep it here if needed: if (selectedDay !== null && dayIndex === selectedDay) { ... }
-      undoAllTodosForDay(dayIndex);
+      undoAllForDay(dayIndex);
     },
-    [undoAllTodosForDay]
+    [undoAllForDay]
   );
 
   const handleSelectDay = useCallback((dayIndex: number): void => {
     setSelectedDay(dayIndex);
   }, []);
 
-  const handleShowAddModal = useCallback(() => {
-    // Optional: Could add checks here, e.g., if a day is selected
-    if (selectedDay !== null) {
-      setAddModalVisible(true);
-    } else {
-      // Maybe show an alert?
-      console.warn("Please select a day first.");
-    }
-  }, [selectedDay]);
-
-  // --- Style Calculations ---
   const isRTL = language === "ar";
   const flexDirection = isRTL
     ? { flexDirection: "row-reverse" as const }
@@ -134,7 +118,6 @@ const PrayerLinks = () => {
     height
   );
 
-  // --- Render ---
   return (
     <ThemedView style={styles.container}>
       <View style={styles.categoriesContainer}>
@@ -239,34 +222,32 @@ const PrayerLinks = () => {
       </View>
       <View style={styles.todoListContainer}>
         <WeeklyCalendarSection
-          weeklyTodos={weeklyTodos}
-          isLoadingTodos={isLoadingTodos}
+          todosByDay={todosByDay}
+          loading={loading}
+          onToggleTodo={toggleTodo}
+          onUndoAll={undoAllForDay}
+          onShowAddModal={() => setAddModalVisible(true)}
+          onShowDeleteModal={showDeleteConfirmation}
           selectedDay={selectedDay}
-          currentDayIndex={getCurrentDayIndex()} // Pass current day index
+          currentDayIndex={getCurrentDayIndex()}
           onSelectDay={handleSelectDay}
-          onToggleTodo={toggleTodo} // Pass directly from hook
-          onShowAddModal={handleShowAddModal}
-          onShowDeleteModal={showDeleteConfirmation} // Pass handler
-          onUndoAll={handleUndoAll} // Pass handler
         />
       </View>
-       {/* Render Modals */}
-       {selectedDay !== null && ( // Only render Add modal if a day is potentially selected
-          <AddTodoModal
-            visible={addModalVisible}
-            onClose={() => setAddModalVisible(false)}
-            onAdd={handleAddTodoConfirmed}
-            selectedDayName={getFullDayName(selectedDay)}
-           
-          />
-        )}
-
-        <DeleteTodoModal
-          visible={deleteModalVisible}
-          onClose={cancelDelete}
-          onConfirmDelete={handleConfirmDelete}
-         
+      {/* Render Modals */}
+      {selectedDay !== null && ( // Only render Add modal if a day is potentially selected
+        <AddTodoModal
+          visible={addModalVisible}
+          onClose={() => setAddModalVisible(false)}
+          onAdd={handleAddTodoConfirmed}
+          selectedDayName={getFullDayName(selectedDay)}
         />
+      )}
+
+      <DeleteTodoModal
+        visible={deleteModalVisible}
+        onClose={cancelDelete}
+        onConfirmDelete={handleConfirmDelete}
+      />
     </ThemedView>
   );
 };
@@ -275,7 +256,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     padding: 20,
-    gap: 40,
+    gap: 25,
   },
 
   categoriesContainer: {

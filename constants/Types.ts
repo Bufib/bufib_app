@@ -256,12 +256,11 @@ export type TodoItemType = {
 };
 
 export type TodoListType = {
-  todos: TodoItemType[] | undefined;
+  todos: TodoItemType[];
   dayIndex: number;
-  onToggleTodo: (dayIndex: number, todoId: number) => void;
-  onShowDeleteModal: (dayIndex: number, todoId: number) => void;
-  addTodo: (day: number, text: string) => void;
-  onShowAddModal: () => void
+  onToggleTodo: (day: number, id: number) => void;
+  onShowDeleteModal: (day: number, id: number) => void;
+  onShowAddModal: () => void;
 };
 
 export type WeeklyTodosType = {
@@ -278,13 +277,26 @@ export type UseWeeklyTodosResult = {
 };
 
 export type WeeklyCalendarSectionType = {
-  weeklyTodos: TodoItemType[];
-  isLoadingTodos: boolean;
-  selectedDay: number | null;
-  currentDayIndex: number; // Need current day for DaySelector styling
-  onSelectDay: (dayIndex: number) => void;
-  onToggleTodo: (dayIndex: number, todoId: number) => void;
+  todosByDay: WeeklyTodosType;
+  loading: boolean;
+  onToggleTodo: (day: number, id: number) => void;
+  onUndoAll: (day: number) => void;
   onShowAddModal: () => void;
-  onShowDeleteModal: (dayIndex: number, todoId: number) => void;
-  onUndoAll: (dayIndex: number) => void;
+  onShowDeleteModal: (day: number, id: number) => void;
+  selectedDay: number | null;
+  currentDayIndex: number;
+  onSelectDay: (day: number) => void;
 };
+
+
+export type AddTodoModalType =  {
+  visible: boolean;
+  onClose: () => void;
+  onAdd: (text: string) => void;
+  selectedDayName: string;
+}
+
+export type TodoToDeleteType = {
+  dayIndex: number | null;
+  todoId: number | null;
+}

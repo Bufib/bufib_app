@@ -18,21 +18,9 @@ import type { ColorSchemeName } from "react-native";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { AddTodoModalType } from "@/constants/Types";
 
-interface AddTodoModalProps {
-  visible: boolean;
-  onClose: () => void;
-  onAdd: (text: string) => void; // Callback with the text to add
-  selectedDayName: string;
-  language: string;
-  t: TFunction;
-  themeStyles: ReturnType<typeof CoustomTheme>;
-  colorScheme: ColorSchemeName;
-  isRTL: boolean;
-  flexDirection: object;
-}
-
-export const AddTodoModal: React.FC<AddTodoModalProps> = ({
+export const AddTodoModal: React.FC<AddTodoModalType> = ({
   visible,
   onClose,
   onAdd,
@@ -45,14 +33,14 @@ export const AddTodoModal: React.FC<AddTodoModalProps> = ({
   const isRTL = language === "ar";
   const handleAddPress = () => {
     if (newTodo.trim()) {
-      onAdd(newTodo.trim()); // Pass text back via prop
-      setNewTodo(""); // Clear internal state
-      // onClose(); // Optionally close automatically, or let HomeScreen handle it
+      onAdd(newTodo.trim());
+      setNewTodo("");
+      onClose();
     }
   };
 
   const handleClose = () => {
-    setNewTodo(""); // Clear input on close
+    setNewTodo("");
     onClose();
   };
 

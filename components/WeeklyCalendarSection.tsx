@@ -11,42 +11,45 @@ import { ThemedView } from "./ThemedView";
 import { EvilIcons } from "@expo/vector-icons";
 import { DaySelector } from "./DaySelector";
 import { TodoList } from "./ToDoList";
-import { TodoItemType, WeeklyCalendarSectionType } from "@/constants/Types";
+import { WeeklyTodosType, TodoItemType } from "@/constants/Types";
 import { getFullDayName } from "@/utils/dayNames";
 import { Colors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
-import { useWeeklyTodos } from "@/hooks/useWeeklyTodos";
+import type { WeeklyCalendarSectionType } from "@/constants/Types";
 
-export const WeeklyCalendarSection = ({
+export const WeeklyCalendarSection: React.FC<
+  WeeklyCalendarSectionType & {
+    todosByDay: WeeklyTodosType;
+    loading: boolean;
+    onToggleTodo: (day: number, id: number) => void;
+  }
+> = ({
   selectedDay,
   currentDayIndex,
   onSelectDay,
-  onToggleTodo,
   onShowAddModal,
   onShowDeleteModal,
   onUndoAll,
-}: WeeklyCalendarSectionType) => {
+  todosByDay,
+  loading,
+  onToggleTodo,
+}) => {
+  const { t } = useTranslation();
+  const colorScheme = useColorScheme() || "light";
+
   const handleUndo = () => {
     if (selectedDay !== null) {
       onUndoAll(selectedDay);
     }
   };
 
-  const { t } = useTranslation();
-  const colorScheme = useColorScheme() || "light";
-  const {
-    todosByDay,
-    loading,
-    toggleTodo,
-    addTodo,
-    deleteTodo,
-    undoAllForDay,
-  } = useWeeklyTodos();
   return (
     <View style={styles.calendarSection}>
       {/* Header */}
       <View style={[styles.calendarHeader]}>
-        <ThemedText style={[styles.sectionTitle]}>{t("weeklyToDo")}</ThemedText>
+        <ThemedText style={[styles.sectionTitle]}>
+          {t("weeklyToDo")}{" "}
+        </ThemedText>
         <TouchableOpacity
           style={[
             styles.addButton,
@@ -56,12 +59,15 @@ export const WeeklyCalendarSection = ({
                   ? Colors.universal.primary
                   : Colors.universal.secondary,
             },
-            selectedDay === null && { opacity: 0.5 }, // Dim if no day selected
+            selectedDay === null && { opacity: 0.5 },
           ]}
           onPress={onShowAddModal}
           disabled={selectedDay === null}
         >
-          <ThemedText style={styles.addButtonText}>{t("addWeekly")}</ThemedText>
+          <ThemedText style={styles.addButtonText}>
+            {" "}
+            {t("addWeekly")}{" "}
+          </ThemedText>
         </TouchableOpacity>
       </View>
 
@@ -90,7 +96,6 @@ export const WeeklyCalendarSection = ({
           </TouchableOpacity>
         </ThemedView>
       )}
-
       {/* Todo List Area */}
       {loading ? (
         <View style={styles.loadingContainer}>
@@ -103,9 +108,9 @@ export const WeeklyCalendarSection = ({
         <TodoList
           todos={todosByDay[selectedDay] ?? []}
           dayIndex={selectedDay}
-          onToggleTodo={toggleTodo}
-          onShowDeleteModal={deleteTodo}
-          onShowAddModal={(text: string) => addTodo(selectedDay, text)}
+          onToggleTodo={onToggleTodo}
+          onShowDeleteModal={onShowDeleteModal}
+          onShowAddModal={onShowAddModal}
         />
       ) : (
         <View style={styles.loadingContainer}>
@@ -119,14 +124,13 @@ export const WeeklyCalendarSection = ({
 };
 
 const styles = StyleSheet.create({
+  calendarSection: {},
+
   loadingContainer: {
     minHeight: 200,
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 30,
-  },
-  calendarSection: {
-    marginTop: 16,
   },
   calendarHeader: {
     flexDirection: "row",
