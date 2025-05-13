@@ -39,6 +39,8 @@ export type NewsType = {
   images_url?: string[];
   external_urls?: string[];
   internal_urls?: string[];
+  language_code: string;
+
 };
 
 export type NewsCardType = {
@@ -86,7 +88,7 @@ export type AnswerStatusType = {
 // Categories
 export type QuestionCategoryType = {
   id: number;
-  category_name: string;
+  question_category_name: string;
   created_at: string;
 };
 
@@ -180,7 +182,7 @@ export type StatusForQuestionType = {
 // Subcategories
 export type QuestionSubcategoryType = {
   id: number;
-  subcategory_name: string;
+  question_subcategory_name: string;
   created_at: string;
 };
 

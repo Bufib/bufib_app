@@ -1,155 +1,3 @@
-// import React, {
-//   createContext,
-//   useContext,
-//   useEffect,
-//   useState,
-//   ReactNode,
-// } from "react";
-// import { supabase } from "@/utils/supabase";
-// import { useQueryClient } from "@tanstack/react-query";
-// import { userQuestionsNewAnswerForQuestions } from "@/constants/messages";
-// import { useAuthStore } from "@/stores/authStore";
-
-// type SupabaseRealtimeContextType = {
-//   userId: string | null;
-//   hasNewNewsData: boolean;
-//   clearNewNewsFlag: () => void;
-// };
-
-// const SupabaseRealtimeContext = createContext<SupabaseRealtimeContextType>({
-//   userId: null,
-//   hasNewNewsData: false,
-//   clearNewNewsFlag: () => {},
-// });
-
-// export const SupabaseRealtimeProvider = ({
-//   children,
-// }: {
-//   children: ReactNode;
-// }) => {
-//   const [userId, setUserId] = useState<string | null>(null);
-//   const [hasNewNewsData, setHasNewNewsData] = useState(false);
-//   const queryClient = useQueryClient();
-//   const {isAdmin} = useAuthStore();
-//   const clearNewNewsFlag = () => setHasNewNewsData(false);
-
-//   /**
-//    * Auth state management
-//    */
-//   useEffect(() => {
-//     const getCurrentUser = async () => {
-//       try {
-//         const {
-//           data: { user },
-//         } = await supabase.auth.getUser();
-//         setUserId(user?.id ?? null);
-//       } catch (error) {
-//         console.error("Error fetching user:", error);
-//         setUserId(null);
-//       }
-//     };
-
-//     getCurrentUser();
-
-//     const {
-//       data: { subscription },
-//     } = supabase.auth.onAuthStateChange(async (event) => {
-//       console.log("Auth event triggered:", event);
-//       if (event === "SIGNED_OUT") {
-//         setUserId(null);
-//         queryClient.removeQueries({ queryKey: ["questionsFromUser"] });
-//       } else {
-//         await getCurrentUser();
-//       }
-//     });
-
-//     return () => {
-//       subscription?.unsubscribe();
-//     };
-//   }, [queryClient]);
-
-//   /**
-//    * User questions subscription
-//    */
-//   useEffect(() => {
-//     if (!userId) return;
-
-//     const userQuestionsChannel = supabase
-//       .channel(`user_questions_${userId}`)
-//       .on(
-//         "postgres_changes",
-//         {
-//           event: "*", // Listen to all events (INSERT, UPDATE, DELETE)
-//           schema: "public",
-//           table: "user_question",
-//           filter: `user_id=eq.${userId}`,
-//         },
-//         async (payload) => {
-//           console.log("user_question event:", payload.eventType, payload);
-//           userQuestionsNewAnswerForQuestions();
-//           await queryClient.invalidateQueries({
-//             queryKey: ["questionsFromUser", userId],
-//             refetchType: "all",
-//           });
-//         }
-//       )
-//       .subscribe();
-
-//     return () => {
-//       userQuestionsChannel.unsubscribe();
-//     };
-//   }, [userId, queryClient]);
-
-//   /**
-//    * News subscription
-//    */
-
-//   useEffect(() => {
-//     const newsChannel = supabase
-//       .channel("news_changes")
-//       .on(
-//         "postgres_changes",
-//         {
-//           event: "*",
-//           schema: "public",
-//           table: "news",
-//         },
-//         async (payload) => {
-//           console.log("news event:", payload.eventType, payload);
-//           if (!isAdmin) {
-//             setHasNewNewsData(true); // Only show update button for non-admin users
-//           } else {
-//             await queryClient.invalidateQueries({
-//               queryKey: ["news"],
-//               refetchType: "all",
-
-//             });
-//             console.log("here")
-//           }
-//         }
-//       )
-//       .subscribe();
-
-//     return () => {
-//       newsChannel.unsubscribe();
-//     };
-//   }, [queryClient, isAdmin]);
-
-//   return (
-//     <SupabaseRealtimeContext.Provider
-//       value={{
-//         userId,
-//         hasNewNewsData,
-//         clearNewNewsFlag,
-//       }}
-//     >
-//       {children}
-//     </SupabaseRealtimeContext.Provider>
-//   );
-// };
-
-// export const useSupabaseRealtime = () => useContext(SupabaseRealtimeContext);
-
 import React, {
   createContext,
   useContext,
@@ -158,10 +6,13 @@ import React, {
   ReactNode,
 } from "react";
 import { supabase } from "@/utils/supabase";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { userQuestionsNewAnswerForQuestions } from "@/constants/messages";
 import { useAuthStore } from "@/stores/authStore";
 import Toast from "react-native-toast-message";
+import { NewsArticlesType, NewsType, PodcastType } from "@/constants/Types";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type SupabaseRealtimeContextType = {
   userId: string | null;
@@ -182,6 +33,9 @@ export const SupabaseRealtimeProvider = ({
 }) => {
   const [userId, setUserId] = useState<string | null>(null);
   const [hasNewNewsData, setHasNewNewsData] = useState(false);
+  const [hasNewNewsArticlesData, setHasNewNewsArticlesData] = useState(false);
+  const [hasNewPodcastsData, setHasNewPodcastsData] = useState(false);
+  const { language } = useLanguage();
   const queryClient = useQueryClient();
 
   const isAdmin = useAuthStore((state) => state.isAdmin);
@@ -225,39 +79,6 @@ export const SupabaseRealtimeProvider = ({
     return () => subscription.unsubscribe();
   }, [queryClient]);
 
-  // useEffect(() => {
-  //   const getCurrentUser = async () => {
-  //     try {
-  //       const {
-  //         data: { user },
-  //       } = await supabase.auth.getUser();
-  //       setUserId(user?.id ?? null);
-  //     } catch (error) {
-  //       console.error("Error fetching user:", error);
-  //       setUserId(null);
-  //     }
-  //   };
-
-  //   getCurrentUser();
-
-  //   const {
-  //     data: { subscription },
-  //   } = supabase.auth.onAuthStateChange((event) => {
-  //     // ✅ No async in callback
-  //     console.log("Auth event triggered:", event);
-  //     if (event === "SIGNED_OUT") {
-  //       setUserId(null);
-  //       queryClient.removeQueries({ queryKey: ["questionsFromUser"] });
-  //     } else {
-  //       getCurrentUser();
-  //     }
-  //   });
-
-  //   return () => {
-  //     subscription?.unsubscribe();
-  //   };
-  // }, [queryClient]);
-
   /**
    * User questions subscription
    */
@@ -275,7 +96,6 @@ export const SupabaseRealtimeProvider = ({
           filter: `user_id=eq.${userId}`,
         },
         async (payload) => {
-          console.log("user_question event:", payload.eventType, payload);
           if (payload.eventType === "INSERT") {
             Toast.show({
               type: "success",
@@ -299,102 +119,369 @@ export const SupabaseRealtimeProvider = ({
     return () => {
       userQuestionsChannel.unsubscribe();
     };
-  }, [userId, queryClient]);
-
-  // useEffect(() => {
-  //   if (!userId) return; // ✅ Don't subscribe if the user isn't logged in
-
-  //   const notificationChannel = supabase
-  //     .channel("pending_notification_changes")
-  //     .on(
-  //       "postgres_changes",
-  //       {
-  //         event: "INSERT",
-  //         schema: "public",
-  //         table: "pending_notification",
-  //       },
-  //       async (payload) => {
-  //         console.log("New notification added:", payload);
-
-  //         // 🚀 Call the Edge Function when a new notification is inserted
-  //         const {
-  //           data: { session },
-  //         } = await supabase.auth.getSession();
-
-  //         if (!session) {
-  //           console.error("No active session found");
-  //           return;
-  //         }
-
-  //         const response = await fetch(
-  //           "https://tdjuwrsspauybgfywlfr.supabase.co/functions/v1/sendPushNotifications",
-  //           {
-  //             method: "POST",
-  //             headers: {
-  //               Authorization: `Bearer ${session.access_token}`,
-  //             },
-  //           }
-  //         );
-
-  //         if (response.ok) {
-  //           console.log("Edge function executed successfully!");
-  //         } else {
-  //           console.error(
-  //             "Error calling Edge Function:",
-  //             await response.text()
-  //           );
-  //         }
-  //       }
-  //     )
-  //     .subscribe();
-
-  //   return () => {
-  //     notificationChannel.unsubscribe();
-  //   };
-  // }, [userId]);
+  }, [userId, queryClient, language]);
 
   /**
-   * News subscription
+   * News subscription - MOVED HERE
+   * This subscription listens to all news changes and updates the
+   * language-specific TanStack Query cache.
    */
-
   useEffect(() => {
     const newsChannel = supabase
-      .channel("news_changes")
+      .channel("all_news_changes") // Listen to a general channel for all news
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "*", // Listen to all events: INSERT, UPDATE, DELETE
           schema: "public",
           table: "news",
+          // No language filter here, we'll process based on payload's language_code
         },
-        async (payload) => {
-          console.log("news event:", payload.eventType, payload);
+        (payload) => {
+          const { eventType, new: newRec, old: oldRec } = payload;
 
-          // Always delete immediately!
-          if (payload.eventType === "DELETE") {
-            await queryClient.invalidateQueries({
-              queryKey: ["news"],
-              refetchType: "all",
-            });
+          // Determine the language code from the payload
+          let recordLang: string | undefined;
+          if (eventType === "INSERT" || eventType === "UPDATE") {
+            recordLang = (newRec as NewsType)?.language_code;
+          } else if (eventType === "DELETE") {
+            // For DELETE, Supabase often puts the old record's data in `old`
+            // and `new` might be minimal or just the ID.
+            // We need to ensure `oldRec` has `language_code`.
+            // Your RLS policies for "news" table must allow read access to `oldRec` data for this to work.
+            recordLang = (oldRec as Partial<NewsType>)?.language_code;
+
+            // If language_code is not in oldRec for DELETE (e.g. due to RLS or minimal payload)
+            // then we cannot target the specific language cache and might have to invalidate more broadly or skip.
+            // This is a potential edge case to consider based on your Supabase setup.
+            if (!recordLang && oldRec?.id) {
+              console.warn(
+                `News DELETE: language_code missing from old record for id ${oldRec.id}. Cannot perform targeted cache update.`
+              );
+              // Fallback: invalidate all news queries if necessary, though less ideal.
+              // queryClient.invalidateQueries({ queryKey: ["news"] });
+              // Or, if this is problematic, you might have to accept that deletes
+              // without language_code in oldRec won't be optimistically handled here.
+              return;
+            }
           }
 
+          if (!recordLang) {
+            console.warn(
+              "News event without determinable language_code. Skipping cache update.",
+              payload
+            );
+            return;
+          }
+
+          const queryKeyForNews = ["news", recordLang];
+
+          queryClient.setQueryData<InfiniteData<NewsType[]>>(
+            queryKeyForNews,
+            (oldData) => {
+              if (!oldData) return oldData;
+
+              let pages = oldData.pages.map((page) => [...page]); // Create shallow copies for mutation
+
+              switch (eventType) {
+                case "INSERT":
+                  // Add to the beginning of the first page
+                  // Ensure newRec is correctly typed and has all necessary fields
+                  if (newRec) {
+                    // Check if item already exists (e.g. due to rapid events)
+                    const itemExists = pages.some((p) =>
+                      p.some((item) => item.id === (newRec as NewsType).id)
+                    );
+                    if (!itemExists) {
+                      pages[0] = [newRec as NewsType, ...pages[0]];
+                      // Optional: Trim the last page if it exceeds NEWS_PAGE_SIZE due to an insert elsewhere
+                      // This depends on how strictly you want to manage page sizes optimistically.
+                    }
+                  }
+                  break;
+                case "UPDATE":
+                  pages = pages.map((page) =>
+                    page.map((item) =>
+                      item.id === (newRec as NewsType)!.id
+                        ? (newRec as NewsType)
+                        : item
+                    )
+                  );
+                  break;
+                case "DELETE":
+                  // Ensure oldRec has 'id' and is correctly typed
+                  const idToDelete = (oldRec as Partial<NewsType>)?.id;
+                  if (idToDelete) {
+                    pages = pages.map((page) =>
+                      page.filter((item) => item.id !== idToDelete)
+                    );
+                  }
+                  break;
+                default:
+                  return oldData; // Should not happen with event: "*"
+              }
+              return { ...oldData, pages };
+            }
+          );
+
+          // Handle the hasNewNewsData flag for non-admins
           if (!isAdmin) {
-            setHasNewNewsData(true); // Only show update button for non-admin users
+            setHasNewNewsData(true);
           } else {
-            await queryClient.invalidateQueries({
-              queryKey: ["news"],
-              refetchType: "all",
-            });
-            console.log("here");
+            // For admins, the data is updated optimistically above.
+            // If you still wanted to trigger a refetch for admins for some reason:
+            // queryClient.invalidateQueries({ queryKey: queryKeyForNews });
           }
         }
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (err) {
+          console.error(`Error subscribing to all_news_changes channel:`, err);
+        }
+        console.log(`Subscribed to all_news_changes with status: ${status}`);
+      });
 
     return () => {
-      newsChannel.unsubscribe();
+      supabase.removeChannel(newsChannel);
     };
-  }, [queryClient, isAdmin]);
+  }, [queryClient, isAdmin, language]); // isAdmin is used for the hasNewNewsData flag logic
+
+  /**
+   * News Articles subscription (for 'news_articles' table) - NEW
+   */
+  useEffect(() => {
+    const newsArticlesChannel = supabase
+      .channel("all_news_articles_changes") // Unique channel name
+      .on(
+        "postgres_changes",
+        {
+          event: "*", // Listen to all events
+          schema: "public",
+          table: "news_articles",
+          // No language filter here, will process based on payload's language_code
+        },
+        (payload) => {
+          const { eventType, new: newRec, old: oldRec } = payload;
+
+          let recordLang: string | undefined;
+          // Ensure your NewsArticlesType has language_code
+          if (eventType === "INSERT" || eventType === "UPDATE") {
+            recordLang = (newRec as NewsArticlesType)?.language_code;
+          } else if (eventType === "DELETE") {
+            recordLang = (oldRec as Partial<NewsArticlesType>)?.language_code;
+            if (!recordLang && oldRec?.id) {
+              console.warn(
+                `NewsArticle DELETE: language_code missing from old record for id ${oldRec.id}. Cannot perform targeted cache update.`
+              );
+              return;
+            }
+          }
+
+          if (!recordLang) {
+            console.warn(
+              "NewsArticle event without determinable language_code. Skipping cache update.",
+              payload
+            );
+            return;
+          }
+
+          const queryKeyForNewsArticles = ["newsArticles", recordLang];
+
+          queryClient.setQueryData<InfiniteData<NewsArticlesType[]>>(
+            queryKeyForNewsArticles,
+            (oldData) => {
+              if (!oldData) return oldData;
+
+              // Create shallow copies for mutation safety
+              let pages = oldData.pages.map((page) => [...page]);
+
+              switch (eventType) {
+                case "INSERT":
+                  if (newRec) {
+                    const inserted = newRec as NewsArticlesType;
+                    // Check if item already exists (e.g. due to rapid events or optimistic updates elsewhere)
+                    const itemExists = pages.some((p) =>
+                      p.some((item) => item.id === inserted.id)
+                    );
+                    if (!itemExists) {
+                      if (pages.length > 0) {
+                        pages[0] = [inserted, ...pages[0]];
+                      } else {
+                        pages.push([inserted]); // Handle case where pages array was empty
+                      }
+                    }
+                  }
+                  break;
+                case "UPDATE":
+                  if (newRec) {
+                    const updated = newRec as NewsArticlesType;
+                    pages = pages.map((page) =>
+                      page.map((item) =>
+                        item.id === updated.id ? updated : item
+                      )
+                    );
+                  }
+                  break;
+                case "DELETE":
+                  const idToDelete = (oldRec as Partial<NewsArticlesType>)?.id;
+                  if (idToDelete) {
+                    pages = pages.map((page) =>
+                      page.filter((item) => item.id !== idToDelete)
+                    );
+                  }
+                  break;
+                default:
+                  return oldData;
+              }
+              return { ...oldData, pages };
+            }
+          );
+
+          // Handle the hasNewNewsArticlesData flag for non-admins
+          if (!isAdmin) {
+            setHasNewNewsArticlesData(true);
+          }
+        }
+      )
+      .subscribe((status, err) => {
+        if (err) {
+          console.error(
+            `Error subscribing to all_news_articles_changes channel:`,
+            err
+          );
+        }
+        console.log(
+          `Subscribed to all_news_articles_changes with status: ${status}`
+        );
+      });
+
+    return () => {
+      supabase.removeChannel(newsArticlesChannel);
+    };
+  }, [queryClient, isAdmin, language]); // isAdmin used for the flag logic
+
+  /**
+   * Podcasts subscription - NEWLY ADDED
+   */
+  useEffect(() => {
+    const podcastsChannel = supabase
+      .channel("all_podcasts_changes") // General channel for all podcast changes
+      .on(
+        "postgres_changes",
+        {
+          event: "*", // Listen to INSERT, UPDATE, DELETE
+          schema: "public",
+          table: "podcasts",
+          // No language filter here, will process based on payload's language_code
+        },
+        (payload) => {
+          const { eventType, new: newRec, old: oldRec } = payload;
+
+          let recordLang: string | undefined;
+          // Assuming PodcastType includes language_code
+          if (eventType === "INSERT" || eventType === "UPDATE") {
+            recordLang = (newRec as PodcastType)?.language_code;
+          } else if (eventType === "DELETE") {
+            recordLang = (oldRec as Partial<PodcastType>)?.language_code;
+            if (!recordLang && oldRec?.id) {
+              console.warn(
+                `Podcast DELETE: language_code missing from old record for id ${oldRec.id}. Cannot perform targeted cache update.`
+              );
+              // Fallback: consider broader invalidation if this is critical
+              // queryClient.invalidateQueries({ queryKey: ["podcasts"] });
+              return;
+            }
+          }
+
+          if (!recordLang) {
+            console.warn(
+              "Podcast event without determinable language_code. Skipping cache update.",
+              payload
+            );
+            return;
+          }
+
+          const queryKeyForPodcasts: ["podcasts", string] = [
+            "podcasts",
+            recordLang,
+          ];
+
+          queryClient.setQueryData<InfiniteData<PodcastType[]>>(
+            queryKeyForPodcasts,
+            (oldData) => {
+              if (!oldData) return oldData; // No existing cache for this language
+
+              // Create shallow copies for mutation safety
+              let pages = oldData.pages.map((page) => [...page]);
+
+              switch (eventType) {
+                case "INSERT":
+                  if (newRec) {
+                    const inserted = newRec as PodcastType;
+                    // Check if item already exists
+                    const itemExists = pages.some((p) =>
+                      p.some((item) => item.id === inserted.id)
+                    );
+                    if (!itemExists) {
+                      if (pages.length > 0) {
+                        // Add to the beginning of the first page
+                        pages[0] = [inserted, ...pages[0]];
+                      } else {
+                        // Handle case where pages array was empty
+                        pages.push([inserted]);
+                      }
+                    }
+                  }
+                  break;
+                case "UPDATE":
+                  if (newRec) {
+                    const updated = newRec as PodcastType;
+                    pages = pages.map((page) =>
+                      page.map((item) =>
+                        item.id === updated.id ? updated : item
+                      )
+                    );
+                  }
+                  break;
+                case "DELETE":
+                  const idToDelete = (oldRec as Partial<PodcastType>)?.id;
+                  if (idToDelete) {
+                    pages = pages.map((page) =>
+                      page.filter((item) => item.id !== idToDelete)
+                    );
+                  }
+                  break;
+                default:
+                  return oldData; // Should not happen with event: "*"
+              }
+              return { ...oldData, pages };
+            }
+          );
+
+          // Handle the hasNewPodcastsData flag for non-admins
+          if (!isAdmin) {
+            setHasNewPodcastsData(true);
+          }
+        }
+      )
+      .subscribe((status, err) => {
+        if (err) {
+          console.error(
+            `Error subscribing to all_podcasts_changes channel:`,
+            err
+          );
+        }
+        console.log(
+          `Subscribed to all_podcasts_changes with status: ${status}`
+        );
+      });
+
+    return () => {
+      supabase
+        .removeChannel(podcastsChannel)
+        .catch((err) => console.error("Error removing podcasts_channel", err));
+    };
+  }, [queryClient, isAdmin, language]); // isAdmin is used for the hasNewPodcastsData flag logic
 
   return (
     <SupabaseRealtimeContext.Provider

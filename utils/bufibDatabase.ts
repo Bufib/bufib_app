@@ -35,10 +35,10 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
 
       -- Question tables
       CREATE TABLE IF NOT EXISTS question_categories (
-        category_name TEXT PRIMARY KEY
+        question_category_name TEXT PRIMARY KEY
       );
       CREATE TABLE IF NOT EXISTS question_subcategories (
-        subcategory_name TEXT PRIMARY KEY
+        question_subcategory_name TEXT PRIMARY KEY
       );
       CREATE TABLE IF NOT EXISTS questions (
         id               INTEGER PRIMARY KEY,
@@ -47,8 +47,8 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         answer           TEXT,
         answer_sistani   TEXT,
         answer_khamenei  TEXT,
-        question_subcategories_name    TEXT    REFERENCES question_categories(category_name),
-        question_subcategories_name TEXT    REFERENCES question_subcategories(subcategory_name),
+        question_category_name    TEXT    REFERENCES question_categories(question_category_name),
+        question_subcategory_name TEXT    REFERENCES question_subcategories(question_subcategory_name),
         created_at       TEXT    DEFAULT CURRENT_TIMESTAMP,
         language_code    TEXT    NOT NULL
       );
@@ -250,7 +250,7 @@ const fetchQuestionsFromSupabase = async () => {
       const stmt = await txn.prepareAsync(
         `INSERT OR REPLACE INTO questions
           (id, title, question, answer, answer_sistani,
-           answer_khamenei, category_name, subcategory_name, created_at, language_code)
+           answer_khamenei, question_category_name, question_subcategory_name, created_at, language_code)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
       );
       try {
@@ -262,8 +262,8 @@ const fetchQuestionsFromSupabase = async () => {
             question.answer ?? null,
             question.answer_sistani ?? null,
             question.answer_khamenei ?? null,
-            question.category_name,
-            question.subcategory_name,
+            question.question_category_name,
+            question.question_subcategory_name,
             question.created_at,
             question.language_code,
           ]);
@@ -528,18 +528,19 @@ export const getFavoriteQuestions = async (): Promise<QuestionType[]> => {
   }
 };
 
+//!
 export const getSubcategoriesForCategory = async (
-  categoryName: string
+  question_category_name: string
 ): Promise<string[]> => {
   try {
     const db = await getDatabase();
-    const rows = await db.getAllAsync<{ subcategory_name: string }>(
+    const rows = await db.getAllAsync<{ question_subcategory_name: string }>(
       `
-      SELECT DISTINCT subcategory_name FROM questions WHERE category_name = ?;
+      SELECT DISTINCT question_subcategory_name FROM questions WHERE question_category_name = ?;
     `,
-      [categoryName]
+      [question_category_name]
     );
-    return rows.map((row) => row.subcategory_name);
+    return rows.map((row) => row.question_subcategory_name);
   } catch (error) {
     console.error("Error fetching subcategories:", error);
     throw error;
@@ -554,7 +555,7 @@ export const getQuestionsForSubcategory = async (
     const db = await getDatabase();
     return await db.getAllAsync<QuestionType>(
       `
-      SELECT * FROM questions WHERE category_name = ? AND subcategory_name = ? ORDER BY created_at DESC;
+      SELECT * FROM questions WHERE question_category_name = ? AND question_subcategory_name = ? ORDER BY created_at DESC;
     `,
       [categoryName, subcategoryName]
     );
@@ -574,7 +575,7 @@ export const getQuestion = async (
     const rows = await db.getAllAsync<QuestionType>(
       `
       SELECT * FROM questions
-      WHERE category_name = ? AND subcategory_name = ? AND id = ?
+      WHERE question_category_name = ? AND question_subcategory_name = ? AND id = ?
       LIMIT 1;
     `,
       [categoryName, subcategoryName, questionId]
@@ -612,7 +613,7 @@ export const searchQuestions = async (
     const db = await getDatabase();
     return await db.getAllAsync<SearchResultQAType>(
       `
-      SELECT id, category_name, subcategory_name, question, title
+      SELECT id, question_category_name, question_subcategory_name, question, title
       FROM questions
       WHERE question LIKE ? OR title LIKE ?;
     `,

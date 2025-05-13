@@ -16,16 +16,6 @@ export function useNews() {
   const queryClient = useQueryClient();
   const queryKey = ["news", lang];
 
-  const selectCols = `
-    id,
-    created_at,
-    title,
-    content,
-    external_urls,
-    internal_urls,
-    images_url
-  `;
-
   const infiniteQuery = useInfiniteQuery<NewsType[], Error>({
     queryKey,
     enabled: Boolean(language),
@@ -40,7 +30,7 @@ export function useNews() {
 
       const { data, error } = await supabase
         .from("news")
-        .select(selectCols)
+        .select("*")
         .eq("language_code", lang)
         .order("created_at", { ascending: false })
         .range(from, to);
@@ -53,58 +43,6 @@ export function useNews() {
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === PAGE_SIZE ? allPages.length : undefined,
   });
-
-  // real-time subscription for this language
-  useEffect(() => {
-    if (!language) return;
-
-    const channel = supabase
-      .channel(`news_${lang}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "news",
-          filter: `language_code=eq.${lang}`,
-        },
-        (payload) => {
-          const { eventType, new: newRec, old: oldRec } = payload;
-
-          queryClient.setQueryData<InfiniteData<NewsType[]>>(
-            queryKey,
-            (oldData) => {
-              if (!oldData) return oldData;
-
-              const pages = oldData.pages.map((page) => {
-                switch (eventType) {
-                  case "UPDATE":
-                    return page.map((item) =>
-                      item.id === newRec!.id ? (newRec as NewsType) : item
-                    );
-                  case "DELETE":
-                    return page.filter((item) => item.id !== oldRec!.id);
-                  default:
-                    return page;
-                }
-              });
-
-              // insert at front on INSERT
-              if (eventType === "INSERT") {
-                pages[0] = [newRec as NewsType, ...pages[0]];
-              }
-
-              return { ...oldData, pages };
-            }
-          );
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [language, lang, queryClient, queryKey]);
 
   return infiniteQuery;
 }

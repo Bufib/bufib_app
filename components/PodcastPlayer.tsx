@@ -12,7 +12,7 @@ import {
 import Slider from "@react-native-community/slider";
 import { useAudioPlayer, useAudioPlayerStatus, AudioStatus } from "expo-audio";
 import { PodcastType } from "@/constants/Types"; // Adjust path if needed
-import { usePodcasts } from "@/hooks/useFetchPodcasts"; // Adjust path if needed
+import { usePodcasts } from "@/hooks/usePodcasts"; // Adjust path if needed
 import { ThemedView } from "./ThemedView";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";

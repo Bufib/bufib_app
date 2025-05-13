@@ -102,7 +102,7 @@ import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { Colors } from "@/constants/Colors"; // For loading screen
 import AppReviewPrompt from "@/components/AppReviewPrompt";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { cleanupCache } from "@/hooks/useFetchPodcasts";
+import { cleanupCache } from "@/hooks/usePodcasts";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete. (From Code 1)
 SplashScreen.preventAutoHideAsync();

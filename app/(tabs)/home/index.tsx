@@ -22,7 +22,7 @@ import { router } from "expo-router";
 import { useNews } from "@/hooks/useNews";
 import NewsCard from "@/components/NewsCard";
 import { PodcastPreviewCard } from "@/components/PodcastPreviewCard";
-import { usePodcasts } from "@/hooks/useFetchPodcasts";
+import { usePodcasts } from "@/hooks/usePodcasts";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function HomeScreen() {
