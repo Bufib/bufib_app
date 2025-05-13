@@ -86,13 +86,13 @@ export const SupabaseRealtimeProvider = ({
     if (!userId) return;
 
     const userQuestionsChannel = supabase
-      .channel(`user_questions_${userId}`)
+      .channel(`user_questions`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
-          table: "user_question",
+          table: "user_questions",
           filter: `user_id=eq.${userId}`,
         },
         async (payload) => {
@@ -119,7 +119,7 @@ export const SupabaseRealtimeProvider = ({
     return () => {
       userQuestionsChannel.unsubscribe();
     };
-  }, [userId, queryClient, language]);
+  }, [userId, queryClient]);
 
   /**
    * News subscription - MOVED HERE
@@ -185,19 +185,21 @@ export const SupabaseRealtimeProvider = ({
 
               switch (eventType) {
                 case "INSERT":
-                  // Add to the beginning of the first page
-                  // Ensure newRec is correctly typed and has all necessary fields
                   if (newRec) {
-                    // Check if item already exists (e.g. due to rapid events)
+                    const inserted = newRec as NewsType;
+                    // Check if item already exists (e.g. due to rapid events or optimistic updates elsewhere)
                     const itemExists = pages.some((p) =>
-                      p.some((item) => item.id === (newRec as NewsType).id)
+                      p.some((item) => item.id === inserted.id)
                     );
                     if (!itemExists) {
-                      pages[0] = [newRec as NewsType, ...pages[0]];
-                      // Optional: Trim the last page if it exceeds NEWS_PAGE_SIZE due to an insert elsewhere
-                      // This depends on how strictly you want to manage page sizes optimistically.
+                      if (pages.length > 0) {
+                        pages[0] = [inserted, ...pages[0]];
+                      } else {
+                        pages.push([inserted]); // Handle case where pages array was empty
+                      }
                     }
                   }
+
                   break;
                 case "UPDATE":
                   pages = pages.map((page) =>
@@ -242,9 +244,11 @@ export const SupabaseRealtimeProvider = ({
       });
 
     return () => {
-      supabase.removeChannel(newsChannel);
+      supabase
+        .removeChannel(newsChannel)
+        .catch((err) => console.error("Error removing podcasts_channel", err));
     };
-  }, [queryClient, isAdmin, language]); // isAdmin is used for the hasNewNewsData flag logic
+  }, [queryClient, isAdmin]); // isAdmin is used for the hasNewNewsData flag logic
 
   /**
    * News Articles subscription (for 'news_articles' table) - NEW
@@ -356,9 +360,11 @@ export const SupabaseRealtimeProvider = ({
       });
 
     return () => {
-      supabase.removeChannel(newsArticlesChannel);
+      supabase
+        .removeChannel(newsArticlesChannel)
+        .catch((err) => console.error("Error removing podcasts_channel", err));
     };
-  }, [queryClient, isAdmin, language]); // isAdmin used for the flag logic
+  }, [queryClient, isAdmin]); // isAdmin used for the flag logic
 
   /**
    * Podcasts subscription - NEWLY ADDED
@@ -481,7 +487,7 @@ export const SupabaseRealtimeProvider = ({
         .removeChannel(podcastsChannel)
         .catch((err) => console.error("Error removing podcasts_channel", err));
     };
-  }, [queryClient, isAdmin, language]); // isAdmin is used for the hasNewPodcastsData flag logic
+  }, [queryClient, isAdmin]); // isAdmin is used for the hasNewPodcastsData flag logic
 
   return (
     <SupabaseRealtimeContext.Provider

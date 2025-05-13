@@ -16,6 +16,7 @@ import { usePodcasts } from "@/hooks/usePodcasts"; // Adjust path if needed
 import { ThemedView } from "./ThemedView";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 interface PodcastPlayerProps {
   podcast: PodcastType;
@@ -212,7 +213,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
       // }
     },
     [player, status?.isLoaded]
-  ); 
+  );
 
   // --- Render Logic ---
   const isPlayerActuallyLoading = !!(sourceUri && !status?.isLoaded);
@@ -255,9 +256,16 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
         <ThemedText style={styles.descriptionText} type="subtitle">
           {podcast.description}
         </ThemedText>
-        <ThemedText style={styles.descriptionText} type="subtitle">
-          {formatTime(status?.duration)} min 
-        </ThemedText>
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <ThemedText style={styles.descriptionText} type="subtitle">
+            {formatTime(status?.duration)} min
+          </ThemedText>
+          <AntDesign
+            name="clockcircleo"
+            size={24}
+            color={colorScheme === "dark" ? "#fff" : "#000"}
+          />
+        </View>
       </View>
 
       {playerError && (
