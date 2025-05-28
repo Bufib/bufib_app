@@ -8,6 +8,7 @@ import {
   useColorScheme,
   Pressable,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useAudioPlayer, useAudioPlayerStatus, AudioStatus } from "expo-audio";
@@ -18,6 +19,7 @@ import { Colors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+import { Image } from "expo-image";
 export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   podcast,
 }) => {
@@ -217,7 +219,13 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ScrollView
+      style={[
+        styles.scrollStyle,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
+      contentContainerStyle={styles.scrollContent}
+    >
       <View
         style={[
           styles.headerContainer,
@@ -227,19 +235,19 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
         <ThemedText style={styles.title} type="titleSmall">
           {podcast.title}
         </ThemedText>
-        <ThemedText style={styles.descriptionText} type="subtitle">
+        <ThemedText style={styles.descriptionText}>
           {podcast.description}
         </ThemedText>
 
         {status.isLoaded && (
           <View style={{ flexDirection: "row", gap: 10 }}>
-            <ThemedText style={styles.descriptionText} type="subtitle">
+            <Text style={[styles.descriptionText, { fontWeight: 600, color: Colors.universal.primary}]}>
               {formatTime(status?.duration)} min
-            </ThemedText>
+            </Text>
             <AntDesign
               name="clockcircleo"
               size={24}
-              color={Colors[colorScheme].defaultIcon}
+              color={Colors.universal.primary}
             />
           </View>
         )}
@@ -304,16 +312,21 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
         </>
       )}
 
+      {/* *** Main *** */}
       {showPlaybackControls && !playerError && (
-        <>
+        <View style={styles.mainComponentsContainer}>
+          <Image
+            source={require("@/assets/images/logo.png")}
+            style={styles.logo}
+            contentFit="cover"
+          />
+
           <View style={styles.timeContainer}>
             <Text style={styles.timeText}>
               {formatTime(status?.currentTime)}
             </Text>
             <Text style={styles.timeText}>{formatTime(status?.duration)}</Text>
           </View>
-
-          {/* *** 3. Add the Slider component *** */}
           <Slider
             style={styles.slider}
             value={status?.currentTime ?? 0} // Current position
@@ -379,16 +392,19 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
             onPress={stopPlayback}
             disabled={controlsDisabled}
           />
-        </>
+        </View>
       )}
-    </ThemedView>
+    </ScrollView>
   );
 };
 
 // --- Styles ---
 const styles = StyleSheet.create({
-  container: {
+  scrollStyle: {
     flex: 1,
+  },
+  scrollContent: {
+    gap: 20,
   },
   headerContainer: {
     flexDirection: "column",
@@ -398,7 +414,9 @@ const styles = StyleSheet.create({
   },
 
   title: {},
-  descriptionText: {},
+  descriptionText: {
+    fontSize: 18,
+  },
   loader: { marginVertical: 16, alignSelf: "center" },
   spacer: { height: 8 },
   initialButtons: {
@@ -433,6 +451,15 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 12,
     color: "#444",
+  },
+  mainComponentsContainer: {
+    flex: 1,
+  },
+  logo: {
+    width: "90%",
+    height: 300,
+    alignSelf: "center",
+    marginBottom: 20,
   },
   slider: {
     width: "100%",
