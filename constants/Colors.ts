@@ -22,6 +22,7 @@ export const Colors = {
     shadow: "#000",
     loadingIndicator: "#000",
     error: "#d32f2f",
+    defaultIcon: "#000",
 
     // Switch
     trackColor: "#767577",
@@ -60,6 +61,7 @@ export const Colors = {
     shadow: "#fff",
     loadingIndicator: "#fff",
     error: "#f44336",
+    defaultIcon: "#fff",
 
     // Switch
     trackColor: "#057958",

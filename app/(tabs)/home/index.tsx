@@ -239,10 +239,12 @@ export default function HomeScreen() {
               onEndReachedThreshold={0.5}
               ListFooterComponent={() =>
                 newsIsFetchingNextPage ? (
+                
                   <LoadingIndicator size="small" />
                 ) : null
               }
             /> */}
+
 
           {!newsIsLoading && !newsIsError && (
             <View style={styles.flatListContentContainer}>

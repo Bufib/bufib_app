@@ -336,3 +336,7 @@ export interface PodcastType {
 }
 
 export type PodcastProps = { podcast: PodcastType };
+export type PodcastPlayerPropsType = {
+  podcast: PodcastType;
+}
+

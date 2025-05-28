@@ -6,38 +6,43 @@ import {
   ActivityIndicator,
   StyleSheet,
   Platform,
-  useColorScheme, // Import Platform for potential styling differences
+  useColorScheme,
 } from "react-native";
-// *** 1. Import Slider ***
 import Slider from "@react-native-community/slider";
 import { useAudioPlayer, useAudioPlayerStatus, AudioStatus } from "expo-audio";
-import { PodcastType } from "@/constants/Types"; // Adjust path if needed
-import { usePodcasts } from "@/hooks/usePodcasts"; // Adjust path if needed
+import { PodcastType } from "@/constants/Types";
+import { usePodcasts } from "@/hooks/usePodcasts";
 import { ThemedView } from "./ThemedView";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";
 import AntDesign from "@expo/vector-icons/AntDesign";
-
-interface PodcastPlayerProps {
-  podcast: PodcastType;
-}
-
-export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
-  const { stream, download } = usePodcasts(podcast.language_code);
-
+import { PodcastPlayerPropsType } from "@/constants/Types";
+export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
+  podcast,
+}) => {
+  const { stream, download, getCachedUri } = usePodcasts(podcast.language_code);
   const [sourceUri, setSourceUri] = useState<string | null>(null);
   const [isPreparingStream, setIsPreparingStream] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [playerError, setPlayerError] = useState<string | null>(null);
   const [didInitiatePlayback, setDidInitiatePlayback] = useState(false);
-  // Optional: State to track if user is currently sliding
   const [isSeeking, setIsSeeking] = useState(false);
   const colorScheme = useColorScheme() || "light";
   const player = useAudioPlayer(sourceUri ? { uri: sourceUri } : null, 500);
-  // Use a shorter update interval if seeking needs finer updates, but 500ms is usually fine
   const status: AudioStatus | null = useAudioPlayerStatus(player);
 
-  // --- Effects ---
+  useEffect(() => {
+    (async () => {
+      if (!podcast.sound_path) return;
+      // try to re-use existing file
+      const uri = await getCachedUri(podcast.sound_path);
+      if (uri) {
+        setSourceUri(uri);
+        return;
+      }
+     
+    })();
+  }, [podcast.sound_path]);
 
   useEffect(() => {
     if (player) player.loop = false;
@@ -45,7 +50,6 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
 
   useEffect(() => {
     if (status?.didJustFinish) {
-      console.log("Playback finished.");
       setDidInitiatePlayback(false);
     }
   }, [status?.didJustFinish]);
@@ -57,10 +61,6 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
     setIsPreparingStream(false);
     setDidInitiatePlayback(false);
   }, [podcast.id]);
-
-  useEffect(() => {
-    // console.log("PLAYER STATUS:", JSON.stringify(status, null, 2));
-  }, [status]);
 
   useEffect(() => {
     if (
@@ -93,10 +93,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
     didInitiatePlayback,
   ]);
 
-  // --- Handlers ---
-
   const handleStream = useCallback(() => {
-    // ... (same as before)
     if (!podcast.sound_path) {
       setPlayerError("Audio path missing.");
       return;
@@ -126,7 +123,6 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
   }, [podcast.sound_path, stream]);
 
   const handleDownloadAndPlay = useCallback(async () => {
-    // ... (same as before)
     if (!podcast.sound_path) {
       setPlayerError("Audio path missing.");
       return;
@@ -220,7 +216,6 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
   const isPreparing = isPreparingStream || download.isPending;
   const isLoading = isPreparing || isPlayerActuallyLoading;
   const canPlay = !!status?.isLoaded;
-
   const showInitialButtons = !sourceUri && !isLoading && !playerError;
   const showPlaybackControls = sourceUri && canPlay;
   const showDownloadProgress = download.isPending;
@@ -256,16 +251,57 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
         <ThemedText style={styles.descriptionText} type="subtitle">
           {podcast.description}
         </ThemedText>
-        <View style={{ flexDirection: "row", gap: 10 }}>
-          <ThemedText style={styles.descriptionText} type="subtitle">
-            {formatTime(status?.duration)} min
-          </ThemedText>
-          <AntDesign
-            name="clockcircleo"
-            size={24}
-            color={colorScheme === "dark" ? "#fff" : "#000"}
-          />
-        </View>
+
+        {status.isLoaded && (
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            <ThemedText style={styles.descriptionText} type="subtitle">
+              {formatTime(status?.duration)} min
+            </ThemedText>
+            <AntDesign
+              name="clockcircleo"
+              size={24}
+              color={Colors[colorScheme].defaultIcon}
+            />
+          </View>
+        )}
+        {showInitialButtons && (
+          <View style={styles.initialButtons}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                title="Stream Episode"
+                onPress={handleStream}
+                disabled={isLoading}
+              />
+              <AntDesign
+                name="clouddownloado"
+                size={24}
+                color={Colors[colorScheme].defaultIcon}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                title="Download & Play"
+                onPress={handleDownloadAndPlay}
+                disabled={isLoading}
+              />
+              <AntDesign
+                name="download"
+                size={24}
+                color={Colors[colorScheme].defaultIcon}
+              />
+            </View>
+          </View>
+        )}
       </View>
 
       {playerError && (
@@ -286,22 +322,6 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
           <Text style={styles.progressText}>
             Downloading: {Math.round(downloadProgress * 100)}%
           </Text>
-        </>
-      )}
-
-      {showInitialButtons && (
-        <>
-          <Button
-            title="Stream Episode"
-            onPress={handleStream}
-            disabled={isLoading}
-          />
-          <View style={styles.spacer} />
-          <Button
-            title="Download & Play"
-            onPress={handleDownloadAndPlay}
-            disabled={isLoading}
-          />
         </>
       )}
 
@@ -331,7 +351,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
 
           <View style={styles.controls}>
             <Button
-              title="⏪ 15s"
+              title="15 s"
               onPress={goBack}
               disabled={controlsDisabled}
             />
@@ -341,7 +361,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerProps> = ({ podcast }) => {
               disabled={controlsDisabled}
             />
             <Button
-              title="15s ⏩"
+              title="15 s"
               onPress={goForward}
               disabled={controlsDisabled}
             />
@@ -373,6 +393,13 @@ const styles = StyleSheet.create({
   descriptionText: {},
   loader: { marginVertical: 16, alignSelf: "center" },
   spacer: { height: 8 },
+  initialButtons: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+
   errorText: { color: "red", marginVertical: 8, textAlign: "center" },
   progressContainer: {
     width: "100%",

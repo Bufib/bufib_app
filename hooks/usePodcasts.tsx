@@ -119,38 +119,197 @@ export async function cleanupCache(): Promise<void> {
   }
 }
 
+// async function downloadToCache(
+//   source: string,
+//   onProgress?: (frac: number) => void
+// ): Promise<string> {
+//   let downloadUrl: string;
+//   const filename =
+//     source.substring(source.lastIndexOf("/") + 1).split("?")[0] ||
+//     `download_${Date.now()}`;
+//   const localUri = getCacheDirectory() + filename;
+
+//   const info = await FileSystem.getInfoAsync(localUri).catch(() => null); // Handle potential error if dir doesn't exist yet
+//   if (info?.exists) {
+//     console.log(`File found in cache: ${localUri}`);
+//     return localUri;
+//   }
+
+//   if (/^https?:\/\//.test(source)) {
+//     downloadUrl = source;
+//   } else {
+//     // Assume it's a path needing signing (or could add public check here if needed)
+//     console.log(`Generating signed URL for download path: ${source}`);
+//     const { data, error } = await supabase.storage
+//       .from(BUCKET_NAME)
+//       .createSignedUrl(source, 60 * 60);
+//     if (error) {
+//       console.error(`Error creating signed URL for ${source}:`, error);
+//       throw error; // Re-throw the Supabase error
+//     }
+//     if (!data?.signedUrl) {
+//       throw new Error("Failed to get signed URL from Supabase.");
+//     }
+//     downloadUrl = data.signedUrl;
+//   }
+
+//   let currentUrl = downloadUrl;
+//   for (let attempt = 0; attempt < 2; attempt++) {
+//     try {
+//       const task = FileSystem.createDownloadResumable(
+//         currentUrl,
+//         localUri,
+//         {},
+//         ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+//           if (
+//             onProgress &&
+//             totalBytesExpectedToWrite > 0 &&
+//             totalBytesExpectedToWrite >= totalBytesWritten
+//           ) {
+//             onProgress(totalBytesWritten / totalBytesExpectedToWrite);
+//           }
+//         }
+//       );
+//       const result = await task.downloadAsync();
+//       if (!result?.uri) {
+//         throw new Error("Download failed, result URI missing.");
+//       }
+
+//       console.log(`Download successful: ${result.uri}`);
+//       // Trigger cleanup but don't wait for it
+//       cleanupCache().catch(console.warn);
+//       return result.uri;
+//     } catch (err: any) {
+//       console.error(
+//         `Download attempt ${attempt + 1} failed for ${source}:`,
+//         err
+//       );
+//       const isSignedUrlAttempt = !/^https?:\/\//.test(source);
+//       const isLikelyExpired =
+//         err.message?.includes("403") || err.status === 403;
+
+//       if (attempt === 0 && isSignedUrlAttempt && isLikelyExpired) {
+//         console.log("Attempting signed URL refresh...");
+//         try {
+//           const { data, error: refreshError } = await supabase.storage
+//             .from(BUCKET_NAME)
+//             .createSignedUrl(source, 60 * 60);
+//           if (refreshError) throw refreshError; // Throw if refresh fails
+//           if (!data?.signedUrl)
+//             throw new Error("Refreshed signed URL is missing.");
+//           currentUrl = data.signedUrl;
+//           console.log("Retrying download with refreshed URL.");
+//           continue; // Next attempt
+//         } catch (refreshErr) {
+//           console.error("Signed URL refresh failed:", refreshErr);
+//           throw err; // Throw original download error if refresh fails
+//         }
+//       }
+//       // If not handled by retry logic, throw the error from this attempt
+//       throw err;
+//     }
+//   }
+//   // Should only be reached if both attempts fail
+//   throw new Error(`Download failed for ${source} after multiple attempts.`);
+// }
+
+// --- THE HOOK ---
+
+// --- Add this helper at the top or in a common utility file ---
+// (BUCKET_NAME should be accessible here or passed as a parameter)
+function getSupabaseRelativePath(
+  filePath: string,
+  bucketName: string
+): string | null {
+  try {
+    // Example: https://ygtlsiifupyoepxfamcn.supabase.co/storage/v1/object/public/sounds/podcasts/timer.mp3
+    // The part we want is "podcasts/timer.mp3"
+    const url = new URL(filePath);
+    const pathParts = url.pathname.split("/");
+    // Find <bucketName> in the path parts
+    const bucketIndex = pathParts.indexOf(bucketName);
+    if (bucketIndex > -1 && bucketIndex < pathParts.length - 1) {
+      return pathParts.slice(bucketIndex + 1).join("/");
+    }
+  } catch (e) {
+    // Not a valid URL, so it might already be a relative path
+    if (!filePath.startsWith("http://") && !filePath.startsWith("https://")) {
+      return filePath;
+    }
+  }
+  return null; // Could not determine relative path from a URL, or it's an external URL
+}
+
+// --- Modified downloadToCache function ---
 async function downloadToCache(
-  source: string,
+  source: string, // Can be relative path (e.g., "podcasts/file.mp3") or full Supabase public/signed URL
   onProgress?: (frac: number) => void
 ): Promise<string> {
   let downloadUrl: string;
+  // Determine the actual relative path for Supabase operations, regardless of 'source' format
+  let relativePathForSupabase = getSupabaseRelativePath(source, BUCKET_NAME);
+  if (!relativePathForSupabase && !/^https?:\/\//.test(source)) {
+    relativePathForSupabase = source; // Assume 'source' is already relative if not a URL and getSupabaseRelativePath didn't parse it from one
+  }
+
+  const effectiveSourceForFilename = relativePathForSupabase || source; // Use relative path for filename if available
   const filename =
-    source.substring(source.lastIndexOf("/") + 1).split("?")[0] ||
-    `download_${Date.now()}`;
+    effectiveSourceForFilename
+      .substring(effectiveSourceForFilename.lastIndexOf("/") + 1)
+      .split("?")[0] || `download_${Date.now()}`;
   const localUri = getCacheDirectory() + filename;
 
-  const info = await FileSystem.getInfoAsync(localUri).catch(() => null); // Handle potential error if dir doesn't exist yet
+  const info = await FileSystem.getInfoAsync(localUri).catch(() => null);
   if (info?.exists) {
     console.log(`File found in cache: ${localUri}`);
     return localUri;
   }
 
+  // Determine the initial downloadUrl
   if (/^https?:\/\//.test(source)) {
+    // If 'source' is already a full URL (public or signed), use it directly.
     downloadUrl = source;
-  } else {
-    // Assume it's a path needing signing (or could add public check here if needed)
-    console.log(`Generating signed URL for download path: ${source}`);
-    const { data, error } = await supabase.storage
+    console.log(`Using provided full URL for download: ${downloadUrl}`);
+  } else if (relativePathForSupabase) {
+    // 'source' is a relative path. Prefer public URL for downloading if available.
+    console.log(
+      `Attempting to get public URL for relative path: ${relativePathForSupabase}`
+    );
+    const { data: publicUrlData } = supabase.storage
       .from(BUCKET_NAME)
-      .createSignedUrl(source, 60 * 60);
-    if (error) {
-      console.error(`Error creating signed URL for ${source}:`, error);
-      throw error; // Re-throw the Supabase error
+      .getPublicUrl(relativePathForSupabase);
+
+    if (publicUrlData?.publicUrl) {
+      downloadUrl = publicUrlData.publicUrl;
+      console.log(`Using public URL for download: ${downloadUrl}`);
+    } else {
+      // Fallback to signed URL if public URL is not available or desired
+      console.log(
+        `Public URL not available for ${relativePathForSupabase}, generating signed URL.`
+      );
+      const { data: signedUrlData, error: signedUrlError } =
+        await supabase.storage
+          .from(BUCKET_NAME)
+          .createSignedUrl(relativePathForSupabase, 60 * 60); // 1 hour validity
+
+      if (signedUrlError) {
+        console.error(
+          `Error creating signed URL for ${relativePathForSupabase}:`,
+          signedUrlError
+        );
+        throw signedUrlError;
+      }
+      if (!signedUrlData?.signedUrl) {
+        throw new Error(
+          `Failed to get signed URL for ${relativePathForSupabase} from Supabase.`
+        );
+      }
+      downloadUrl = signedUrlData.signedUrl;
+      console.log(`Using signed URL for download: ${downloadUrl}`);
     }
-    if (!data?.signedUrl) {
-      throw new Error("Failed to get signed URL from Supabase.");
-    }
-    downloadUrl = data.signedUrl;
+  } else {
+    // This case should ideally not be reached if source is always either a valid URL or a relative path
+    throw new Error(`Invalid source format for download: ${source}`);
   }
 
   let currentUrl = downloadUrl;
@@ -176,33 +335,44 @@ async function downloadToCache(
       }
 
       console.log(`Download successful: ${result.uri}`);
-      // Trigger cleanup but don't wait for it
       cleanupCache().catch(console.warn);
       return result.uri;
     } catch (err: any) {
       console.error(
-        `Download attempt ${attempt + 1} failed for ${source}:`,
+        `Download attempt ${
+          attempt + 1
+        } failed for source "${source}" (using URL ${currentUrl}):`,
         err
       );
-      const isSignedUrlAttempt = !/^https?:\/\//.test(source);
-      const isLikelyExpired =
-        err.message?.includes("403") || err.status === 403;
+      const isLikelyAuthError =
+        err.message?.includes("403") ||
+        err.status === 403 ||
+        err.message?.includes("access denied");
 
-      if (attempt === 0 && isSignedUrlAttempt && isLikelyExpired) {
-        console.log("Attempting signed URL refresh...");
+      // Retry with a fresh signed URL if:
+      // - It's the first attempt.
+      // - We have a relativePathForSupabase (meaning we know the object's path).
+      // - The error is likely an auth/permission issue (e.g., expired signed URL or public URL access denied).
+      if (attempt === 0 && relativePathForSupabase && isLikelyAuthError) {
+        console.log(
+          `Attempting signed URL refresh for path: ${relativePathForSupabase}`
+        );
         try {
-          const { data, error: refreshError } = await supabase.storage
-            .from(BUCKET_NAME)
-            .createSignedUrl(source, 60 * 60);
-          if (refreshError) throw refreshError; // Throw if refresh fails
-          if (!data?.signedUrl)
+          const { data: refreshData, error: refreshError } =
+            await supabase.storage
+              .from(BUCKET_NAME)
+              .createSignedUrl(relativePathForSupabase, 60 * 60); // New signed URL
+          if (refreshError) throw refreshError;
+          if (!refreshData?.signedUrl)
             throw new Error("Refreshed signed URL is missing.");
-          currentUrl = data.signedUrl;
-          console.log("Retrying download with refreshed URL.");
-          continue; // Next attempt
+
+          currentUrl = refreshData.signedUrl; // Update currentUrl to the new signed URL
+          console.log("Retrying download with new signed URL.");
+          continue; // Next attempt with the new (signed) URL
         } catch (refreshErr) {
           console.error("Signed URL refresh failed:", refreshErr);
-          throw err; // Throw original download error if refresh fails
+          // Throw original download error if refresh fails to prevent infinite loops on other issues
+          throw err;
         }
       }
       // If not handled by retry logic, throw the error from this attempt
@@ -212,8 +382,6 @@ async function downloadToCache(
   // Should only be reached if both attempts fail
   throw new Error(`Download failed for ${source} after multiple attempts.`);
 }
-
-// --- THE HOOK ---
 
 export function usePodcasts(language: string) {
   const qc = useQueryClient();
@@ -231,6 +399,7 @@ export function usePodcasts(language: string) {
   >({
     queryKey: queryKey, // Use the defined key variable
     queryFn: async ({ pageParam = 0 }) => {
+      // console.log(`Fetching podcasts page: ${pageParam / PAGE_SIZE}`);
       const { data, error, count } = await supabase
         .from("podcasts")
         .select("*", { count: "exact" })
@@ -242,6 +411,7 @@ export function usePodcasts(language: string) {
         console.error("Error fetching podcasts:", error);
         throw error;
       }
+      // console.log(`Fetched ${data?.length} podcasts. Total count: ${count}`);
       return data || [];
     },
     getNextPageParam: (lastPage, allPages) => {
@@ -276,7 +446,7 @@ export function usePodcasts(language: string) {
       const { data } = supabase.storage
         .from(BUCKET_NAME)
         .getPublicUrl(soundPath);
-
+      console.log(soundPath);
       if (!data?.publicUrl) {
         console.error(`Could not get public URL for path: ${soundPath}.`);
         return "";
@@ -319,6 +489,7 @@ export function usePodcasts(language: string) {
       });
     },
     onSuccess: (localUri, variables) => {
+      // console.log(`Successfully downloaded ${variables.soundPath} to ${localUri}`);
       qc.setQueryData(["download", variables.soundPath], {
         status: "done",
         uri: localUri,
@@ -326,10 +497,27 @@ export function usePodcasts(language: string) {
     },
   });
 
+  const getCachedUri = useCallback(
+    async (soundPath: string): Promise<string | null> => {
+      // 1) Compute the same filename
+      const rel = getSupabaseRelativePath(soundPath, BUCKET_NAME) || soundPath;
+      const filename =
+        rel.substring(rel.lastIndexOf("/") + 1).split("?")[0] ||
+        `download_${Date.now()}`;
+      const localUri = getCacheDirectory() + filename;
+
+      // 2) Check file existence
+      const info = await FileSystem.getInfoAsync(localUri);
+      return info.exists ? localUri : null;
+    },
+    []
+  );
+
   // --- RETURN VALUE ---
   return {
-    ...infiniteQuery, // Includes data, fetchNextPage, isLoading, error etc. for the list
+    ...infiniteQuery,
     stream: getPublicStreamUrl,
-    download: downloadMutation, // The mutation object itself { mutate, mutateAsync, status, error, data }
+    download: downloadMutation,
+    getCachedUri,
   };
 }
