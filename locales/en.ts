@@ -31,6 +31,8 @@ export const en = {
   settings: "Settings",
   questionScreenTitle: "Questions and Answers",
   prayerScreenTitle: "Prayers and more",
+  newsArticleScreenTitle: "Articles",
+  podcastScreenTitle: "Podcasts",
 
   // Database
   updateAvailable: "New update available",

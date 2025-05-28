@@ -13,7 +13,7 @@ const renderScene = SceneMap({
   prayerScreen: indexPrayer,
 });
 
-export default function TopNavigation() {
+export default function TopNavigationKnowledge() {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
   const colorScheme = useColorScheme() || "light";

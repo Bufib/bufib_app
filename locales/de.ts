@@ -31,6 +31,8 @@ export const de = {
   settings: "Einstellungen",
   questionScreenTitle: "Fragen und Antworten",
   prayerScreenTitle: "Gebete und mehr",
+  newsArticleScreenTitle: "Artikel",
+  podcastScreenTitle: "Podcasts",
 
   // Database
   updateAvailable: "Update Verfügbar",

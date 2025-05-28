@@ -1,14 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import TopNavigationFavorites from "@/components/TopNavigationFavorites";
 
 const index = () => {
-  return (
-    <View>
-      <Text>index</Text>
-    </View>
-  )
-}
+  return <TopNavigationFavorites />;
+};
 
-export default index
-
-const styles = StyleSheet.create({})
+export default index;

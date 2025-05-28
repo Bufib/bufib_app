@@ -31,6 +31,8 @@ export const ar = {
   settings: "إعدادات",
   questionScreenTitle: "أسئلة وأجوبة",
   prayerScreenTitle: "صلاة وأكثر",
+  newsArticleScreenTitle: "مقالات",
+  podcastScreenTitle: "بودكاست",
 
   // Database
   updateAvailable: "تحديث جديد متوفر",

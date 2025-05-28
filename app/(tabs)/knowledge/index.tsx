@@ -1,8 +1,8 @@
 import React from "react";
-import TopNavigation from "@/components/TopNavigation";
+import TopNavigationKnowledge from "@/components/TopNavigationKnowledge";
 
 const index = () => {
-  return <TopNavigation />;
+  return <TopNavigationKnowledge />;
 };
 
 export default index;
