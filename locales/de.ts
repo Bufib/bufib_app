@@ -24,6 +24,7 @@ export const de = {
   medium: "Mittel",
   large: "Groß",
   error: "Fehler",
+  favorites: "Favoriten",
 
   // Navigation
   knowledge: "Wissen",

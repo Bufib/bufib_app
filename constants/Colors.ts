@@ -89,5 +89,6 @@ export const Colors = {
     questionLinks: "#2ea853",
     prayerLinks: "#84CEEB",
     externalLinkIcon: "#057958",
+    favorite: "gold",
   },
 };

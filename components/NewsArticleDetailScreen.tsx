@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -13,17 +13,23 @@ import { useNewsArticles } from "@/hooks/useNewsArticles";
 import { NewsArticlesType } from "@/constants/Types";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { ThemedView } from "./ThemedView";
+import Entypo from "@expo/vector-icons/Entypo";
 import { useTranslation } from "react-i18next";
 import { LoadingIndicator } from "./LoadingIndicator";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { formattedDate } from "@/utils/formate";
 import AntDesign from "@expo/vector-icons/AntDesign";
+
 import FontSizePickerModal from "./FontSizePickerModal";
+import {
+  isNewsArticleFavorited,
+  toggleNewsArticleFavorite,
+} from "@/utils/favorites";
+import {} from "@/utils/bufibDatabase";
 export default function NewsArticleDetailScreen({
   articleId,
 }: {
-  articleId?: string;
+  articleId: number;
 }) {
   const { fetchNewsArticleById } = useNewsArticles();
   const { fontSize, lineHeight } = useFontSizeStore();
@@ -33,6 +39,8 @@ export default function NewsArticleDetailScreen({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showFontSizePickerModal, setShowFontSizePickerModal] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
   useEffect(() => {
     if (!articleId) {
       setError(t("errorLoadingArticle"));
@@ -44,7 +52,7 @@ export default function NewsArticleDetailScreen({
       setIsLoading(true);
       setError(null);
       try {
-        const fetchedArticle = await fetchNewsArticleById(parseInt(articleId));
+        const fetchedArticle = await fetchNewsArticleById(articleId);
         if (fetchedArticle) {
           setArticle(fetchedArticle);
         } else {
@@ -59,6 +67,24 @@ export default function NewsArticleDetailScreen({
     };
 
     loadArticle();
+  }, [articleId]);
+
+  // load favorite state
+  useEffect(() => {
+    (async () => {
+      try {
+        setIsFavorite(await isNewsArticleFavorited(articleId));
+      } catch {
+        /* ignore */
+      }
+    })();
+  }, [articleId]);
+
+  // ★ toggle handler updates local state
+  const onPressToggle = useCallback(() => {
+    toggleNewsArticleFavorite(articleId).then((newFav) => {
+      setIsFavorite(newFav);
+    });
   }, [articleId]);
 
   if (isLoading) {
@@ -114,14 +140,24 @@ export default function NewsArticleDetailScreen({
             <Ionicons
               name="text"
               size={30}
-              color={colorScheme === "dark" ? "#fff" : "#000"}
+              color={Colors[colorScheme].defaultIcon}
               onPress={() => setShowFontSizePickerModal(true)}
             />
-            <AntDesign
-              name="star"
-              size={30}
-              color={colorScheme === "dark" ? "#fff" : "#000"}
-            />
+            {isFavorite ? (
+              <AntDesign
+                name="star"
+                size={32}
+                color={Colors.universal.favorite}
+                onPress={() => onPressToggle()}
+              />
+            ) : (
+              <AntDesign
+                name="staro"
+                size={32}
+                color={Colors[colorScheme].defaultIcon}
+                onPress={() => onPressToggle()}
+              />
+            )}
           </View>
           <ThemedText type="title" style={styles.titleText}>
             {article.title}

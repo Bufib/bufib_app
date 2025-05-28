@@ -24,6 +24,8 @@ export const ar = {
   medium: "واسطة",
   large: "كبير",
   error: "خطأ",
+  favorites: "المفضلة",
+  
   // Navigation
   knowledge: "معرفة",
   settings: "إعدادات",

@@ -13,6 +13,8 @@ import handleOpenExternalUrl from "./handleOpenExternalUrl";
 import Constants from "expo-constants";
 import {
   FullPrayer,
+  NewsArticlesType,
+  PodcastType,
   PrayerCategoryType,
   PrayerType,
   PrayerWithCategory,
@@ -59,6 +61,7 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         title     TEXT    NOT NULL,
         parent_id TEXT    -- JSON array of numeric IDs, no FK
       );
+
       CREATE TABLE IF NOT EXISTS prayers (
         id                   INTEGER PRIMARY KEY,
         name                 TEXT    NOT NULL,
@@ -73,6 +76,7 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         created_at           TEXT    DEFAULT CURRENT_TIMESTAMP,
         updated_at           TEXT    DEFAULT CURRENT_TIMESTAMP
       );
+
       CREATE TABLE IF NOT EXISTS prayer_translations (
         id                      INTEGER PRIMARY KEY,
         prayer_id               INTEGER REFERENCES prayers(id),
@@ -85,11 +89,30 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         updated_at              TEXT    DEFAULT CURRENT_TIMESTAMP
       );
 
-      -- Favorites table
-      CREATE TABLE IF NOT EXISTS favorites (
-        question_id INTEGER UNIQUE REFERENCES questions(id),
-        added_at    TEXT DEFAULT CURRENT_TIMESTAMP
-      );
+    CREATE TABLE IF NOT EXISTS favorite_questions (  
+      id                INTEGER PRIMARY KEY,                                      
+      question_id        INTEGER NOT NULL REFERENCES questions(id) ON DELETE CASCADE UNIQUE, 
+      created_at         TEXT    DEFAULT CURRENT_TIMESTAMP                                                                   
+    );
+
+    CREATE TABLE IF NOT EXISTS favorite_prayers (  
+      id                  INTEGER PRIMARY KEY,                                           
+      prayer_id           INTEGER NOT NULL REFERENCES prayers(id) ON DELETE CASCADE UNIQUE,       
+      created_at          TEXT    DEFAULT CURRENT_TIMESTAMP                                                                   
+    );
+     
+
+    CREATE TABLE IF NOT EXISTS favorite_podcasts ( 
+      id                  INTEGER PRIMARY KEY,                                  
+      podcast_id    INTEGER NOT NULL REFERENCES podcasts(id) ON DELETE CASCADE UNIQUE,
+      created_at    TEXT    DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS favorite_newsarticles ( 
+      id                  INTEGER PRIMARY KEY,                                    
+      newsarticle_id    INTEGER NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE UNIQUE,
+      created_at        TEXT    DEFAULT CURRENT_TIMESTAMP
+    );
     `);
   }
   return dbInstance;
@@ -462,37 +485,6 @@ export const getQuestionCount = async (): Promise<number> => {
   }
 };
 
-export const addQuestionToFavorite = async (
-  questionId: number
-): Promise<void> => {
-  try {
-    const db = await getDatabase();
-    await db.runAsync(
-      `INSERT OR IGNORE INTO favorites (question_id) VALUES (?);`,
-      [questionId]
-    );
-    console.log(`Question ${questionId} added to favorites.`);
-  } catch (error) {
-    console.error("Error adding favorite:", error);
-    throw error;
-  }
-};
-
-export const removeQuestionFromFavorite = async (
-  questionId: number
-): Promise<void> => {
-  try {
-    const db = await getDatabase();
-    await db.runAsync(`DELETE FROM favorites WHERE question_id = ?;`, [
-      questionId,
-    ]);
-    console.log(`Question ${questionId} removed from favorites.`);
-  } catch (error) {
-    console.error("Error removing favorite:", error);
-    throw error;
-  }
-};
-
 export const isQuestionInFavorite = async (
   questionId: number
 ): Promise<boolean> => {
@@ -508,22 +500,6 @@ export const isQuestionInFavorite = async (
     return count > 0;
   } catch (error) {
     console.error("Error checking favorite status:", error);
-    throw error;
-  }
-};
-
-export const getFavoriteQuestions = async (): Promise<QuestionType[]> => {
-  try {
-    const db = await getDatabase();
-    const rows = await db.getAllAsync<QuestionType>(`
-      SELECT q.*
-      FROM questions q
-      INNER JOIN favorites f ON q.id = f.question_id
-      ORDER BY f.added_at DESC;
-    `);
-    return rows;
-  } catch (error) {
-    console.error("Error retrieving favorite questions:", error);
     throw error;
   }
 };
@@ -745,3 +721,171 @@ export async function getAllPrayersForArabic(
     [categoryId]
   );
 }
+
+/**
+ * Check whether a element is currently favorited.
+ */
+
+/**
+ * Check whether a given news-article is currently favorited.
+ */
+export const isNewsArticleFavorited = async (
+  articleId: number
+): Promise<boolean> => {
+  const db = await getDatabase();
+  try {
+    const row = await db.getFirstAsync<{ count: number }>(
+      `SELECT COUNT(*) AS count
+     FROM favorite_newsarticles
+     WHERE newsarticle_id = ?;`,
+      [articleId]
+    );
+    return (row?.count ?? 0) > 0;
+  } catch (error) {
+    console.log(error);
+  }
+  return false;
+};
+
+/**
+ * Check whether a given question is currently favorited.
+ */
+export const isQuestionFavorited = async (
+  questionId: number
+): Promise<boolean> => {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) AS count
+     FROM favorite_questions
+     WHERE question_id = ?;`,
+    [questionId]
+  );
+  return (row?.count ?? 0) > 0;
+};
+
+/**
+ * Check whether a given prayer is currently favorited.
+ */
+export const isPrayerFavorited = async (prayerId: number): Promise<boolean> => {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) AS count
+     FROM favorite_prayers
+     WHERE prayer_id = ?;`,
+    [prayerId]
+  );
+  return (row?.count ?? 0) > 0;
+};
+
+/**
+ * Check whether a given podcast is currently favorited.
+ */
+export const isPodcastFavorited = async (
+  podcastId: number
+): Promise<boolean> => {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) AS count
+     FROM favorite_podcasts
+     WHERE podcast_id = ?;`,
+    [podcastId]
+  );
+  return (row?.count ?? 0) > 0;
+};
+
+/**
+ * Fetch all favorited questions.
+ */
+export const getFavoriteQuestions = async (): Promise<QuestionType[]> => {
+  try {
+    const db = await getDatabase();
+    return await db.getAllAsync<QuestionType>(`
+      SELECT q.*
+      FROM questions   AS q
+      JOIN favorite_questions AS f
+        ON q.id = f.question_id
+      ORDER BY datetime(f.created_at) DESC;
+    `);
+  } catch (error) {
+    console.error("Error retrieving favorite questions:", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch all favorited prayers.
+ */
+export const getFavoritePrayers = async (): Promise<PrayerType[]> => {
+  try {
+    const db = await getDatabase();
+    return await db.getAllAsync<PrayerType>(`
+      SELECT p.*
+      FROM prayers     AS p
+      JOIN favorite_prayers   AS f
+        ON p.id = f.prayer_id
+      ORDER BY datetime(f.created_at) DESC;
+    `);
+  } catch (error) {
+    console.error("Error retrieving favorite prayers:", error);
+    throw error;
+  }
+};
+
+/**
+ * Toggle a question in favorites.
+ * @returns true if added, false if removed
+ */
+export const toggleQuestionFavorite = async (
+  questionId: number
+): Promise<boolean> => {
+  const db = await getDatabase();
+  // Check existence
+  const row = await db.getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) AS count FROM favorite_questions WHERE question_id = ?;`,
+    [questionId]
+  );
+  const exists = (row?.count ?? 0) > 0;
+
+  if (exists) {
+    // remove
+    await db.runAsync(`DELETE FROM favorite_questions WHERE question_id = ?;`, [
+      questionId,
+    ]);
+    return false;
+  } else {
+    // add
+    await db.runAsync(
+      `INSERT OR IGNORE INTO favorite_questions (question_id) VALUES (?);`,
+      [questionId]
+    );
+    return true;
+  }
+};
+
+/**
+ * Toggle a prayer in favorites.
+ * @returns true if added, false if removed
+ */
+export const togglePrayerFavorite = async (
+  prayerId: number
+): Promise<boolean> => {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) AS count FROM favorite_prayers WHERE prayer_id = ?;`,
+    [prayerId]
+  );
+  const exists = (row?.count ?? 0) > 0;
+
+  if (exists) {
+    await db.runAsync(`DELETE FROM favorite_prayers WHERE prayer_id = ?;`, [
+      prayerId,
+    ]);
+    return false;
+  } else {
+    await db.runAsync(
+      `INSERT OR IGNORE INTO favorite_prayers (prayer_id) VALUES (?);`,
+      [prayerId]
+    );
+    return true;
+  }
+};

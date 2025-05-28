@@ -40,6 +40,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="favorites"
+        options={{
+          title: i18n.t("favorites"),
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="star" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: i18n.t("settings"),
