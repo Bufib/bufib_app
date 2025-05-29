@@ -5,10 +5,10 @@ const _layout = () => {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="favoritesQuestions" options={{ headerShown: false }} />
-      <Stack.Screen name="favoritesNewsArticles" options={{ headerShown: false }} />
-      <Stack.Screen name="favoritesPodcasts" options={{ headerShown: false }} />
-      <Stack.Screen name="favoritesPrayers" options={{ headerShown: false }} />
+      <Stack.Screen name="favoriteQuestions" options={{ headerShown: false }} />
+      <Stack.Screen name="favoriteNewsArticles" options={{ headerShown: false }} />
+      <Stack.Screen name="favoritePodcasts" options={{ headerShown: false }} />
+      <Stack.Screen name="favoritePrayers" options={{ headerShown: false }} />
     </Stack>
   );
 };

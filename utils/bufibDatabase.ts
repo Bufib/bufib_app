@@ -727,27 +727,6 @@ export async function getAllPrayersForArabic(
  */
 
 /**
- * Check whether a given news-article is currently favorited.
- */
-export const isNewsArticleFavorited = async (
-  articleId: number
-): Promise<boolean> => {
-  const db = await getDatabase();
-  try {
-    const row = await db.getFirstAsync<{ count: number }>(
-      `SELECT COUNT(*) AS count
-     FROM favorite_newsarticles
-     WHERE newsarticle_id = ?;`,
-      [articleId]
-    );
-    return (row?.count ?? 0) > 0;
-  } catch (error) {
-    console.log(error);
-  }
-  return false;
-};
-
-/**
  * Check whether a given question is currently favorited.
  */
 export const isQuestionFavorited = async (
@@ -773,22 +752,6 @@ export const isPrayerFavorited = async (prayerId: number): Promise<boolean> => {
      FROM favorite_prayers
      WHERE prayer_id = ?;`,
     [prayerId]
-  );
-  return (row?.count ?? 0) > 0;
-};
-
-/**
- * Check whether a given podcast is currently favorited.
- */
-export const isPodcastFavorited = async (
-  podcastId: number
-): Promise<boolean> => {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) AS count
-     FROM favorite_podcasts
-     WHERE podcast_id = ?;`,
-    [podcastId]
   );
   return (row?.count ?? 0) > 0;
 };

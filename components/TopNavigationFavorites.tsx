@@ -1,20 +1,20 @@
 import * as React from "react";
 import { useWindowDimensions, useColorScheme } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import favoriteNewsArticles from "@/app/(tabs)/favorites/favoriteNewsArticles";
-import favoritePrayers from "@/app/(tabs)/favorites/favoritePrayers";
-import favoriteQuestions from "@/app/(tabs)/favorites/favoriteQuestions";
-import favoritesPodcasts from "@/app/(tabs)/favorites/favoritesPodcasts";
+import FavoriteNewsArticles from "@/app/(tabs)/favorites/favoriteNewsArticles";
+import FavoritePrayers from "@/app/(tabs)/favorites/favoritePrayers";
+import FavoriteQuestions from "@/app/(tabs)/favorites/favoriteQuestions";
+import FavoritePodcasts from "@/app/(tabs)/favorites/favoritePodcasts";
 import i18n from "@/utils/i18n";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 const renderScene = SceneMap({
-  favoriteNewsArticles: favoriteNewsArticles,
-  favoritePrayers: favoritePrayers,
-  favoriteQuestions: favoriteQuestions,
-  favoritesPodcasts: favoritesPodcasts,
+  favoriteNewsArticles: FavoriteNewsArticles,
+  favoritePrayers: FavoritePrayers,
+  favoriteQuestions: FavoriteQuestions,
+  favoritesPodcasts: FavoritePodcasts,
 });
 
 export default function TopNavigationFavorites() {

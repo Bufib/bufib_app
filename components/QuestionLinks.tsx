@@ -4,6 +4,7 @@ import {
   StyleSheet,
   useWindowDimensions,
   TouchableOpacity,
+  Text,
 } from "react-native";
 import { router } from "expo-router";
 import { Image } from "expo-image";
@@ -17,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { ThemedView } from "./ThemedView";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function QuestionLinks() {
   const { width, height } = useWindowDimensions();
@@ -143,6 +145,13 @@ export default function QuestionLinks() {
         </View>
         <LatestQuestions />
       </View>
+      <TouchableOpacity style={styles.askQuestionButton}>
+        <MaterialCommunityIcons
+          name="chat-question-outline"
+          size={50}
+          color="#fff"
+        />
+      </TouchableOpacity>
     </ThemedView>
   );
 }
@@ -248,4 +257,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   footerHeaderContainerText: {},
+  askQuestionButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 80,
+    height: 80,
+    backgroundColor: Colors.universal.primary,
+    borderRadius: 10,
+    position: "absolute",
+    bottom: "15%",
+    right: "5%",
+  },
 });

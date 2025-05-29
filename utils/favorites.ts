@@ -1,14 +1,14 @@
-// utils/favorites.ts
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const NEWS_KEY    = "favorite_newsarticles";
+const NEWS_KEY = "favorite_newsarticles";
 const PODCAST_KEY = "favorite_podcasts";
 
-// Generic getters/setters
+
 async function getIds(key: string): Promise<number[]> {
   const json = await AsyncStorage.getItem(key);
   return json ? JSON.parse(json) : [];
 }
+
 async function setIds(key: string, ids: number[]) {
   await AsyncStorage.setItem(key, JSON.stringify(ids));
 }
@@ -38,6 +38,10 @@ export async function toggleNewsArticleFavorite(id: number): Promise<boolean> {
   return favorited;
 }
 
+export async function getFavoriteNewsArticle(): Promise<number[]> {
+  return getIds(NEWS_KEY);
+}
+
 // Podcasts
 export async function isPodcastFavorited(id: number): Promise<boolean> {
   const ids = await getIds(PODCAST_KEY);
@@ -61,4 +65,8 @@ export async function togglePodcastFavorite(id: number): Promise<boolean> {
 
   await setIds(PODCAST_KEY, newIds);
   return favorited;
+}
+
+export async function getFavoritePodcasts(): Promise<number[]> {
+  return getIds(PODCAST_KEY);
 }
