@@ -4,7 +4,7 @@ import React from 'react'
 const favoritePodcasts = () => {
   return (
     <View>
-      <Text>favoritesPodcasts</Text>
+      <Text>favoritePodcasts</Text>
     </View>
   )
 }

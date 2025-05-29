@@ -114,7 +114,7 @@ export default function HomeScreen() {
                     item.is_external_link
                       ? handleOpenExternalUrl(item.external_link_url || "")
                       : router.push({
-                          pathname: "/(tabs)/home/newsArticle",
+                          pathname: "/(newsArticle)",
                           params: {
                             articleId: item.id,
                           },

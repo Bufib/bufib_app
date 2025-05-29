@@ -24,8 +24,10 @@ import FontSizePickerModal from "./FontSizePickerModal";
 import {
   isNewsArticleFavorited,
   toggleNewsArticleFavorite,
+  favoriteNewsArticleTriggerAtom,
 } from "@/utils/favorites";
 import {} from "@/utils/bufibDatabase";
+import { useAtom } from "jotai";
 export default function NewsArticleDetailScreen({
   articleId,
 }: {
@@ -40,7 +42,7 @@ export default function NewsArticleDetailScreen({
   const [error, setError] = useState<string | null>(null);
   const [showFontSizePickerModal, setShowFontSizePickerModal] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-
+  const [, setFavoriteTrigger] = useAtom(favoriteNewsArticleTriggerAtom);
   useEffect(() => {
     if (!articleId) {
       setError(t("errorLoadingArticle"));
@@ -81,11 +83,17 @@ export default function NewsArticleDetailScreen({
   }, [articleId]);
 
   // ★ toggle handler updates local state
-  const onPressToggle = useCallback(() => {
-    toggleNewsArticleFavorite(articleId).then((newFav) => {
-      setIsFavorite(newFav);
-    });
-  }, [articleId]);
+  const onPressToggle = useCallback(async () => {
+    if (!articleId) return;
+
+    try {
+      const newFavStatus = await toggleNewsArticleFavorite(articleId);
+      setIsFavorite(newFavStatus);
+      setFavoriteTrigger((prevCount) => prevCount + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [articleId, setFavoriteTrigger]);
 
   if (isLoading) {
     return (

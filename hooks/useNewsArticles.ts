@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/utils/supabase";
 import { NewsArticlesType } from "@/constants/Types";
@@ -41,10 +41,9 @@ export function useNewsArticles() {
   });
 
   // Function to fetch a single news article by ID
-  const fetchNewsArticleById = async (
+  const fetchNewsArticleById = useCallback(async ( 
     id: number
   ): Promise<NewsArticlesType | null> => {
-    // Attempt to find the article in the existing cache first
     const cachedData =
       queryClient.getQueryData<InfiniteData<NewsArticlesType[]>>(queryKey);
     if (cachedData) {
@@ -61,19 +60,19 @@ export function useNewsArticles() {
       .from("news_articles")
       .select("*")
       .eq("id", id)
-      .single(); // .single() is important for fetching one record
+      .single();
 
     if (error) {
       console.error("Error fetching single news article:", error);
-      throw error; // Or handle error as you see fit
+      throw error;
     }
 
     if (!data) {
-      return null; // Or handle not found case
+      return null;
     }
 
     return data as NewsArticlesType;
-  };
+  }, [queryClient, queryKey]); 
 
   return { ...infiniteQuery, fetchNewsArticleById };
 }
