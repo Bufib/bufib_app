@@ -111,6 +111,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
 
     try {
       const publicUrl = stream(podcast.filename);
+      console.log("→ streaming URL:", publicUrl);
       if (!publicUrl) {
         setPlayerError("Failed to get streaming URL.");
       } else {
@@ -241,7 +242,12 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
 
         {status.isLoaded && (
           <View style={{ flexDirection: "row", gap: 10 }}>
-            <Text style={[styles.descriptionText, { fontWeight: 600, color: Colors.universal.primary}]}>
+            <Text
+              style={[
+                styles.descriptionText,
+                { fontWeight: 600, color: Colors.universal.primary },
+              ]}
+            >
               {formatTime(status?.duration)} min
             </Text>
             <AntDesign
@@ -313,7 +319,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
       )}
 
       {/* *** Main *** */}
-      {showPlaybackControls && !playerError && (
+      {showPlaybackControls && !playerError && status?.isLoaded && (
         <View style={styles.mainComponentsContainer}>
           <Image
             source={require("@/assets/images/logo.png")}
@@ -329,16 +335,15 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
           </View>
           <Slider
             style={styles.slider}
-            value={status?.currentTime ?? 0} // Current position
+            value={Math.min(status.currentTime || 0, status.duration || 0)}
             minimumValue={0}
-            maximumValue={status?.duration ?? 1} // Total duration (use 1 as fallback)
-            // Use onSlidingStart/Complete to avoid seeking too often during drag
-            onSlidingStart={() => setIsSeeking(true)} // Optional: Indicate seeking start
-            onSlidingComplete={handleSeek} // Seek when user releases slider
-            minimumTrackTintColor="#3b82f6" // Example color
-            maximumTrackTintColor="#d1d5db" // Example color
-            thumbTintColor="#3b82f6" // Example color
-            disabled={controlsDisabled || !status?.duration} // Disable if controls are disabled or duration unknown
+            maximumValue={status.duration || 0}
+            onSlidingStart={() => setIsSeeking(true)}
+            onSlidingComplete={handleSeek}
+            minimumTrackTintColor="#3b82f6"
+            maximumTrackTintColor="#d1d5db"
+            thumbTintColor="#3b82f6"
+            disabled={controlsDisabled}
           />
 
           <View style={styles.controls}>
