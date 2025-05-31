@@ -40,7 +40,6 @@ export type NewsType = {
   external_urls?: string[];
   internal_urls?: string[];
   language_code: string;
-
 };
 
 export type NewsCardType = {
@@ -327,16 +326,18 @@ export type TodoToDeleteType = {
 };
 
 // Podcasts
-export interface PodcastType {
-  id: number;
-  title: string;
-  language_code: string;
-  description: string;
-  sound_path: string;
-}
+export type PodcastType = {
+  id: number; 
+  title: string; 
+  description: string; 
+  filename: string; 
+  language_code?: string; 
+  published_at: string; 
+  created_at: string; 
+};
+
 
 export type PodcastProps = { podcast: PodcastType };
 export type PodcastPlayerPropsType = {
   podcast: PodcastType;
-}
-
+};

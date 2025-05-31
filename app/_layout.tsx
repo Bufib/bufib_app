@@ -40,6 +40,7 @@ import AppReviewPrompt from "@/components/AppReviewPrompt";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cleanupCache } from "@/hooks/usePodcasts";
 
+//! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
 if (typeof (BackHandler as any).removeEventListener !== "function") {
   ;(BackHandler as any).removeEventListener = (eventName: any, handler: () => boolean) => {

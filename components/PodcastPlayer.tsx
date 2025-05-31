@@ -23,7 +23,7 @@ import { Image } from "expo-image";
 export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   podcast,
 }) => {
-  const { stream, download, getCachedUri } = usePodcasts(podcast.language_code);
+  const { stream, download, getCachedUri } = usePodcasts();
 
   const [sourceUri, setSourceUri] = useState<string | null>(null);
   const [isPreparingStream, setIsPreparingStream] = useState(false);
@@ -47,13 +47,13 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
     setWantsPlay(false);
 
     (async () => {
-      if (!podcast.sound_path) return;
-      const uri = await getCachedUri(podcast.sound_path);
+      if (!podcast.filename) return;
+      const uri = await getCachedUri(podcast.filename);
       if (uri) {
         setSourceUri(uri);
       }
     })();
-  }, [podcast.id, podcast.sound_path]);
+  }, [podcast.id, podcast.filename]);
 
   // Disable looping
   useEffect(() => {
@@ -100,7 +100,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
 
   // Stream handler
   const handleStream = useCallback(() => {
-    if (!podcast.sound_path) {
+    if (!podcast.filename) {
       setPlayerError("Audio path missing.");
       return;
     }
@@ -110,7 +110,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
     setDidInitiatePlayback(false);
 
     try {
-      const publicUrl = stream(podcast.sound_path);
+      const publicUrl = stream(podcast.filename);
       if (!publicUrl) {
         setPlayerError("Failed to get streaming URL.");
       } else {
@@ -124,11 +124,11 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
     } finally {
       setIsPreparingStream(false);
     }
-  }, [podcast.sound_path, stream]);
+  }, [podcast.filename, stream]);
 
   // Download & play handler
   const handleDownloadAndPlay = useCallback(async () => {
-    if (!podcast.sound_path) {
+    if (!podcast.filename) {
       setPlayerError("Audio path missing.");
       return;
     }
@@ -139,7 +139,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
 
     try {
       const localUri = await download.mutateAsync({
-        soundPath: podcast.sound_path,
+        filename: podcast.filename,
         onProgress: setDownloadProgress,
       });
       setSourceUri(localUri);
@@ -150,7 +150,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
       setPlayerError(`Download failed: ${errorMsg}`);
       setDownloadProgress(0);
     }
-  }, [podcast.sound_path, download]);
+  }, [podcast.filename, download]);
 
   // Playback controls
   const togglePlayPause = useCallback(() => {
