@@ -1,68 +1,5 @@
-// // app/_layout.tsx
-// import "@/utils/i18n"; // initialize i18next
-// import React, { useEffect } from "react";
-// import {
-//   ThemeProvider,
-//   DarkTheme,
-//   DefaultTheme,
-// } from "@react-navigation/native";
-// import { Stack } from "expo-router";
-// import * as SplashScreen from "expo-splash-screen";
-// import { StatusBar } from "expo-status-bar";
-// import "react-native-reanimated";
-// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { useColorScheme } from "@/hooks/useColorScheme";
-// import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
-// import LanguageSelection from "@/components/LanguageSelectionScreen";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import Toast from "react-native-toast-message";
+import { BackHandler } from "react-native";
 
-// const queryClient = new QueryClient();
-
-// function AppContent() {
-//   const colorScheme = useColorScheme();
-//   const { ready, language } = useLanguage();
-
-//   useEffect(() => {
-//     if (ready) {
-//       SplashScreen.hideAsync();
-//     }
-//   }, [ready]);
-
-//   // keep native splash visible until i18n + storage are ready
-//   if (!ready) {
-//     return null;
-//   }
-
-//   // on first run, show the picker
-//   if (!language) {
-//     return <LanguageSelection />;
-//   }
-
-//   // language chosen → render your app
-//   return (
-//     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-//       <QueryClientProvider client={queryClient}>
-//         <Stack>
-//           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-//           <Stack.Screen name="+not-found" />
-//         </Stack>
-//         <StatusBar style="auto" />
-//       </QueryClientProvider>
-//       <Toast />
-//     </ThemeProvider>
-//   );
-// }
-
-// export default function RootLayout() {
-//   return (
-//     <LanguageProvider>
-//       <AppContent />
-//     </LanguageProvider>
-//   );
-// }
-
-// app/_layout.tsx
 import "@/utils/i18n"; // initialize i18next (from Code 2)
 import React, { useEffect, useState } from "react";
 import {
@@ -85,12 +22,11 @@ import {
   Platform,
   View,
   Text,
-} from "react-native"; // From Code 1 & general RN
+} from "react-native";
 
-// Imports from Code 1
 import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
 import { SQLiteProvider } from "expo-sqlite";
-import { Storage } from "expo-sqlite/kv-store"; // For theme persistence
+import { Storage } from "expo-sqlite/kv-store";
 import { useAuthStore } from "@/stores/authStore";
 import { NoInternet } from "@/components/NoInternet";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -103,6 +39,15 @@ import { Colors } from "@/constants/Colors"; // For loading screen
 import AppReviewPrompt from "@/components/AppReviewPrompt";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cleanupCache } from "@/hooks/usePodcasts";
+
+// If removeEventListener doesn’t exist, patch it on-the-fly:
+if (typeof (BackHandler as any).removeEventListener !== "function") {
+  ;(BackHandler as any).removeEventListener = (eventName: any, handler: () => boolean) => {
+    // Create a dummy subscription and immediately remove it.
+    const subscription = BackHandler.addEventListener(eventName, handler);
+    subscription.remove();
+  };
+}
 
 // Prevent the splash screen from auto-hiding before asset loading is complete. (From Code 1)
 SplashScreen.preventAutoHideAsync();
@@ -250,8 +195,8 @@ function AppContent() {
   // Run cleanup once on app mount
   useEffect(() => {
     console.log("Running cache cleanup on App mount...");
-    cleanupCache().catch(console.warn); 
-  }, []); 
+    cleanupCache().catch(console.warn);
+  }, []);
 
   // //! Store push token (from Code 1, kept commented)
   // useEffect(() => {
