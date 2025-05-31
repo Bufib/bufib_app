@@ -160,7 +160,7 @@ const useNotificationStore = create<NotificationState>()(
               const userId = useAuthStore.getState().session?.user?.id;
               if (userId) {
                 await Promise.all([
-                  supabase.from("user_token").delete().eq("user_id", userId),
+                  supabase.from("user_tokens").delete().eq("user_id", userId),
                   supabase
                     .from("pending_notification")
                     .delete()
