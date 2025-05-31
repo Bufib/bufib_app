@@ -2,7 +2,6 @@ import { StyleSheet, Text, useColorScheme, View } from "react-native";
 import React from "react";
 import { router, Stack } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-
 const _layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
