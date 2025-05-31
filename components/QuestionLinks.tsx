@@ -145,7 +145,7 @@ export default function QuestionLinks() {
         </View>
         <LatestQuestions />
       </View>
-      <TouchableOpacity style={styles.askQuestionButton}>
+      <TouchableOpacity style={styles.askQuestionButton} onPress={()=> router.push("/(askQuestion)/")}>
         <MaterialCommunityIcons
           name="chat-question-outline"
           size={50}
@@ -258,14 +258,14 @@ const styles = StyleSheet.create({
   },
   footerHeaderContainerText: {},
   askQuestionButton: {
+    position: "absolute",
+    bottom: "15%",
+    right: "5%",
     justifyContent: "center",
     alignItems: "center",
     width: 80,
     height: 80,
     backgroundColor: Colors.universal.primary,
     borderRadius: 10,
-    position: "absolute",
-    bottom: "15%",
-    right: "5%",
   },
 });

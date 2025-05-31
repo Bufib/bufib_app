@@ -31,7 +31,7 @@ export default function RootLayout() {
                   onPress={() =>
                     router.canGoBack()
                       ? router.back()
-                      : router.replace("/(tabs)/home/")
+                      : router.replace("/(tabs)/knowledge/(questions)/indexQuestion.tsx")
                   }
                 />
               );
@@ -39,7 +39,7 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
-          name="askQuestion"
+          name="ask"
           options={{ headerShown: true, headerTitle: "" }}
         />
         <Stack.Screen

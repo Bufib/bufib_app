@@ -37,7 +37,7 @@ export default function QuestionsList() {
   // 2. If not logged in, redirect to login
   useEffect(() => {
     if (!isLoggedIn) {
-      router.push("/(auth)/login");
+      router.replace("/(auth)/login");
     }
   }, [isLoggedIn, session]);
 
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   },
   questionText: {
     fontSize: 14,
-    color: Colors.universal.questionBoxQuestionText,
+    color: Colors.universal.primary,
     marginBottom: 12,
   },
   questionFooter: {
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   createdAtText: {
-    color: Colors.universal.fadeColor,
+    color: Colors.universal.grayedOut,
   },
   emptyContainer: {
     alignItems: "center",
