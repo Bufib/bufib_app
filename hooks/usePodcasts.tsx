@@ -842,13 +842,13 @@ export function usePodcasts() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // --- 2) Run one cache cleanup on mount (optional) ---
-  useEffect(() => {
-    if (!didInitialCleanup.current) {
-      cleanupCache().catch(console.warn);
-      didInitialCleanup.current = true;
-    }
-  }, []);
+  // //! --- 2) Run one cache cleanup on mount (optional) ---
+  // useEffect(() => {
+  //   if (!didInitialCleanup.current) {
+  //     cleanupCache().catch(console.warn);
+  //     didInitialCleanup.current = true;
+  //   }
+  // }, []);
 
   // --- 3) Real-time subscription to INSERT, UPDATE, DELETE on `episodes` ---
   useEffect(() => {

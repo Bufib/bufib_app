@@ -24,10 +24,9 @@ import FontSizePickerModal from "./FontSizePickerModal";
 import {
   isNewsArticleFavorited,
   toggleNewsArticleFavorite,
-  favoriteNewsArticleTriggerAtom,
 } from "@/utils/favorites";
 import {} from "@/utils/bufibDatabase";
-import { useAtom } from "jotai";
+import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 export default function NewsArticleDetailScreen({
   articleId,
 }: {
@@ -42,7 +41,8 @@ export default function NewsArticleDetailScreen({
   const [error, setError] = useState<string | null>(null);
   const [showFontSizePickerModal, setShowFontSizePickerModal] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [, setFavoriteTrigger] = useAtom(favoriteNewsArticleTriggerAtom);
+  const { triggerRefreshFavorites } = useRefreshFavorites();
+
   useEffect(() => {
     if (!articleId) {
       setError(t("errorLoadingArticle"));
@@ -89,11 +89,11 @@ export default function NewsArticleDetailScreen({
     try {
       const newFavStatus = await toggleNewsArticleFavorite(articleId);
       setIsFavorite(newFavStatus);
-      setFavoriteTrigger((prevCount) => prevCount + 1);
+      triggerRefreshFavorites();
     } catch (error) {
       console.log(error);
     }
-  }, [articleId, setFavoriteTrigger]);
+  }, [articleId, triggerRefreshFavorites]);
 
   if (isLoading) {
     return (

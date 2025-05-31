@@ -145,8 +145,9 @@ export default function CategoryScreen() {
   };
 
   const handlePrayerPress = (prayer: PrayerWithCategory) => {
+    console.log("Press")
     router.push({
-      pathname: "/[prayer]",
+      pathname: "/(displayPrayer)/[prayer]",
       params: { prayer: prayer.id.toString() },
     });
   };
@@ -305,7 +306,7 @@ export default function CategoryScreen() {
                         ]}
                         numberOfLines={1}
                       >
-                        {prayer.name}
+                        {prayer.title}
                       </ThemedText>
                     </View>
                   </View>

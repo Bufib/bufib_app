@@ -152,8 +152,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { NewsArticlesType } from "@/constants/Types";
 import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
-import { useAtom } from "jotai";
-import { favoriteNewsArticleTriggerAtom } from "@/utils/favorites";
+import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 
 const FavoriteNewsArticles = () => {
   const [articles, setArticles] = useState<NewsArticlesType[]>([]);
@@ -161,9 +160,9 @@ const FavoriteNewsArticles = () => {
   const [error, setError] = useState<string | null>(null);
   const { fetchNewsArticleById } = useNewsArticles();
   const colorScheme = useColorScheme() || "light";
+  const { refreshTriggerFavorites } = useRefreshFavorites();
 
-  const [favoriteTrigger] = useAtom(favoriteNewsArticleTriggerAtom); // Subscribe to the trigger atom's value
-
+  
   const loadFavorites = useCallback(async () => {
     console.log(
       "FavoriteNewsArticles: Reloading favorites due to trigger change or mount."
@@ -188,7 +187,7 @@ const FavoriteNewsArticles = () => {
 
   useEffect(() => {
     loadFavorites();
-  }, [favoriteTrigger, loadFavorites]); 
+  }, [refreshTriggerFavorites, loadFavorites]);
 
   if (isLoading) {
     return (

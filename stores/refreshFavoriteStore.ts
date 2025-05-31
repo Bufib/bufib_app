@@ -1,11 +1,8 @@
+import { triggerRefreshFavoritesType } from "@/constants/Types";
 import { create } from "zustand";
 
-interface FavoritesState {
-  refreshTriggerFavorites: number;
-  triggerRefreshFavorites: () => void;
-}
 
-export const useRefreshFavorites = create<FavoritesState>((set) => ({
+export const useRefreshFavorites = create<triggerRefreshFavoritesType>((set) => ({
   refreshTriggerFavorites: 0,
   triggerRefreshFavorites: () =>
     set((state) => ({

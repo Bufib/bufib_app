@@ -1,14 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import RenderFavoriteQuestions from "@/components/RenderFavoriteQuestions";
 
 const favoriteQuestions = () => {
-  return (
-    <View>
-      <Text>favoriteQuestions</Text>
-    </View>
-  )
-}
+  return <RenderFavoriteQuestions />;
+};
 
-export default favoriteQuestions
 
-const styles = StyleSheet.create({})
+export default favoriteQuestions;

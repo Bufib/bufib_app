@@ -325,6 +325,10 @@ function AppContent() {
                     options={{ headerShown: false }}
                   />
                   <Stack.Screen
+                    name="(displayPrayer)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
                     name="(askQuestion)"
                     options={{ headerShown: false }}
                   />

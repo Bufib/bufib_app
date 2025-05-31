@@ -71,13 +71,9 @@
 
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { atom } from "jotai"; 
 const NEWS_KEY = "favorite_newsarticles";
 const PODCAST_KEY = "favorite_podcasts";
 
-// These atoms will act as triggers. Components will listen to them.
-export const favoriteNewsArticleTriggerAtom = atom(0);
-export const favoritePodcastTriggerAtom = atom(0); // Use a separate trigger for podcasts
 
 async function getIds(key: string): Promise<number[]> {
   try {

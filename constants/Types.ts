@@ -57,6 +57,11 @@ export type Sizes = {
   gap: number;
 };
 
+export type triggerRefreshFavoritesType = {
+  refreshTriggerFavorites: number;
+  triggerRefreshFavorites: () => void;
+}
+
 // Prayer and Question ButtonLinks
 export type PrayerQuestionLinksType = {
   id: number;
@@ -341,3 +346,6 @@ export type PodcastProps = { podcast: PodcastType };
 export type PodcastPlayerPropsType = {
   podcast: PodcastType;
 };
+
+
+

@@ -21,7 +21,6 @@ import {
 } from "react-native";
 import {
   getPrayerWithTranslations,
-  // Removed favorite-related imports
 } from "@/utils/bufibDatabase";
 import { PrayerType, PrayerWithTranslationType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -38,9 +37,7 @@ import { FlashList } from "@shopify/flash-list";
 import { Stack } from "expo-router";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
-// Removed CategoryPickerModal import
 import { Storage } from "expo-sqlite/kv-store";
-// Removed useRefreshFavorites import
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
@@ -81,7 +78,6 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   const { t } = i18n;
   const { language } = useLanguage();
   const flashListRef = useRef<FlashList<any>>(null);
-  // Removed triggerRefreshFavorites
 
   const [scrollOffset, setScrollOffset] = useState(0);
   const showScrollUp = scrollOffset > 50;
@@ -230,7 +226,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
-      <Stack.Screen options={{ headerTitle: prayer.name }} />
+      <Stack.Screen options={{ headerTitle: prayer.name, headerBackTitle: t("back")}} />
 
       {/* Header Buttons */}
       <View
@@ -396,14 +392,14 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                 <Octicons
                   name="bookmark-slash"
                   size={20}
-                  color={Colors[colorScheme].iconDefault}
+                  color={Colors[colorScheme].defaultIcon}
                   onPress={() => handleBookmark(idx + 1)}
                 />
               ) : (
                 <Octicons
                   name="bookmark"
                   size={20}
-                  color={Colors[colorScheme].iconDefault}
+                  color={Colors[colorScheme].defaultIcon}
                   onPress={() => handleBookmark(idx + 1)}
                 />
               )}

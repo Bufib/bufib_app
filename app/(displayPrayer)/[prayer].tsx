@@ -1,15 +1,16 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
 import RenderPrayer from "@/components/RenderPrayer";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 const prayer = () => {
   const params = useLocalSearchParams();
   const prayerID = Array.isArray(params.prayer)
     ? params.prayer[0]
     : params.prayer;
+  const { t } = useTranslation();
 
-  console.log(prayerID);
   return (
     <View style={styles.container}>
       <RenderPrayer prayerID={parseInt(prayerID)} />

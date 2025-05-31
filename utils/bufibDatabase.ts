@@ -95,12 +95,19 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
       created_at         TEXT    DEFAULT CURRENT_TIMESTAMP                                                                   
     );
 
+      CREATE INDEX IF NOT EXISTS idx_fav_questions_question_id 
+        ON favorite_questions(question_id);
+
+
     CREATE TABLE IF NOT EXISTS favorite_prayers (  
       id                  INTEGER PRIMARY KEY,                                           
       prayer_id           INTEGER NOT NULL REFERENCES prayers(id) ON DELETE CASCADE UNIQUE,       
       created_at          TEXT    DEFAULT CURRENT_TIMESTAMP                                                                   
     );
      
+    CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
+      ON favorite_prayers(prayer_id);
+
 
     CREATE TABLE IF NOT EXISTS favorite_podcasts ( 
       id                  INTEGER PRIMARY KEY,                                  
@@ -492,12 +499,14 @@ export const isQuestionInFavorite = async (
     const db = await getDatabase();
     const result = await db.getFirstAsync<{ count: number }>(
       `
-      SELECT COUNT(*) as count FROM favorites WHERE question_id = ?;
+      SELECT COUNT(*) as count FROM favorite_questions WHERE question_id = ?;
     `,
       [questionId]
     );
-    const count = result?.count ?? 0;
-    return count > 0;
+    if (result && result.count !== undefined) {
+      return result.count > 0;
+    }
+    return false;
   } catch (error) {
     console.error("Error checking favorite status:", error);
     throw error;
@@ -745,15 +754,26 @@ export const isQuestionFavorited = async (
 /**
  * Check whether a given prayer is currently favorited.
  */
-export const isPrayerFavorited = async (prayerId: number): Promise<boolean> => {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) AS count
-     FROM favorite_prayers
-     WHERE prayer_id = ?;`,
-    [prayerId]
-  );
-  return (row?.count ?? 0) > 0;
+
+export const isPrayerFavorited = async (
+  questionId: number
+): Promise<boolean> => {
+  try {
+    const db = await getDatabase();
+    const result = await db.getFirstAsync<{ count: number }>(
+      `
+      SELECT COUNT(*) as count FROM favorite_prayers WHERE question_id = ?;
+    `,
+      [questionId]
+    );
+    if (result && result.count !== undefined) {
+      return result.count > 0;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error checking favorite status:", error);
+    throw error;
+  }
 };
 
 /**
