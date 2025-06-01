@@ -347,7 +347,6 @@ function AppContent() {
 }
 
 export default function RootLayout() {
-  // Root layout structure from Code 2
   return (
     <LanguageProvider>
       <AppContent />

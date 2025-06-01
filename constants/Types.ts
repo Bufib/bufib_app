@@ -68,7 +68,15 @@ export type PrayerQuestionLinksType = {
   name: string;
   image: any;
   value: string;
+  
 };
+
+export type FavoritePrayerFolderType = {
+  name: string;
+  color: string;
+  prayerCount: number;
+}
+
 // Answers table
 export type AnswerType = {
   id: number;
@@ -346,6 +354,5 @@ export type PodcastProps = { podcast: PodcastType };
 export type PodcastPlayerPropsType = {
   podcast: PodcastType;
 };
-
 
 

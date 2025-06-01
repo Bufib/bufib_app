@@ -12,6 +12,7 @@ import { Alert, Platform } from "react-native";
 import handleOpenExternalUrl from "./handleOpenExternalUrl";
 import Constants from "expo-constants";
 import {
+  FavoritePrayerFolderType,
   FullPrayer,
   NewsArticlesType,
   PodcastType,
@@ -99,27 +100,18 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         ON favorite_questions(question_id);
 
 
-    CREATE TABLE IF NOT EXISTS favorite_prayers (  
-      id                  INTEGER PRIMARY KEY,                                           
-      prayer_id           INTEGER NOT NULL REFERENCES prayers(id) ON DELETE CASCADE UNIQUE,       
-      created_at          TEXT    DEFAULT CURRENT_TIMESTAMP                                                                   
+      CREATE TABLE IF NOT EXISTS favorite_prayers (
+        id            INTEGER PRIMARY KEY,
+        prayer_id     INTEGER NOT NULL REFERENCES prayers(id) ON DELETE CASCADE,
+        folder_name   TEXT NOT NULL,
+        folder_color  TEXT NOT NULL,
+        created_at    TEXT    DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(prayer_id, folder_name)  -- so you can still insert the same prayer into different folders
     );
      
     CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
       ON favorite_prayers(prayer_id);
 
-
-    CREATE TABLE IF NOT EXISTS favorite_podcasts ( 
-      id                  INTEGER PRIMARY KEY,                                  
-      podcast_id    INTEGER NOT NULL REFERENCES podcasts(id) ON DELETE CASCADE UNIQUE,
-      created_at    TEXT    DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS favorite_newsarticles ( 
-      id                  INTEGER PRIMARY KEY,                                    
-      newsarticle_id    INTEGER NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE UNIQUE,
-      created_at        TEXT    DEFAULT CURRENT_TIMESTAMP
-    );
     `);
   }
   return dbInstance;
@@ -762,7 +754,7 @@ export const isPrayerFavorited = async (
     const db = await getDatabase();
     const result = await db.getFirstAsync<{ count: number }>(
       `
-      SELECT COUNT(*) as count FROM favorite_prayers WHERE question_id = ?;
+      SELECT COUNT(*) as count FROM favorite_prayers WHERE prayer_id = ?;
     `,
       [questionId]
     );
@@ -796,6 +788,40 @@ export const getFavoriteQuestions = async (): Promise<QuestionType[]> => {
 };
 
 /**
+ * Fetch all distinct folder_name + folder_color entries from favorite_prayers,
+ * along with the number of prayers in each folder.
+ */
+export const getFavoritePrayerFolders = async (): Promise<FavoritePrayerFolderType[]> => {
+  try {
+    const db = await getDatabase();
+    const rows = await db.getAllAsync<{
+      folder_name: string;
+      folder_color: string;
+      cnt: number;
+    }>(
+      `
+      SELECT
+        folder_name,
+        folder_color,
+        COUNT(*) AS cnt
+      FROM favorite_prayers
+      GROUP BY folder_name, folder_color
+      ORDER BY LOWER(folder_name);
+      `
+    );
+
+    return rows.map((r) => ({
+      name: r.folder_name,
+      color: r.folder_color,
+      prayerCount: r.cnt,
+    }));
+  } catch (error) {
+    console.error("Error fetching favorite‐prayer folders:", error);
+    throw error;
+  }
+};
+
+/**
  * Fetch all favorited prayers.
  */
 export const getFavoritePrayers = async (): Promise<PrayerType[]> => {
@@ -812,6 +838,28 @@ export const getFavoritePrayers = async (): Promise<PrayerType[]> => {
     console.error("Error retrieving favorite prayers:", error);
     throw error;
   }
+};
+
+// (2) “Create” a folder (just return the object; actual insertion happens in addPrayerToFolder)
+export const createFolder = async (name: string, color: string): Promise<{ name: string; color: string }> => {
+  // No DB write here—just return the name/color pair. 
+  // The call to `addPrayerToFolder()` below will insert into favorite_prayers.
+  return { name, color };
+};
+
+// (3) Add a prayer into a folder in favorite_prayers
+export const addPrayerToFolder = async (
+  prayerId: number,
+  folder: { name: string; color: string }
+): Promise<void> => {
+  const db = await getDatabase();
+  await db.runAsync(
+    `
+    INSERT OR IGNORE INTO favorite_prayers (prayer_id, folder_name, folder_color)
+    VALUES (?, ?, ?);
+    `,
+    [prayerId, folder.name, folder.color]
+  );
 };
 
 /**

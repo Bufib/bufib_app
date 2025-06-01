@@ -1,259 +1,329 @@
+import React, { useEffect, useState, useRef, useMemo } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetFlatList,
+} from "@gorhom/bottom-sheet";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
+import {
+  getFavoritePrayerFolders,
+  createFolder,
+  addPrayerToFolder,
+} from "@/utils/bufibDatabase";
+import { FavoritePrayerFolderType } from "@/constants/Types";
+type Props = {
+  visible: boolean;
+  onClose: () => void;
+  prayerId: number;
+  onFavorited?: () => void;
+};
 
-// import React, { useEffect, useState, useRef, useMemo } from "react";
-// import {
-//   View,
-//   Text,
-//   TouchableOpacity,
-//   TextInput,
-//   Alert,
-//   StyleSheet,
-//   ActivityIndicator,
-// } from "react-native";
-// import BottomSheet, { BottomSheetView, BottomSheetFlatList } from "@gorhom/bottom-sheet";
-// import { useSafeAreaInsets } from "react-native-safe-area-context";
-// import WheelColorPicker from "react-native-wheel-color-picker";
+const HARD_CODED_COLORS = [
+  "#1ABC9C",
+  "#2ECC71",
+  "#3498DB",
+  "#9B59B6",
+  "#E74C3C",
+  "#E67E22",
+  "#F1C40F",
+  "#7F8C8D",
+  "#34495E",
+  "#F39C12",
+];
 
-// import { useTranslation } from "react-i18next";
-// import {
-//   getCategories,
-//   createCategory,
-//   Category,
-// } from "../utils/favoriteCategories";
+const CategoryPickerBottomSheet: React.FC<Props> = ({
+  visible,
+  onClose,
+  prayerId,
+  onFavorited,
+}) => {
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const sheetRef = useRef<BottomSheet>(null);
 
-// interface Props {
-//   visible: boolean;
-//   onClose: () => void;
-//   onSelect: (category: Category) => void;
-// }
+  // existing folders loaded from DB
+  const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
+  // new-folder name & selected color
+  const [newFolderName, setNewFolderName] = useState("");
+  const [selectedColor, setSelectedColor] = useState<string>(
+    HARD_CODED_COLORS[0]
+  );
+  const [isProcessing, setIsProcessing] = useState(false);
 
-// const CategoryPickerBottomSheet: React.FC<Props> = ({
-//   visible,
-//   onClose,
-//   onSelect,
-// }) => {
-//   const { t } = useTranslation();
-//   const [categories, setCategories] = useState<Category[]>([]);
-//   const [categoryName, setCategoryName] = useState("");
-//   const [color, setColor] = useState<string>("#3498db");
-//   const [creating, setCreating] = useState(false);
-//   const sheetRef = useRef<BottomSheet>(null);
-//   const insets = useSafeAreaInsets();
+  const snapPoints = useMemo(() => ["50%", "90%"], []);
 
-//   // Two snap points: half-screen and nearly full
-//   const snapPoints = useMemo(() => ["50%", "90%"], []);
+  // open/close sheet
+  useEffect(() => {
+    if (visible) {
+      sheetRef.current?.snapToIndex(1);
+    } else {
+      sheetRef.current?.close();
+    }
+  }, [visible]);
 
-//   // Control bottom sheet open/close
-//   useEffect(() => {
-//     if (visible) {
-//       sheetRef.current?.snapToIndex(1);
-//     } else {
-//       sheetRef.current?.close();
-//     }
-//   }, [visible]);
+  // load folders on open
+  useEffect(() => {
+    if (!visible) return;
+    getFavoritePrayerFolders()
+      .then((arr) => setFolders(arr))
+      .catch((err) => {
+        console.error("Failed to load folders:", err);
+        Alert.alert(t("toast.error"), t("FavoriteCategories.loadFailed"));
+      });
+  }, [visible, t]);
 
-//   // Fetch categories when opened
-//   useEffect(() => {
-//     if (visible) {
-//       getCategories()
-//         .then(setCategories)
-//         .catch((err) => {
-//           console.error("Failed to load categories:", err);
-//           Alert.alert(t("toast.error"), t("FavoriteCategories.loadFailed"));
-//         });
-//     }
-//   }, [visible, t]);
+  // user tapped an existing folder → simply add prayer there
+  const handleSelectExisting = async (folder: FavoritePrayerFolderType) => {
+    setIsProcessing(true);
+    try {
+      await addPrayerToFolder(prayerId, {
+        name: folder.name,
+        color: folder.color,
+      });
+      onClose();
+      onFavorited?.();
+    } catch (err) {
+      console.error("Error adding to existing folder:", err);
+      Alert.alert(t("toast.error"), t("FavoriteCategories.addFailed"));
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
-//   const handleCreate = async () => {
-//     const name = categoryName.trim();
-//     if (!name) {
-//       Alert.alert(t("toast.error"), t("FavoriteCategories.nameRequired"));
-//       return;
-//     }
-//     const exists = categories.some(
-//       (cat) => cat.name.trim().toLowerCase() === name.toLowerCase()
-//     );
-//     if (exists) {
-//       Alert.alert(t("toast.error"), t("FavoriteCategories.nameExists"));
-//       return;
-//     }
+  // user tapped “Create & Add”
+  const handleCreateNew = async () => {
+    const name = newFolderName.trim();
+    if (name.length === 0) {
+      Alert.alert(t("toast.error"), t("FavoriteCategories.nameRequired"));
+      return;
+    }
 
-//     setCreating(true);
-//     try {
-//       const newCat = await createCategory(name, color);
-//       onSelect(newCat);
-//       sheetRef.current?.close();
-//       onClose();
-//     } catch (err) {
-//       console.error("Error creating category:", err);
-//       Alert.alert(t("toast.error"), t("FavoriteCategories.createFailed"));
-//     } finally {
-//       setCreating(false);
-//     }
-//   };
+    // check name collision (case-insensitive)
+    const existing = folders.find(
+      (f) => f.name.trim().toLowerCase() === name.toLowerCase()
+    );
+    if (existing) {
+      // if folder exists, just add the prayer there
+      handleSelectExisting(existing);
+      return;
+    }
 
-//   const renderCategory = ({ item }: { item: Category }) => (
-//     <TouchableOpacity
-//       style={styles.row}
-//       onPress={() => {
-//         onSelect(item);
-//         sheetRef.current?.close();
-//         onClose();
-//       }}
-//     >
-//       <View style={[styles.dot, { backgroundColor: item.color }]} />
-//       <Text style={styles.categoryText}>{item.name}</Text>
-//     </TouchableOpacity>
-//   );
+    setIsProcessing(true);
+    try {
+      const newFolder = await createFolder(name, selectedColor);
+      await addPrayerToFolder(prayerId, newFolder);
+      onClose();
+      onFavorited?.();
+    } catch (err) {
+      console.error("Error creating folder or adding prayer:", err);
+      Alert.alert(t("toast.error"), t("FavoriteCategories.createFailed"));
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
-//   return (
-//     <BottomSheet
-//       ref={sheetRef}
-//       index={-1}
-//       snapPoints={snapPoints}
-//       enablePanDownToClose
-//       onClose={() => onClose()}
-//     >
-//       <BottomSheetView style={[styles.container, { paddingBottom: insets.bottom }]}>  
-//         <Text style={styles.title}>
-//           {t("FavoriteCategories.selectCategory")}
-//         </Text>
+  const renderFolder = ({ item }: { item: FavoritePrayerFolderType }) => (
+    <TouchableOpacity
+      style={styles.row}
+      onPress={() => handleSelectExisting(item)}
+      disabled={isProcessing}
+    >
+      <View style={[styles.dot, { backgroundColor: item.color }]} />
+      <Text style={styles.folderText}>
+        {item.name} <Text style={styles.countText}>({item.prayerCount})</Text>
+      </Text>
+    </TouchableOpacity>
+  );
 
-//         <BottomSheetFlatList
-//           data={categories}
-//           keyExtractor={(item) => item.id.toString()}
-//           renderItem={renderCategory}
-//           contentContainerStyle={styles.listContainer}
-//         />
+  const renderColorSwatch = (colorHex: string) => {
+    const isSelected = colorHex === selectedColor;
+    return (
+      <TouchableOpacity
+        key={colorHex}
+        style={[
+          styles.swatch,
+          { backgroundColor: colorHex },
+          isSelected && styles.swatchSelected,
+        ]}
+        onPress={() => setSelectedColor(colorHex)}
+        disabled={isProcessing}
+      />
+    );
+  };
 
-//         <View style={styles.divider} />
+  return (
+    <BottomSheet
+      ref={sheetRef}
+      index={-1}
+      snapPoints={snapPoints}
+      enablePanDownToClose
+      onClose={onClose}
+    >
+      <BottomSheetView
+        style={[styles.container, { paddingBottom: insets.bottom }]}
+      >
+        <Text style={styles.title}>{t("FavoriteCategories.selectFolder")}</Text>
 
-//         <Text style={styles.subtitle}>
-//           {t("FavoriteCategories.newCategory")}
-//         </Text>
-//         <TextInput
-//           placeholder={t("FavoriteCategories.namePlaceholder")}
-//           value={categoryName}
-//           onChangeText={setCategoryName}
-//           style={styles.input}
-//         />
+        <BottomSheetFlatList
+          data={folders}
+          keyExtractor={(item) => item.name}
+          renderItem={renderFolder}
+          contentContainerStyle={styles.listContainer}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              {t("FavoriteCategories.noFoldersYet")}
+            </Text>
+          }
+        />
 
-//         <Text style={styles.subtitle}>{t("FavoriteCategories.pickColor")}</Text>
-//         <View style={styles.pickerContainer}>
-//           <WheelColorPicker
-//             color={color}
-//             onColorChangeComplete={setColor}
-//             thumbSize={20}
-//             sliderSize={20}
-//             noSnap
-//             row={false}
-//             swatches
-//             swatchesLast
-//             swatchesOnly={false}
-//           />
-//         </View>
+        <View style={styles.divider} />
 
-//         <TouchableOpacity
-//           onPress={handleCreate}
-//           disabled={creating}
-//           style={[styles.button, creating && styles.buttonDisabled]}
-//         >
-//           {creating ? (
-//             <ActivityIndicator color="white" />
-//           ) : (
-//             <Text style={styles.buttonText}>
-//               {t("FavoriteCategories.createButton")}
-//             </Text>
-//           )}
-//         </TouchableOpacity>
+        <Text style={styles.subtitle}>{t("FavoriteCategories.newFolder")}</Text>
+        <TextInput
+          placeholder={t("FavoriteCategories.namePlaceholder")}
+          value={newFolderName}
+          onChangeText={setNewFolderName}
+          style={styles.input}
+          editable={!isProcessing}
+        />
 
-//         <TouchableOpacity
-//           onPress={() => {
-//             sheetRef.current?.close();
-//             onClose();
-//           }}
-//           style={styles.cancel}
-//         >
-//           <Text style={styles.cancelText}>{t("cancel")}</Text>
-//         </TouchableOpacity>
-//       </BottomSheetView>
-//     </BottomSheet>
-//   );
-// };
+        <Text style={styles.subtitle}>{t("FavoriteCategories.pickColor")}</Text>
+        <View style={styles.swatchContainer}>
+          {HARD_CODED_COLORS.map(renderColorSwatch)}
+        </View>
 
-// export default CategoryPickerBottomSheet;
+        <TouchableOpacity
+          onPress={handleCreateNew}
+          disabled={isProcessing}
+          style={[styles.button, isProcessing && styles.buttonDisabled]}
+        >
+          {isProcessing ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>
+              {t("FavoriteCategories.createButton")}
+            </Text>
+          )}
+        </TouchableOpacity>
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 16,
-//   },
-//   title: {
-//     fontSize: 18,
-//     fontWeight: "600",
-//     marginBottom: 12,
-//     textAlign: "center",
-//   },
-//   listContainer: {
-//     paddingBottom: 12,
-//   },
-//   row: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     paddingVertical: 8,
-//   },
-//   dot: {
-//     width: 16,
-//     height: 16,
-//     borderRadius: 8,
-//     marginRight: 8,
-//   },
-//   categoryText: {
-//     fontSize: 16,
-//   },
-//   divider: {
-//     height: 1,
-//     backgroundColor: "#eee",
-//     marginVertical: 12,
-//   },
-//   subtitle: {
-//     fontSize: 16,
-//     fontWeight: "500",
-//     marginBottom: 8,
-//   },
-//   input: {
-//     borderWidth: 1,
-//     borderColor: "#ccc",
-//     borderRadius: 6,
-//     padding: 10,
-//     marginBottom: 16,
-//   },
-//   pickerContainer: {
-//     height: 300,
-//     marginBottom: 20,
-//     alignItems: "center",
-//   },
-//   button: {
-//     backgroundColor: "#2196F3",
-//     padding: 14,
-//     borderRadius: 8,
-//     alignItems: "center",
-//     marginBottom: 10,
-//   },
-//   buttonDisabled: {
-//     opacity: 0.6,
-//   },
-//   buttonText: {
-//     color: "white",
-//     fontWeight: "600",
-//     fontSize: 16,
-//   },
-//   cancel: {
-//     alignItems: "center",
-//     paddingVertical: 10,
-//   },
-//   cancelText: {
-//     color: "#888",
-//     fontSize: 14,
-//   },
-// });
+        <TouchableOpacity
+          onPress={onClose}
+          disabled={isProcessing}
+          style={styles.cancel}
+        >
+          <Text style={styles.cancelText}>{t("cancel")}</Text>
+        </TouchableOpacity>
+      </BottomSheetView>
+    </BottomSheet>
+  );
+};
+
+export default CategoryPickerBottomSheet;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  listContainer: {
+    paddingBottom: 12,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  dot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  folderText: {
+    fontSize: 16,
+  },
+  countText: {
+    color: "#555",
+    fontSize: 14,
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#777",
+    marginVertical: 20,
+    fontSize: 14,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#eee",
+    marginVertical: 16,
+  },
+  subtitle: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 16,
+  },
+  swatchContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    marginBottom: 20,
+  },
+  swatch: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    margin: 6,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  swatchSelected: {
+    borderColor: "#000",
+  },
+  button: {
+    backgroundColor: "#2196F3",
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  cancel: {
+    alignItems: "center",
+    paddingVertical: 12,
+  },
+  cancelText: {
+    color: "#888",
+    fontSize: 14,
+  },
+});

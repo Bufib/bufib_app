@@ -36,6 +36,7 @@ import { Stack } from "expo-router";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { Storage } from "expo-sqlite/kv-store";
+import CategoryPickerBottomSheet from "./CategoryPickerModal";
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
@@ -87,6 +88,11 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
 
   const { fontSize, lineHeight } = useFontSizeStore();
   const [fontSizeModalVisible, setFontSizeModalVisible] = useState(false);
+  const [pickerVisible, setPickerVisible] = useState(false);
+
+  const onCategorySelect = () => {
+    setPickerVisible(false);
+  };
 
   // Fetch prayer on mount (removed favorite check)
   useLayoutEffect(() => {
@@ -95,9 +101,6 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         setIsLoading(true);
         const data = await getPrayerWithTranslations(prayerID);
         setPrayer(data as PrayerWithTranslations);
-        // Removed favorite check:
-        // const fav = await isPrayerInFavorite(prayerID);
-        // setIsFavorite(fav);
       } catch (err) {
         console.error(err);
       } finally {
@@ -194,9 +197,6 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
     [bookmark, prayerID, t]
   );
 
-  // Removed handleFavoriteToggle
-  // Removed onCategorySelect
-
   const handleSheetChanges = useCallback((index: number) => {
     /* no-op */
   }, []);
@@ -263,10 +263,9 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                 color="white"
               />
             </TouchableOpacity>
-            {/* Removed Favorite Button */}
-            {/* <TouchableOpacity onPress={handleFavoriteToggle}>
+            <TouchableOpacity onPress={() => setPickerVisible(true)}>
               <AntDesign name="addfolder" size={25} color="white" />
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -547,12 +546,11 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         onClose={() => setFontSizeModalVisible(false)}
       />
 
-      {/* Removed CategoryPickerModal instance */}
-      {/* <CategoryPickerModal
+      <CategoryPickerBottomSheet
         visible={pickerVisible}
-        onSelect={onCategorySelect}
+        prayerId={prayerID}
         onClose={() => setPickerVisible(false)}
-      /> */}
+      />
     </ThemedView>
   );
 };
