@@ -18,13 +18,13 @@ import { ThemedText } from "./ThemedText";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import { Image } from "expo-image";
-
+import { isPodcastFavorited, togglePodcastFavorite } from "@/utils/favorites";
 export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   podcast,
 }) => {
   // We only need download + getCachedUri now
   const { download, getCachedUri } = usePodcasts();
-
+  const [isFavorite, setIsFavorite] = useState(false);
   const [sourceUri, setSourceUri] = useState<string | null>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [playerError, setPlayerError] = useState<string | null>(null);
@@ -191,6 +191,31 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
     return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
+  // ★ Load favorite state on podcast change
+  useEffect(() => {
+    (async () => {
+      if (!podcast.id) return;
+      try {
+        const fav = await isPodcastFavorited(podcast.id);
+        setIsFavorite(fav);
+      } catch {
+        /* ignore */
+      }
+    })();
+  }, [podcast.id]);
+
+  // ★ Toggle favorite handler
+  const onPressToggleFavorite = useCallback(async () => {
+    if (!podcast.id) return;
+    try {
+      const newStatus = await togglePodcastFavorite(podcast.id);
+      setIsFavorite(newStatus);
+      // (Optionally trigger a refresh in parent/store)
+    } catch (error) {
+      console.error("Error toggling podcast favorite:", error);
+    }
+  }, [podcast.id]);
+
   return (
     <ScrollView
       style={[
@@ -205,9 +230,30 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
           { backgroundColor: Colors[colorScheme].contrast },
         ]}
       >
-        <ThemedText style={styles.title} type="titleSmall">
-          {podcast.title}
-        </ThemedText>
+        <View style={styles.headerTopRow}>
+          <ThemedText style={styles.title} type="titleSmall">
+            {podcast.title}
+          </ThemedText>
+
+          <TouchableOpacity
+            onPress={onPressToggleFavorite}
+            style={styles.starButton}
+          >
+            {isFavorite ? (
+              <AntDesign
+                name="star"
+                size={28}
+                color={Colors.universal.favorite}
+              />
+            ) : (
+              <AntDesign
+                name="staro"
+                size={28}
+                color={Colors[colorScheme].defaultIcon}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
         <ThemedText style={styles.descriptionText}>
           {podcast.description}
         </ThemedText>
@@ -371,7 +417,19 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 10,
   },
-  title: {},
+  headerTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  starButton: {
+    padding: 4,
+  },
+  title: {
+    flex: 1,
+  },
+
   descriptionText: {
     fontSize: 18,
   },

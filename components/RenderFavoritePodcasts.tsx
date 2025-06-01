@@ -37,7 +37,7 @@ const RenderFavoritePodcasts = () => {
         keyExtractor={(item) => item.toString()}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-            <Text style={styles.itemText}>Podcast ID: {item}</Text>
+            <Text style={styles.itemText}>{item}</Text>
             {/* 
               If you have a way to fetch podcast metadata (e.g. title, image) by ID,
               you could swap this out for a custom component that fetches and displays details.
@@ -78,3 +78,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
