@@ -8,8 +8,8 @@ import {
   ActivityIndicator,
   ScrollView,
   Alert,
+  useColorScheme,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -18,17 +18,19 @@ import {
 } from "@/utils/bufibDatabase";
 import { FavoritePrayerFolderType, PrayerType } from "@/constants/Types";
 import { router } from "expo-router";
+import { Colors } from "@/constants/Colors";
+import { ThemedView } from "./ThemedView";
+import { ThemedText } from "./ThemedText";
 
 const FavoritePrayersScreen: React.FC = () => {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
 
   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [prayers, setPrayers] = useState<PrayerType[]>([]);
   const [isLoadingFolders, setIsLoadingFolders] = useState(false);
   const [isLoadingPrayers, setIsLoadingPrayers] = useState(false);
-
+  const colorScheme = useColorScheme() || "light";
   // Load all favorite folders on mount
   useEffect(() => {
     (async () => {
@@ -81,14 +83,14 @@ const FavoritePrayersScreen: React.FC = () => {
         ]}
         onPress={() => setSelectedFolder(folder.name)}
       >
-        <Text
+        <ThemedText
           style={[
             styles.folderPillText,
             isActive && styles.folderPillTextActive,
           ]}
         >
           {folder.name} ({folder.prayerCount})
-        </Text>
+        </ThemedText>
       </TouchableOpacity>
     );
   };
@@ -96,7 +98,10 @@ const FavoritePrayersScreen: React.FC = () => {
   // Render one prayer card
   const renderPrayerCard = ({ item }: { item: PrayerType }) => (
     <TouchableOpacity
-      style={styles.prayerCard}
+      style={[
+        styles.prayerCard,
+        { backgroundColor: Colors[colorScheme].contrast },
+      ]}
       onPress={() => {
         router.push({
           pathname: "/(displayPrayer)/[prayer]",
@@ -104,15 +109,15 @@ const FavoritePrayersScreen: React.FC = () => {
         });
       }}
     >
-      <Text style={styles.prayerName}>{item.name}</Text>
+      <ThemedText style={styles.prayerName}>{item.name}</ThemedText>
       {item.arabic_title ? (
-        <Text style={styles.prayerArabicTitle}>{item.arabic_title}</Text>
+        <ThemedText style={styles.prayerArabicTitle}>{item.arabic_title}</ThemedText>
       ) : null}
     </TouchableOpacity>
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <ThemedView style={styles.container}>
       <Text style={styles.headerText}>
         {t("FavoriteCategories.title", "Favorite Prayers")}
       </Text>
@@ -137,12 +142,12 @@ const FavoritePrayersScreen: React.FC = () => {
             style={{ marginTop: 20 }}
           />
         ) : prayers.length === 0 ? (
-          <Text style={styles.noPrayersText}>
+          <ThemedText style={styles.noPrayersText}>
             {t(
               "FavoriteCategories.noPrayersInFolder",
               "No prayers in this folder."
             )}
-          </Text>
+          </ThemedText>
         ) : (
           <FlatList
             data={prayers}
@@ -152,7 +157,7 @@ const FavoritePrayersScreen: React.FC = () => {
           />
         )}
       </View>
-    </View>
+    </ThemedView>
   );
 };
 
@@ -161,7 +166,6 @@ export default FavoritePrayersScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9F9F9",
   },
   headerText: {
     fontSize: 24,
@@ -202,7 +206,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   prayerCard: {
-    backgroundColor: "white",
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -218,17 +221,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     marginBottom: 4,
-    color: "#333",
   },
   prayerArabicTitle: {
     fontSize: 14,
     fontStyle: "italic",
-    color: "#666",
   },
   noPrayersText: {
     marginTop: 20,
     textAlign: "center",
     fontSize: 16,
-    color: "#888",
   },
 });

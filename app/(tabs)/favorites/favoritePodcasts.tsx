@@ -1,14 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import RenderFavoritePodcasts from "@/components/RenderFavoritePodcasts";
 
 const favoritePodcasts = () => {
-  return (
-    <View>
-      <Text>favoritePodcasts</Text>
-    </View>
-  )
-}
+  return <RenderFavoritePodcasts />;
+};
 
-export default favoritePodcasts
+export default favoritePodcasts;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
