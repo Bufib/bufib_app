@@ -273,7 +273,7 @@ export type PrayerCategoryType = {
 
 export type PrayerWithCategory = {
   id: number;
-  title: string;
+  name: string;
   prayer_text: string;
   category_id: number;
 };

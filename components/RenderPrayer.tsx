@@ -19,9 +19,7 @@ import {
   StatusBar,
   TextStyle,
 } from "react-native";
-import {
-  getPrayerWithTranslations,
-} from "@/utils/bufibDatabase";
+import { getPrayerWithTranslations } from "@/utils/bufibDatabase";
 import { PrayerType, PrayerWithTranslationType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemedView } from "./ThemedView";
@@ -49,10 +47,12 @@ interface RenderPrayerProps {
 
 const markdownRules = (
   customFontSize: number,
-  textColor: string
+  textColor: string,
+  index: number
 ): RenderRules => ({
   code_inline: (_node, _children, _parent, styles) => (
     <Text
+      key={index}
       style={{
         fontSize: customFontSize,
         ...(styles.text as TextStyle),
@@ -171,8 +171,8 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   }, []);
 
   const handleBookmark = useCallback(
-    (idx: number) => {
-      if (bookmark === idx) {
+    (index: number) => {
+      if (bookmark === index) {
         Storage.removeItemSync(`Bookmark-${prayerID}`);
         setBookmark(null);
       } else if (bookmark) {
@@ -180,15 +180,15 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
           {
             text: t("replace"),
             onPress: () => {
-              Storage.setItemSync(`Bookmark-${prayerID}`, String(idx));
-              setBookmark(idx);
+              Storage.setItemSync(`Bookmark-${prayerID}`, String(index));
+              setBookmark(index);
             },
           },
           { text: t("cancel"), style: "cancel" },
         ]);
       } else {
-        Storage.setItemSync(`Bookmark-${prayerID}`, String(idx));
-        setBookmark(idx);
+        Storage.setItemSync(`Bookmark-${prayerID}`, String(index));
+        setBookmark(index);
       }
     },
     [bookmark, prayerID, t]
@@ -226,7 +226,9 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
-      <Stack.Screen options={{ headerTitle: prayer.name, headerBackTitle: t("back")}} />
+      <Stack.Screen
+        options={{ headerTitle: prayer.name, headerBackTitle: t("back") }}
+      />
 
       {/* Header Buttons */}
       <View
@@ -238,13 +240,13 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         <View style={styles.headerContent}>
           <View style={styles.titleContainer}>
             <Text
-              style={[styles.title, { fontSize: fontSize * 0.9 }]}
+              style={[styles.title, { fontSize: fontSize }]}
               numberOfLines={1}
             >
               {prayer.name} ({indices.length} {t("lines")})
             </Text>
             <Text
-              style={[styles.arabicTitle, { fontSize: fontSize * 0.9 }]}
+              style={[styles.arabicTitle, { fontSize: fontSize }]}
               numberOfLines={1}
             >
               {prayer.arabic_title}
@@ -278,6 +280,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         }
         data={indices}
         estimatedItemSize={200}
+        extraData={[bookmark, selectTranslations]}
         ListHeaderComponent={
           <>
             {prayer.translations.find((t) => t.language_code === language)
@@ -296,8 +299,8 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                 <Markdown
                   style={{
                     body: {
-                      fontSize: fontSize * 0.9,
-                      lineHeight: lineHeight * 0.9,
+                      fontSize: fontSize,
+                      lineHeight: lineHeight,
                       color: Colors[colorScheme].text,
                     },
                   }}
@@ -360,47 +363,47 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
             </View>
           </>
         }
-        renderItem={({ item: idx }) => {
-          const arabic = formatted?.arabicLines[idx];
-          const translit = formatted?.translitLines[idx];
+        renderItem={({ item: index }) => {
+          const arabic = formatted?.arabicLines[index];
+          const translit = formatted?.translitLines[index];
           const activeTranslations = formatted?.translations.filter(
             (tr) => selectTranslations[tr.code]
           );
           const hasNote =
             arabic?.hasAt ||
-            activeTranslations?.some((tr) => tr.lines[idx]?.hasAt);
+            activeTranslations?.some((tr) => tr.lines[index]?.hasAt);
           return (
             <View
-              key={idx}
+              key={index}
               style={[
                 styles.prayerSegment,
                 { backgroundColor: Colors[colorScheme].contrast },
                 hasNote && {
-                  backgroundColor: Colors[colorScheme].renderPrayerNotiz,
+                  backgroundColor: Colors.universal.primary,
                 },
-                bookmark === idx + 1 && {
+                bookmark === index + 1 && {
                   backgroundColor: Colors[colorScheme].prayerBookmark,
                 },
               ]}
             >
               <View style={styles.lineNumberBadge}>
-                <Text style={styles.lineNumber}>{idx + 1}</Text>
+                <Text style={styles.lineNumber}>{index + 1}</Text>
               </View>
 
               {/* Bookmark Icon */}
-              {bookmark === idx + 1 ? (
+              {bookmark === index + 1 ? (
                 <Octicons
                   name="bookmark-slash"
                   size={20}
                   color={Colors[colorScheme].defaultIcon}
-                  onPress={() => handleBookmark(idx + 1)}
+                  onPress={() => handleBookmark(index + 1)}
                 />
               ) : (
                 <Octicons
                   name="bookmark"
                   size={20}
                   color={Colors[colorScheme].defaultIcon}
-                  onPress={() => handleBookmark(idx + 1)}
+                  onPress={() => handleBookmark(index + 1)}
                 />
               )}
 
@@ -408,15 +411,16 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
               {arabic && (
                 <Markdown
                   rules={markdownRules(
-                    fontSize * 1.3,
-                    Colors[colorScheme].text
+                    fontSize,
+                    Colors[colorScheme].text,
+                    index
                   )}
                   style={{
                     body: {
-                      fontSize: fontSize * 1.2,
-                      lineHeight: lineHeight * 1.2,
+                      fontSize: fontSize * 1.3,
+                      lineHeight: lineHeight,
                       color: Colors[colorScheme].prayerArabicText,
-                      textAlign: "right",
+                      alignSelf: "flex-end",
                       marginBottom: 16,
                     },
                   }}
@@ -429,13 +433,14 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
               {translit && (
                 <Markdown
                   rules={markdownRules(
-                    fontSize * 0.8,
-                    Colors[colorScheme].text
+                    fontSize,
+                    Colors[colorScheme].text,
+                    index
                   )}
                   style={{
                     body: {
-                      fontSize: fontSize * 0.8,
-                      lineHeight: lineHeight * 0.8,
+                      fontSize: fontSize,
+                      lineHeight: lineHeight,
                       color: Colors[colorScheme].prayerTransliterationText,
                       fontStyle: "italic",
                       marginBottom: 16,
@@ -461,7 +466,11 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                     {tr.code.toUpperCase()}
                   </Text>
                   <Markdown
-                    rules={markdownRules(fontSize, Colors[colorScheme].text)}
+                    rules={markdownRules(
+                      fontSize,
+                      Colors[colorScheme].text,
+                      index
+                    )}
                     style={{
                       body: {
                         fontSize,
@@ -470,7 +479,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                       },
                     }}
                   >
-                    {tr.lines[idx]?.text || ""}
+                    {tr.lines[index]?.text || ""}
                   </Markdown>
                 </View>
               ))}
@@ -490,11 +499,11 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                 {t("notes")}
               </ThemedText>
               <Markdown
-                rules={markdownRules(fontSize * 0.9, Colors[colorScheme].text)}
+                rules={markdownRules(fontSize, Colors[colorScheme].text, 0)}
                 style={{
                   body: {
-                    fontSize: fontSize * 0.9,
-                    lineHeight: lineHeight * 0.9,
+                    fontSize: fontSize,
+                    lineHeight: lineHeight,
                     color: Colors[colorScheme].text,
                   },
                 }}
