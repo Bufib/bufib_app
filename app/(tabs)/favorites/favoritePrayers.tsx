@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import RenderFavoritePrayers from '@/components/RenderFavoritePrayers'
 
 const favoritePrayers = () => {
   return (
-    <View>
-      <Text>favoritePrayers</Text>
-    </View>
+   <RenderFavoritePrayers />
   )
 }
 

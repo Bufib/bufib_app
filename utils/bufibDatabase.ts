@@ -602,6 +602,7 @@ export const searchQuestions = async (
   }
 };
 
+
 export const getLatestQuestions = async (
   limit: number = 10
 ): Promise<QuestionType[]> => {
@@ -703,6 +704,26 @@ export async function getPrayersForCategory(
 }
 
 /**
+ * Fetch all prayers (PrayerType) that belong to a given folderName.
+ */
+
+export const getFavoritePrayersForFolder = async (
+  folderName: string
+): Promise<PrayerType[]> => {
+  const db = await getDatabase();
+  return await db.getAllAsync<PrayerType>(
+    `
+    SELECT p.*
+      FROM prayers p
+      JOIN favorite_prayers f
+        ON p.id = f.prayer_id
+     WHERE f.folder_name = ?
+     ORDER BY datetime(f.created_at) DESC;
+    `,
+    [folderName]
+  );
+};
+/**
  * Fetch all prayers in one category, but always return the Arabic text.
  * Useful when the UI’s language is Arabic.
  */
@@ -723,6 +744,17 @@ export async function getAllPrayersForArabic(
   );
 }
 
+/**
+ * Return an array of folder names that this prayer is already in.
+ */
+export const getFoldersForPrayer = async (prayerId: number): Promise<string[]> => {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<{ folder_name: string }>(
+    `SELECT folder_name FROM favorite_prayers WHERE prayer_id = ?;`,
+    [prayerId]
+  );
+  return rows.map((r) => r.folder_name);
+};
 /**
  * Check whether a element is currently favorited.
  */
@@ -861,6 +893,20 @@ export const addPrayerToFolder = async (
     [prayerId, folder.name, folder.color]
   );
 };
+
+export async function removePrayerFromFolder(
+  prayerId: number,
+  folderName: string
+): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    `
+    DELETE FROM favorite_prayers
+    WHERE prayer_id = ? AND folder_name = ?;
+    `,
+    [prayerId, folderName]
+  );
+}
 
 /**
  * Toggle a question in favorites.
