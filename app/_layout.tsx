@@ -43,7 +43,10 @@ import { cleanupCache } from "@/hooks/usePodcasts";
 //! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
 if (typeof (BackHandler as any).removeEventListener !== "function") {
-  ;(BackHandler as any).removeEventListener = (eventName: any, handler: () => boolean) => {
+  (BackHandler as any).removeEventListener = (
+    eventName: any,
+    handler: () => boolean
+  ) => {
     // Create a dummy subscription and immediately remove it.
     const subscription = BackHandler.addEventListener(eventName, handler);
     subscription.remove();
@@ -312,14 +315,7 @@ function AppContent() {
                     name="(auth)"
                     options={{ headerShown: false }}
                   />
-                  <Stack.Screen
-                    name="(search)"
-                    options={{
-                      headerShown: true,
-                      headerBackTitle: "Zurück", // TODO: i18n
-                      headerTitle: "Suche", // TODO: i18n
-                    }}
-                  />
+
                   <Stack.Screen
                     name="(displayQuestion)"
                     options={{ headerShown: false }}

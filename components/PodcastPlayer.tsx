@@ -19,6 +19,8 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import { Image } from "expo-image";
 import { isPodcastFavorited, togglePodcastFavorite } from "@/utils/favorites";
+import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
+
 export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   podcast,
 }) => {
@@ -31,7 +33,8 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   const [didInitiatePlayback, setDidInitiatePlayback] = useState(false);
   const [isSeeking, setIsSeeking] = useState(false);
   const [wantsPlay, setWantsPlay] = useState(false);
-
+  const { refreshTriggerFavorites, triggerRefreshFavorites } =
+    useRefreshFavorites();
   const colorScheme = useColorScheme() || "light";
   const player = useAudioPlayer(sourceUri ? { uri: sourceUri } : null, 500);
   const status: AudioStatus | null = useAudioPlayerStatus(player);
@@ -198,8 +201,8 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
       try {
         const fav = await isPodcastFavorited(podcast.id);
         setIsFavorite(fav);
-      } catch {
-        /* ignore */
+      } catch (error) {
+        console.log(error)
       }
     })();
   }, [podcast.id]);
@@ -210,11 +213,11 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
     try {
       const newStatus = await togglePodcastFavorite(podcast.id);
       setIsFavorite(newStatus);
-      // (Optionally trigger a refresh in parent/store)
+      triggerRefreshFavorites();
     } catch (error) {
       console.error("Error toggling podcast favorite:", error);
     }
-  }, [podcast.id]);
+  }, [podcast.id, triggerRefreshFavorites]);
 
   return (
     <ScrollView

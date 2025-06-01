@@ -25,6 +25,7 @@ export const ar = {
   large: "كبير",
   error: "خطأ",
   favorites: "المفضلة",
+  search: "بحث",
   
   // Navigation
   knowledge: "معرفة",

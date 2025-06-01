@@ -25,6 +25,7 @@ export const en = {
   large: "large",
   error: "Error",
   favorites: "favorites",
+  search: "Search",
   
   // Navigation
   knowledge: "Knowledge",

@@ -185,7 +185,7 @@ export default function QuestionsList() {
 
       <Pressable
         style={[styles.askQuestionButton, !hasInternet && styles.disabled]}
-        onPress={() => router.push("/(askQuestion)/askQuestion")}
+        onPress={() => router.push("/(askQuestion)/ask")}
         disabled={!hasInternet}
       >
         <AntDesign name="plus" size={35} color="#fff" />

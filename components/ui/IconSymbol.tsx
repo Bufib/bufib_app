@@ -20,6 +20,7 @@ const MAPPING = {
   "house.fill": "home",
   "book": "menu-book",
   "star": "star",
+  "magnifyingglass": "search",
   "gear.circle": "settings",
 } as IconMapping;
 

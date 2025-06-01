@@ -603,6 +603,27 @@ export const searchQuestions = async (
 };
 
 
+export const searchPrayers = async (
+  searchTerm: string
+): Promise<PrayerType[]> => {
+  try {
+    const db = await getDatabase();
+
+    return await db.getAllAsync<PrayerType>(
+      `
+      SELECT *
+      FROM prayers
+      WHERE name LIKE ? OR arabic_title LIKE ?;
+      `,
+      [`%${searchTerm}%`, `%${searchTerm}%`]
+    );
+  } catch (error) {
+    console.error("Error searching prayers:", error);
+    throw error;
+  }
+};
+
+
 export const getLatestQuestions = async (
   limit: number = 10
 ): Promise<QuestionType[]> => {
