@@ -6,10 +6,12 @@ import { useGradient } from "../hooks/useGradient";
 import { PodcastType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PodcastProps } from "@/constants/Types";
+import { formatDate } from "@/utils/formatDate";
 
 export const PodcastPreviewCard: React.FC<PodcastProps> = ({ podcast }) => {
   const { gradientColors } = useGradient();
-  const { language } = useLanguage();
+  const { language, isArabic } = useLanguage();
+  const formatedDate = formatDate(podcast.created_at);
 
   return (
     <LinearGradient
@@ -28,13 +30,20 @@ export const PodcastPreviewCard: React.FC<PodcastProps> = ({ podcast }) => {
       >
         {podcast.title}
       </Text>
+      <Text
+        style={[styles.createdAt, { textAlign: isArabic() ? "left" : "right" }]}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
+        {formatedDate}
+      </Text>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     gap: 20,
     height: 250,
     width: 200,
@@ -45,4 +54,5 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
   },
+  createdAt: {},
 });

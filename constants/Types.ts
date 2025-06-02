@@ -18,6 +18,7 @@ export type UseGradientOptionsType = {
 export type NewsArticlesPreviewType = {
   title: string;
   is_external_link: boolean;
+  created_at: string;
 };
 
 export type NewsArticlesType = {

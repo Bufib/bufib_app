@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import NewsArticleDetailScreen from "@/components/NewsArticleDetailScreen";
 import { useLocalSearchParams } from "expo-router";
@@ -10,5 +9,3 @@ const newsArticle = () => {
 };
 
 export default newsArticle;
-
-const styles = StyleSheet.create({});

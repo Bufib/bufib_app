@@ -13,7 +13,6 @@ import { useNewsArticles } from "@/hooks/useNewsArticles";
 import { NewsArticlesType } from "@/constants/Types";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import Entypo from "@expo/vector-icons/Entypo";
 import { useTranslation } from "react-i18next";
 import { LoadingIndicator } from "./LoadingIndicator";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -27,12 +26,13 @@ import {
 } from "@/utils/favorites";
 import {} from "@/utils/bufibDatabase";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { ThemedView } from "./ThemedView";
 export default function NewsArticleDetailScreen({
   articleId,
 }: {
   articleId: number;
 }) {
-  const { fetchNewsArticleById } = useNewsArticles();
   const { fontSize, lineHeight } = useFontSizeStore();
   const colorScheme = useColorScheme() ?? "light";
   const { t } = useTranslation();
@@ -42,6 +42,8 @@ export default function NewsArticleDetailScreen({
   const [showFontSizePickerModal, setShowFontSizePickerModal] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const { triggerRefreshFavorites } = useRefreshFavorites();
+  const { language, isArabic } = useLanguage();
+  const { fetchNewsArticleById } = useNewsArticles(language);
 
   useEffect(() => {
     if (!articleId) {
@@ -97,15 +99,15 @@ export default function NewsArticleDetailScreen({
 
   if (isLoading) {
     return (
-      <View style={styles.centered}>
+      <ThemedView style={styles.centered}>
         <LoadingIndicator size={"large"} />
-      </View>
+      </ThemedView>
     );
   }
 
   if (error || !article) {
     return (
-      <View style={styles.centered}>
+      <ThemedView style={styles.centered}>
         <Stack.Screen options={{ title: "Error" }} />
         <ThemedText
           type="subtitle"
@@ -113,7 +115,7 @@ export default function NewsArticleDetailScreen({
         >
           {t("errorLoadingArticle")}
         </ThemedText>
-      </View>
+      </ThemedView>
     );
   }
   return (

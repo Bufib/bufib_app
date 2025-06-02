@@ -8,14 +8,17 @@ import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Feather from "@expo/vector-icons/Feather";
+import { formatDate } from "@/utils/formatDate";
 const NewsArticlePreviewCard = ({
   title,
   is_external_link,
+  created_at,
 }: NewsArticlesPreviewType) => {
   // Use the custom hook to handle all gradient logic
   const { gradientColors } = useGradient();
   const { t } = useTranslation();
-  const { language } = useLanguage();
+  const { language, isArabic } = useLanguage();
+  const formatedDate = formatDate(created_at)
   return (
     <LinearGradient
       style={styles.container}
@@ -28,7 +31,7 @@ const NewsArticlePreviewCard = ({
           style={[
             styles.externalLinkBadge,
             {
-              alignSelf: language === "ar" ? "flex-start" : "flex-end",
+              alignSelf: isArabic() ? "flex-start" : "flex-end",
             },
           ]}
         >
@@ -40,14 +43,18 @@ const NewsArticlePreviewCard = ({
         </View>
       )}
       <Text
-        style={[
-          styles.newsTitle,
-          { textAlign: language === "ar" ? "right" : "left" },
-        ]}
+        style={[styles.newsTitle, { textAlign: isArabic() ? "right" : "left" }]}
         numberOfLines={2}
         ellipsizeMode="tail"
       >
         {title}
+      </Text>
+      <Text
+        style={[styles.createdAt, { textAlign: isArabic() ? "left" : "right" }]}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
+        {formatedDate}
       </Text>
     </LinearGradient>
   );
@@ -57,7 +64,7 @@ export default NewsArticlePreviewCard;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     gap: 20,
     height: 150,
     width: 300,
@@ -73,4 +80,6 @@ const styles = StyleSheet.create({
   newsTitle: {
     fontSize: 20,
   },
+  createdAt: {
+  }
 });

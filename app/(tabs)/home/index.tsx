@@ -127,6 +127,7 @@ export default function HomeScreen() {
                     <NewsArticlePreviewCard
                       title={item.title}
                       is_external_link={item.is_external_link}
+                      created_at={item.created_at}
                     />
                   </TouchableOpacity>
                 )}

@@ -2,6 +2,7 @@ import { StyleSheet, Text, useColorScheme, View } from "react-native";
 import React from "react";
 import { router, Stack } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 const _layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
@@ -11,15 +12,7 @@ const _layout = () => {
         options={{
           headerShown: true,
           headerLeft: () => {
-            return (
-              <Ionicons
-                name="chevron-back-outline"
-                size={30}
-                style={{ marginLeft: -16 }}
-                onPress={() => router.back()}
-                color={colorScheme === "dark" ? "#d0d0c0" : "#000"}
-              />
-            );
+            return <HeaderLeftBackButton />;
           },
         }}
       />
