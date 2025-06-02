@@ -90,10 +90,6 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   const [fontSizeModalVisible, setFontSizeModalVisible] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
 
-  const onCategorySelect = () => {
-    setPickerVisible(false);
-  };
-
   // Fetch prayer on mount (removed favorite check)
   useLayoutEffect(() => {
     (async () => {

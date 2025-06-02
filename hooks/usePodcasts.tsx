@@ -9,7 +9,6 @@ import * as FileSystem from "expo-file-system";
 import { useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/utils/supabase"; // Your initialized Supabase client
 import { PodcastType } from "@/constants/Types"; // Matches your `episodes` schema
-import { Platform } from "react-native";
 
 // --- CONFIGURATION ---
 const PAGE_SIZE = 3;
@@ -194,14 +193,12 @@ async function downloadToCache(
   );
 }
 
-export function usePodcasts() {
+export function usePodcasts(language: string) {
   const qc = useQueryClient();
   const didInitialCleanup = useRef(false);
 
   // --- 1) Infinite paginated list from `episodes` table ---
-  // “PodcastType” should match your Supabase `episodes` row shape:
-  // { id, title, filename, description, published_at, created_at, … }
-  const queryKey: QueryKey = ["episodes"];
+  const queryKey: QueryKey = ["episodes", language];
 
   const infiniteQuery = useInfiniteQuery<
     PodcastType[], // data page type
@@ -213,9 +210,11 @@ export function usePodcasts() {
     queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       // Fetch a page of size PAGE_SIZE, ordered by published_at DESC
+      // Count returns overall count
       const { data, error, count } = await supabase
         .from("episodes")
         .select("*", { count: "exact" })
+        .eq("language_code", language)
         .order("published_at", { ascending: false })
         .range(pageParam, pageParam + PAGE_SIZE - 1);
 
@@ -233,14 +232,6 @@ export function usePodcasts() {
     initialPageParam: 0,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
-  // //! --- 2) Run one cache cleanup on mount (optional) ---
-  // useEffect(() => {
-  //   if (!didInitialCleanup.current) {
-  //     cleanupCache().catch(console.warn);
-  //     didInitialCleanup.current = true;
-  //   }
-  // }, []);
 
   // --- 3) Real-time subscription to INSERT, UPDATE, DELETE on `episodes` ---
   useEffect(() => {

@@ -10,11 +10,9 @@ import {
 
 const PAGE_SIZE = 10; // adjust as needed
 
-export function useNews() {
-  const { language } = useLanguage();
-  const lang = language ?? "de";
+export function useNews(language: string) {
   const queryClient = useQueryClient();
-  const queryKey = ["news", lang];
+  const queryKey = ["news", language];
 
   const infiniteQuery = useInfiniteQuery<NewsType[], Error>({
     queryKey,
@@ -31,7 +29,7 @@ export function useNews() {
       const { data, error } = await supabase
         .from("news")
         .select("*")
-        .eq("language_code", lang)
+        .eq("language_code", language)
         .order("created_at", { ascending: false })
         .range(from, to);
 

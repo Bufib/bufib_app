@@ -1,5 +1,4 @@
-import { useCallback, useEffect } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useCallback } from "react";
 import { supabase } from "@/utils/supabase";
 import { NewsArticlesType } from "@/constants/Types";
 import {
@@ -10,11 +9,9 @@ import {
 
 const PAGE_SIZE = 1;
 
-export function useNewsArticles() {
-  const { language } = useLanguage();
-  const lang = language ?? "de";
+export function useNewsArticles(language: string) {
   const queryClient = useQueryClient();
-  const queryKey = ["newsArticles", lang];
+  const queryKey = ["newsArticles", language];
 
   const infiniteQuery = useInfiniteQuery<NewsArticlesType[], Error>({
     queryKey,
@@ -29,7 +26,7 @@ export function useNewsArticles() {
       const { data, error } = await supabase
         .from("news_articles")
         .select("*")
-        .eq("language_code", lang)
+        .eq("language_code", language)
         .order("created_at", { ascending: false })
         .range(from, to);
 
@@ -41,38 +38,39 @@ export function useNewsArticles() {
   });
 
   // Function to fetch a single news article by ID
-  const fetchNewsArticleById = useCallback(async ( 
-    id: number
-  ): Promise<NewsArticlesType | null> => {
-    const cachedData =
-      queryClient.getQueryData<InfiniteData<NewsArticlesType[]>>(queryKey);
-    if (cachedData) {
-      for (const page of cachedData.pages) {
-        const foundArticle = page.find((article) => article.id === id);
-        if (foundArticle) {
-          return foundArticle;
+  const fetchNewsArticleById = useCallback(
+    async (id: number): Promise<NewsArticlesType | null> => {
+      const cachedData =
+        queryClient.getQueryData<InfiniteData<NewsArticlesType[]>>(queryKey);
+      if (cachedData) {
+        for (const page of cachedData.pages) {
+          const foundArticle = page.find((article) => article.id === id);
+          if (foundArticle) {
+            return foundArticle;
+          }
         }
       }
-    }
 
-    // If not in cache, fetch from Supabase
-    const { data, error } = await supabase
-      .from("news_articles")
-      .select("*")
-      .eq("id", id)
-      .single();
+      // If not in cache, fetch from Supabase
+      const { data, error } = await supabase
+        .from("news_articles")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-    if (error) {
-      console.error("Error fetching single news article:", error);
-      throw error;
-    }
+      if (error) {
+        console.error("Error fetching single news article:", error);
+        throw error;
+      }
 
-    if (!data) {
-      return null;
-    }
+      if (!data) {
+        return null;
+      }
 
-    return data as NewsArticlesType;
-  }, [queryClient, queryKey]); 
+      return data as NewsArticlesType;
+    },
+    [queryClient, queryKey]
+  );
 
   return { ...infiniteQuery, fetchNewsArticleById };
 }

@@ -38,7 +38,7 @@ export default function HomeScreen() {
     fetchNextPage: newsArticlesFetchNextPage,
     hasNextPage: newsArticlesHasNextPage,
     isFetchingNextPage: newsArticlesIsFetchingNextPage,
-  } = useNewsArticles();
+  } = useNewsArticles(language);
 
   const {
     data: newsData,
@@ -48,7 +48,7 @@ export default function HomeScreen() {
     fetchNextPage: newsfetchNextPage,
     hasNextPage: newHasNextPage,
     isFetchingNextPage: newsIsFetchingNextPage,
-  } = useNews();
+  } = useNews(language);
 
   const {
     data: podcastPages,
@@ -59,8 +59,6 @@ export default function HomeScreen() {
     hasNextPage: podcastsHasNextPage,
     isFetchingNextPage: podcastsIsFetchingNextPage,
   } = usePodcasts(language);
-
-  // Flatten out pages of podcasts
 
   // flatten paginated data
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];
@@ -84,122 +82,134 @@ export default function HomeScreen() {
       >
         {/* //!----------- News articles ----------- */}
 
-        <View style={styles.newsArticleContainer}>
-          <ThemedText type="titleSmall">{t("newsArticlesTitle")}</ThemedText>
+        {articles.length < 0 && (
+          <View style={styles.newsArticleContainer}>
+            <ThemedText type="titleSmall">{t("newsArticlesTitle")}</ThemedText>
 
-          {newsArticlesIsLoading && (
-            <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
-          )}
+            {newsArticlesIsLoading && (
+              <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
+            )}
 
-          {newsArticlesIsError && (
-            <View style={styles.errorContainer}>
-              <Text
-                style={[styles.errorText, { color: Colors[colorScheme].error }]}
-              >
-                {newsArticlesError?.message ?? t("errorLoadingData")}
-              </Text>
-              <RetryButton onPress={() => newsArticlesFetchNextPage()} />
-            </View>
-          )}
-
-          {!newsArticlesIsLoading && !newsArticlesIsError && (
-            <FlatList
-              horizontal
-              contentContainerStyle={styles.flatListContentContainer}
-              data={articles}
-              keyExtractor={(item: NewsArticlesType) => item.id.toString()}
-              renderItem={({ item }: { item: NewsArticlesType }) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    item.is_external_link
-                      ? handleOpenExternalUrl(item.external_link_url || "")
-                      : router.push({
-                          pathname: "/(newsArticle)",
-                          params: {
-                            articleId: item.id,
-                          },
-                        })
-                  }
+            {newsArticlesIsError && (
+              <View style={styles.errorContainer}>
+                <Text
+                  style={[
+                    styles.errorText,
+                    { color: Colors[colorScheme].error },
+                  ]}
                 >
-                  <NewsArticlePreviewCard
-                    title={item.title}
-                    is_external_link={item.is_external_link}
-                  />
-                </TouchableOpacity>
-              )}
-              showsHorizontalScrollIndicator={false}
-              onEndReached={() => {
-                if (
-                  newsArticlesHasNextPage &&
-                  !newsArticlesIsFetchingNextPage
-                ) {
-                  newsArticlesFetchNextPage();
+                  {newsArticlesError?.message ?? t("errorLoadingData")}
+                </Text>
+                <RetryButton onPress={() => newsArticlesFetchNextPage()} />
+              </View>
+            )}
+
+            {!newsArticlesIsLoading && !newsArticlesIsError && (
+              <FlatList
+                horizontal
+                contentContainerStyle={styles.flatListContentContainer}
+                data={articles}
+                keyExtractor={(item: NewsArticlesType) => item.id.toString()}
+                renderItem={({ item }: { item: NewsArticlesType }) => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      item.is_external_link
+                        ? handleOpenExternalUrl(item.external_link_url || "")
+                        : router.push({
+                            pathname: "/(newsArticle)",
+                            params: {
+                              articleId: item.id,
+                            },
+                          })
+                    }
+                  >
+                    <NewsArticlePreviewCard
+                      title={item.title}
+                      is_external_link={item.is_external_link}
+                    />
+                  </TouchableOpacity>
+                )}
+                showsHorizontalScrollIndicator={false}
+                onEndReached={() => {
+                  if (
+                    newsArticlesHasNextPage &&
+                    !newsArticlesIsFetchingNextPage
+                  ) {
+                    newsArticlesFetchNextPage();
+                  }
+                }}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={() =>
+                  newsArticlesIsFetchingNextPage ? (
+                    <LoadingIndicator size="small" />
+                  ) : null
                 }
-              }}
-              onEndReachedThreshold={0.5}
-              ListFooterComponent={() =>
-                newsArticlesIsFetchingNextPage ? (
-                  <LoadingIndicator size="small" />
-                ) : null
-              }
-            />
-          )}
-        </View>
+              />
+            )}
+          </View>
+        )}
 
         {/* //!-------- Podcasts Section -------- */}
-        <View style={styles.podcastContainer}>
-          <ThemedText type="titleSmall">{t("podcastsTitle")}</ThemedText>
 
-          {podcastsLoading && (
-            <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
-          )}
+        {podcasts.length < 0 && (
+          <View style={styles.podcastContainer}>
+            <ThemedText type="titleSmall">{t("podcastsTitle")}</ThemedText>
 
-          {podcastsError && (
-            <View style={styles.errorContainer}>
-              <Text
-                style={[styles.errorText, { color: Colors[colorScheme].error }]}
-              >
-                {podcastsErrorObj?.message ?? t("errorLoadingData")}
-              </Text>
-              <RetryButton onPress={() => podcastsFetchNextPage()} />
-            </View>
-          )}
+            {podcastsLoading && (
+              <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
+            )}
 
-          {!podcastsLoading && !podcastsError && (
-            <FlatList
-              horizontal
-              contentContainerStyle={styles.flatListContentContainer}
-              data={podcasts}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    router.push({
-                      pathname: "/home/podcast",
-                      params: {
-                        podcast: JSON.stringify(item),
-                      },
-                    })
-                  }
+            {podcastsError && (
+              <View style={styles.errorContainer}>
+                <Text
+                  style={[
+                    styles.errorText,
+                    { color: Colors[colorScheme].error },
+                  ]}
                 >
-                  <PodcastPreviewCard podcast={item} />
-                </TouchableOpacity>
-              )}
-              showsVerticalScrollIndicator={false}
-              onEndReached={() => {
-                if (podcastsHasNextPage && !podcastsIsFetchingNextPage) {
-                  podcastsFetchNextPage();
+                  {podcastsErrorObj?.message ?? t("errorLoadingData")}
+                </Text>
+                <RetryButton onPress={() => podcastsFetchNextPage()} />
+              </View>
+            )}
+
+            {!podcastsLoading && !podcastsError && (
+              <FlatList
+                horizontal
+                contentContainerStyle={styles.flatListContentContainer}
+                data={podcasts}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/home/podcast",
+                        params: {
+                          podcast: JSON.stringify(item),
+                        },
+                      })
+                    }
+                  >
+                    <PodcastPreviewCard podcast={item} />
+                  </TouchableOpacity>
+                )}
+                showsVerticalScrollIndicator={false}
+                onEndReached={() => {
+                  if (podcastsHasNextPage && !podcastsIsFetchingNextPage) {
+                    podcastsFetchNextPage();
+                  }
+                }}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={() =>
+                  podcastsIsFetchingNextPage ? (
+                    <LoadingIndicator size="small" />
+                  ) : null
                 }
-              }}
-              onEndReachedThreshold={0.5}
-              ListFooterComponent={() =>
-                podcastsIsFetchingNextPage ? (
-                  <LoadingIndicator size="small" />
-                ) : null
-              }
-            />
-          )}
-        </View>
+              />
+            )}
+          </View>
+        )}
+
         {/* //!----------- News ----------- */}
         <View style={styles.newsContainer}>
           <ThemedText type="titleSmall">{t("newsTitle")}</ThemedText>
@@ -244,7 +254,6 @@ export default function HomeScreen() {
                 ) : null
               }
             /> */}
-
 
           {!newsIsLoading && !newsIsError && (
             <View style={styles.flatListContentContainer}>

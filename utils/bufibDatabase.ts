@@ -14,8 +14,6 @@ import Constants from "expo-constants";
 import {
   FavoritePrayerFolderType,
   FullPrayer,
-  NewsArticlesType,
-  PodcastType,
   PrayerCategoryType,
   PrayerType,
   PrayerWithCategory,
@@ -90,14 +88,14 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         updated_at              TEXT    DEFAULT CURRENT_TIMESTAMP
       );
 
-    CREATE TABLE IF NOT EXISTS favorite_questions (  
-      id                INTEGER PRIMARY KEY,                                      
-      question_id        INTEGER NOT NULL REFERENCES questions(id) ON DELETE CASCADE UNIQUE, 
-      created_at         TEXT    DEFAULT CURRENT_TIMESTAMP                                                                   
-    );
+      CREATE TABLE IF NOT EXISTS favorite_questions (  
+        id                INTEGER PRIMARY KEY,                                      
+        question_id        INTEGER NOT NULL REFERENCES questions(id) ON DELETE CASCADE UNIQUE, 
+        created_at         TEXT    DEFAULT CURRENT_TIMESTAMP                                                                   
+      );
 
-      CREATE INDEX IF NOT EXISTS idx_fav_questions_question_id 
-        ON favorite_questions(question_id);
+        CREATE INDEX IF NOT EXISTS idx_fav_questions_question_id 
+          ON favorite_questions(question_id);
 
 
       CREATE TABLE IF NOT EXISTS favorite_prayers (
@@ -109,8 +107,8 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         UNIQUE(prayer_id, folder_name)  -- so you can still insert the same prayer into different folders
     );
      
-    CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
-      ON favorite_prayers(prayer_id);
+      CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
+        ON favorite_prayers(prayer_id);
 
     `);
   }
@@ -484,27 +482,6 @@ export const getQuestionCount = async (): Promise<number> => {
   }
 };
 
-export const isQuestionInFavorite = async (
-  questionId: number
-): Promise<boolean> => {
-  try {
-    const db = await getDatabase();
-    const result = await db.getFirstAsync<{ count: number }>(
-      `
-      SELECT COUNT(*) as count FROM favorite_questions WHERE question_id = ?;
-    `,
-      [questionId]
-    );
-    if (result && result.count !== undefined) {
-      return result.count > 0;
-    }
-    return false;
-  } catch (error) {
-    console.error("Error checking favorite status:", error);
-    throw error;
-  }
-};
-
 //!
 export const getSubcategoriesForCategory = async (
   question_category_name: string
@@ -602,7 +579,6 @@ export const searchQuestions = async (
   }
 };
 
-
 export const searchPrayers = async (
   searchTerm: string
 ): Promise<PrayerType[]> => {
@@ -622,7 +598,6 @@ export const searchPrayers = async (
     throw error;
   }
 };
-
 
 export const getLatestQuestions = async (
   limit: number = 10
@@ -768,7 +743,9 @@ export async function getAllPrayersForArabic(
 /**
  * Return an array of folder names that this prayer is already in.
  */
-export const getFoldersForPrayer = async (prayerId: number): Promise<string[]> => {
+export const getFoldersForPrayer = async (
+  prayerId: number
+): Promise<string[]> => {
   const db = await getDatabase();
   const rows = await db.getAllAsync<{ folder_name: string }>(
     `SELECT folder_name FROM favorite_prayers WHERE prayer_id = ?;`,
@@ -777,37 +754,17 @@ export const getFoldersForPrayer = async (prayerId: number): Promise<string[]> =
   return rows.map((r) => r.folder_name);
 };
 /**
- * Check whether a element is currently favorited.
+ * Check whether a question is currently in favorite.
  */
 
-/**
- * Check whether a given question is currently favorited.
- */
-export const isQuestionFavorited = async (
-  questionId: number
-): Promise<boolean> => {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) AS count
-     FROM favorite_questions
-     WHERE question_id = ?;`,
-    [questionId]
-  );
-  return (row?.count ?? 0) > 0;
-};
-
-/**
- * Check whether a given prayer is currently favorited.
- */
-
-export const isPrayerFavorited = async (
+export const isQuestionInFavorite = async (
   questionId: number
 ): Promise<boolean> => {
   try {
     const db = await getDatabase();
     const result = await db.getFirstAsync<{ count: number }>(
       `
-      SELECT COUNT(*) as count FROM favorite_prayers WHERE prayer_id = ?;
+      SELECT COUNT(*) as count FROM favorite_questions WHERE question_id = ?;
     `,
       [questionId]
     );
@@ -820,6 +777,31 @@ export const isPrayerFavorited = async (
     throw error;
   }
 };
+
+/**
+ * Check whether a given prayer is currently in favorite.
+ */
+
+// export const isPrayerInFavorite = async (
+//   prayer_id: number
+// ): Promise<boolean> => {
+//   try {
+//     const db = await getDatabase();
+//     const result = await db.getFirstAsync<{ count: number }>(
+//       `
+//       SELECT COUNT(*) as count FROM favorite_prayers WHERE prayer_id = ?;
+//     `,
+//       [prayer_id]
+//     );
+//     if (result && result.count !== undefined) {
+//       return result.count > 0;
+//     }
+//     return false;
+//   } catch (error) {
+//     console.error("Error checking favorite status:", error);
+//     throw error;
+//   }
+// };
 
 /**
  * Fetch all favorited questions.
@@ -844,7 +826,9 @@ export const getFavoriteQuestions = async (): Promise<QuestionType[]> => {
  * Fetch all distinct folder_name + folder_color entries from favorite_prayers,
  * along with the number of prayers in each folder.
  */
-export const getFavoritePrayerFolders = async (): Promise<FavoritePrayerFolderType[]> => {
+export const getFavoritePrayerFolders = async (): Promise<
+  FavoritePrayerFolderType[]
+> => {
   try {
     const db = await getDatabase();
     const rows = await db.getAllAsync<{
@@ -894,8 +878,11 @@ export const getFavoritePrayers = async (): Promise<PrayerType[]> => {
 };
 
 // (2) “Create” a folder (just return the object; actual insertion happens in addPrayerToFolder)
-export const createFolder = async (name: string, color: string): Promise<{ name: string; color: string }> => {
-  // No DB write here—just return the name/color pair. 
+export const createFolder = async (
+  name: string,
+  color: string
+): Promise<{ name: string; color: string }> => {
+  // No DB write here—just return the name/color pair.
   // The call to `addPrayerToFolder()` below will insert into favorite_prayers.
   return { name, color };
 };
