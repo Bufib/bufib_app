@@ -1,4 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
+import Toast from "react-native-toast-message";
+import i18n from "./i18n";
 const NEWS_KEY = "favorite_newsarticles";
 const PODCAST_KEY = "favorite_podcasts";
 
@@ -36,12 +39,19 @@ export async function toggleNewsArticleFavorite(id: number): Promise<boolean> {
   if (index >= 0) {
     newIds = ids.filter((x) => x !== id);
     favorited = false;
+    Toast.show({
+      type: "success",
+      text1: i18n.t("addedToFavorites"),
+    });
   } else {
     newIds = [...ids, id];
     favorited = true;
+    Toast.show({
+      type: "error",
+      text1: i18n.t("removedFromFavorites"),
+    });
   }
   await setIds(NEWS_KEY, newIds);
-  // The component calling this function will be responsible for updating the Jotai trigger atom
   return favorited;
 }
 
@@ -55,7 +65,6 @@ export async function isPodcastFavorited(id: number): Promise<boolean> {
   return ids.includes(id);
 }
 
-// CORRECTED: togglePodcastFavorite does NOT use useAtom
 export async function togglePodcastFavorite(id: number): Promise<boolean> {
   const ids = await getIds(PODCAST_KEY);
   const index = ids.indexOf(id);
@@ -70,7 +79,6 @@ export async function togglePodcastFavorite(id: number): Promise<boolean> {
     favorited = true;
   }
   await setIds(PODCAST_KEY, newIds);
-  // The component calling this function will be responsible for updating the Jotai trigger atom
   return favorited;
 }
 

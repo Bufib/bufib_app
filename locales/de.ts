@@ -27,7 +27,8 @@ export const de = {
   error: "Fehler",
   favorites: "Favoriten",
   search: "Suche",
-
+  removedFromFavorites: "Aus Favoriten entfernt",
+  addedToFavorites: "Zu Favoriten hinzugefügt",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -35,6 +36,7 @@ export const de = {
   prayerScreenTitle: "Gebete und mehr",
   newsArticleScreenTitle: "Artikel",
   podcastScreenTitle: "Podcasts",
+  home: "Home",
 
   // Database
   updateAvailable: "Update Verfügbar",

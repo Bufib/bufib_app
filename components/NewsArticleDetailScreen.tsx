@@ -79,7 +79,7 @@ export default function NewsArticleDetailScreen({
       try {
         setIsFavorite(await isNewsArticleFavorited(articleId));
       } catch {
-        /* ignore */
+        console.log("error");
       }
     })();
   }, [articleId]);
@@ -156,14 +156,14 @@ export default function NewsArticleDetailScreen({
             {isFavorite ? (
               <AntDesign
                 name="star"
-                size={32}
+                size={31}
                 color={Colors.universal.favorite}
                 onPress={() => onPressToggle()}
               />
             ) : (
               <AntDesign
                 name="staro"
-                size={32}
+                size={31}
                 color={Colors[colorScheme].defaultIcon}
                 onPress={() => onPressToggle()}
               />

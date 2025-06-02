@@ -11,9 +11,8 @@ export const en = {
   newsTitle: "News",
   newsEmpty: "There are no news yet!",
 
-
-   // Podcasts
-   podcastsTitle: "Podcast",
+  // Podcasts
+  podcastsTitle: "Podcast",
 
   // General
   retry: "Retry",
@@ -28,7 +27,10 @@ export const en = {
   error: "Error",
   favorites: "favorites",
   search: "Search",
-  
+  removedFromFavorites: "Removed from favorites",
+  addedToFavorites: "Added to Favorites",
+
+
   // Navigation
   knowledge: "Knowledge",
   settings: "Settings",

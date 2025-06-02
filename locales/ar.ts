@@ -11,9 +11,8 @@ export const ar = {
   newsTitle: "أخبار",
   newsEmpty: "لا توجد أخبار حتى الآن",
 
-
-   // Podcasts
-   podcastsTitle: "بودكاست",
+  // Podcasts
+  podcastsTitle: "بودكاست",
 
   // General
   retry: "إعادة المحاولة",
@@ -28,7 +27,9 @@ export const ar = {
   error: "خطأ",
   favorites: "المفضلة",
   search: "بحث",
-  
+  removedFromFavorites: "تمت إزالته من المفضلة",
+  addedToFavorites: "تمت إضافته إلى المفضلة",
+
   // Navigation
   knowledge: "معرفة",
   settings: "إعدادات",
@@ -36,7 +37,7 @@ export const ar = {
   prayerScreenTitle: "صلاة وأكثر",
   newsArticleScreenTitle: "مقالات",
   podcastScreenTitle: "بودكاست",
-
+  home: "الرئيسية",
   // Database
   updateAvailable: "تحديث جديد متوفر",
   newAppVersionAvailable: "إصدار جديد من التطبيق متوفّر في متجر التطبيقات!",

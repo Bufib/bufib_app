@@ -7,11 +7,11 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import i18n from "@/utils/i18n";
+import { useTranslation } from "react-i18next";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  const { t } = useTranslation();
   return (
     <Tabs
       screenOptions={{
@@ -24,7 +24,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: "Home",
+          title: t("home"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
@@ -33,7 +33,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="knowledge"
         options={{
-          title: i18n.t("knowledge"),
+          title: t("knowledge"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book" color={color} />
           ),
@@ -42,7 +42,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: i18n.t("search"),
+          title: t("search"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="magnifyingglass" color={color} />
           ),
@@ -51,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="favorites"
         options={{
-          title: i18n.t("favorites"),
+          title: t("favorites"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="star" color={color} />
           ),
@@ -60,7 +60,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: i18n.t("settings"),
+          title: t("settings"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="gear.circle" color={color} />
           ),
