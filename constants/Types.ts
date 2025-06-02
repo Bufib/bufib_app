@@ -3,6 +3,7 @@ export type LanguageContextType = {
   language: string;
   setAppLanguage: (lng: string) => Promise<void>;
   ready: boolean;
+  isArabic: () => boolean
 };
 
 export type LanguageCode = "de" | "ar" | "en";
@@ -40,6 +41,8 @@ export type NewsType = {
   external_urls?: string[];
   internal_urls?: string[];
   language_code: string;
+  image_url?: string[];
+  is_pinned: boolean;
 };
 
 export type NewsCardType = {
@@ -60,7 +63,7 @@ export type Sizes = {
 export type triggerRefreshFavoritesType = {
   refreshTriggerFavorites: number;
   triggerRefreshFavorites: () => void;
-}
+};
 
 // Prayer and Question ButtonLinks
 export type PrayerQuestionLinksType = {
@@ -68,14 +71,13 @@ export type PrayerQuestionLinksType = {
   name: string;
   image: any;
   value: string;
-  
 };
 
 export type FavoritePrayerFolderType = {
   name: string;
   color: string;
   prayerCount: number;
-}
+};
 
 // Answers table
 export type AnswerType = {
@@ -340,19 +342,16 @@ export type TodoToDeleteType = {
 
 // Podcasts
 export type PodcastType = {
-  id: number; 
-  title: string; 
-  description: string; 
-  filename: string; 
-  language_code?: string; 
-  published_at: string; 
-  created_at: string; 
+  id: number;
+  title: string;
+  description: string;
+  filename: string;
+  language_code?: string;
+  published_at: string;
+  created_at: string;
 };
-
 
 export type PodcastProps = { podcast: PodcastType };
 export type PodcastPlayerPropsType = {
   podcast: PodcastType;
 };
-
-

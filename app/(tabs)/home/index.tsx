@@ -20,10 +20,11 @@ import { Colors } from "@/constants/Colors";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import { router } from "expo-router";
 import { useNews } from "@/hooks/useNews";
-import NewsCard from "@/components/NewsCard";
 import { PodcastPreviewCard } from "@/components/PodcastPreviewCard";
 import { usePodcasts } from "@/hooks/usePodcasts";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { NewsItem } from "@/components/NewsItem";
+import { ThemedView } from "@/components/ThemedView";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -82,7 +83,7 @@ export default function HomeScreen() {
       >
         {/* //!----------- News articles ----------- */}
 
-        {articles.length < 0 && (
+        {articles.length > 0 && (
           <View style={styles.newsArticleContainer}>
             <ThemedText type="titleSmall">{t("newsArticlesTitle")}</ThemedText>
 
@@ -151,7 +152,7 @@ export default function HomeScreen() {
 
         {/* //!-------- Podcasts Section -------- */}
 
-        {podcasts.length < 0 && (
+        {podcasts.length > 0 && (
           <View style={styles.podcastContainer}>
             <ThemedText type="titleSmall">{t("podcastsTitle")}</ThemedText>
 
@@ -228,39 +229,23 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* {!newsIsLoading && !newsIsError && (
-            <FlatList
-              contentContainerStyle={styles.flatListContentContainer}
-              data={news}
-              keyExtractor={(item: NewsType) => item.id.toString()}
-              renderItem={({ item }: { item: NewsType }) => (
-                <NewsCard
-                  title={item.title}
-                  content={item.content}
-                  created_at={item.created_at}
-                />
-              )}
-              showsHorizontalScrollIndicator={false}
-              onEndReached={() => {
-                if (newHasNextPage && !newsArticlesIsFetchingNextPage) {
-                  newsfetchNextPage();
-                }
-              }}
-              onEndReachedThreshold={0.5}
-              ListFooterComponent={() =>
-                newsIsFetchingNextPage ? (
-                
-                  <LoadingIndicator size="small" />
-                ) : null
-              }
-            /> */}
+          {news.length === 0 && (
+            <ThemedView style={styles.newsEmptyContainer}>
+              <ThemedText style={styles.newsEmptyText} type="subtitle">
+                {t("newsEmpty")}
+              </ThemedText>
+            </ThemedView>
+          )}
 
           {!newsIsLoading && !newsIsError && (
             <View style={styles.flatListContentContainer}>
               {/* Render each item */}
               {news.map((item, index) => (
-                <NewsCard
+                <NewsItem
                   key={item.id.toString()}
+                  id={item.id}
+                  language_code={item.language_code}
+                  is_pinned={item.is_pinned}
                   title={item.title}
                   content={item.content}
                   created_at={item.created_at}
@@ -300,6 +285,14 @@ const styles = StyleSheet.create({
   newsArticleContainer: {
     flex: 1,
     gap: 10,
+  },
+  newsEmptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  newsEmptyText: {
+    textAlign: "center",
   },
   errorContainer: {
     alignItems: "center",

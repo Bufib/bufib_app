@@ -59,7 +59,6 @@
 //   return useContext(LanguageContext);
 // }
 
-
 import React, {
   createContext,
   useContext,
@@ -78,6 +77,7 @@ const LanguageContext = createContext<LanguageContextType>({
   language: defaultLang,
   setAppLanguage: async () => {},
   ready: false,
+  isArabic: () => false,
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
@@ -104,11 +104,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLanguage(lng);
   };
 
+  const isArabic = (): boolean => {
+    return language === "ar";
+  };
   return (
     <LanguageContext.Provider
       value={{
         language,
         setAppLanguage,
+        isArabic,
         ready: i18nReady && checkedStorage,
       }}
     >

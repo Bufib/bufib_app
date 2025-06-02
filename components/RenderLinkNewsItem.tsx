@@ -6,6 +6,7 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "react-native";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import handleOpenInternallUrl from "../utils/handleOpenInternalUrl";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type RenderLinkNewsItemProps = {
   url: string;
@@ -19,7 +20,7 @@ const RenderLinkNewsItem = ({
   isExternal,
 }: RenderLinkNewsItemProps) => {
   const colorScheme = useColorScheme();
-  
+  const { isArabic } = useLanguage();
   return (
     <Pressable
       key={index}
@@ -37,7 +38,10 @@ const RenderLinkNewsItem = ({
         color={colorScheme === "dark" ? "#fff" : "#000"}
         style={{ paddingRight: 5 }}
       />
-      <ThemedText style={styles.linkText} numberOfLines={1}>
+      <ThemedText
+        style={[styles.linkText, { textAlign: isArabic() ? "right" : "left" }]}
+        numberOfLines={1}
+      >
         {url}
       </ThemedText>
     </Pressable>

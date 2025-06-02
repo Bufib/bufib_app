@@ -9,7 +9,7 @@ import {
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { CoustomTheme } from "@/utils/coustomTheme";
-import { NewsItemType } from "@/hooks/useFetchNews";
+import { NewsType } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { formatDate } from "../utils/formatDate";
 import { useColorScheme } from "@/hooks/useColorScheme.web";
@@ -18,6 +18,7 @@ import { useAuthStore } from "../stores/authStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import NewsMenu from "./NewsMenu";
 import { Image } from "expo-image";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const screenWidth = Dimensions.get("window").width;
 const imageHeight = screenWidth * 1.2;
@@ -25,19 +26,20 @@ const imageHeight = screenWidth * 1.2;
 export const NewsItem = ({
   id,
   title,
-  body_text,
+  content,
   created_at,
   image_url,
-  internal_url,
-  external_url,
+  internal_urls,
+  external_urls,
   is_pinned,
-}: NewsItemType) => {
+  language_code,
+}: NewsType) => {
   const colorScheme = useColorScheme();
   const themeStyles = CoustomTheme();
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const [currentPage, setCurrentPage] = useState(0);
   const flatListRef = useRef<FlatList<string>>(null);
-
+  const { isArabic } = useLanguage();
   const handleScrollEnd = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const pageIndex = Math.round(offsetX / screenWidth);
@@ -69,17 +71,30 @@ export const NewsItem = ({
         </ThemedView>
       )}
       {title && title.trim() !== "" && (
-        <ThemedText style={styles.newsTitle} type="defaultSemiBold">
+        <ThemedText
+          style={[
+            styles.newsTitle,
+            { textAlign: isArabic() ? "right" : "left" },
+          ]}
+          type="defaultSemiBold"
+        >
           {title}
         </ThemedText>
       )}
-      {body_text && body_text.trim() !== "" && (
-        <ThemedText style={styles.newsContent}>{body_text}</ThemedText>
+      {content && content.trim() !== "" && (
+        <ThemedText
+          style={[
+            styles.newsContent,
+            { textAlign: isArabic() ? "right" : "left" },
+          ]}
+        >
+          {content}
+        </ThemedText>
       )}
 
-      {external_url && external_url.length > 0 && (
+      {external_urls && external_urls.length > 0 && (
         <ThemedView style={styles.linksContainer}>
-          {external_url.map((url, index) => (
+          {external_urls.map((url, index) => (
             <RenderLinkNewsItem
               key={`external-url-${index}-${url}`}
               url={url}
@@ -90,9 +105,9 @@ export const NewsItem = ({
         </ThemedView>
       )}
 
-      {internal_url && internal_url.length > 0 && (
+      {internal_urls && internal_urls.length > 0 && (
         <ThemedView style={styles.linksContainer}>
-          {internal_url.map((url, index) => (
+          {internal_urls.map((url, index) => (
             <RenderLinkNewsItem
               key={`internal-url-${index}-${url}`}
               url={url}
@@ -144,7 +159,7 @@ export const NewsItem = ({
         </View>
       )}
 
-      <ThemedText style={styles.newsDate}>{formatDate(created_at)}</ThemedText>
+      <ThemedText style={[styles.newsDate,  { textAlign: isArabic() ? "left" : "right" },]}>{formatDate(created_at)}</ThemedText>
     </View>
   );
 };
@@ -206,6 +221,6 @@ const styles = StyleSheet.create({
   },
   newsDate: {
     fontSize: 14,
-    color: Colors.universal.fadeColor,
+    color: Colors.universal.grayedOut,
   },
 });

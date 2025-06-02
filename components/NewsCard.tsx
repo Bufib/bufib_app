@@ -8,7 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const NewsCard: React.FC<NewsCardType> = ({ title, content, created_at }) => {
   const colorScheme = useColorScheme() || "light";
-  const { language } = useLanguage();
+  const { language, isArabic } = useLanguage();
   return (
     <View
       style={[
@@ -24,7 +24,7 @@ const NewsCard: React.FC<NewsCardType> = ({ title, content, created_at }) => {
         style={[
           styles.title,
           {
-            textAlign: language === "ar" ? "right" : "left",
+            textAlign: isArabic() ? "right" : "left",
           },
         ]}
         type="title"
@@ -35,7 +35,7 @@ const NewsCard: React.FC<NewsCardType> = ({ title, content, created_at }) => {
         style={[
           styles.content,
           {
-            textAlign: language === "ar" ? "right" : "left",
+            textAlign: isArabic() ? "right" : "left",
           },
         ]}
         type="default"
@@ -47,7 +47,7 @@ const NewsCard: React.FC<NewsCardType> = ({ title, content, created_at }) => {
           styles.date,
           {
             color: Colors.universal.grayedOut,
-            textAlign: language === "ar" ? "left" : "right",
+            textAlign: isArabic() ? "left" : "right",
           },
         ]}
       >

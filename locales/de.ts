@@ -9,6 +9,7 @@ export const de = {
 
   // News
   newsTitle: "Neuigkeiten",
+  newsEmpty: "Es gibt derzeit noch keine Neuigkeiten!",
 
   // Podcasts
   podcastsTitle: "Podcast",

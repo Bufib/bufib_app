@@ -9,6 +9,8 @@ export const ar = {
 
   // News
   newsTitle: "أخبار",
+  newsEmpty: "لا توجد أخبار حتى الآن",
+
 
    // Podcasts
    podcastsTitle: "بودكاست",

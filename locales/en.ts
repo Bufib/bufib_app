@@ -9,6 +9,8 @@ export const en = {
 
   // News
   newsTitle: "News",
+  newsEmpty: "There are no news yet!",
+
 
    // Podcasts
    podcastsTitle: "Podcast",
