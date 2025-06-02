@@ -27,6 +27,7 @@ import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { NoInternet } from "@/components/NoInternet";
 import Constants from "expo-constants";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
@@ -149,6 +150,7 @@ const Settings = () => {
               thumbColor={Colors[colorScheme].thumbColor}
             />
           </View>
+          <LanguageSwitcher />
           {isLoggedIn && (
             <View style={styles.settingRow}>
               <View>
