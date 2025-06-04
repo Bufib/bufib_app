@@ -89,7 +89,7 @@ export default function QuestionLinks() {
                   <ThemedText
                     style={[styles.elementText, { fontSize: fontSize }]}
                   >
-                    {category.name}
+                   { t(category.name)}
                   </ThemedText>
                 </View>
               </View>

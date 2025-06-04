@@ -66,7 +66,8 @@ export const ar = {
   names: "أسْماءُ الحُسْنَى",
 
   // Weekly calendar
-  weeklyToDo: "خطة الأسبوع",
+  weeklyToDoTitle: "خطة الأسبوع",
+  weeklyToDoSubtitle: "أضف صلواتك اليومية",
   addWeekly: "إضافة",
   addForDay: "إضافة ل",
   enterPrayer: "أدخل الصلاة...",

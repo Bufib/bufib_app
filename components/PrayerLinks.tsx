@@ -2,16 +2,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
-  ScrollView,
   ColorSchemeName,
-  Keyboard,
-  TouchableWithoutFeedback,
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
 import { router } from "expo-router";
 import { useColorScheme } from "react-native";
-import { CoustomTheme } from "../utils/coustomTheme";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { prayerCategories, tasbihCategory } from "@/utils/categories";
@@ -26,7 +22,6 @@ import { Colors } from "@/constants/Colors";
 import { Image } from "expo-image";
 import { ThemedText } from "./ThemedText";
 import { AntDesign } from "@expo/vector-icons";
-import i18n from "@/utils/i18n";
 import { PrayerQuestionLinksType, TodoToDeleteType } from "@/constants/Types";
 
 const PrayerLinks = () => {
@@ -94,22 +89,12 @@ const PrayerLinks = () => {
     setTodoToDelete({ dayIndex: null, todoId: null });
   }, []);
 
-  // const handleUndoAll = useCallback(
-  //   (dayIndex: number): void => {
-  //     // The check for null selectedDay happens inside WeeklyCalendarSection now
-  //     // or keep it here if needed: if (selectedDay !== null && dayIndex === selectedDay) { ... }
-  //     undoAllForDay(dayIndex);
-  //   },
-  //   [undoAllForDay]
-  // );
-
   const handleCategoryPress = useCallback(
     (prayerLink: PrayerQuestionLinksType) => {
       router.push(
         prayerLink.value === "Tasbih"
           ? {
               pathname: "/(tabs)/knowledge/(prayers)/tasbih",
-         
             }
           : prayerLink.value === "Names"
           ? {
@@ -192,7 +177,7 @@ const PrayerLinks = () => {
                   <ThemedText
                     style={[styles.elementText, { fontSize: fontSize }]}
                   >
-                    {category.name}
+                    {t(category.name)}
                   </ThemedText>
                 </View>
               </View>

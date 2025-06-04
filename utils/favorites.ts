@@ -40,15 +40,15 @@ export async function toggleNewsArticleFavorite(id: number): Promise<boolean> {
     newIds = ids.filter((x) => x !== id);
     favorited = false;
     Toast.show({
-      type: "success",
-      text1: i18n.t("addedToFavorites"),
+      type: "error",
+      text1: i18n.t("removedFromFavorites"),
     });
   } else {
     newIds = [...ids, id];
     favorited = true;
     Toast.show({
-      type: "error",
-      text1: i18n.t("removedFromFavorites"),
+      type: "success",
+      text1: i18n.t("addedToFavorites"),
     });
   }
   await setIds(NEWS_KEY, newIds);
@@ -74,9 +74,17 @@ export async function togglePodcastFavorite(id: number): Promise<boolean> {
   if (index >= 0) {
     newIds = ids.filter((x) => x !== id);
     favorited = false;
+    Toast.show({
+      type: "error",
+      text1: i18n.t("removedFromFavorites"),
+    });
   } else {
     newIds = [...ids, id];
     favorited = true;
+    Toast.show({
+      type: "success",
+      text1: i18n.t("addedToFavorites"),
+    });
   }
   await setIds(PODCAST_KEY, newIds);
   return favorited;

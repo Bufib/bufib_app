@@ -4,42 +4,42 @@ import { PrayerQuestionLinksType } from "@/constants/Types";
 export const questionCategories: PrayerQuestionLinksType[] = [
   {
     id: 0,
-    name: i18n.t("rechtsfragen"),
+    name: "rechtsfragen",
     image: require("@/assets/images/rechtsfragen.png"),
     value: "Rechtsfragen",
   },
   {
     id: 1,
 
-    name: i18n.t("quran"),
+    name: "quran",
     image: require("@/assets/images/quran.png"),
     value: "Quran",
   },
   {
     id: 2,
 
-    name: i18n.t("geschichte"),
+    name: "geschichte",
     image: require("@/assets/images/geschichte.png"),
     value: "Geschichte",
   },
   {
     id: 3,
 
-    name: i18n.t("glaubensfragen"),
+    name: "glaubensfragen",
     image: require("@/assets/images/glaubensfragen.png"),
     value: "Glaubensfragen",
   },
   {
     id: 4,
 
-    name: i18n.t("ethik"),
+    name: "ethik",
     image: require("@/assets/images/ethik.png"),
     value: "Ethik",
   },
   {
     id: 5,
 
-    name: i18n.t("ratschlaege"),
+    name: "ratschlaege",
     image: require("@/assets/images/ratschlaege.png"),
     value: "Ratschläge",
   },
@@ -49,39 +49,39 @@ export const questionCategories: PrayerQuestionLinksType[] = [
 export const prayerCategories: PrayerQuestionLinksType[] = [
   {
     id: 0,
-    name: i18n.t("dua"),
+    name: "dua",
     image: require("@/assets/images/dua.png"),
     value: "Dua",
   },
   {
     id: 1,
-    name: i18n.t("salat"),
+    name: "salat",
     image: require("@/assets/images/salat.png"),
     value: "Salat",
   },
   {
     id: 2,
-    name: i18n.t("ziyarat"),
+    name: "ziyarat",
     image: require("@/assets/images/ziyarat.png"),
     value: "Ziyarat",
   },
 
   {
     id: 3,
-    name: i18n.t("munajat"),
+    name: "munajat",
     image: require("@/assets/images/munajat.png"),
     value: "Munajat",
   },
   {
     id: 4,
-    name: i18n.t("special"),
+    name: "special",
     image: require("@/assets/images/special.png"),
     value: "Special",
   },
 
   {
     id: 5,
-    name: i18n.t("names"),
+    name: "names",
     image: require("@/assets/images/names.png"),
     value: "Names",
   },
@@ -91,7 +91,7 @@ export const prayerCategories: PrayerQuestionLinksType[] = [
 export const tasbihCategory: PrayerQuestionLinksType[] = [
   {
     id: 0,
-    name: i18n.t("tasbih"),
+    name: "tasbih",
     image: require("@/assets/images/tasbih.png"),
     value: "Tasbih",
   },

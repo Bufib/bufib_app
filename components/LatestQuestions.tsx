@@ -5,63 +5,29 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
+  useColorScheme,
 } from "react-native";
 import { router } from "expo-router";
 import { getLatestQuestions } from "@/utils/bufibDatabase";
 import { QuestionType } from "@/constants/Types";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "./ThemedText";
-import { useColorScheme } from "react-native";
 import { ThemedView } from "./ThemedView";
 import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 const LatestQuestions: React.FC = () => {
+  //State & Hooks
   const [latestQuestions, setLatestQuestions] = useState<QuestionType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const dbInitialized = useInitializeDatabase();
   const themeStyles = CoustomTheme();
   const colorScheme = useColorScheme();
 
-  const QuestionItem = ({
-    item,
-    onPress,
-  }: {
-    item: QuestionType;
-    onPress: () => void;
-  }) => {
-    return (
-      <Pressable
-        onPress={onPress}
-        style={({ pressed }) => [
-          styles.questionItem,
-          themeStyles.contrast,
-
-          pressed &&
-            styles.pressed && {
-              backgroundColor: colorScheme === "dark" ? "#242c40" : "#E8E8E8",
-            },
-
-          ,
-        ]}
-      >
-        <View style={styles.questionContent}>
-          <ThemedText style={styles.questionPreview} numberOfLines={2}>
-            {item.question}
-          </ThemedText>
-          <View style={styles.categoryContainer}>
-            <ThemedText style={styles.categoryText}>
-              {item.question_category_name} {">"} {item.question_subcategory_name}
-            </ThemedText>
-          </View>
-        </View>
-      </Pressable>
-    );
-  };
-
+  //Data‐Loading Effect
   useEffect(() => {
-    if (!dbInitialized) {
-      return;
-    }
+    if (!dbInitialized) return;
+
     const loadLatestQuestions = async () => {
       setIsLoading(true);
       try {
@@ -77,18 +43,46 @@ const LatestQuestions: React.FC = () => {
     loadLatestQuestions();
   }, [dbInitialized]);
 
-  // While loading
+  // loading
   if (isLoading) {
     return (
-      <ThemedView
-        style={{ flex: 1, marginTop: 20, gap: 10, alignItems: "center" }}
-      >
-        <ThemedText>Fragen werden geladen</ThemedText>
-        <ActivityIndicator />
+      <ThemedView style={styles.loadingContainer}>
+        <LoadingIndicator />
       </ThemedView>
     );
   }
 
+  // Child Component: Renders a Single Question Row
+  const QuestionItem: React.FC<{
+    item: QuestionType;
+    onPress: () => void;
+  }> = ({ item, onPress }) => (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.questionItem,
+        themeStyles.contrast,
+        pressed && {
+          ...styles.pressed,
+          backgroundColor: colorScheme === "dark" ? "#242c40" : "#E8E8E8",
+        },
+      ]}
+    >
+      <View style={styles.questionContent}>
+        <ThemedText style={styles.questionPreview} numberOfLines={2}>
+          {item.question}
+        </ThemedText>
+        <View style={styles.categoryContainer}>
+          <ThemedText style={styles.categoryText}>
+            {item.question_category_name} {" > "}{" "}
+            {item.question_subcategory_name}
+          </ThemedText>
+        </View>
+      </View>
+    </Pressable>
+  );
+
+  //Render Item Function
   const renderItem = ({ item }: { item: QuestionType }) => (
     <QuestionItem
       item={item}
@@ -106,6 +100,7 @@ const LatestQuestions: React.FC = () => {
     />
   );
 
+  //Main Render: FlatList of Latest Questions
   return (
     <FlatList
       data={latestQuestions}
@@ -113,12 +108,19 @@ const LatestQuestions: React.FC = () => {
       renderItem={renderItem}
       style={styles.list}
       contentContainerStyle={styles.listContent}
-      showsVerticalScrollIndicator={true}
+      showsVerticalScrollIndicator
     />
   );
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    marginTop: 20,
+    gap: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   list: {
     flex: 1,
   },
@@ -131,31 +133,24 @@ const styles = StyleSheet.create({
     padding: 16,
     // iOS Shadow
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 }, // X: 0, Y: 2
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-
     // Android Shadow
-    elevation: 5, // Adjust for stronger or softer shadow
+    elevation: 5,
   },
-
   pressed: {
     top: 2,
     // iOS Shadow
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 }, // X: 0, Y: 2
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
-
     // Android Shadow
-    elevation: 5, // Adjust for stronger or softer shadow,
+    elevation: 5,
   },
   questionContent: {
     gap: 8,
-  },
-  questionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
   },
   questionPreview: {
     fontSize: 14,

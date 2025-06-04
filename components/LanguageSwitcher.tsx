@@ -2,7 +2,7 @@ import React from "react";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Colors } from "@/constants/Colors";
-
+import i18n from "@/utils/i18n";
 /**
  * A small UI widget with three buttons (“Deutsch” / “English” / “العربية”) that uses
  * LanguageContext to switch the app’s i18n language and persist it.

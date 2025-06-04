@@ -11,11 +11,13 @@ import { ThemedView } from "./ThemedView";
 import { EvilIcons } from "@expo/vector-icons";
 import { DaySelector } from "./DaySelector";
 import { TodoList } from "./ToDoList";
-import { WeeklyTodosType, TodoItemType } from "@/constants/Types";
+import { WeeklyTodosType } from "@/constants/Types";
 import { getFullDayName } from "@/utils/dayNames";
 import { Colors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
 import type { WeeklyCalendarSectionType } from "@/constants/Types";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { LinearGradient } from "expo-linear-gradient";
 
 export const WeeklyCalendarSection: React.FC<
   WeeklyCalendarSectionType & {
@@ -47,27 +49,41 @@ export const WeeklyCalendarSection: React.FC<
     <View style={styles.calendarSection}>
       {/* Header */}
       <View style={[styles.calendarHeader]}>
-        <ThemedText style={[styles.sectionTitle]}>
-          {t("weeklyToDo")}{" "}
-        </ThemedText>
+        <View style={styles.calenderHeaderContainer}>
+          <AntDesign
+            name="calendar"
+            size={45}
+            color="#f5f6fa"
+            style={{
+              backgroundColor: Colors.universal.primary,
+              borderRadius: 10,
+              padding: 5,
+              paddingBottom: 7,
+            }}
+          />
+          <View style={[styles.calenderTextContainer]}>
+            <ThemedText style={[styles.calenderTextTitle]}>
+              {t("weeklyToDoTitle")}
+            </ThemedText>
+            <ThemedText style={[styles.calenderTextSubtitle]}>
+              {t("weeklyToDoSubtitle")}
+            </ThemedText>
+          </View>
+        </View>
         <TouchableOpacity
           style={[
             styles.addButton,
-            {
-              backgroundColor:
-                colorScheme === "dark"
-                  ? Colors.universal.primary
-                  : Colors.universal.secondary,
-            },
+            
             selectedDay === null && { opacity: 0.5 },
           ]}
           onPress={onShowAddModal}
           disabled={selectedDay === null}
         >
-          <ThemedText style={styles.addButtonText}>
-            {" "}
-            {t("addWeekly")}{" "}
-          </ThemedText>
+          <AntDesign
+            name="pluscircleo"
+            size={35}
+            color={Colors[colorScheme].defaultIcon}
+          />
         </TouchableOpacity>
       </View>
 
@@ -124,8 +140,7 @@ export const WeeklyCalendarSection: React.FC<
 };
 
 const styles = StyleSheet.create({
-  calendarSection: {
-  },
+  calendarSection: {},
 
   loadingContainer: {
     minHeight: 200,
@@ -135,22 +150,34 @@ const styles = StyleSheet.create({
   },
   calendarHeader: {
     flexDirection: "row",
+    gap: 10,
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
   },
-  sectionTitle: {
+  calenderHeaderContainer: {
+    flexDirection: "row",
+    gap: 15,
+    marginLeft: 13,
+  },
+  calenderTextContainer: {
+    flexDirection: "column",
+    gap: 1,
+    justifyContent: "center",
+  },
+  calenderTextTitle: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "600",
+  },
+  calenderTextSubtitle: {
+    fontSize: 16,
   },
   addButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingRight: 15
   },
   addButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "700",
   },
   weekPlanerContainer: {
     flex: 1,

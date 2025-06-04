@@ -66,7 +66,8 @@ export const de = {
   names: "Asma-ul-Husna",
 
   // Weekly calender
-  weeklyToDo: "Plan für die Woche",
+  weeklyToDoTitle: "Plan für die Woche",
+  weeklyToDoSubtitle: "Plane deine Woche",
   addWeekly: "Hinzufügen",
   addForDay: "Hinzufügen für",
   enterPrayer: "Gib das Gebet ein...",
