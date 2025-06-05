@@ -128,17 +128,6 @@ const PrayerLinks = () => {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.categoriesContainer}>
-        <View style={styles.categoriesHeaderContainer}>
-          <ThemedText style={[styles.categoriesContainerText]}>
-            {t("categories")} (7)
-          </ThemedText>
-          <AntDesign
-            name="search1"
-            size={30}
-            color="black"
-            style={{ marginRight: 6 }}
-          />
-        </View>
         <View style={styles.categories}>
           {prayerCategories.map((category, index) => (
             <TouchableOpacity
@@ -191,7 +180,7 @@ const PrayerLinks = () => {
               styles.element,
               {
                 backgroundColor: Colors[colorScheme].contrast,
-                width: "100%",
+                width: "96%",
                 height: elementSize / 2,
               },
             ]}
@@ -218,34 +207,34 @@ const PrayerLinks = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.todoListContainer}>
-        <WeeklyCalendarSection
-          todosByDay={todosByDay}
-          loading={loading}
-          onToggleTodo={toggleTodo}
-          onUndoAll={undoAllForDay}
-          onShowAddModal={() => setAddModalVisible(true)}
-          onShowDeleteModal={showDeleteConfirmation}
-          selectedDay={selectedDay}
-          currentDayIndex={getCurrentDayIndex()}
-          onSelectDay={handleSelectDay}
-        />
-      </View>
-      {/* Render Modals */}
-      {selectedDay !== null && ( // Only render Add modal if a day is potentially selected
-        <AddTodoModal
-          visible={addModalVisible}
-          onClose={() => setAddModalVisible(false)}
-          onAdd={handleAddTodoConfirmed}
-          selectedDayName={getFullDayName(selectedDay)}
-        />
-      )}
 
-      <DeleteTodoModal
-        visible={deleteModalVisible}
-        onClose={cancelDelete}
-        onConfirmDelete={handleConfirmDelete}
+      <WeeklyCalendarSection
+        todosByDay={todosByDay}
+        loading={loading}
+        onToggleTodo={toggleTodo}
+        onUndoAll={undoAllForDay}
+        onShowAddModal={() => setAddModalVisible(true)}
+        onShowDeleteModal={showDeleteConfirmation}
+        selectedDay={selectedDay}
+        currentDayIndex={getCurrentDayIndex()}
+        onSelectDay={handleSelectDay}
       />
+
+      {selectedDay !== null && (
+        <>
+          <AddTodoModal
+            visible={addModalVisible}
+            onClose={() => setAddModalVisible(false)}
+            onAdd={handleAddTodoConfirmed}
+            selectedDayName={getFullDayName(selectedDay)}
+          />
+          <DeleteTodoModal
+            visible={deleteModalVisible}
+            onClose={cancelDelete}
+            onConfirmDelete={handleConfirmDelete}
+          />
+        </>
+      )}
     </ThemedView>
   );
 };
@@ -253,43 +242,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    padding: 20,
     gap: 25,
+    padding: 10,
   },
-
   categoriesContainer: {
-    flexDirection: "column",
-    marginTop: 10,
-  },
-  categoriesHeaderContainer: {
-    flex: 1,
+    marginTop: 15,
     flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
   },
 
-  categoriesContainerText: {
-    fontSize: 25,
-    fontWeight: "500",
-  },
   categories: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    gap: 20,
+    gap: 15,
   },
-
-  imageHeader: {
-    height: "auto",
-    aspectRatio: 2,
-  },
-  flatListContent: {
-    gap: 7,
-    paddingRight: 15,
-    paddingLeft: 15,
-    paddingVertical: 10,
-  },
-  flatListStyles: {},
 
   element: {
     flexDirection: "column",
@@ -333,7 +299,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  todoListContainer: {},
+  todoListContainer: {
+    flex: 1,
+  },
 });
 
 export default PrayerLinks;

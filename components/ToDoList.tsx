@@ -8,11 +8,13 @@ import {
   ScrollView,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
-import { Ionicons } from "@expo/vector-icons";
+import { EvilIcons, Ionicons } from "@expo/vector-icons";
 import { TodoListType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ThemedView } from "./ThemedView";
+import { getFullDayName } from "@/utils/dayNames";
 
 export const TodoList = ({
   todos,
@@ -24,13 +26,11 @@ export const TodoList = ({
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
 
-  const { language } = useLanguage();
-
-  const isRTL = language === "ar";
+  const { language, isArabic } = useLanguage();
 
   if (!todos || todos.length === 0) {
     return (
-      <View style={styles.emptyDayContainer}>
+      <View style={styles.emptyPrayerForDay}>
         <Ionicons
           name="calendar-outline"
           size={40}
@@ -60,6 +60,21 @@ export const TodoList = ({
       contentContainerStyle={styles.scrollContent}
       style={styles.scrollStyle}
     >
+      {/* <ThemedView style={[styles.fulldayNameContainer]}>
+            <ThemedText style={styles.selectedDayTitle}>
+              {getFullDayName(dayIndex)}
+            </ThemedText>
+            <TouchableOpacity onPress={handleUndo}>
+              <View style={{ flexDirection: "row", gap: 5 }}>
+                <ThemedText style={{ fontSize: 12 }}>{t("undo")}</ThemedText>
+                <EvilIcons
+                  name="undo"
+                  size={30}
+                  color={colorScheme === "dark" ? "#ffffff" : "#000000"}
+                />
+              </View>
+            </TouchableOpacity>
+          </ThemedView> */}
       {todos.map((todo) => (
         <View
           key={todo.id}
@@ -73,7 +88,7 @@ export const TodoList = ({
           <TouchableOpacity
             style={[
               styles.checkboxContainer,
-              isRTL ? { marginLeft: 12 } : { marginRight: 12 },
+              isArabic() ? { marginLeft: 12 } : { marginRight: 12 },
             ]}
             onPress={() => onToggleTodo(dayIndex, todo.id)}
           >
@@ -120,9 +135,9 @@ export const TodoList = ({
 const styles = StyleSheet.create({
   scrollStyle: {},
   scrollContent: {
+    flex: 1,
     gap: 10,
   },
-
   todoItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -155,19 +170,18 @@ const styles = StyleSheet.create({
   deleteButton: {
     padding: 4,
   },
-  emptyDayContainer: {
+  emptyPrayerForDay: {
+    flex: 1,
+    justifyContent: "flex-start",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 30,
-    minHeight: 200,
   },
   emptyDayIcon: {
-    marginBottom: 16,
+    marginBottom: 5,
   },
   emptyDayText: {
     fontSize: 16,
     opacity: 0.7,
-    marginBottom: 16,
+    marginBottom: 10,
     textAlign: "center",
   },
   emptyDayAddButton: {

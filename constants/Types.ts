@@ -165,6 +165,20 @@ export type SearchResultQAType = {
   title: string;
   question: string;
 };
+
+export type CombinedResult = {
+  id: string;
+  type: "question" | "prayer" | "podcast" | "newsArticle"; 
+  question?: string;
+  title?: string;
+  name?: string;
+  arabic_text?: string;
+  podcastEpisodeTitle?: string;
+  podcastEpisodeDescription?: string;
+  newsTitle?: string; // Added
+  newsSnippet?: string; // Added
+};
+
 // Roles lookup
 export type RoleType = {
   id: number;

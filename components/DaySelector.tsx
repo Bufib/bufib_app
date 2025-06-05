@@ -23,14 +23,15 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
 }) => {
   const dayNames = getDayNames();
   const colorScheme = useColorScheme() || "light";
- 
+
   const { t } = useTranslation();
 
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.daysContainer}
+      contentContainerStyle={styles.scrollContent}
+      style={styles.scrollStyle}
     >
       {dayNames.map((day, index) => (
         <TouchableOpacity
@@ -61,12 +62,17 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
 };
 
 const styles = StyleSheet.create({
-  daysContainer: {
+  scrollContent: {
+    backgroundColor: "red",
     flexDirection: "row",
-    paddingBottom: 10,
     gap: 10,
   },
+  scrollStyle: {
+    
+  },
   dayButton: {
+    width: 80,
+    height: 50,
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,

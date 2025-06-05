@@ -5,10 +5,10 @@ import { Sizes } from "@/constants/Types";
     const isMedium = width < 380 && height > 650;
   
     return {
-      elementSize: isLarge ? 120 : isMedium ? 110 : 90,
-      fontSize: isLarge ? 13 : isMedium ? 12 : 11,
-      iconSize: isLarge ? 65 : isMedium ? 60 : 50,
-      imageSize: isLarge ? 300 : isMedium ? 280 : 200,
+      elementSize: isLarge ? 125 : isMedium ? 105 : 90,
+      fontSize: isLarge ? 13 : isMedium ? 11 : 10,
+      iconSize: isLarge ? 65 : isMedium ? 50 : 45,
+      imageSize: isLarge ? 300 : isMedium ? 260 : 230,
       gap: isLarge ? 30 : isMedium ? 20 : 15
     };
   };

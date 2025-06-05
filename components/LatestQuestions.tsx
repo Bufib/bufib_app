@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
   },
   list: {
     flex: 1,
+    paddingHorizontal: 5,
   },
   listContent: {
     marginTop: 15,
@@ -138,6 +139,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     // Android Shadow
     elevation: 5,
+    
   },
   pressed: {
     top: 2,
@@ -157,6 +159,7 @@ const styles = StyleSheet.create({
   },
   categoryContainer: {
     marginTop: 4,
+    padding: 10
   },
   categoryText: {
     fontSize: 12,

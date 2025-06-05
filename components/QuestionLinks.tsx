@@ -16,7 +16,6 @@ import { Colors } from "@/constants/Colors";
 import { returnSize } from "@/utils/sizes";
 import { useTranslation } from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { ThemedView } from "./ThemedView";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
@@ -34,17 +33,6 @@ export default function QuestionLinks() {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.categoriesContainer}>
-        <View style={styles.categoriesHeaderContainer}>
-          <ThemedText style={[styles.categoriesContainerText]}>
-            {t("categories")} (7)
-          </ThemedText>
-          <AntDesign
-            name="search1"
-            size={30}
-            color="black"
-            style={{ marginRight: 6 }}
-          />
-        </View>
         <View style={styles.categories}>
           {questionCategories.map((category, index) => (
             <TouchableOpacity
@@ -89,7 +77,7 @@ export default function QuestionLinks() {
                   <ThemedText
                     style={[styles.elementText, { fontSize: fontSize }]}
                   >
-                   { t(category.name)}
+                    {t(category.name)}
                   </ThemedText>
                 </View>
               </View>
@@ -106,7 +94,7 @@ export default function QuestionLinks() {
               styles.element,
               {
                 backgroundColor: Colors[colorScheme].contrast,
-                width: "100%",
+                width: "96%",
                 height: elementSize / 2,
               },
             ]}
@@ -145,7 +133,10 @@ export default function QuestionLinks() {
         </View>
         <LatestQuestions />
       </View>
-      <TouchableOpacity style={styles.askQuestionButton} onPress={()=> router.push("/(askQuestion)/")}>
+      <TouchableOpacity
+        style={styles.askQuestionButton}
+        onPress={() => router.push("/(askQuestion)/")}
+      >
         <MaterialCommunityIcons
           name="chat-question-outline"
           size={50}
@@ -159,7 +150,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    padding: 20,
+    padding: 10,
     gap: 40,
   },
 
@@ -167,22 +158,12 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     marginTop: 10,
   },
-  categoriesHeaderContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-  },
 
-  categoriesContainerText: {
-    fontSize: 25,
-    fontWeight: "500",
-  },
   categories: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    gap: 20,
+    gap: 15,
   },
 
   imageHeader: {
@@ -213,16 +194,6 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
-  categoryPressed: {
-    top: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-
-    // Android Shadow
-    elevation: 5,
-  },
   categoryButtonContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -256,15 +227,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  footerHeaderContainerText: {},
+  footerHeaderContainerText: {
+    paddingHorizontal: 5,
+  },
   askQuestionButton: {
     position: "absolute",
     bottom: "15%",
     right: "5%",
     justifyContent: "center",
     alignItems: "center",
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     backgroundColor: Colors.universal.primary,
     borderRadius: 10,
   },

@@ -17,8 +17,6 @@ import { Colors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
 import type { WeeklyCalendarSectionType } from "@/constants/Types";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { LinearGradient } from "expo-linear-gradient";
-
 export const WeeklyCalendarSection: React.FC<
   WeeklyCalendarSectionType & {
     todosByDay: WeeklyTodosType;
@@ -46,7 +44,7 @@ export const WeeklyCalendarSection: React.FC<
   };
 
   return (
-    <View style={styles.calendarSection}>
+    <View style={styles.container}>
       {/* Header */}
       <View style={[styles.calendarHeader]}>
         <View style={styles.calenderHeaderContainer}>
@@ -71,11 +69,7 @@ export const WeeklyCalendarSection: React.FC<
           </View>
         </View>
         <TouchableOpacity
-          style={[
-            styles.addButton,
-            
-            selectedDay === null && { opacity: 0.5 },
-          ]}
+          style={[styles.addButton, selectedDay === null && { opacity: 0.5 }]}
           onPress={onShowAddModal}
           disabled={selectedDay === null}
         >
@@ -94,60 +88,52 @@ export const WeeklyCalendarSection: React.FC<
         onSelectDay={onSelectDay}
       />
 
-      {/* Selected Day Heading */}
-      {selectedDay !== null && (
-        <ThemedView style={[styles.weekPlanerContainer]}>
-          <ThemedText style={styles.selectedDayTitle}>
-            {getFullDayName(selectedDay)}
-          </ThemedText>
-          <TouchableOpacity onPress={handleUndo}>
-            <View style={{ flexDirection: "row", gap: 5 }}>
-              <ThemedText style={{ fontSize: 12 }}>{t("undo")}</ThemedText>
-              <EvilIcons
-                name="undo"
-                size={30}
-                color={colorScheme === "dark" ? "#ffffff" : "#000000"}
-              />
-            </View>
-          </TouchableOpacity>
-        </ThemedView>
-      )}
       {/* Todo List Area */}
-      {loading ? (
+      {loading || selectedDay === null ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator
             size="large"
             color={colorScheme === "dark" ? "#fff" : "#000"}
           />
         </View>
-      ) : selectedDay !== null ? (
-        <TodoList
-          todos={todosByDay[selectedDay] ?? []}
-          dayIndex={selectedDay}
-          onToggleTodo={onToggleTodo}
-          onShowDeleteModal={onShowDeleteModal}
-          onShowAddModal={onShowAddModal}
-        />
       ) : (
-        <View style={styles.loadingContainer}>
-          <ThemedText>
-            {t("selectDayPrompt") || "Wähle einen Tag aus"}
-          </ThemedText>
-        </View>
+        <>
+          <ThemedView style={[styles.fulldayNameContainer]}>
+            <ThemedText style={styles.selectedDayTitle}>
+              {getFullDayName(selectedDay)}
+            </ThemedText>
+            <TouchableOpacity onPress={handleUndo}>
+              <View style={{ flexDirection: "row", gap: 5 }}>
+                <ThemedText style={{ fontSize: 12 }}>{t("undo")}</ThemedText>
+                <EvilIcons
+                  name="undo"
+                  size={30}
+                  color={colorScheme === "dark" ? "#ffffff" : "#000000"}
+                />
+              </View>
+            </TouchableOpacity>
+          </ThemedView>
+
+          <View style={{ flex: 1 }}>
+            <TodoList
+              todos={todosByDay[selectedDay] ?? []}
+              dayIndex={selectedDay}
+              onToggleTodo={onToggleTodo}
+              onShowDeleteModal={onShowDeleteModal}
+              onShowAddModal={onShowAddModal}
+            />
+          </View>
+        </>
       )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  calendarSection: {},
-
-  loadingContainer: {
-    minHeight: 200,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 30,
+  container: {
+    flex: 1,
   },
+
   calendarHeader: {
     flexDirection: "row",
     gap: 10,
@@ -166,30 +152,41 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   calenderTextTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
   },
   calenderTextSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
   },
   addButton: {
-    paddingRight: 15
+    paddingRight: 15,
   },
   addButtonText: {
     fontSize: 18,
     fontWeight: "700",
   },
-  weekPlanerContainer: {
-    flex: 1,
+  fulldayNameContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 10,
-    marginTop: 16,
+    marginTop: 10,
     marginBottom: 12,
   },
   selectedDayTitle: {
     fontSize: 16,
     fontWeight: "600",
+  },
+  loadingContainer: {
+    minHeight: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 30,
+  },
+  todoListContainer: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    marginTop: -10,
   },
 });
