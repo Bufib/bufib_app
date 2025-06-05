@@ -11,11 +11,8 @@ import {
   Platform,
   useColorScheme,
 } from "react-native";
-import { ThemedText } from "./ThemedText"; // Adjust path
+import { ThemedText } from "./ThemedText";
 import { Ionicons } from "@expo/vector-icons";
-import { CoustomTheme } from "@/utils/coustomTheme"; // Adjust path
-import type { ColorSchemeName } from "react-native";
-import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { AddTodoModalType } from "@/constants/Types";
@@ -26,11 +23,11 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
   onAdd,
   selectedDayName,
 }) => {
-  const [newTodo, setNewTodo] = useState<string>(""); // Internal state for input
+  const [newTodo, setNewTodo] = useState<string>("");
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { language } = useLanguage();
-  const isRTL = language === "ar";
+  const { language, isArabic } = useLanguage();
+
   const handleAddPress = () => {
     if (newTodo.trim()) {
       onAdd(newTodo.trim());
@@ -88,7 +85,7 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                     color: colorScheme === "dark" ? "#fff" : "#000",
                     backgroundColor:
                       colorScheme === "dark" ? "#333" : "#f5f5f5",
-                    textAlign: isRTL ? "right" : "left",
+                    textAlign: isArabic() ? "right" : "left",
                   },
                 ]}
                 value={newTodo}

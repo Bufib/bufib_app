@@ -181,7 +181,7 @@ const SearchScreen = () => {
     >
       <TextInput
         style={[styles.input, {backgroundColor: Colors[colorScheme].contrast}]}
-        placeholder="Search questions, prayers, podcasts & news…" // Updated placeholder
+        placeholder="Search questions, prayers, podcasts & news…"
         value={searchTerm}
         onChangeText={setSearchTerm}
         autoCorrect={false}

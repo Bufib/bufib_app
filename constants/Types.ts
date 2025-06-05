@@ -3,7 +3,7 @@ export type LanguageContextType = {
   language: string;
   setAppLanguage: (lng: string) => Promise<void>;
   ready: boolean;
-  isArabic: () => boolean
+  isArabic: () => boolean;
 };
 
 export type LanguageCode = "de" | "ar" | "en";
@@ -59,6 +59,11 @@ export type Sizes = {
   iconSize: number;
   imageSize: number;
   gap: number;
+  emptyTextSize: number;
+  emptyIconSize: number;
+  emptyGap: number
+  isLarge: boolean,
+  isMedium: boolean
 };
 
 export type triggerRefreshFavoritesType = {
@@ -168,7 +173,7 @@ export type SearchResultQAType = {
 
 export type CombinedResult = {
   id: string;
-  type: "question" | "prayer" | "podcast" | "newsArticle"; 
+  type: "question" | "prayer" | "podcast" | "newsArticle";
   question?: string;
   title?: string;
   name?: string;

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   useColorScheme,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { EvilIcons, Ionicons } from "@expo/vector-icons";
@@ -15,6 +16,7 @@ import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemedView } from "./ThemedView";
 import { getFullDayName } from "@/utils/dayNames";
+import { returnSize } from "@/utils/sizes";
 
 export const TodoList = ({
   todos,
@@ -25,19 +27,25 @@ export const TodoList = ({
 }: TodoListType) => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-
   const { language, isArabic } = useLanguage();
+  const { width, height } = useWindowDimensions();
+  const { emptyIconSize, emptyTextSize, emptyGap } = returnSize(width, height);
 
   if (!todos || todos.length === 0) {
     return (
       <View style={styles.emptyPrayerForDay}>
         <Ionicons
           name="calendar-outline"
-          size={40}
+          size={emptyIconSize}
           color={colorScheme === "dark" ? "#666" : "#999"}
-          style={styles.emptyDayIcon}
+          style={[styles.emptyDayIcon, { marginBottom: emptyGap }]}
         />
-        <ThemedText style={styles.emptyDayText}>
+        <ThemedText
+          style={[
+            styles.emptyDayText,
+            { fontSize: emptyTextSize, marginBottom: emptyGap },
+          ]}
+        >
           {t("noPrayersForDay")}
         </ThemedText>
         <TouchableOpacity
@@ -60,21 +68,6 @@ export const TodoList = ({
       contentContainerStyle={styles.scrollContent}
       style={styles.scrollStyle}
     >
-      {/* <ThemedView style={[styles.fulldayNameContainer]}>
-            <ThemedText style={styles.selectedDayTitle}>
-              {getFullDayName(dayIndex)}
-            </ThemedText>
-            <TouchableOpacity onPress={handleUndo}>
-              <View style={{ flexDirection: "row", gap: 5 }}>
-                <ThemedText style={{ fontSize: 12 }}>{t("undo")}</ThemedText>
-                <EvilIcons
-                  name="undo"
-                  size={30}
-                  color={colorScheme === "dark" ? "#ffffff" : "#000000"}
-                />
-              </View>
-            </TouchableOpacity>
-          </ThemedView> */}
       {todos.map((todo) => (
         <View
           key={todo.id}
@@ -133,10 +126,11 @@ export const TodoList = ({
 };
 
 const styles = StyleSheet.create({
-  scrollStyle: {},
+  scrollStyle: {
+    flex: 1
+  },
   scrollContent: {
-    flex: 1,
-    gap: 10,
+    gap: 5,
   },
   todoItem: {
     flexDirection: "row",
@@ -172,16 +166,12 @@ const styles = StyleSheet.create({
   },
   emptyPrayerForDay: {
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center",
   },
-  emptyDayIcon: {
-    marginBottom: 5,
-  },
+  emptyDayIcon: {},
   emptyDayText: {
-    fontSize: 16,
     opacity: 0.7,
-    marginBottom: 10,
     textAlign: "center",
   },
   emptyDayAddButton: {

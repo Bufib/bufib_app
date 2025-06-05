@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   useColorScheme,
+  useWindowDimensions,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
@@ -17,6 +18,7 @@ import { Colors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
 import type { WeeklyCalendarSectionType } from "@/constants/Types";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { returnSize } from "@/utils/sizes";
 export const WeeklyCalendarSection: React.FC<
   WeeklyCalendarSectionType & {
     todosByDay: WeeklyTodosType;
@@ -36,7 +38,8 @@ export const WeeklyCalendarSection: React.FC<
 }) => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-
+  const { width, height } = useWindowDimensions();
+  const { isLarge, isMedium } = returnSize(width, height);
   const handleUndo = () => {
     if (selectedDay !== null) {
       onUndoAll(selectedDay);
@@ -50,7 +53,7 @@ export const WeeklyCalendarSection: React.FC<
         <View style={styles.calenderHeaderContainer}>
           <AntDesign
             name="calendar"
-            size={45}
+            size={isLarge ? 45 : isMedium ? 40 : 35}
             color="#f5f6fa"
             style={{
               backgroundColor: Colors.universal.primary,
@@ -60,10 +63,20 @@ export const WeeklyCalendarSection: React.FC<
             }}
           />
           <View style={[styles.calenderTextContainer]}>
-            <ThemedText style={[styles.calenderTextTitle]}>
+            <ThemedText
+              style={[
+                styles.calenderTextTitle,
+                { fontSize: isLarge ? 20 : isMedium ? 16 : 14 },
+              ]}
+            >
               {t("weeklyToDoTitle")}
             </ThemedText>
-            <ThemedText style={[styles.calenderTextSubtitle]}>
+            <ThemedText
+              style={[
+                styles.calenderTextSubtitle,
+                { fontSize: isLarge ? 16 : isMedium ? 14 : 12 },
+              ]}
+            >
               {t("weeklyToDoSubtitle")}
             </ThemedText>
           </View>
@@ -75,18 +88,20 @@ export const WeeklyCalendarSection: React.FC<
         >
           <AntDesign
             name="pluscircleo"
-            size={35}
+            size={isLarge ? 35 : isMedium ? 30 : 25}
             color={Colors[colorScheme].defaultIcon}
           />
         </TouchableOpacity>
       </View>
 
       {/* Day Selector */}
-      <DaySelector
-        selectedDay={selectedDay}
-        currentDayIndex={currentDayIndex}
-        onSelectDay={onSelectDay}
-      />
+      <View style={{ flex: 0 }}>
+        <DaySelector
+          selectedDay={selectedDay}
+          currentDayIndex={currentDayIndex}
+          onSelectDay={onSelectDay}
+        />
+      </View>
 
       {/* Todo List Area */}
       {loading || selectedDay === null ? (
@@ -152,12 +167,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   calenderTextTitle: {
-    fontSize: 16,
     fontWeight: "600",
   },
-  calenderTextSubtitle: {
-    fontSize: 14,
-  },
+  calenderTextSubtitle: {},
   addButton: {
     paddingRight: 15,
   },

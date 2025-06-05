@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   categoriesContainer: {
-    marginTop: 15,
+    marginTop: 10,
     flexDirection: "row",
   },
 

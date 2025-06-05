@@ -4,11 +4,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
+  useWindowDimensions,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { getDayNames } from "@/utils/dayNames";
 import i18n from "@/utils/i18n";
 import { useTranslation } from "react-i18next";
+import { returnSize } from "@/utils/sizes";
 
 interface DaySelectorProps {
   selectedDay: number | null;
@@ -22,8 +24,9 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
   onSelectDay,
 }) => {
   const dayNames = getDayNames();
+  const { width, height } = useWindowDimensions();
+  const { isLarge, isMedium } = returnSize(width, height);
   const colorScheme = useColorScheme() || "light";
-
   const { t } = useTranslation();
 
   return (
@@ -38,6 +41,10 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
           key={index}
           style={[
             styles.dayButton,
+            {
+              width: isLarge ? 80 : isMedium ? 70 : 60,
+              height: 45
+            },
             selectedDay === index && styles.selectedDayButton,
             { backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0" },
             selectedDay === index && {
@@ -49,6 +56,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
           <ThemedText
             style={[
               styles.dayButtonText,
+              { fontSize: isLarge ? 18 : isMedium ? 16 : 14 },
               selectedDay === index && styles.selectedDayText,
               currentDayIndex === index && styles.currentDayText,
             ]}
@@ -63,16 +71,14 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
 
 const styles = StyleSheet.create({
   scrollContent: {
-    backgroundColor: "red",
+    paddingVertical: 5,
     flexDirection: "row",
     gap: 10,
   },
   scrollStyle: {
-    
+    flexGrow: 0,
   },
   dayButton: {
-    width: 80,
-    height: 50,
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
@@ -84,7 +90,6 @@ const styles = StyleSheet.create({
     borderColor: "#4CAF50",
   },
   dayButtonText: {
-    fontSize: 16,
     fontWeight: "500",
   },
   selectedDayText: {
