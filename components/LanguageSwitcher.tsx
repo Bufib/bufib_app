@@ -1,15 +1,24 @@
 import React from "react";
-import { View, Pressable, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Pressable,
+  Text,
+  StyleSheet,
+  useWindowDimensions,
+} from "react-native";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Colors } from "@/constants/Colors";
 import i18n from "@/utils/i18n";
+import { returnSize } from "@/utils/sizes";
+import { ThemedText } from "./ThemedText";
 /**
  * A small UI widget with three buttons (“Deutsch” / “English” / “العربية”) that uses
  * LanguageContext to switch the app’s i18n language and persist it.
  */
 export function LanguageSwitcher() {
   const { language, setAppLanguage, ready: langReady } = useLanguage();
-
+  const { width, height } = useWindowDimensions();
+  const { isLarge, isMedium } = returnSize(width, height);
   const selectDeutsch = () => {
     if (langReady && language !== "de") {
       setAppLanguage("de");
@@ -31,8 +40,8 @@ export function LanguageSwitcher() {
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.title}>Sprache</Text>
-        <Text style={styles.subtitle}>App-Sprache wählen</Text>
+        <ThemedText style={styles.title}>Sprache</ThemedText>
+        <ThemedText style={styles.subtitle}>App-Sprache wählen</ThemedText>
       </View>
       <View style={styles.buttons}>
         <Pressable
@@ -40,7 +49,7 @@ export function LanguageSwitcher() {
           style={({ pressed }) => [
             styles.button,
             language === "de" && styles.buttonActive,
-            { opacity: pressed ? 0.8 : 1 },
+            { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
           ]}
         >
           <Text
@@ -58,7 +67,7 @@ export function LanguageSwitcher() {
           style={({ pressed }) => [
             styles.button,
             language === "en" && styles.buttonActive,
-            { opacity: pressed ? 0.8 : 1 },
+            { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
           ]}
         >
           <Text
@@ -76,7 +85,7 @@ export function LanguageSwitcher() {
           style={({ pressed }) => [
             styles.button,
             language === "ar" && styles.buttonActive,
-            { opacity: pressed ? 0.8 : 1 },
+            { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
           ]}
         >
           <Text
@@ -114,7 +123,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   button: {
-    paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
     borderWidth: 1,

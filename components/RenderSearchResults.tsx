@@ -266,7 +266,7 @@ const SearchScreen = () => {
           ) : null
         }
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator
+        showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
   );

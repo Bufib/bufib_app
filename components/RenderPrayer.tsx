@@ -84,7 +84,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   const showScrollUp = scrollOffset > 50;
 
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ["50%"], []);
+  const snapPoints = useMemo(() => ["70%"], []);
 
   const { fontSize, lineHeight } = useFontSizeStore();
   const [fontSizeModalVisible, setFontSizeModalVisible] = useState(false);
@@ -487,7 +487,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
               style={[
                 styles.notesContainer,
                 styles.prayerSegment,
-                { backgroundColor: Colors.universal.secondary },
+                { backgroundColor: Colors.universal.primary },
               ]}
             >
               <ThemedText style={styles.notesTitle} type="subtitle">
@@ -555,25 +555,55 @@ export default RenderPrayer;
 
 // Styles remain largely the same, no direct changes needed here for favorite logic removal
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: {
+    flex: 1,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  header: { padding: 20, marginBottom: 20 },
+  header: {
+    padding: 20,
+    marginBottom: 20,
+  },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  titleContainer: { flex: 1, marginRight: 16, gap: 10 },
-  title: { fontWeight: "700", color: "white", marginBottom: 4 },
-  arabicTitle: { fontSize: 18, color: "rgba(255,255,255,0.9)" },
-  headerControls: { flexDirection: "row", alignItems: "center", gap: 15 }, // Added gap for spacing after removal
-  introContainer: { margin: 16, padding: 16, borderRadius: 12 },
-  languageSelectContainer: { paddingHorizontal: 16, marginBottom: 16 },
-  languageButtons: { paddingBottom: 8, paddingRight: 16 },
+  titleContainer: {
+    flex: 1,
+    marginRight: 16,
+    gap: 10,
+  },
+  title: {
+    fontWeight: "700",
+    color: "white",
+    marginBottom: 4,
+  },
+  arabicTitle: {
+    fontSize: 18,
+    color: "rgba(255,255,255,0.9)",
+  },
+  headerControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
+  introContainer: {
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+  },
+  languageSelectContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  languageButtons: {
+    paddingBottom: 8,
+    paddingRight: 16,
+  },
   languageButton: {
     paddingVertical: 8,
     paddingHorizontal: 16,
