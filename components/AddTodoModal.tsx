@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Modal,
@@ -27,6 +27,13 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { language, isArabic } = useLanguage();
+
+  // Clear out the input:
+  useEffect(() => {
+    if (visible) {
+      setNewTodo("");
+    }
+  }, [visible]);
 
   const handleAddPress = () => {
     if (newTodo.trim()) {

@@ -65,7 +65,7 @@ const _layout = () => {
           },
         }}
       />
-      <Stack.Screen name="tasbih" options={{ headerShown: true }} />
+      <Stack.Screen name="tasbih" options={{ headerShown: false }} />
     </Stack>
   );
 };

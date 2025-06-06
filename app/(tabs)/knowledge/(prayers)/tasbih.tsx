@@ -13,43 +13,43 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import i18n from "@/utils/i18n";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 // Make initial Dhikr Types immutable-like for safer resets
 const initialDhikrTypes = Object.freeze([
   {
     id: 0,
-    name: `${i18n.t("dhikrFree")}`,
+    name: "dhikrFree",
     arabicText: "",
     defaultLimit: 100,
   },
   {
     id: 1,
     name: "Subhanallah",
-    arabicText: `${i18n.t("dhikrSubhanallah")}`,
+    arabicText: "dhikrSubhanallah",
     defaultLimit: 100,
   },
   {
     id: 2,
     name: "Alhamdulillah",
-    arabicText: `${i18n.t("dhikrAlhamdulillah")}`,
+    arabicText: "dhikrAlhamdulillah",
     defaultLimit: 100,
   },
   {
     id: 3,
     name: "Allahu Akbar",
-    arabicText: `${i18n.t("dhikrAllahuAkbar")}`,
+    arabicText: "dhikrAllahuAkbar",
     defaultLimit: 100,
   },
   {
     id: 4,
     name: "La ilaha illallah",
-    arabicText: `${i18n.t("dhikrLaIlahaIllallah")}`,
+    arabicText: "dhikrLaIlahaIllallah",
     defaultLimit: 100,
   },
   {
     id: 5,
     name: "Astaghfirullah",
-    arabicText: `${i18n.t("dhikrAstaghfirullah")}`,
+    arabicText: "dhikrAstaghfirullah",
     defaultLimit: 100,
   },
 ]);
@@ -63,13 +63,13 @@ const prayerPresets = Object.freeze([
   {
     id: "free",
     name: i18n.t("freeMode"),
-    description: i18n.t("freeModeDescription"),
+    description: "freeModeDescription",
     icon: "🔄",
     sequence: [],
   },
   {
     id: "1",
-    name: i18n.t("TasbihFatima"), // if you want dynamic translation, consider using t() here too
+    name: "TasbihFatima", // if you want dynamic translation, consider using t() here too
     icon: "📿",
     sequence: [
       { dhikrId: 3, limit: 34 },
@@ -195,20 +195,6 @@ export default function tasbih() {
     sequenceCompleted,
   ]);
 
-  // const handleResetCurrent = useCallback(() => {
-  //   if (!activeCounter) return;
-
-  //   setCounters((prevCounters) =>
-  //     prevCounters.map((counter) => {
-  //       if (counter.id === activeDhikrId) {
-  //         setTotalDhikr((prev) => prev - (counter.count || 0));
-  //         return { ...counter, count: 0 };
-  //       }
-  //       return counter;
-  //     })
-  //   );
-  // }, [activeCounter, activeDhikrId]);
-
   const handleResetCurrent = useCallback(() => {
     if (!activeCounter) return;
 
@@ -319,13 +305,22 @@ export default function tasbih() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
   return (
-    <ThemedView style={styles.container}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
+      edges={["top"]}
+    >
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={{ flexGrow: 1, gap: 10, paddingBottom: 20 }}
       >
         {/* Header */}
         <View style={styles.headerContainer}>
+          <View style={{alignSelf: "flex-start"}}>
+          <HeaderLeftBackButton />
+          </View>
           <ThemedText style={styles.headerTitle} type="title">
             {t("tasbih")}
           </ThemedText>
@@ -351,7 +346,6 @@ export default function tasbih() {
                   selectedPresetId === preset.id && styles.selectedPrayerCard,
                   {
                     backgroundColor: Colors[colorScheme].contrast,
-                    shadowColor: Colors[colorScheme].shadowColor,
                     borderColor: Colors[colorScheme].border,
                   },
                 ]}
@@ -361,10 +355,10 @@ export default function tasbih() {
                   {preset.icon}
                 </ThemedText>
                 <ThemedText style={styles.prayerCardTitle}>
-                  {preset.name}
+                  {t(preset.name)}
                 </ThemedText>
                 <ThemedText style={styles.prayerCardDescription}>
-                  {preset.description}
+                  {t(preset.description)}
                 </ThemedText>
 
                 {preset.id !== "free" && (
@@ -457,7 +451,7 @@ export default function tasbih() {
                       activeDhikrId === dhikr.id && styles.activeTabText,
                     ]}
                   >
-                    {dhikr.name}
+                    {t(dhikr.name)}
                   </Text>
                 </TouchableOpacity>
               );
@@ -510,7 +504,7 @@ export default function tasbih() {
               />
             </View>
             <ThemedText style={styles.arabicText}>
-              {activeCounter.arabicText}
+              {t(activeCounter.arabicText)}
             </ThemedText>
             <ThemedText style={styles.counterText}>
               {activeCounter.count}
@@ -524,7 +518,7 @@ export default function tasbih() {
               <Text
                 style={[styles.completionText, styles.sequenceCompletionText]}
               >
-                {currentPreset.name} {t("completedText")}
+                {t(currentPreset.name)} {t("completedText")}
               </Text>
             )}
             {isPresetMode &&
@@ -615,7 +609,7 @@ export default function tasbih() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </ThemedView>
+    </SafeAreaView>
   );
 }
 
@@ -627,12 +621,17 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   headerContainer: {
+    flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 20,
     borderBottomWidth: StyleSheet.hairlineWidth,
     paddingBottom: 10,
     marginTop: 10,
   },
-  headerTitle: {},
+  headerTitle: {
+    flex: 1,
+    textAlign: "center"
+  },
 
   cardsContainer: {
     padding: 10,
@@ -866,7 +865,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   resetButton: {
-    backgroundColor: Colors.universal.secondary,
+    backgroundColor: Colors.universal.primary,
     paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 10,
@@ -876,8 +875,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(239, 83, 80, 1)",
   },
   resetButtonText: {
+    color: "#fff",
     fontSize: 13,
-    fontWeight: "500",
+    fontWeight: "600",
   },
 
   totalCount: {

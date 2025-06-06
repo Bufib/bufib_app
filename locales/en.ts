@@ -30,7 +30,6 @@ export const en = {
   removedFromFavorites: "Removed from favorites",
   addedToFavorites: "Added to Favorites",
 
-
   // Navigation
   knowledge: "Knowledge",
   settings: "Settings",
@@ -67,13 +66,31 @@ export const en = {
   special: "Special",
   names: "Asma-ul-Husna",
 
+  // Tasbih
+  dhikrFree: "Free",
+  dhikrSubhanallah: "Subhanallah",
+  dhikrAlhamdulillah: "Alhamdulillah",
+  dhikrAllahuAkbar: "Allahu Akbar",
+  dhikrLaIlahaIllallah: "La ilaha illallah",
+  dhikrAstaghfirullah: "Astaghfirullah",
+  TasbihFatima: "Tasbih of Fatima Zahra (a.)",
+  freeMode: "Free Mode",
+  freeModeDescription: "Choose any dhikr",
+  setMaximumReps: "Set maximum repetitions:",
+  resetCurrent: "Reset current",
+  resetAll: "Reset all",
+  stepCompleteNext: "Step complete! Next...",
+  tap: "Tap",
+  totalDhikr: "Total dhikr:",
+  completedText: "completed ✓",
+
   // Weekly calender
   weeklyToDoTitle: "Weekly Schedule",
   weeklyToDoSubtitle: "Plan your week",
 
   addWeekly: "Add",
   addForDay: "Add for",
-  enterPrayer: "Enter prayer...",
+  enterPrayer: "Enter your Todo..",
   add: "Add",
   cancel: "Cancel",
   noPrayersForDay: "No prayers for this day",

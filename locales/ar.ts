@@ -65,6 +65,24 @@ export const ar = {
   special: "خاصة",
   names: "أسْماءُ الحُسْنَى",
 
+  // Tasbih
+  dhikrFree: "حر",
+  dhikrSubhanallah: "سبحان الله",
+  dhikrAlhamdulillah: "الحمد لله",
+  dhikrAllahuAkbar: "الله أكبر",
+  dhikrLaIlahaIllallah: "لا إله إلا الله",
+  dhikrAstaghfirullah: "أستغفر الله",
+  TasbihFatima: "تسبيح فاطمة الزهراء (ع)",
+  freeMode: "الوضع الحر",
+  freeModeDescription: "اختر أي ذكر",
+  setMaximumReps: "ضبط الحد الأقصى للتكرارات:",
+  resetCurrent: "إعادة تعيين الحالي",
+  resetAll: "إعادة تعيين الكل",
+  stepCompleteNext: "تمت الخطوة! التالي...",
+  tap: "اضغط",
+  totalDhikr: "مجموع الأذكار:",
+  completedText: "اكتمل ✓",
+
   // Weekly calendar
   weeklyToDoTitle: "خطة الأسبوع",
   weeklyToDoSubtitle: "أضف صلواتك اليومية",

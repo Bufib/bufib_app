@@ -46,7 +46,7 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
               height: 45
             },
             selectedDay === index && styles.selectedDayButton,
-            { backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0" },
+            { backgroundColor: colorScheme === "dark" ? "#333" : "#ccc" },
             selectedDay === index && {
               backgroundColor: colorScheme === "dark" ? "#555" : "#e0e0e0",
             },
