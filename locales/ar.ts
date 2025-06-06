@@ -112,6 +112,11 @@ export const ar = {
   confirmDelete: "تأكيد الحذف",
   deleteQuestion: "هل أنت متأكد أنك تريد حذف هذه الصلاة؟",
   delete: "حذف",
+
+  //search
+  noSearchResults: "لا توجد نتائج بحث",
+  searchPlaceholder:
+    "ابحث عن الأسئلة أو الأدعية أو المقالات الإخبارية أو الملفات الصوتية",
 } as const;
 
 export default ar;

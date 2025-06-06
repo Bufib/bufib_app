@@ -39,6 +39,9 @@ export const Colors = {
     prayerIntroductionBackground: "#84CEEB",
     prayerLoadingIndicator: "#1F6E8C",
     prayerBookmark: "#B3D7EC",
+
+    //search
+    itemTypeColor: "#666"
   },
 
   dark: {
@@ -80,6 +83,9 @@ export const Colors = {
     prayerLoadingIndicator: "#84CEEB",
     prayerBookmark: "#4B7E94",
     grayedOut: "#B0BEC5",
+
+       //search
+    itemTypeColor: "#ccc"
   },
   universal: {
     primary: "#2ea853",

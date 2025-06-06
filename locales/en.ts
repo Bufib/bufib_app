@@ -114,6 +114,11 @@ export const en = {
   confirmDelete: "Confirm Deletion",
   deleteQuestion: "Are you sure you want to delete this prayer?",
   delete: "Delete",
+
+    //search
+    noSearchResults: "No search results found!",
+  searchPlaceholder: "Search for questions, prayers, news-articles or podcasts",
+
 } as const;
 
 export default en;

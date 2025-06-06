@@ -19,6 +19,9 @@ import {
   CombinedResult,
 } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
+import { ThemedText } from "./ThemedText";
+import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 const SearchScreen = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -32,7 +35,7 @@ const SearchScreen = () => {
   const colorScheme = useColorScheme() || "light";
   const podcastQuery = useSearchPodcasts(searchTerm);
   const newsArticleSearchQuery = useSearchNewsArticles(searchTerm); // Added
-
+  const { t } = useTranslation();
   const performManualSearch = async (term: string) => {
     if (term.trim().length === 0) {
       setQuestionAndPrayerResults([]);
@@ -146,7 +149,7 @@ const SearchScreen = () => {
         itemTypeText = "Podcast Episode";
         itemTextContent = item.podcastEpisodeTitle || "";
         break;
-      case "newsArticle": // Added
+      case "newsArticle":
         itemTypeText = "News Article";
         itemTextContent = item.newsTitle || "";
         break;
@@ -155,17 +158,66 @@ const SearchScreen = () => {
     }
 
     return (
-      <View style={styles.itemContainer}>
-        <Text style={styles.itemType}>{itemTypeText}</Text>
-        <Text style={styles.itemText}>{itemTextContent}</Text>
+      <View
+        style={[
+          styles.itemContainer,
+          { backgroundColor: Colors[colorScheme].contrast },
+        ]}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingRight: 5,
+            marginBottom: 5,
+          }}
+        >
+          <ThemedText
+            style={[
+              styles.itemType,
+              { color: Colors[colorScheme].itemTypeColor },
+            ]}
+          >
+            {itemTypeText}
+          </ThemedText>
+          {itemTypeText === "Question" ? (
+            <AntDesign
+              name="search1"
+              size={24}
+              color={Colors[colorScheme].defaultIcon}
+            />
+          ) : itemTypeText === "Prayer" ? (
+            <Entypo
+              name="open-book"
+              size={24}
+              color={Colors[colorScheme].defaultIcon}
+            />
+          ) : itemTypeText === "Podcast Episode" ? (
+            <FontAwesome5
+              name="headphones"
+              size={24}
+              color={Colors[colorScheme].defaultIcon}
+            />
+          ) : (
+            <Entypo
+              name="news"
+              size={24}
+              color={Colors[colorScheme].defaultIcon}
+            />
+          )}
+        </View>
+
+        <ThemedText style={styles.itemText}>{itemTextContent}</ThemedText>
         {item.type === "podcast" && item.podcastEpisodeDescription && (
-          <Text style={styles.itemDescription}>
+          <ThemedText style={styles.itemDescription}>
             {item.podcastEpisodeDescription}
-          </Text>
+          </ThemedText>
         )}
         {item.type === "newsArticle" &&
           item.newsSnippet && ( // Added
-            <Text style={styles.itemDescription}>{item.newsSnippet}</Text>
+            <ThemedText style={styles.itemDescription}>
+              {item.newsSnippet}
+            </ThemedText>
           )}
       </View>
     );
@@ -180,8 +232,14 @@ const SearchScreen = () => {
       edges={["top"]}
     >
       <TextInput
-        style={[styles.input, {backgroundColor: Colors[colorScheme].contrast}]}
-        placeholder="Search questions, prayers, podcasts & news…"
+        style={[
+          styles.input,
+          {
+            backgroundColor: Colors[colorScheme].contrast,
+            color: Colors[colorScheme].text,
+          },
+        ]}
+        placeholder={t("searchPlaceholder")}
         value={searchTerm}
         onChangeText={setSearchTerm}
         autoCorrect={false}
@@ -202,10 +260,13 @@ const SearchScreen = () => {
         renderItem={renderItem}
         ListEmptyComponent={
           !isLoading && searchTerm.trim().length > 0 ? (
-            <Text style={styles.emptyText}>No results found.</Text>
+            <ThemedText style={styles.emptyText}>
+              {t("noSearchResults")}
+            </ThemedText>
           ) : null
         }
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator
       />
     </SafeAreaView>
   );
@@ -216,12 +277,11 @@ export default SearchScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#fff",
+    padding: 15,
+    gap: 10,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -231,27 +291,22 @@ const styles = StyleSheet.create({
   itemContainer: {
     marginBottom: 16,
     padding: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 6,
+    borderRadius: 10,
   },
   itemType: {
     fontSize: 12,
-    color: "#777",
     marginBottom: 4,
     fontWeight: "bold",
   },
   itemText: {
     fontSize: 16,
-    color: "#222",
   },
   itemDescription: {
     fontSize: 14,
-    color: "#555",
     marginTop: 4,
   },
   emptyText: {
     textAlign: "center",
-    color: "#888",
     marginTop: 20,
   },
 });

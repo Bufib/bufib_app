@@ -113,6 +113,11 @@ export const de = {
   confirmDelete: "Löschen bestätigen",
   deleteQuestion: "Möchtest du dieses Gebet wirklich löschen?",
   delete: "Löschen",
+
+  //search
+  noSearchResults: "Keine Suchergebnisse gefunden!",
+  searchPlaceholder: "Suche nach Fragen, Gebeten, News-Artikel oder Podcasts",
+
 } as const;
 
 export default de;
