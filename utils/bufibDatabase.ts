@@ -562,10 +562,10 @@ export const getQuestionInternalURL = async (
 
 export const searchQuestions = async (
   searchTerm: string
-): Promise<SearchResultQAType[]> => {
+): Promise<QuestionType[]> => {
   try {
     const db = await getDatabase();
-    return await db.getAllAsync<SearchResultQAType>(
+    return await db.getAllAsync<QuestionType>(
       `
       SELECT id, question_category_name, question_subcategory_name, question, title
       FROM questions

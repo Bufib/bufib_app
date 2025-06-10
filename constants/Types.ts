@@ -194,6 +194,7 @@ export type CombinedResult =
       podcastId: number;
       podcastEpisodeTitle: string;
       podcastEpisodeDescription?: string;
+      podcast: any
     }
   | {
       renderId: string;

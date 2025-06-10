@@ -38,7 +38,6 @@ const RenderQuestion = ({
     const loadQuestion = async () => {
       try {
         setIsLoading(true);
-
         if (!category || !subcategory) {
           console.log("Missing category or subcategory");
           return;
@@ -115,7 +114,7 @@ const RenderQuestion = ({
       contentContainerStyle={styles.scrollViewContent}
       showsVerticalScrollIndicator={false}
     >
-     <NoInternet showUI={true} showToast={false}/>
+      <NoInternet showUI={true} showToast={false} />
       <View
         style={[
           styles.questionContainer,
@@ -216,7 +215,7 @@ const RenderQuestion = ({
                 </Markdown>
               </View>
             </Collapsible>
-            
+
             <Collapsible title="Sayid as-Sistani" marja="sistani">
               <View style={styles.textIconContainer}>
                 {hasCopiedSistani ? (
@@ -287,7 +286,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     padding: 12,
     borderWidth: 0.5,
-    borderRadius: 7
+    borderRadius: 7,
   },
   questionText: {
     textAlign: "center",

@@ -58,6 +58,8 @@ const SearchScreen = () => {
           questionId: q.id,
           question: q.question,
           title: q.title,
+          question_category_name: q.question_category_name,
+          question_subcategory_name: q.question_subcategory_name,
         })
       );
 
@@ -105,6 +107,7 @@ const SearchScreen = () => {
         type: "podcast",
         podcastEpisodeTitle: p.title,
         podcastEpisodeDescription: p.description,
+        podcast: p,
       })
     );
 
@@ -192,7 +195,7 @@ const SearchScreen = () => {
           } else if (item.type === "podcast") {
             router.push({
               pathname: "/(podcast)",
-              params: { podcast: JSON.stringify(item) },
+              params: { podcast: JSON.stringify(item.podcast) },
             });
           } else if (item.type === "newsArticle") {
             router.push({
