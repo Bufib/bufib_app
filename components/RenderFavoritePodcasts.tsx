@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  useColorScheme,
 } from "react-native";
 import { usePodcasts } from "@/hooks/usePodcasts"; // adjust the import path as needed
 import { getFavoritePodcasts } from "@/utils/favorites";
@@ -16,20 +17,24 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import { useTranslation } from "react-i18next";
+import { Colors } from "@/constants/Colors";
+import { Entypo } from "@expo/vector-icons";
+import { formatDate } from "@/utils/formatDate";
 
 const RenderFavoritePodcasts = () => {
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+  const { language, isArabic } = useLanguage();
   const {
     data: infiniteData,
     isLoading,
     isError,
     fetchNextPage,
     hasNextPage,
-  } = usePodcasts();
+  } = usePodcasts(language);
 
   const { refreshTriggerFavorites, triggerRefreshFavorites } =
     useRefreshFavorites();
-
+  const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   // 1) Load favorite IDs from AsyncStorage on mount
   useEffect(() => {
@@ -93,24 +98,44 @@ const RenderFavoritePodcasts = () => {
         data={favoriteEpisodes}
         extraData={[favoriteIds, refreshTriggerFavorites]}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.itemContainer}
-            onPress={() => {
-              router.push({
-                pathname: "/home/podcast",
-                params: {
-                  podcast: JSON.stringify(item),
+        style={styles.listStyle}
+        renderItem={({ item }) => {
+          return (
+            <TouchableOpacity
+              style={[
+                styles.itemContainer,
+                {
+                  backgroundColor: Colors[colorScheme].contrast,
+                  flexDirection: isArabic() ? "row-reverse" : "row",
                 },
-              });
-            }}
-          >
-            <ThemedText style={styles.itemTitle}>{item.title}</ThemedText>
-            <ThemedText style={styles.itemDate}>
-              Published: {new Date(item.published_at).toLocaleDateString()}
-            </ThemedText>
-          </TouchableOpacity>
-        )}
+              ]}
+              onPress={() => {
+                router.push({
+                  pathname: "/(podcast)",
+                  params: {
+                    podcast: JSON.stringify(item),
+                  },
+                });
+              }}
+            >
+              <View style={{ flex: 1, gap: 40 }}>
+                <ThemedText style={styles.itemTitle}>{item.title}</ThemedText>
+                <ThemedText style={styles.itemDate}>
+                  {formatDate(item.created_at)}
+                </ThemedText>
+              </View>
+
+              <View>
+                <Entypo
+                  name="chevron-thin-right"
+                  size={24}
+                  color={colorScheme === "dark" ? "#fff" : "#000"}
+                  style={{ marginTop: -15 }}
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        }}
         contentContainerStyle={styles.listContent}
       />
     </ThemedView>
@@ -122,7 +147,6 @@ export default RenderFavoritePodcasts;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
   },
   centered: {
     flex: 1,
@@ -145,13 +169,20 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
   },
+  listStyle: {
+    padding: 15,
+  },
   listContent: {
     paddingBottom: 24,
   },
   itemContainer: {
-    paddingVertical: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 15,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: "#ccc",
+    borderRadius: 8,
   },
   itemTitle: {
     fontSize: 16,
@@ -159,15 +190,7 @@ const styles = StyleSheet.create({
   },
   itemDate: {
     fontSize: 14,
-    color: "#444",
-    marginTop: 4,
-  },
-  loadMoreContainer: {
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  loadMoreText: {
-    fontSize: 16,
-    color: "#007AFF",
+    alignSelf: "flex-end",
+    color: Colors.universal.grayedOut,
   },
 });

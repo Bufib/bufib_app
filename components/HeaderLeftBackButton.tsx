@@ -12,7 +12,7 @@ const HeaderLeftBackButton = () => {
         style={{ marginLeft: -16 }}
         onPress={() => router.back()}
         color={colorScheme === "dark" ? "#d0d0c0" : "#000"}
-      />
+      /> 
   )
 }
 

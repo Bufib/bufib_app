@@ -191,7 +191,7 @@ const SearchScreen = () => {
             });
           } else if (item.type === "podcast") {
             router.push({
-              pathname: "/home/podcast",
+              pathname: "/(podcast)",
               params: { podcast: JSON.stringify(item) },
             });
           } else if (item.type === "newsArticle") {

@@ -332,6 +332,10 @@ function AppContent() {
                     name="(askQuestion)"
                     options={{ headerShown: false }}
                   />
+                  <Stack.Screen
+                    name="(podcast)"
+                    options={{ headerShown: false, }}
+                  />
                   <Stack.Screen name="+not-found" />
                 </Stack>
                 <AppReviewPrompt />

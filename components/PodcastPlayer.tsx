@@ -20,12 +20,16 @@ import Feather from "@expo/vector-icons/Feather";
 import { Image } from "expo-image";
 import { isPodcastFavorited, togglePodcastFavorite } from "@/utils/favorites";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   podcast,
 }) => {
   // We only need download + getCachedUri now
-  const { download, getCachedUri } = usePodcasts();
+  const { language } = useLanguage();
+  const { download, getCachedUri } = usePodcasts(language);
   const [isFavorite, setIsFavorite] = useState(false);
   const [sourceUri, setSourceUri] = useState<string | null>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
@@ -38,7 +42,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   const colorScheme = useColorScheme() || "light";
   const player = useAudioPlayer(sourceUri ? { uri: sourceUri } : null, 500);
   const status: AudioStatus | null = useAudioPlayerStatus(player);
-
+  const { t } = useTranslation();
   // On podcast change: reset UI state and check for a cached file
   useEffect(() => {
     setSourceUri(null);
@@ -202,7 +206,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
         const fav = await isPodcastFavorited(podcast.id);
         setIsFavorite(fav);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     })();
   }, [podcast.id]);
@@ -227,6 +231,11 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
       ]}
       contentContainerStyle={styles.scrollContent}
     >
+      <Stack.Screen
+        options={{
+          headerTitle: t("Podcast"),
+        }}
+      />
       <View
         style={[
           styles.headerContainer,

@@ -194,8 +194,7 @@ async function downloadToCache(
   );
 }
 
-export function usePodcasts() {
-  const { language } = useLanguage();
+export function usePodcasts(language: string) {
 
   const qc = useQueryClient();
   const didInitialCleanup = useRef(false);
