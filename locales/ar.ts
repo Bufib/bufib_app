@@ -29,6 +29,9 @@ export const ar = {
   search: "بحث",
   removedFromFavorites: "تمت إزالته من المفضلة",
   addedToFavorites: "تمت إضافته إلى المفضلة",
+  readMore: "المزيد",
+  noFavorites: "ليس لديك مفضلات حتى الآن!",
+
 
   // Navigation
   knowledge: "معرفة",

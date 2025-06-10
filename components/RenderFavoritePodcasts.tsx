@@ -1,84 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { StyleSheet, Text, View, FlatList } from "react-native";
-// import { getFavoritePodcasts } from "@/utils/favorites";
-
-// const RenderFavoritePodcasts = () => {
-//   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
-
-//   useEffect(() => {
-//     // Load all stored favorite podcast IDs when this component mounts
-//     const loadFavorites = async () => {
-//       try {
-//         const ids = await getFavoritePodcasts();
-//         setFavoriteIds(ids);
-//       } catch (error) {
-//         console.error("Error loading favorite podcasts:", error);
-//       }
-//     };
-
-//     loadFavorites();
-//   }, []);
-
-//   // If there are no favorites, show a placeholder message
-//   if (favoriteIds.length === 0) {
-//     return (
-//       <View style={styles.container}>
-//         <Text style={styles.emptyText}>You have no favorite podcasts yet.</Text>
-//       </View>
-//     );
-//   }
-
-//   // Otherwise, render a FlatList of podcast IDs
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.header}>Your Favorite Podcasts</Text>
-//       <FlatList
-//         data={favoriteIds}
-//         keyExtractor={(item) => item.toString()}
-//         renderItem={({ item }) => (
-//           <View style={styles.itemContainer}>
-//             <Text style={styles.itemText}>{item}</Text>
-//             {/*
-//               If you have a way to fetch podcast metadata (e.g. title, image) by ID,
-//               you could swap this out for a custom component that fetches and displays details.
-//             */}
-//           </View>
-//         )}
-//         contentContainerStyle={styles.listContent}
-//       />
-//     </View>
-//   );
-// };
-
-// export default RenderFavoritePodcasts;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 16,
-//   },
-//   header: {
-//     fontSize: 20,
-//     fontWeight: "600",
-//     marginBottom: 12,
-//   },
-//   emptyText: {
-//     fontSize: 16,
-//     color: "#666",
-//   },
-//   listContent: {
-//     paddingBottom: 24,
-//   },
-//   itemContainer: {
-//     paddingVertical: 12,
-//     borderBottomWidth: StyleSheet.hairlineWidth,
-//     borderColor: "#ccc",
-//   },
-//   itemText: {
-//     fontSize: 16,
-//   },
-// });
-
 import React, { useEffect, useState, useMemo, useLayoutEffect } from "react";
 import {
   StyleSheet,
@@ -93,6 +12,10 @@ import { getFavoritePodcasts } from "@/utils/favorites";
 import { PodcastType } from "@/constants/Types";
 import { router, useFocusEffect } from "expo-router";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { ThemedView } from "./ThemedView";
+import { ThemedText } from "./ThemedText";
+import { useTranslation } from "react-i18next";
 
 const RenderFavoritePodcasts = () => {
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -107,6 +30,7 @@ const RenderFavoritePodcasts = () => {
   const { refreshTriggerFavorites, triggerRefreshFavorites } =
     useRefreshFavorites();
 
+  const { t } = useTranslation();
   // 1) Load favorite IDs from AsyncStorage on mount
   useEffect(() => {
     const loadFavorites = async () => {
@@ -145,44 +69,26 @@ const RenderFavoritePodcasts = () => {
   // If there was an error fetching episodes at all
   if (isError) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>Failed to load episodes.</Text>
-      </View>
+      <ThemedView style={styles.centered}>
+        <ThemedText style={styles.errorText}>
+          Failed to load episodes.
+        </ThemedText>
+      </ThemedView>
     );
   }
 
   // 4) If there are no favorites (or none of the favorites have been loaded yet), show placeholder
   if (favoriteIds.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.emptyText}>You have no favorite podcasts yet.</Text>
-      </View>
+      <ThemedView style={styles.container}>
+        <ThemedText style={styles.emptyText}>{t("noFavorites")}</ThemedText>
+      </ThemedView>
     );
   }
 
-  // 5) If we have favorite IDs but none of them appear in the loaded pages yet,
-  //    prompt the user or trigger loading more pages until we either find them or run out.
-  if (favoriteIds.length > 0 && favoriteEpisodes.length === 0) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.emptyText}>
-          We found your favorite IDs, but none are loaded yet.{"\n"}
-          {hasNextPage ? (
-            <Text style={styles.loadMoreText} onPress={() => fetchNextPage()}>
-              Tap to load more episodes…
-            </Text>
-          ) : (
-            "No more pages to load."
-          )}
-        </Text>
-      </View>
-    );
-  }
-
-  // 6) Otherwise, render the list of favorite episodes
+  // 5) Otherwise, render the list of favorite episodes
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Your Favorite Podcasts</Text>
+    <ThemedView style={styles.container}>
       <FlatList
         data={favoriteEpisodes}
         extraData={[favoriteIds, refreshTriggerFavorites]}
@@ -199,23 +105,15 @@ const RenderFavoritePodcasts = () => {
               });
             }}
           >
-            <Text style={styles.itemTitle}>{item.title}</Text>
-            <Text style={styles.itemDate}>
+            <ThemedText style={styles.itemTitle}>{item.title}</ThemedText>
+            <ThemedText style={styles.itemDate}>
               Published: {new Date(item.published_at).toLocaleDateString()}
-            </Text>
-            {/* If you want to enable “play from cache” or “download,” you can also show a button here that calls usePodcasts().download.mutate({ filename: item.filename }) */}
+            </ThemedText>
           </TouchableOpacity>
         )}
         contentContainerStyle={styles.listContent}
       />
-      {hasNextPage && (
-        <View style={styles.loadMoreContainer}>
-          <Text style={styles.loadMoreText} onPress={() => fetchNextPage()}>
-            Load more…
-          </Text>
-        </View>
-      )}
-    </View>
+    </ThemedView>
   );
 };
 

@@ -9,6 +9,7 @@ import * as FileSystem from "expo-file-system";
 import { useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/utils/supabase"; // Your initialized Supabase client
 import { PodcastType } from "@/constants/Types"; // Matches your `episodes` schema
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // --- CONFIGURATION ---
 const PAGE_SIZE = 3;
@@ -193,7 +194,9 @@ async function downloadToCache(
   );
 }
 
-export function usePodcasts(language: string) {
+export function usePodcasts() {
+  const { language } = useLanguage();
+
   const qc = useQueryClient();
   const didInitialCleanup = useRef(false);
 

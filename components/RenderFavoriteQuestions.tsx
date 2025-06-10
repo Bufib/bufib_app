@@ -14,12 +14,13 @@ import { router } from "expo-router";
 import { getFavoriteQuestions } from "@/utils/bufibDatabase";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { QuestionType } from "@/constants/Types";
+import { useTranslation } from "react-i18next";
 
 function RenderFavoriteQuestions() {
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  const {t} = useTranslation()
   const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme();
   const { refreshTriggerFavorites } = useRefreshFavorites();
@@ -60,33 +61,32 @@ function RenderFavoriteQuestions() {
 
   if (error && !isLoading && questions.length === 0) {
     return (
-      <View style={styles.centeredContainer}>
+      <ThemedView style={styles.centeredContainer}>
         <ThemedText>{error}</ThemedText>
-      </View>
+      </ThemedView>
     );
   }
 
   if (isLoading) {
     return (
-      <View style={styles.centeredContainer}>
+      <ThemedView style={styles.centeredContainer}>
         <ThemedText>Favoriten werden geladen…</ThemedText>
-      </View>
+      </ThemedView>
     );
   }
 
   if (questions.length === 0 && !isLoading && !error) {
     return (
-      <View style={styles.centeredContainer}>
+      <ThemedView style={styles.centeredContainer}>
         <ThemedText style={styles.emptyText}>
-          Du hast noch keine Favoriten!{'\n'}Klicke auf den Stern bei einer
-          Frage, um sie hinzuzufügen.
+         {t("noFavorites")}
         </ThemedText>
-      </View>
+      </ThemedView>
     );
   }
 
   return (
-    <View style={[styles.container, themeStyle.defaultBackgorundColor]}>
+    <ThemedView style={[styles.container, themeStyle.defaultBackgorundColor]}>
       <FlatList
         data={questions}
         extraData={refreshTriggerFavorites}
@@ -111,7 +111,7 @@ function RenderFavoriteQuestions() {
             <ThemedView style={[styles.item, themeStyle.contrast]}>
               <View style={styles.questionContainer}>
                 <ThemedText style={styles.titleText}>{item.title}</ThemedText>
-                <ThemedText style={styles.questionText} numberOfLines={1}>
+                <ThemedText style={styles.questionText} numberOfLines={2}>
                   {item.question}
                 </ThemedText>
               </View>
@@ -124,7 +124,7 @@ function RenderFavoriteQuestions() {
           </Pressable>
         )}
       />
-    </View>
+    </ThemedView>
   );
 }
 

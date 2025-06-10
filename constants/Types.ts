@@ -61,9 +61,9 @@ export type Sizes = {
   gap: number;
   emptyTextSize: number;
   emptyIconSize: number;
-  emptyGap: number
-  isLarge: boolean,
-  isMedium: boolean
+  emptyGap: number;
+  isLarge: boolean;
+  isMedium: boolean;
 };
 
 export type triggerRefreshFavoritesType = {
@@ -171,18 +171,38 @@ export type SearchResultQAType = {
   question: string;
 };
 
-export type CombinedResult = {
-  id: string;
-  type: "question" | "prayer" | "podcast" | "newsArticle";
-  question?: string;
-  title?: string;
-  name?: string;
-  arabic_text?: string;
-  podcastEpisodeTitle?: string;
-  podcastEpisodeDescription?: string;
-  newsTitle?: string; // Added
-  newsSnippet?: string; // Added
-};
+export type CombinedResult =
+  | {
+      renderId: string;
+      type: "question";
+      questionId: number;
+      title: string;
+      question: string;
+      question_category_name?: string;
+      question_subcategory_name?: string;
+    }
+  | {
+      renderId: string;
+      type: "prayer";
+      prayerId: number;
+      name: string;
+      arabic_text?: string;
+    }
+  | {
+      renderId: string;
+      type: "podcast";
+      podcastId: number;
+      podcastEpisodeTitle: string;
+      podcastEpisodeDescription?: string;
+    }
+  | {
+      renderId: string;
+      type: "newsArticle";
+      newsArticleId: number;
+      newsTitle: string;
+      newsSnippet?: string;
+    };
+
 
 // Roles lookup
 export type RoleType = {

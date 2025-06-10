@@ -43,8 +43,7 @@ export default function CategoryScreen() {
   const colorScheme = useColorScheme() || "light";
   const themeStyles = CoustomTheme();
   const { t } = useTranslation();
-  const { language } = useLanguage();
-  const isRTL = language === "AR";
+  const { language, isArabic } = useLanguage();
 
   const [childCategories, setChildCategories] = useState<PrayerCategoryType[]>(
     []
@@ -195,7 +194,9 @@ export default function CategoryScreen() {
               color={Colors.universal.primary}
             />
           </View>
-          <ThemedText style={[styles.header, isRTL && { textAlign: "right" }]}>
+          <ThemedText
+            style={[styles.header, isArabic() && { textAlign: "right" }]}
+          >
             {prayerCategory} ({allPrayers.length})
           </ThemedText>
         </View>
@@ -206,11 +207,14 @@ export default function CategoryScreen() {
             <View
               style={[
                 styles.sectionHeaderRow,
-                isRTL && { flexDirection: "row-reverse" },
+                isArabic() && { flexDirection: "row-reverse" },
               ]}
             >
               <ThemedText
-                style={[styles.sectionTitle, isRTL && { textAlign: "right" }]}
+                style={[
+                  styles.sectionTitle,
+                  isArabic() && { textAlign: "right" },
+                ]}
               >
                 {t("categories")}
               </ThemedText>
@@ -272,17 +276,16 @@ export default function CategoryScreen() {
           <View
             style={[
               styles.sectionHeaderRow,
-              isRTL && { flexDirection: "row-reverse" },
+              isArabic() && { flexDirection: "row-reverse" },
             ]}
           >
             <ThemedText
-              style={[styles.sectionTitle, isRTL && { textAlign: "right" }]}
+              style={[
+                styles.sectionTitle,
+                isArabic() && { textAlign: "right" },
+              ]}
             >
-              {t("prayers")}
               {selectedSubcategory && ` • ${selectedSubcategory.title}`}
-            </ThemedText>
-            <ThemedText style={{ fontSize: 14 }}>
-              {allPrayers.length}
             </ThemedText>
           </View>
 
@@ -302,7 +305,7 @@ export default function CategoryScreen() {
                       <ThemedText
                         style={[
                           styles.prayerTitle,
-                          isRTL && { textAlign: "right" },
+                          isArabic() && { textAlign: "right" },
                         ]}
                         numberOfLines={1}
                       >
@@ -315,7 +318,7 @@ export default function CategoryScreen() {
                       style={[
                         styles.prayerText,
                         { color: Colors.universal.grayedOut },
-                        isRTL && { textAlign: "right" },
+                        isArabic() && { textAlign: "right" },
                       ]}
                       numberOfLines={2}
                     >
@@ -325,21 +328,21 @@ export default function CategoryScreen() {
                   <View
                     style={[
                       styles.prayerFooter,
-                      isRTL ? { flexDirection: "row-reverse" } : {},
+                      isArabic() ? { flexDirection: "row-reverse" } : {},
                     ]}
                   >
                     <Text
                       style={[
                         styles.readMore,
-                        { color: Colors.universal.secondary },
+                        { color: Colors.universal.primary },
                       ]}
                     >
                       {t("readMore")}
                     </Text>
                     <Ionicons
-                      name={isRTL ? "chevron-back" : "chevron-forward"}
+                      name={isArabic() ? "chevron-back" : "chevron-forward"}
                       size={16}
-                      color={Colors.universal.secondary}
+                      color={Colors.universal.primary}
                     />
                   </View>
                 </TouchableOpacity>
@@ -357,7 +360,7 @@ export default function CategoryScreen() {
                 style={[
                   styles.emptyStateText,
                   { color: colorScheme === "dark" ? "#94a3b8" : "#64748b" },
-                  isRTL && { textAlign: "right" },
+                  isArabic() && { textAlign: "right" },
                 ]}
               >
                 {t("noPrayer")}
@@ -465,11 +468,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  prayerTitleContainer: { flex: 1 },
-  prayerTitle: { fontSize: 18, fontWeight: "600" },
-  prayerText: { fontSize: 15, marginBottom: 18 },
-  prayerFooter: { flexDirection: "row", alignItems: "center" },
-  readMore: { fontSize: 14, fontWeight: "600", marginRight: 4 },
+  prayerTitleContainer: {
+    flex: 1,
+  },
+  prayerTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  prayerText: {
+    fontSize: 15,
+    marginBottom: 18,
+  },
+  prayerFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  readMore: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginRight: 1,
+  },
 
   emptyState: {
     padding: 30,
@@ -477,7 +495,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 10,
   },
-  emptyStateIcon: { marginBottom: 12 },
-  emptyStateText: { fontSize: 16, textAlign: "center", marginBottom: 16 },
-  resetButton: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 50 },
+  emptyStateIcon: {
+    marginBottom: 12,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  resetButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 50,
+  },
 });

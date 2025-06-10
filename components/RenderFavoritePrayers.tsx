@@ -21,6 +21,7 @@ import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 const FavoritePrayersScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -79,7 +80,11 @@ const FavoritePrayersScreen: React.FC = () => {
         style={[
           styles.folderPill,
           { backgroundColor: folder.color },
-          isActive && styles.folderPillActive,
+          isActive && {
+            opacity: 1,
+            borderWidth: 2,
+            borderColor: Colors[colorScheme].border,
+          },
         ]}
         onPress={() => setSelectedFolder(folder.name)}
       >
@@ -111,21 +116,19 @@ const FavoritePrayersScreen: React.FC = () => {
     >
       <ThemedText style={styles.prayerName}>{item.name}</ThemedText>
       {item.arabic_title ? (
-        <ThemedText style={styles.prayerArabicTitle}>{item.arabic_title}</ThemedText>
+        <ThemedText style={styles.prayerArabicTitle}>
+          {item.arabic_title}
+        </ThemedText>
       ) : null}
     </TouchableOpacity>
   );
 
   return (
     <ThemedView style={styles.container}>
-      <Text style={styles.headerText}>
-        {t("FavoriteCategories.title", "Favorite Prayers")}
-      </Text>
-
       {/* Folder pills in a horizontal ScrollView */}
       <View style={styles.pillContainer}>
         {isLoadingFolders ? (
-          <ActivityIndicator size="small" color="#555" />
+          <LoadingIndicator size={"small"} />
         ) : (
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {folders.map(renderFolderPill)}
@@ -166,6 +169,8 @@ export default FavoritePrayersScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 15,
+    gap: 10,
   },
   headerText: {
     fontSize: 24,
@@ -174,8 +179,6 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   pillContainer: {
-    height: 50,
-    marginVertical: 8,
     paddingLeft: 16,
   },
   folderPill: {
@@ -185,11 +188,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
     opacity: 0.8,
   },
-  folderPillActive: {
-    opacity: 1,
-    borderWidth: 2,
-    borderColor: "#333",
-  },
+  folderPillActive: {},
   folderPillText: {
     fontSize: 14,
     color: "white",

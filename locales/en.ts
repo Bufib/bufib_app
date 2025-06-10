@@ -29,6 +29,9 @@ export const en = {
   search: "Search",
   removedFromFavorites: "Removed from favorites",
   addedToFavorites: "Added to Favorites",
+  readMore: "More",
+  noFavorites: "You have no favorites yet!",
+
 
   // Navigation
   knowledge: "Knowledge",
@@ -90,7 +93,7 @@ export const en = {
 
   addWeekly: "Add",
   addForDay: "Add for",
-  enterPrayer: "Enter your Todo..",
+  enterPrayer: "Enter your Todo...",
   add: "Add",
   cancel: "Cancel",
   noPrayersForDay: "No prayers for this day",

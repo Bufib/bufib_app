@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   useColorScheme,
+  TouchableOpacity,
 } from "react-native";
 import debounce from "lodash.debounce";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,11 +18,14 @@ import {
   PodcastType,
   NewsArticlesType,
   CombinedResult,
+  PrayerType,
+  QuestionType,
 } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";
 import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { router } from "expo-router";
 
 const SearchScreen = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -48,20 +52,24 @@ const SearchScreen = () => {
       const prayerResults = await searchPrayers(term);
 
       const questionsTagged: CombinedResult[] = questionResults.map(
-        (q: any) => ({
-          id: `question-${q.id}`,
+        (q: QuestionType) => ({
+          renderId: `question-${q.id}`,
           type: "question",
+          questionId: q.id,
           question: q.question,
           title: q.title,
         })
       );
 
-      const prayersTagged: CombinedResult[] = prayerResults.map((p: any) => ({
-        id: `prayer-${p.id}`,
-        type: "prayer",
-        name: p.name,
-        arabic_text: p.arabic_text,
-      }));
+      const prayersTagged: CombinedResult[] = prayerResults.map(
+        (p: PrayerType) => ({
+          renderId: `prayer-${p.id}`,
+          prayerId: p.id,
+          type: "prayer",
+          name: p.name,
+          arabic_text: p.arabic_text,
+        })
+      );
 
       setQuestionAndPrayerResults([...questionsTagged, ...prayersTagged]);
     } catch (err) {
@@ -92,7 +100,8 @@ const SearchScreen = () => {
     const podcastsData = podcastQuery.data || [];
     const podcastsTagged: CombinedResult[] = podcastsData.map(
       (p: PodcastType) => ({
-        id: `podcast-${p.id}`,
+        renderId: `podcast-${p.id}`,
+        podcastId: p.id,
         type: "podcast",
         podcastEpisodeTitle: p.title,
         podcastEpisodeDescription: p.description,
@@ -102,7 +111,8 @@ const SearchScreen = () => {
     const newsArticlesData = newsArticleSearchQuery.data || [];
     const newsArticlesTagged: CombinedResult[] = newsArticlesData.map(
       (na: NewsArticlesType) => ({
-        id: `news-${na.id}`,
+        renderId: `newsArticle-${na.id}`,
+        newsArticleId: na.id,
         type: "newsArticle",
         newsTitle: na.title,
         newsSnippet:
@@ -158,11 +168,39 @@ const SearchScreen = () => {
     }
 
     return (
-      <View
+      <TouchableOpacity
         style={[
           styles.itemContainer,
           { backgroundColor: Colors[colorScheme].contrast },
         ]}
+        onPress={() => {
+          if (item.type === "question") {
+            router.push({
+              pathname: "/(displayQuestion)",
+              params: {
+                category: item.question_category_name,
+                subcategory: item.question_subcategory_name,
+                questionId: item.questionId,
+                questionTitle: item.title,
+              },
+            });
+          } else if (item.type === "prayer") {
+            router.push({
+              pathname: "/[prayer]",
+              params: { prayer: item.prayerId.toString() },
+            });
+          } else if (item.type === "podcast") {
+            router.push({
+              pathname: "/home/podcast",
+              params: { podcast: JSON.stringify(item) },
+            });
+          } else if (item.type === "newsArticle") {
+            router.push({
+              pathname: "/(newsArticle)",
+              params: { articleId: item.newsArticleId },
+            });
+          }
+        }}
       >
         <View
           style={{
@@ -219,7 +257,7 @@ const SearchScreen = () => {
               {item.newsSnippet}
             </ThemedText>
           )}
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -256,7 +294,7 @@ const SearchScreen = () => {
 
       <FlatList
         data={combinedDisplayResults}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => item.renderId}
         renderItem={renderItem}
         ListEmptyComponent={
           !isLoading && searchTerm.trim().length > 0 ? (

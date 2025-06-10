@@ -13,7 +13,7 @@ export const de = {
 
   // Podcasts
   podcastsTitle: "Podcast",
-
+  podcastScreenTitle: "Podcasts",
   // General
   retry: "Wiederholen",
   errorLoadingData: "Es gab einen Fehler beim laden der Daten",
@@ -29,13 +29,15 @@ export const de = {
   search: "Suche",
   removedFromFavorites: "Aus Favoriten entfernt",
   addedToFavorites: "Zu Favoriten hinzugefügt",
+  noFavorites: "Du hast noch keine Favoriten!",
+
+  readMore: "Mehr",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
   questionScreenTitle: "Fragen und Antworten",
   prayerScreenTitle: "Gebete und mehr",
   newsArticleScreenTitle: "Artikel",
-  podcastScreenTitle: "Podcasts",
   home: "Home",
 
   // Database
@@ -83,7 +85,6 @@ export const de = {
   totalDhikr: "Gesamter Dhikr:",
   completedText: "abgeschlossen ✓",
 
-
   // Weekly calender
   weeklyToDoTitle: "Wochenplan",
   weeklyToDoSubtitle: "Plane deine Woche",
@@ -117,7 +118,6 @@ export const de = {
   //search
   noSearchResults: "Keine Suchergebnisse gefunden!",
   searchPlaceholder: "Suche nach Fragen, Gebeten, News-Artikel oder Podcasts",
-
 } as const;
 
 export default de;
