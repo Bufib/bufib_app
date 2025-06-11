@@ -37,6 +37,7 @@ import FontSizePickerModal from "./FontSizePickerModal";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { Storage } from "expo-sqlite/kv-store";
 import CategoryPickerBottomSheet from "./CategoryPickerModal";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
@@ -199,16 +200,16 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.universal.primary} />
-      </View>
+      <ThemedView style={styles.loadingContainer}>
+        <LoadingIndicator size={"large"} />
+      </ThemedView>
     );
   }
   if (!prayer) {
     return (
-      <View style={styles.container}>
-        <Text>{t("noPrayerFound")}</Text>
-      </View>
+      <ThemedView style={styles.container}>
+        <ThemedText>{t("noPrayerFound")}</ThemedText>
+      </ThemedView>
     );
   }
 
@@ -219,9 +220,6 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         { backgroundColor: Colors[colorScheme].background },
       ]}
     >
-      <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
-      />
       <Stack.Screen
         options={{ headerTitle: prayer.name, headerBackTitle: t("back") }}
       />
@@ -285,9 +283,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                   styles.introContainer,
                   {
                     backgroundColor:
-                      colorScheme === "dark"
-                        ? Colors.dark.prayerIntroductionBackground
-                        : Colors.light.prayerIntroductionBackground,
+                      Colors[colorScheme].prayerIntroductionBackground,
                   },
                 ]}
               >
@@ -464,6 +460,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                     rules={markdownRules(
                       fontSize,
                       Colors[colorScheme].text,
+                      
                       index
                     )}
                     style={{
@@ -471,6 +468,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                         fontSize,
                         lineHeight,
                         marginTop: 4,
+                        color: Colors[colorScheme].text
                       },
                     }}
                   >

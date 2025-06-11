@@ -27,11 +27,19 @@ export const de = {
   error: "Fehler",
   favorites: "Favoriten",
   search: "Suche",
+  remove: "Entfernen",
+  create: "Erstellen",
+  nameFolder: "Name",
+  pickColor: "Wähle eine Farbe aus",
   removedFromFavorites: "Aus Favoriten entfernt",
   addedToFavorites: "Zu Favoriten hinzugefügt",
   noFavorites: "Du hast noch keine Favoriten!",
-
+  noFoldersYet: "Du hast noch keine Ordner",
+  removeConfirmPrayer: "Willst du das Gebet aus dem Ordner entfernen?",
   readMore: "Mehr",
+  about: "Über",
+  impressum: "Impressum",
+  
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",

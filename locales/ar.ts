@@ -27,11 +27,18 @@ export const ar = {
   error: "خطأ",
   favorites: "المفضلة",
   search: "بحث",
+  remove: "يزيل",
+  create: "يصنع",
+  nameFolder: "اسم",
+  pickColor: "اختر لونًا",
   removedFromFavorites: "تمت إزالته من المفضلة",
   addedToFavorites: "تمت إضافته إلى المفضلة",
   readMore: "المزيد",
   noFavorites: "ليس لديك مفضلات حتى الآن!",
-
+  noFoldersYet: "ليس لديك أي مجلدات حتى الآن",
+  removeConfirmPrayer: "هل تريد إزالة الصلاة من المجلد؟",
+  about: "حول التطبيق",
+  impressum: "البيانات القانونية",
 
   // Navigation
   knowledge: "معرفة",

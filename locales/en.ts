@@ -27,11 +27,18 @@ export const en = {
   error: "Error",
   favorites: "favorites",
   search: "Search",
+  remove: "Remove",
+  create: "Create",
+  nameFolder: "Name",
+  pickColor: "Pick a color",
   removedFromFavorites: "Removed from favorites",
   addedToFavorites: "Added to Favorites",
   readMore: "More",
   noFavorites: "You have no favorites yet!",
-
+  noFoldersYet: "You have no folders yet",
+  removeConfirmPrayer: "Do you want to remove this prayer from the folder?",
+  about: "About",
+  impressum: "Legal Notice",
 
   // Navigation
   knowledge: "Knowledge",
@@ -118,10 +125,9 @@ export const en = {
   deleteQuestion: "Are you sure you want to delete this prayer?",
   delete: "Delete",
 
-    //search
-    noSearchResults: "No search results found!",
+  //search
+  noSearchResults: "No search results found!",
   searchPlaceholder: "Search for questions, prayers, news-articles or podcasts",
-
 } as const;
 
 export default en;

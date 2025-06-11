@@ -110,6 +110,14 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
       CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
         ON favorite_prayers(prayer_id);
 
+
+      CREATE TABLE IF NOT EXISTS prayer_folders (
+        name       TEXT PRIMARY KEY,
+        color      TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      );
+
+
     `);
   }
   return dbInstance;
@@ -822,40 +830,32 @@ export const getFavoriteQuestions = async (): Promise<QuestionType[]> => {
   }
 };
 
-/**
- * Fetch all distinct folder_name + folder_color entries from favorite_prayers,
- * along with the number of prayers in each folder.
- */
 export const getFavoritePrayerFolders = async (): Promise<
   FavoritePrayerFolderType[]
 > => {
-  try {
-    const db = await getDatabase();
-    const rows = await db.getAllAsync<{
-      folder_name: string;
-      folder_color: string;
-      cnt: number;
-    }>(
-      `
-      SELECT
-        folder_name,
-        folder_color,
-        COUNT(*) AS cnt
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<{
+    name: string;
+    color: string;
+    cnt: number;
+  }>(`
+    SELECT
+      f.name,
+      f.color,
+      COALESCE(fp.count, 0) AS cnt
+    FROM prayer_folders AS f
+    LEFT JOIN (
+      SELECT folder_name, COUNT(*) AS count
       FROM favorite_prayers
-      GROUP BY folder_name, folder_color
-      ORDER BY LOWER(folder_name);
-      `
-    );
-
-    return rows.map((r) => ({
-      name: r.folder_name,
-      color: r.folder_color,
-      prayerCount: r.cnt,
-    }));
-  } catch (error) {
-    console.error("Error fetching favorite‐prayer folders:", error);
-    throw error;
-  }
+      GROUP BY folder_name
+    ) fp ON f.name = fp.folder_name
+    ORDER BY LOWER(f.name);
+  `);
+  return rows.map((r) => ({
+    name: r.name,
+    color: r.color,
+    prayerCount: r.cnt,
+  }));
 };
 
 /**
@@ -877,13 +877,12 @@ export const getFavoritePrayers = async (): Promise<PrayerType[]> => {
   }
 };
 
-// (2) “Create” a folder (just return the object; actual insertion happens in addPrayerToFolder)
-export const createFolder = async (
-  name: string,
-  color: string
-): Promise<{ name: string; color: string }> => {
-  // No DB write here—just return the name/color pair.
-  // The call to `addPrayerToFolder()` below will insert into favorite_prayers.
+export const createFolder = async (name: string, color: string) => {
+  const db = await getDatabase();
+  await db.runAsync(
+    `INSERT OR IGNORE INTO prayer_folders (name, color) VALUES (?, ?);`,
+    [name, color]
+  );
   return { name, color };
 };
 

@@ -6,6 +6,20 @@ const _layout = () => {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="about"
+        options={{
+          presentation: "formSheet",
+          animation: "default",
+        }}
+      />
+      <Stack.Screen
+        name="impressum"
+        options={{
+          presentation: "formSheet",
+          animation: "default",
+        }}
+      />
     </Stack>
   );
 };
