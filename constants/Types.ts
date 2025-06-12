@@ -396,3 +396,21 @@ export type PodcastProps = { podcast: PodcastType };
 export type PodcastPlayerPropsType = {
   podcast: PodcastType;
 };
+
+
+// Videos
+export type VideoType = {
+  id: string;
+  title: string;
+  video_category: string;
+  public_id: string;
+  created_at: string;
+  language_code: string
+}
+
+export type VideoCategoryType = {
+  id: string; 
+  video_category: string; 
+  language_code: string
+};
+

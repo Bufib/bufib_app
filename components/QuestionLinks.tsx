@@ -86,7 +86,7 @@ export default function QuestionLinks() {
           <TouchableOpacity
             onPress={() => {
               router.push({
-                pathname: "/knowledge/questionCategories",
+                pathname: "/knowledge/questionVideosCategories",
                 params: { category: "Videos", categoryName: t("videos") },
               });
             }}
