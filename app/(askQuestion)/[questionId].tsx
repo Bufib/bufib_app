@@ -5,10 +5,11 @@ import {
   ScrollView,
   StyleSheet,
   RefreshControl,
+  useColorScheme,
 } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams, router, Stack } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { QuestionFromUser } from "@/utils/types";
+import { QuestionsFromUserType } from "@/constants/Types";
 import { useAuthStore } from "@/stores/authStore";
 import getStatusColor from "@/utils/getStatusColor";
 import { CoustomTheme } from "@/utils/coustomTheme";
@@ -20,6 +21,7 @@ import { useFetchUserQuestions } from "@/hooks/useFetchUserQuestions";
 import Toast from "react-native-toast-message";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { NoInternet } from "@/components/NoInternet";
+import { useTranslation } from "react-i18next";
 export default function QuestionDetailScreen() {
   const { questionId } = useLocalSearchParams();
   const queryClient = useQueryClient();
@@ -28,6 +30,8 @@ export default function QuestionDetailScreen() {
   const userId = session?.user?.id ?? null;
   const themeStyles = CoustomTheme();
   const hasInternet = useConnectionStatus();
+  const colorScheme = useColorScheme() || "light";
+  const {t} = useTranslation();
   // 4. If user is not logged in, redirect to login
   useEffect(() => {
     if (!isLoggedIn) {
@@ -35,16 +39,12 @@ export default function QuestionDetailScreen() {
     }
   }, [isLoggedIn, session]);
 
-  const cachedQuestions = queryClient.getQueryData<QuestionFromUser[]>([
+  const cachedQuestions = queryClient.getQueryData<QuestionsFromUserType[]>([
     "questionsFromUser",
     userId,
   ]);
 
-  const {
-    data: questions,
-    isRefetching,
-    refetch,
-  } = useFetchUserQuestions();
+  const { data: questions, isRefetching, refetch } = useFetchUserQuestions();
 
   // 6. Find the specific question in the cached array
   const question = cachedQuestions?.find(
@@ -55,7 +55,10 @@ export default function QuestionDetailScreen() {
   if (!question) {
     return (
       <ThemedView style={styles.notFound}>
-        <ThemedText style={styles.notFoundText} type="subtitle">
+        <ThemedText
+          style={[styles.notFoundText, { color: Colors[colorScheme].error }]}
+          type="subtitle"
+        >
           Fragen wurden nicht gefunden!
         </ThemedText>
       </ThemedView>
@@ -85,6 +88,7 @@ export default function QuestionDetailScreen() {
         />
       }
     >
+  
       <NoInternet showUI={true} showToast={false} />
       <ThemedView style={[styles.header, themeStyles.borderColor]}>
         <View
@@ -166,9 +170,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  notFoundText: {
-    color: Colors.universal.error,
-  },
+  notFoundText: {},
   header: {
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   statusText: {
-    color: Colors.universal.statusText,
+    color: "#fff",
     fontSize: 12,
     fontWeight: "500",
     textAlign: "center",

@@ -96,5 +96,7 @@ export const Colors = {
     prayerLinks: "#84CEEB",
     externalLinkIcon: "#057958",
     favorite: "gold",
+    chatBubbleQuestion: "#b7d6ef",
+    chatBubbleAnswer: "#b3e1c1",
   },
 };

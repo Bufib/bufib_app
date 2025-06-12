@@ -127,6 +127,13 @@ export const ar = {
   noSearchResults: "لا توجد نتائج بحث",
   searchPlaceholder:
     "ابحث عن الأسئلة أو الأدعية أو المقالات الإخبارية أو الملفات الصوتية",
+
+
+  // videos
+  noVideoFound: "لا توجد مقاطع فيديو لهذه الفئة",
+
+   //User questions
+  yourQuestions: "أسئلتك"
 } as const;
 
 export default ar;

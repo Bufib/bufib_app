@@ -25,11 +25,14 @@ import { usePodcasts } from "@/hooks/usePodcasts";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { NewsItem } from "@/components/NewsItem";
 import { ThemedView } from "@/components/ThemedView";
+import { useAuthStore } from "@/stores/authStore";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const isAdmin = useAuthStore((state) => state.isAdmin);
 
   const {
     data: newsArticlesData,
@@ -214,7 +217,18 @@ export default function HomeScreen() {
 
         {/* //!----------- News ----------- */}
         <View style={styles.newsContainer}>
-          <ThemedText type="titleSmall">{t("newsTitle")}</ThemedText>
+          <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+            <ThemedText type="titleSmall">{t("newsTitle")}</ThemedText>
+            {isAdmin && (
+              <Ionicons
+                name="add-circle-outline"
+                size={35}
+                color={colorScheme === "dark" ? "#fff" : "#000"}
+                style={{ color: Colors[colorScheme].defaultIcon }}
+                onPress={() => router.push("/app/(addNews)/")}
+              />
+            )}
+          </View>
           {newsIsLoading && (
             <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
           )}

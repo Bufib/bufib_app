@@ -8,7 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { router, useFocusEffect } from "expo-router";
+import { router, Stack, useFocusEffect } from "expo-router";
 import { useFetchUserQuestions } from "@/hooks/useFetchUserQuestions";
 import { useAuthStore } from "@/stores/authStore";
 import { formatDate } from "@/utils/formatDate";
@@ -20,17 +20,18 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { userQuestionErrorLoadingQuestions } from "@/constants/messages";
 import { NoInternet } from "@/components/NoInternet";
-import { QuestionFromUser } from "@/utils/types";
+import { QuestionsFromUserType } from "@/constants/Types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "react-i18next";
 export default function QuestionsList() {
   // 1. Check auth state from the store
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const session = useAuthStore.getState().session;
   const colorScheme = useColorScheme();
   const themeStyles = CoustomTheme();
-
+  const { t } = useTranslation();
   // Track connection status
   const hasInternet = useConnectionStatus();
 
@@ -65,7 +66,7 @@ export default function QuestionsList() {
 
   // 6. Render item (memoized for performance)
   const renderQuestion = useCallback(
-    ({ item }: { item: QuestionFromUser }) => (
+    ({ item }: { item: QuestionsFromUserType }) => (
       <Pressable
         style={[styles.questionCard, themeStyles.contrast]}
         onPress={() =>
@@ -150,6 +151,11 @@ export default function QuestionsList() {
         </Pressable>
       )} */}
 
+      <Stack.Screen
+        options={{
+          headerTitle: t("yourQuestions"),
+        }}
+      />
       <FlatList
         data={questions}
         renderItem={renderQuestion}

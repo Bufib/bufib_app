@@ -126,6 +126,13 @@ export const de = {
   //search
   noSearchResults: "Keine Suchergebnisse gefunden!",
   searchPlaceholder: "Suche nach Fragen, Gebeten, News-Artikel oder Podcasts",
+
+
+  // videos
+  noVideoFound: "Es wurden keine Videos für diese Kategorie gefunden!",
+
+  //User questions
+  yourQuestions: "Deine Fragen"
 } as const;
 
 export default de;

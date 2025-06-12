@@ -254,7 +254,7 @@ const Settings = () => {
         isVisible={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}
         onDeleteSuccess={handleDeleteSuccess}
-        serverUrl="https://tdjuwrsspauybgfywlfr.supabase.co/functions/v1/delete-account"
+        serverUrl="https://ygtlsiifupyoepxfamcn.supabase.co/functions/v1/delete-account"
       />
     </SafeAreaView>
   );

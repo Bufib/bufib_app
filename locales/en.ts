@@ -128,6 +128,13 @@ export const en = {
   //search
   noSearchResults: "No search results found!",
   searchPlaceholder: "Search for questions, prayers, news-articles or podcasts",
+
+  // videos
+  noVideoFound: "There are no videos for this category!",
+
+   //User questions
+  yourQuestions: "Your questions"
+
 } as const;
 
 export default en;

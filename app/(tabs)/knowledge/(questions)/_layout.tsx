@@ -39,7 +39,7 @@ const _layout = () => {
         }}
       />
       <Stack.Screen name="questionSubcategories" options={{ headerShown: true }} />
-      <Stack.Screen name="questionVideos" options={{ headerShown: true }} />
+      <Stack.Screen name="questionVideos" options={{ headerShown: true, headerBackVisible: false }} />
     </Stack>
   );
 };
