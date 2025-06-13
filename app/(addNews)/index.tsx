@@ -9,7 +9,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { Colors } from "@/constants/Colors";
 
-const Add = () => {
+const Index = () => {
+
   const renderScene = SceneMap({
     addNews: AddNews,
     addPush: AddPushMessages,
@@ -23,7 +24,6 @@ const Add = () => {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const themeStyles = CoustomTheme();
-  console.log("Hi")
   return (
     <SafeAreaView
       style={[styles.container, themeStyles.defaultBackgorundColor]}
@@ -34,7 +34,7 @@ const Add = () => {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
-        style={{borderTopRightRadius: 2, borderTopLeftRadius: 2}}
+        style={{ borderTopRightRadius: 2, borderTopLeftRadius: 2 }}
         renderTabBar={(props) => (
           <TabBar
             {...props}
@@ -48,10 +48,11 @@ const Add = () => {
   );
 };
 
-export default Add;
+export default Index;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
 });
+

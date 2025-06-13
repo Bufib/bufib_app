@@ -25,7 +25,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
-export default function QuestionsList() {
+export default function Index() {
   // 1. Check auth state from the store
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const session = useAuthStore.getState().session;

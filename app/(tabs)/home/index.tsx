@@ -7,6 +7,8 @@ import {
   useColorScheme,
   TouchableOpacity,
   ScrollView,
+  Pressable,
+  Button,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -217,7 +219,13 @@ export default function HomeScreen() {
 
         {/* //!----------- News ----------- */}
         <View style={styles.newsContainer}>
-          <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <ThemedText type="titleSmall">{t("newsTitle")}</ThemedText>
             {isAdmin && (
               <Ionicons
@@ -225,7 +233,7 @@ export default function HomeScreen() {
                 size={35}
                 color={colorScheme === "dark" ? "#fff" : "#000"}
                 style={{ color: Colors[colorScheme].defaultIcon }}
-                onPress={() => router.push("/app/(addNews)/")}
+                onPress={() => router.push("/(addNews)/")}
               />
             )}
           </View>

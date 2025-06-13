@@ -34,6 +34,23 @@ export default function AddNews() {
   const themeStyles = CoustomTheme();
   const hasInternet = useConnectionStatus();
   const colorScheme = useColorScheme() || "light";
+
+  const LanguageButton = ({ code, label, selected, onPress }) => (
+    <Pressable
+      style={[
+        styles.langButton,
+        selected ? styles.langButtonSelected : styles.langButtonUnselected,
+      ]}
+      onPress={() => onPress(code)}
+    >
+      <Text
+        style={selected ? styles.langTextSelected : styles.langTextUnselected}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+
   const renderForm = () => (
     <ThemedView>
       <NoInternet showToast={false} showUI={true} />
@@ -58,7 +75,7 @@ export default function AddNews() {
         <ThemedText style={styles.label}>Nachricht</ThemedText>
         <Controller
           control={control}
-          name="body_text"
+          name="content"
           render={({ field: { onChange, value } }) => (
             <TextInput
               style={[styles.input, styles.textArea, themeStyles.text]}
@@ -71,33 +88,62 @@ export default function AddNews() {
           )}
         />
 
-        {/* External URL Input */}
-        <ThemedText style={styles.label}>Externe URL</ThemedText>
+        {/* External URLs Input */}
+        <ThemedText style={styles.label}>Externe URLs</ThemedText>
         <Controller
           control={control}
-          name="external_url"
+          name="external_urls"
           render={({ field: { onChange, value } }) => (
             <TextInput
               style={[styles.input, themeStyles.text]}
               onChangeText={onChange}
               value={value}
-              placeholder="Gib eine vollständinge URL (mit http...) ein"
+              placeholder="Kommagetrennte URLs mit http..."
               placeholderTextColor="#888"
             />
           )}
         />
 
-        {/* Title Search Input */}
+        {/* Internal URLs Input */}
         <ThemedText style={styles.label}>Verlinke eine Frage</ThemedText>
         <Controller
           control={control}
-          name="internal_url"
+          name="internal_urls"
           render={({ field: { onChange, value } }) => (
             <TitleSearchInput
               value={value || ""}
               onChangeText={onChange}
               themeStyles={themeStyles}
             />
+          )}
+        />
+
+        {/* Language Selection Buttons */}
+        <ThemedText style={styles.label}>Sprache</ThemedText>
+        <Controller
+          control={control}
+          name="language_code"
+          render={({ field: { onChange, value } }) => (
+            <View style={styles.langContainer}>
+              <LanguageButton
+                code="en"
+                label="EN"
+                selected={value === "en"}
+                onPress={onChange}
+              />
+              <LanguageButton
+                code="de"
+                label="DE"
+                selected={value === "de"}
+                onPress={onChange}
+              />
+              <LanguageButton
+                code="ar"
+                label="AR"
+                selected={value === "ar"}
+                onPress={onChange}
+              />
+            </View>
           )}
         />
 
@@ -142,10 +188,7 @@ export default function AddNews() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Render the entire Form */}
         {renderForm()}
-
-        {/* Now show images in a horizontal row (if any) */}
         {!!selectedImages.length && (
           <ScrollView
             horizontal
@@ -175,26 +218,11 @@ export default function AddNews() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 10,
-  },
+  container: { flex: 1, marginTop: 10 },
   scrollStyles: {},
-
-  scrollContent: {
-    padding: 10,
-    paddingBottom: 40,
-  },
-  card: {
-    borderRadius: 12,
-    padding: 20,
-    gap: 5,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 5,
-  },
+  scrollContent: { padding: 10, paddingBottom: 40 },
+  card: { borderRadius: 12, padding: 20, gap: 5 },
+  label: { fontSize: 16, fontWeight: "600", marginBottom: 5 },
   input: {
     borderWidth: 1,
     borderRadius: 8,
@@ -202,10 +230,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
   },
-  textArea: {
-    textAlignVertical: "top",
-    height: 200,
+  textArea: { textAlignVertical: "top", height: 200 },
+  langContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
   },
+  langButton: {
+    flex: 1,
+    padding: 10,
+    marginHorizontal: 4,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  langButtonSelected: { backgroundColor: Colors.universal.primary },
+  langButtonUnselected: {},
+  langTextSelected: { color: "#fff", fontWeight: "600" },
+  langTextUnselected: { color: Colors.universal.primary, fontWeight: "600" },
   pickImageButton: {
     padding: 15,
     borderRadius: 12,
@@ -214,52 +255,19 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
-  imagePickerText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
-  },
+  imagePickerText: { color: "#fff", fontWeight: "600", fontSize: 16 },
   submitButton: {
     padding: 15,
     borderRadius: 12,
     backgroundColor: Colors.universal.primary,
     alignItems: "center",
   },
-  disabled: {
-    opacity: 0.5,
-  },
-  submitButtonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-
-  /* Horizontal Images Row */
-  imageRow: {
-    paddingRight: 20,
-  },
-  scrollViewStyle: {
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  imageContainer: {
-    marginRight: 15,
-    alignItems: "center",
-  },
-  imagePreview: {
-    width: 120,
-    height: 120,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  removeButton: {
-    borderRadius: 8,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-  },
-  removeButtonText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "600",
-  },
+  disabled: { opacity: 0.5 },
+  submitButtonText: { color: "#fff", fontWeight: "700", fontSize: 16 },
+  imageRow: { paddingRight: 20 },
+  scrollViewStyle: { marginTop: 20, marginBottom: 20 },
+  imageContainer: { marginRight: 15, alignItems: "center" },
+  imagePreview: { width: 120, height: 120, borderRadius: 12, marginBottom: 8 },
+  removeButton: { borderRadius: 8, paddingVertical: 5, paddingHorizontal: 10 },
+  removeButtonText: { color: "#fff", fontSize: 12, fontWeight: "600" },
 });

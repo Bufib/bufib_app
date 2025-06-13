@@ -7,7 +7,7 @@ import {
   DarkTheme,
   DefaultTheme,
 } from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
@@ -39,6 +39,7 @@ import { Colors } from "@/constants/Colors"; // For loading screen
 import AppReviewPrompt from "@/components/AppReviewPrompt";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cleanupCache } from "@/hooks/usePodcasts";
+import { MenuProvider } from "react-native-popup-menu";
 
 //! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
@@ -290,59 +291,70 @@ function AppContent() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <ReMountManager>
-          <NoInternet showUI={!hasInternet} showToast={true} />
-          <QueryClientProvider client={queryClient}>
-            <SupabaseRealtimeProvider>
-              <SQLiteProvider
-                databaseName="islam-fragen.db"
-                useSuspense={false}
-              >
-                {/* Set useSuspense={false} for SQLiteProvider if not using React Suspense for DB loading */}
-                {/* Or handle suspense boundary if dbInitialized is used with it */}
-                <Stack
-                  screenOptions={{
-                    headerTintColor:
-                      colorScheme === "dark" ? "#d0d0c0" : "#000", // From Code 1
-                  }}
+          <MenuProvider>
+            <NoInternet showUI={!hasInternet} showToast={true} />
+            <QueryClientProvider client={queryClient}>
+              <SupabaseRealtimeProvider>
+                <SQLiteProvider
+                  databaseName="islam-fragen.db"
+                  useSuspense={false}
                 >
-                  {/* Merged Stack Screens */}
-                  <Stack.Screen name="index" options={{ headerShown: false }} />
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(auth)"
-                    options={{ headerShown: false }}
-                  />
-
-                  <Stack.Screen
-                    name="(displayQuestion)"
-                    options={{ headerShown: false }}
-                  />
+                  {/* Set useSuspense={false} for SQLiteProvider if not using React Suspense for DB loading */}
+                  {/* Or handle suspense boundary if dbInitialized is used with it */}
+                  <Stack
+                    screenOptions={{
+                      headerTintColor:
+                        colorScheme === "dark" ? "#d0d0c0" : "#000", // From Code 1
+                    }}
+                  >
+                    {/* Merged Stack Screens */}
                     <Stack.Screen
-                    name="(newsArticle)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(displayPrayer)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(askQuestion)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(podcast)"
-                    options={{ headerShown: false, }}
-                  />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-                <AppReviewPrompt />
-                <StatusBar style="auto" />
-              </SQLiteProvider>
-            </SupabaseRealtimeProvider>
-          </QueryClientProvider>
+                      name="index"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(addNews)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(auth)"
+                      options={{ headerShown: false }}
+                    />
+
+                    <Stack.Screen
+                      name="(displayQuestion)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(newsArticle)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(displayPrayer)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(askQuestion)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(podcast)"
+                      options={{ headerShown: false }}
+                    />
+
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                  <AppReviewPrompt />
+                  <StatusBar style="auto" />
+                </SQLiteProvider>
+              </SupabaseRealtimeProvider>
+            </QueryClientProvider>
+          </MenuProvider>
+
           <Toast />
         </ReMountManager>
       </ThemeProvider>

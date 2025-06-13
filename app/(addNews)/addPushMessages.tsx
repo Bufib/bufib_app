@@ -34,7 +34,7 @@ const AddPushMessages: React.FC = () => {
     setIsSending(true);
     try {
       // Insert the notification into the notifications table
-      const { error } = await supabase.from("push_notification").insert({
+      const { error } = await supabase.from("push_notifications").insert({
         title: title.trim(),
         body: message.trim(),
       });
