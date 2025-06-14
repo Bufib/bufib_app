@@ -28,14 +28,13 @@ export const NewsItem = ({
   title,
   content,
   created_at,
-  image_url,
+  images_url,
   internal_urls,
   external_urls,
   is_pinned,
   language_code,
 }: NewsType) => {
-  const colorScheme = useColorScheme();
-  const themeStyles = CoustomTheme();
+  const colorScheme = useColorScheme() || "light";
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const [currentPage, setCurrentPage] = useState(0);
   const flatListRef = useRef<FlatList<string>>(null);
@@ -55,7 +54,12 @@ export const NewsItem = ({
   };
 
   return (
-    <View style={[styles.newsItem, themeStyles.contrast]}>
+    <View
+      style={[
+        styles.newsItem,
+        { backgroundColor: Colors[colorScheme].contrast },
+      ]}
+    >
       {is_pinned && (
         <AntDesign
           name="pushpin"
@@ -117,11 +121,11 @@ export const NewsItem = ({
           ))}
         </ThemedView>
       )}
-      {image_url && image_url.length > 0 && (
+      {images_url && images_url.length > 0 && (
         <View>
           <FlatList
             ref={flatListRef}
-            data={image_url}
+            data={images_url}
             horizontal
             pagingEnabled
             snapToInterval={screenWidth} // Ensure snapping aligns with image width
@@ -143,7 +147,7 @@ export const NewsItem = ({
           />
           {/* Dots Pagination */}
           <View style={styles.dotsContainer}>
-            {image_url.map((_, index) => (
+            {images_url.map((_, index) => (
               <Pressable key={index} onPress={() => handleDotPress(index)}>
                 <View
                   style={[
@@ -159,7 +163,11 @@ export const NewsItem = ({
         </View>
       )}
 
-      <ThemedText style={[styles.newsDate,  { textAlign: isArabic() ? "left" : "right" },]}>{formatDate(created_at)}</ThemedText>
+      <ThemedText
+        style={[styles.newsDate, { textAlign: isArabic() ? "left" : "right" }]}
+      >
+        {formatDate(created_at)}
+      </ThemedText>
     </View>
   );
 };
@@ -169,7 +177,6 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 8,
     borderRadius: 8,
-    gap: 10,
   },
   pinIconStyle: {
     flex: 1,

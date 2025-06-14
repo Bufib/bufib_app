@@ -3,7 +3,7 @@ export const en = {
   chooseLanguage: "Choose a language",
 
   //NewsArticles
-  newsArticlesTitle: "Articls",
+  newsArticlesTitle: "Articles",
   isExternalLink: "External Link",
   errorLoadingArticle: "There was an error loading the article!",
 

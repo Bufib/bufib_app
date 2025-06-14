@@ -12,6 +12,7 @@ import { CoustomTheme } from "../utils/coustomTheme";
 import { deleteNewsItem } from "../utils/deleteNewsItem";
 import { toggleIsPinnedStatus } from "../utils/toggleIsPinnedStatus";
 import { newsDeletedSuccessToast } from "@/constants/messages";
+import { Colors } from "@/constants/Colors";
 export default function NewsMenu({
   id,
   is_pinned,
@@ -19,9 +20,7 @@ export default function NewsMenu({
   id: number;
   is_pinned: boolean;
 }) {
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
-  const themeStyles = CoustomTheme();
+  const colorScheme = useColorScheme() || "light";
 
   return (
     <View style={styles.container}>
@@ -31,7 +30,7 @@ export default function NewsMenu({
           <Entypo
             name="dots-three-horizontal"
             size={24}
-            color={isDarkMode ? "#fff" : "#000"}
+            color={Colors[colorScheme].defaultIcon}
             style={styles.triggerIcon}
           />
         </MenuTrigger>
@@ -39,13 +38,21 @@ export default function NewsMenu({
         {/* Menu options */}
         <MenuOptions
           customStyles={{
-            optionsContainer: [styles.optionsContainer, themeStyles.contrast],
+            optionsContainer: [
+              styles.optionsContainer,
+              {
+                backgroundColor: Colors[colorScheme].contrast,
+                borderColor: Colors[colorScheme].border,
+              },
+            ],
             optionWrapper: styles.optionWrapper,
             optionText: styles.optionText,
           }}
         >
           <MenuOption onSelect={() => toggleIsPinnedStatus(id)}>
-            <Text style={[themeStyles.newsMenuFixieren, styles.optionText]}>
+            <Text
+              style={[styles.optionText, { color: Colors[colorScheme].text }]}
+            >
               {is_pinned ? "Nicht mehr fixieren" : "Fixieren"}
             </Text>
           </MenuOption>
@@ -73,7 +80,9 @@ export default function NewsMenu({
               );
             }}
           >
-            <Text style={[themeStyles.newsMenuLoeschen, styles.optionText]}>
+            <Text
+              style={[styles.optionText, { color: Colors[colorScheme].error }]}
+            >
               Löschen
             </Text>
           </MenuOption>
@@ -93,6 +102,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   optionsContainer: {
+    borderWidth: 1,
     borderRadius: 10,
     paddingVertical: 5,
     elevation: 4, // For Android shadow

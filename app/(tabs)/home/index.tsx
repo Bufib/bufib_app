@@ -272,6 +272,9 @@ export default function HomeScreen() {
                   title={item.title}
                   content={item.content}
                   created_at={item.created_at}
+                  images_url={item.images_url}
+                  internal_urls={item.internal_urls}
+                  external_urls={item.external_urls}
                 />
               ))}
 
@@ -325,11 +328,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   flatListContentContainer: {
-    gap: 20,
+    gap: 10,
   },
   podcastContainer: {
     flex: 1,
-    gap: 10,
+    gap: 5,
   },
   newsContainer: {
     flex: 1,

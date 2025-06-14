@@ -53,7 +53,7 @@ export function useAddNews() {
     // Permission checks omitted for brevity; same as before
     // ...
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsMultipleSelection: true,
       quality: 0.8,
       base64: true,

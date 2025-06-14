@@ -122,7 +122,10 @@ const Settings = () => {
         </Pressable>
       </View>
 
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <NoInternet showToast={false} showUI={true} />
         <View style={styles.section}>
           {isLoggedIn ? (
@@ -150,31 +153,31 @@ const Settings = () => {
               thumbColor={Colors[colorScheme].thumbColor}
             />
           </View>
-          <LanguageSwitcher />
-          {isLoggedIn && (
-            <View style={styles.settingRow}>
-              <View>
-                <ThemedText style={styles.settingTitle}>
-                  Benachrichtigungen
-                </ThemedText>
-                <ThemedText style={styles.settingSubtitle}>
-                  Push-Benachrichtigungen erhalten
-                </ThemedText>
-              </View>
-              <Switch
-                //! value={getNotifications}
-                value={effectiveEnabled}
-                onValueChange={hasInternet ? toggleGetNotifications : undefined}
-                trackColor={{
-                  false: Colors.light.trackColor,
-                  true: Colors.dark.trackColor,
-                }}
-                thumbColor={
-                  isDarkMode ? Colors.light.thumbColor : Colors.dark.thumbColor
-                }
-              />
+          <View style={styles.settingRow}>
+            <View>
+              <ThemedText style={styles.settingTitle}>
+                Benachrichtigungen
+              </ThemedText>
+              <ThemedText style={styles.settingSubtitle}>
+                Push-Benachrichtigungen erhalten
+              </ThemedText>
             </View>
-          )}
+            <Switch
+              value={effectiveEnabled}
+              onValueChange={() => {
+                if (!hasInternet) return;
+                toggleGetNotifications();
+              }}
+              trackColor={{
+                false: Colors.light.trackColor,
+                true: Colors.dark.trackColor,
+              }}
+              thumbColor={
+                isDarkMode ? Colors.light.thumbColor : Colors.dark.thumbColor
+              }
+            />
+          </View>
+          <LanguageSwitcher />
         </View>
 
         {isLoggedIn && (
