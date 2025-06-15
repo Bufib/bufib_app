@@ -1,44 +1,44 @@
 import { BackHandler } from "react-native";
 
+import LanguageSelection from "@/components/LanguageSelectionScreen"; // From Code 2
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext"; // From Code 2
+import { useColorScheme } from "@/hooks/useColorScheme"; // Used by both
 import "@/utils/i18n"; // initialize i18next (from Code 2)
-import React, { useEffect, useState } from "react";
 import {
-  ThemeProvider,
   DarkTheme,
   DefaultTheme,
+  ThemeProvider,
 } from "@react-navigation/native";
-import { Stack, usePathname } from "expo-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import "react-native-reanimated";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useColorScheme } from "@/hooks/useColorScheme"; // Used by both
-import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext"; // From Code 2
-import LanguageSelection from "@/components/LanguageSelectionScreen"; // From Code 2
-import Toast from "react-native-toast-message"; // Used by both
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Appearance,
   Platform,
-  View,
   Text,
+  View,
 } from "react-native";
+import "react-native-reanimated";
+import Toast from "react-native-toast-message"; // Used by both
 
+import AppReviewPrompt from "@/components/AppReviewPrompt";
+import { NoInternet } from "@/components/NoInternet";
+import ReMountManager from "@/components/ReMountManager";
+import { SupabaseRealtimeProvider } from "@/components/SupabaseRealtimeProvider";
+import { Colors } from "@/constants/Colors"; // For loading screen
+import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
+import { cleanupCache } from "@/hooks/usePodcasts";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useAuthStore } from "@/stores/authStore";
+import { useFontSizeStore } from "@/stores/fontSizeStore";
+import useNotificationStore from "@/stores/notificationStore";
 import { SQLiteProvider } from "expo-sqlite";
 import { Storage } from "expo-sqlite/kv-store";
-import { useAuthStore } from "@/stores/authStore";
-import { NoInternet } from "@/components/NoInternet";
-import { usePushNotifications } from "@/hooks/usePushNotifications";
-import { SupabaseRealtimeProvider } from "@/components/SupabaseRealtimeProvider";
-import useNotificationStore from "@/stores/notificationStore";
-import { useFontSizeStore } from "@/stores/fontSizeStore";
-import ReMountManager from "@/components/ReMountManager";
-import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { Colors } from "@/constants/Colors"; // For loading screen
-import AppReviewPrompt from "@/components/AppReviewPrompt";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { cleanupCache } from "@/hooks/usePodcasts";
 import { MenuProvider } from "react-native-popup-menu";
 
 //! Needed or sign up won't work!
@@ -204,18 +204,18 @@ function AppContent() {
   }, []);
 
   // //! Store push token (from Code 1, kept commented)
-  // useEffect(() => {
-  //   if (expoPushToken?.data) {
-  //     console.log("Push Token:", expoPushToken.data);
-  //   }
-  // }, [expoPushToken]);
+  useEffect(() => {
+    if (expoPushToken) {
+      console.log("Push Token:", expoPushToken);
+    }
+  }, [expoPushToken]);
 
   // //! Handle notifications (from Code 1, kept commented)
-  // useEffect(() => {
-  //   if (notification) {
-  //     console.log("Received notification:", notification);
-  //   }
-  // }, [notification]);
+  useEffect(() => {
+    if (notification) {
+      console.log("Received notification:", notification);
+    }
+  }, [notification]);
 
   // Conditional rendering based on loading states
   // 1. Wait for language context, store hydration, and session restoration
@@ -225,7 +225,7 @@ function AppContent() {
   }
 
   // 2. If language not yet selected (after initial readiness)
-  if (!language) {
+  if (language === null) {
     return <LanguageSelection />;
   }
 

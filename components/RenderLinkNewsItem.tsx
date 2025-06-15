@@ -1,12 +1,11 @@
-import React from "react";
-import { StyleSheet, Pressable } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import Feather from "@expo/vector-icons/Feather";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "react-native";
-import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
-import handleOpenInternallUrl from "../utils/handleOpenInternalUrl";
 import { useLanguage } from "@/contexts/LanguageContext";
+import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
+import Feather from "@expo/vector-icons/Feather";
+import React from "react";
+import { Pressable, StyleSheet, useColorScheme } from "react-native";
+import handleOpenInternallUrl from "../utils/handleOpenInternalUrl";
 
 type RenderLinkNewsItemProps = {
   url: string;
@@ -41,6 +40,7 @@ const RenderLinkNewsItem = ({
       <ThemedText
         style={[styles.linkText, { textAlign: isArabic() ? "right" : "left" }]}
         numberOfLines={1}
+        ellipsizeMode="tail"
       >
         {url}
       </ThemedText>
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: 14,
     color: Colors.universal.link,
+    flexShrink: 1,
   },
 });
 

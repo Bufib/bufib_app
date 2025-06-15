@@ -12,7 +12,13 @@
       "supportsTablet": true,
       "bundleIdentifier": "BufiB",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select images.",
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleLocalizations": ["de", "en", "ar"],
+        "CFBundleDevelopmentRegion": "de",
+        "NSUserNotificationsUsageDescription":
+          "Wir senden Push-Benachrichtigungen, u"
       }
     },
     "android": {

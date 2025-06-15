@@ -1,24 +1,23 @@
-import React, { useState, useRef } from "react";
+import RenderLinkNewsItem from "@/components/RenderLinkNewsItem";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Colors } from "@/constants/Colors";
+import { NewsType } from "@/constants/Types";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useColorScheme } from "@/hooks/useColorScheme.web";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { Image } from "expo-image";
+import React, { useRef, useState } from "react";
 import {
-  StyleSheet,
-  View,
   Dimensions,
   FlatList,
   Pressable,
+  StyleSheet,
+  View,
 } from "react-native";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedText } from "@/components/ThemedText";
-import { CoustomTheme } from "@/utils/coustomTheme";
-import { NewsType } from "@/constants/Types";
-import { Colors } from "@/constants/Colors";
-import { formatDate } from "../utils/formatDate";
-import { useColorScheme } from "@/hooks/useColorScheme.web";
-import RenderLinkNewsItem from "@/components/RenderLinkNewsItem";
 import { useAuthStore } from "../stores/authStore";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { formatDate } from "../utils/formatDate";
 import NewsMenu from "./NewsMenu";
-import { Image } from "expo-image";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const screenWidth = Dimensions.get("window").width;
 const imageHeight = screenWidth * 1.2;

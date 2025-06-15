@@ -1,6 +1,6 @@
 // Language
 export type LanguageContextType = {
-  language: string;
+  language: string | null;
   setAppLanguage: (lng: string) => Promise<void>;
   ready: boolean;
   isArabic: () => boolean;
@@ -194,7 +194,7 @@ export type CombinedResult =
       podcastId: number;
       podcastEpisodeTitle: string;
       podcastEpisodeDescription?: string;
-      podcast: any
+      podcast: any;
     }
   | {
       renderId: string;
@@ -203,7 +203,6 @@ export type CombinedResult =
       newsTitle: string;
       newsSnippet?: string;
     };
-
 
 // Roles lookup
 export type RoleType = {
@@ -397,7 +396,6 @@ export type PodcastPlayerPropsType = {
   podcast: PodcastType;
 };
 
-
 // Videos
 export type VideoType = {
   id: string;
@@ -405,15 +403,14 @@ export type VideoType = {
   video_category: string;
   public_id: string;
   created_at: string;
-  language_code: string
-}
-
-export type VideoCategoryType = {
-  id: string; 
-  video_category: string; 
-  language_code: string
+  language_code: string;
 };
 
+export type VideoCategoryType = {
+  id: string;
+  video_category: string;
+  language_code: string;
+};
 
 // User question
 export type QuestionsFromUserType = {
@@ -429,5 +426,5 @@ export type QuestionsFromUserType = {
   internal_url: string[];
   external_url: string[];
   created_at: string;
-  approval_status: string
+  approval_status: string;
 };
