@@ -128,12 +128,17 @@ export const ar = {
   searchPlaceholder:
     "ابحث عن الأسئلة أو الأدعية أو المقالات الإخبارية أو الملفات الصوتية",
 
-
   // videos
   noVideoFound: "لا توجد مقاطع فيديو لهذه الفئة",
 
-   //User questions
-  yourQuestions: "أسئلتك"
+  //User questions
+  yourQuestions: "أسئلتك",
+  still_days_left: "باقي {{count}} يوم",
+  expires_today: "ينتهي اليوم!",
+  expired_days_ago: "انتهى قبل {{count}} يوم - قُرِئ في {{dateTime}}",
+  not_read_yet: "لم يُقرأ بعد",
+  day_plural: "",
+  day_singular: "",
 } as const;
 
 export default ar;

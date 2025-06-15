@@ -39,7 +39,7 @@ export const de = {
   readMore: "Mehr",
   about: "Über",
   impressum: "Impressum",
-  
+
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -127,12 +127,18 @@ export const de = {
   noSearchResults: "Keine Suchergebnisse gefunden!",
   searchPlaceholder: "Suche nach Fragen, Gebeten, News-Artikel oder Podcasts",
 
-
   // videos
   noVideoFound: "Es wurden keine Videos für diese Kategorie gefunden!",
 
   //User questions
-  yourQuestions: "Deine Fragen"
+  yourQuestions: "Deine Fragen",
+  still_days_left: "Noch {{count}} Tag{{e}} übrig bis die Frage gelöscht wird",
+  expires_today: "Läuft heute ab!",
+  expired_days_ago:
+    "Abgelaufen vor {{count}} Tag{{en}} - Gelesen am {{dateTime}}",
+  not_read_yet: "Noch nicht gelesen",
+  day_plural: "e",
+  day_singular: "",
 } as const;
 
 export default de;

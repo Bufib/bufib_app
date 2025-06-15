@@ -427,4 +427,6 @@ export type QuestionsFromUserType = {
   external_url: string[];
   created_at: string;
   approval_status: string;
+  has_read_answer: boolean;
+  has_read_at: string;
 };

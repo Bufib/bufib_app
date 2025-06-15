@@ -1,27 +1,30 @@
+import { NoInternet } from "@/components/NoInternet";
+import RenderLinkNewsItem from "@/components/RenderLinkNewsItem";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Colors } from "@/constants/Colors";
+import { QuestionsFromUserType } from "@/constants/Types";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useConnectionStatus } from "@/hooks/useConnectionStatus";
+import { useFetchUserQuestions } from "@/hooks/useFetchUserQuestions";
+import { useAuthStore } from "@/stores/authStore";
+import { CoustomTheme } from "@/utils/coustomTheme";
+import getStatusColor from "@/utils/getStatusColor";
+import { supabase } from "@/utils/supabase";
+import { useQueryClient } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
+import AsyncStorage from "expo-sqlite/kv-store";
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  View,
-  Text,
+  RefreshControl,
   ScrollView,
   StyleSheet,
-  RefreshControl,
+  Text,
   useColorScheme,
+  View,
 } from "react-native";
-import { useLocalSearchParams, router, Stack } from "expo-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { QuestionsFromUserType } from "@/constants/Types";
-import { useAuthStore } from "@/stores/authStore";
-import getStatusColor from "@/utils/getStatusColor";
-import { CoustomTheme } from "@/utils/coustomTheme";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
-import RenderLinkNewsItem from "@/components/RenderLinkNewsItem";
-import { useFetchUserQuestions } from "@/hooks/useFetchUserQuestions";
 import Toast from "react-native-toast-message";
-import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { NoInternet } from "@/components/NoInternet";
-import { useTranslation } from "react-i18next";
 export default function QuestionDetailScreen() {
   const { questionId } = useLocalSearchParams();
   const queryClient = useQueryClient();
@@ -31,7 +34,8 @@ export default function QuestionDetailScreen() {
   const themeStyles = CoustomTheme();
   const hasInternet = useConnectionStatus();
   const colorScheme = useColorScheme() || "light";
-  const {t} = useTranslation();
+  const { t } = useTranslation();
+  const { isArabic } = useLanguage();
   // 4. If user is not logged in, redirect to login
   useEffect(() => {
     if (!isLoggedIn) {
@@ -50,6 +54,112 @@ export default function QuestionDetailScreen() {
   const question = cachedQuestions?.find(
     (q) => String(q.id) === String(questionId)
   );
+
+  // Check if user has already read this question and update Supabase
+  useEffect(() => {
+    const checkIfHasRead = async () => {
+      if (!questionId || !question || !question.answer) {
+        return;
+      }
+
+      try {
+        // Load the stored list (or empty array) of already read answer IDs
+        const stored = await AsyncStorage.getItem("hasReadAnswers");
+        const ids = stored ? JSON.parse(stored) : [];
+
+        // Check if the current questionId is already in the list
+        if (!ids.includes(questionId)) {
+          // If not in the list, add it and update local storage
+          const updated = [...ids, questionId];
+          await AsyncStorage.setItem("hasReadAnswers", JSON.stringify(updated));
+
+          // Now, update the Supabase row to mark it as read
+          try {
+            const { error } = await supabase
+              .from("user_questions")
+              .update({
+                has_read_answer: true,
+                has_read_at: new Date().toISOString(),
+              }) // Use .update() instead of .insert()
+              .eq("id", questionId); // Specify the row to update by its ID
+
+            if (error) {
+              console.error(
+                "Error updating has_read_answer in Supabase:",
+                error.message
+              );
+            } else {
+              console.log(`Question ${questionId} marked as read in Supabase.`);
+            }
+          } catch (error) {
+            console.error("Supabase update failed:", error);
+          }
+        } else {
+          console.log(`Question ${questionId} already marked as read.`);
+        }
+      } catch (err) {
+        console.error("Error accessing read-answers storage:", err);
+      }
+    };
+
+    if (question) {
+      checkIfHasRead();
+    }
+  }, [questionId, question, userId, queryClient]);
+
+  // Helper function to format the read time
+  // Helper function to format the read time as a countdown
+  const formatReadTime = (timestamp: any) => {
+    if (!timestamp) {
+      return "Not read yet"; // Return a default message if no timestamp
+    }
+
+    const readDate = new Date(timestamp);
+    const now = new Date();
+
+    // Define the duration for the countdown (e.g., 14 days)
+    const countdownDurationDays = 14;
+
+    // Calculate the expiry date by adding the duration to the read date
+    const expiryDate = new Date(
+      readDate.getTime() + countdownDurationDays * 24 * 60 * 60 * 1000
+    );
+
+    // Calculate the difference between now and the expiry date in milliseconds
+    const diffMs = expiryDate.getTime() - now.getTime();
+
+    // Convert milliseconds to days (using Math.ceil to round up for "still N days left")
+    const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    // Format the actual read time (e.g., "June 16, 2025, 10:30 AM") for context if needed
+    const actualDateTime = readDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    if (daysLeft > 0) {
+      return t("still_days_left", {
+        count: daysLeft,
+        s: daysLeft > 1 ? t("day_plural") : t("day_singular"),
+        e: daysLeft > 1 ? t("day_plural") : t("day_singular"),
+      });
+    } else if (daysLeft === 0) {
+      // If less than a day but not yet negative (i.e., today is the expiry day)
+      return t("expires_today"); // Use translation key directly
+    } else {
+      // If daysLeft is negative, it means the period has expired
+      const daysOverdue = Math.abs(daysLeft); // Get positive value for overdue days
+      return t("expired_days_ago", {
+        count: daysOverdue,
+        s: daysOverdue > 1 ? t("day_plural") : t("day_singular"),
+        e: daysLeft > 1 ? t("day_plural") : t("day_singular"),
+        dateTime: actualDateTime,
+      });
+    }
+  };
 
   // 7. Fallback if the question is not in the cache
   if (!question) {
@@ -88,7 +198,6 @@ export default function QuestionDetailScreen() {
         />
       }
     >
-  
       <NoInternet showUI={true} showToast={false} />
       <ThemedView style={[styles.header, themeStyles.borderColor]}>
         <View
@@ -101,6 +210,14 @@ export default function QuestionDetailScreen() {
         </View>
         <ThemedText style={styles.title} type="title">
           {question.title}
+        </ThemedText>
+        <ThemedText
+          style={{
+            color: Colors.universal.grayedOut,
+            alignSelf: isArabic() ? "flex-start" : "flex-end",
+          }}
+        >
+          {formatReadTime(question.has_read_at)}
         </ThemedText>
       </ThemedView>
 
@@ -180,18 +297,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1.5,
   },
   title: {},
-  statusBadge: {
-    alignSelf: "flex-end",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
+  readAtText: {},
   statusText: {
     color: "#fff",
     fontSize: 12,
     fontWeight: "500",
     textAlign: "center",
   },
+  statusBadge: {
+    alignSelf: "flex-end",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+
   chatContainer: {
     flex: 1,
     padding: 16,

@@ -132,9 +132,14 @@ export const en = {
   // videos
   noVideoFound: "There are no videos for this category!",
 
-   //User questions
-  yourQuestions: "Your questions"
-
+  //User questions
+  yourQuestions: "Your questions",
+  still_days_left: "Still {{count}} day{{s}} left till deletion",
+  expires_today: "Expires today!",
+  expired_days_ago: "Expired {{count}} day{{s}} ago - Read on {{dateTime}}",
+  not_read_yet: "Not read yet",
+  day_plural: "s",
+  day_singular: "",
 } as const;
 
 export default en;
