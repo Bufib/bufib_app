@@ -1,22 +1,23 @@
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Colors } from "@/constants/Colors";
+import { useConnectionStatus } from "@/hooks/useConnectionStatus";
+import { CoustomTheme } from "@/utils/coustomTheme";
+import { supabase } from "@/utils/supabase";
 import React, { useState } from "react";
 import {
-  StyleSheet,
-  TextInput,
-  Pressable,
   Alert,
-  Text,
-  TouchableWithoutFeedback,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  useColorScheme,
 } from "react-native";
-import { CoustomTheme } from "@/utils/coustomTheme";
-import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
-import { ThemedView } from "@/components/ThemedView";
-import { supabase } from "@/utils/supabase";
-import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 
 const AddPushMessages: React.FC = () => {
   const themeStyles = CoustomTheme();
@@ -24,7 +25,7 @@ const AddPushMessages: React.FC = () => {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const hasInternet = useConnectionStatus();
-
+  const colorScheme = useColorScheme() || "light";
   const handleSubmit = async () => {
     if (!title.trim() || !message.trim()) {
       Alert.alert("Fehler", "Bitte gebe einen Titel und eine Nachricht ein!");
@@ -74,7 +75,8 @@ const AddPushMessages: React.FC = () => {
                 {
                   backgroundColor: themeStyles.contrast.backgroundColor,
                   color: themeStyles.text.color,
-                  borderWidth: 1.5,
+                  borderWidth: 1,
+                  borderColor: Colors[colorScheme].border,
                 },
               ]}
               placeholder="Title deiner Nachricht"
@@ -91,6 +93,7 @@ const AddPushMessages: React.FC = () => {
                 {
                   backgroundColor: themeStyles.contrast.backgroundColor,
                   color: themeStyles.text.color,
+                  borderColor: Colors[colorScheme].border,
                 },
               ]}
               placeholder="Der Nachrichtentext"
@@ -101,7 +104,10 @@ const AddPushMessages: React.FC = () => {
             />
 
             <Pressable
-              style={[styles.button, (isSending || !hasInternet) && styles.disabled]}
+              style={[
+                styles.button,
+                (isSending || !hasInternet) && styles.disabled,
+              ]}
               onPress={handleSubmit}
               disabled={isSending || !hasInternet}
             >
@@ -142,7 +148,7 @@ const styles = StyleSheet.create({
   multilineInput: {
     height: 300,
     textAlignVertical: "top",
-    borderWidth: 1.5,
+    borderWidth: 1,
   },
   button: {
     borderWidth: 1,

@@ -1,24 +1,24 @@
+import { NoInternet } from "@/components/NoInternet";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { TitleSearchInput } from "@/components/TitleSearch";
+import { Colors } from "@/constants/Colors";
+import { useAddNews } from "@/hooks/useAddNews";
+import { useConnectionStatus } from "@/hooks/useConnectionStatus";
+import { CoustomTheme } from "@/utils/coustomTheme";
 import React from "react";
+import { Controller } from "react-hook-form";
 import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  Switch,
   Image,
   Pressable,
   ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
   useColorScheme,
+  View,
 } from "react-native";
-import { Controller } from "react-hook-form";
-import { ThemedText } from "@/components/ThemedText";
-import { CoustomTheme } from "@/utils/coustomTheme";
-import { Colors } from "@/constants/Colors";
-import { TitleSearchInput } from "@/components/TitleSearch";
-import { useAddNews } from "@/hooks/useAddNews";
-import { ThemedView } from "@/components/ThemedView";
-import { NoInternet } from "@/components/NoInternet";
-import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 
 export default function AddNews() {
   const {
@@ -218,10 +218,20 @@ export default function AddNews() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, marginTop: 10 },
+  container: {
+    flex: 1,
+    paddingTop: 10,
+  },
   scrollStyles: {},
-  scrollContent: { padding: 10, paddingBottom: 40 },
-  card: { borderRadius: 12, padding: 20, gap: 5 },
+  scrollContent: {
+    padding: 10,
+    paddingBottom: 40,
+  },
+  card: {
+    borderRadius: 12,
+    padding: 20,
+    gap: 5,
+  },
   label: { fontSize: 16, fontWeight: "600", marginBottom: 5 },
   input: {
     borderWidth: 1,
