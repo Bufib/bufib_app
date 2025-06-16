@@ -1,516 +1,3 @@
-// import React, { useEffect, useState, useCallback } from "react";
-// import {
-//   View,
-//   Text,
-//   Button,
-//   ActivityIndicator,
-//   StyleSheet,
-//   useColorScheme,
-//   TouchableOpacity,
-//   ScrollView,
-// } from "react-native";
-// import Slider from "@react-native-community/slider";
-// import { useAudioPlayer, useAudioPlayerStatus, AudioStatus } from "expo-audio";
-// import { PodcastType, PodcastPlayerPropsType } from "@/constants/Types";
-// import { usePodcasts } from "@/hooks/usePodcasts";
-// import { Colors } from "@/constants/Colors";
-// import { ThemedText } from "./ThemedText";
-// import AntDesign from "@expo/vector-icons/AntDesign";
-// import Feather from "@expo/vector-icons/Feather";
-// import { Image } from "expo-image";
-// import { isPodcastFavorited, togglePodcastFavorite } from "@/utils/favorites";
-// import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
-// import { useLanguage } from "@/contexts/LanguageContext";
-// import { Stack } from "expo-router";
-// import { useTranslation } from "react-i18next";
-
-// export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
-//   podcast,
-// }) => {
-//   // We only need download + getCachedUri now
-//   const { language } = useLanguage();
-//   const { download, getCachedUri } = usePodcasts(language);
-//   const [isFavorite, setIsFavorite] = useState(false);
-//   const [sourceUri, setSourceUri] = useState<string | null>(null);
-//   const [downloadProgress, setDownloadProgress] = useState(0);
-//   const [playerError, setPlayerError] = useState<string | null>(null);
-//   const [didInitiatePlayback, setDidInitiatePlayback] = useState(false);
-//   const [isSeeking, setIsSeeking] = useState(false);
-//   const [wantsPlay, setWantsPlay] = useState(false);
-//   const { refreshTriggerFavorites, triggerRefreshFavorites } =
-//     useRefreshFavorites();
-//   const colorScheme = useColorScheme() || "light";
-//   const player = useAudioPlayer(sourceUri ? { uri: sourceUri } : null, 500);
-//   const status: AudioStatus | null = useAudioPlayerStatus(player);
-//   const { t } = useTranslation();
-//   // On podcast change: reset UI state and check for a cached file
-//   useEffect(() => {
-//     setSourceUri(null);
-//     setPlayerError(null);
-//     setDownloadProgress(0);
-//     setDidInitiatePlayback(false);
-//     setWantsPlay(false);
-
-//     (async () => {
-//       if (!podcast.filename) return;
-//       const uri = await getCachedUri(podcast.filename);
-//       if (uri) {
-//         setSourceUri(uri);
-//       }
-//     })();
-//   }, [podcast.id, podcast.filename]);
-
-//   // Disable looping
-//   useEffect(() => {
-//     if (player) {
-//       player.loop = false;
-//     }
-//   }, [player]);
-
-//   // When playback finishes, reset play intent
-//   useEffect(() => {
-//     if (status?.didJustFinish) {
-//       setDidInitiatePlayback(false);
-//     }
-//   }, [status?.didJustFinish]);
-
-//   // Auto-play once the file is loaded (either from cache or after download)
-//   useEffect(() => {
-//     if (
-//       player &&
-//       sourceUri &&
-//       status?.isLoaded &&
-//       wantsPlay &&
-//       !status.playing &&
-//       !status.didJustFinish &&
-//       !playerError
-//     ) {
-//       try {
-//         player.play();
-//         setDidInitiatePlayback(true);
-//       } catch (err) {
-//         const errorMsg =
-//           err instanceof Error ? err.message : "Unknown playback error";
-//         setPlayerError(`Failed to start playback: ${errorMsg}`);
-//       }
-//       setWantsPlay(false);
-//     }
-//   }, [
-//     player,
-//     sourceUri,
-//     status?.isLoaded,
-//     status?.playing,
-//     status?.didJustFinish,
-//     playerError,
-//     wantsPlay,
-//   ]);
-
-//   // Download & Play handler
-//   const handleDownloadAndPlay = useCallback(async () => {
-//     if (!podcast.filename) {
-//       setPlayerError("Audio path missing.");
-//       return;
-//     }
-//     setPlayerError(null);
-//     setSourceUri(null);
-//     setDownloadProgress(0);
-//     setDidInitiatePlayback(false);
-
-//     try {
-//       const localUri = await download.mutateAsync({
-//         filename: podcast.filename,
-//         onProgress: setDownloadProgress,
-//       });
-//       setSourceUri(localUri);
-//       setWantsPlay(true);
-//     } catch (err) {
-//       const errorMsg =
-//         err instanceof Error ? err.message : "Unknown download error";
-//       setPlayerError(`Download failed: ${errorMsg}`);
-//       setDownloadProgress(0);
-//     }
-//   }, [podcast.filename, download]);
-
-//   // Playback controls
-//   const togglePlayPause = useCallback(() => {
-//     if (!status?.isLoaded || !!playerError) return;
-//     if (status.playing) {
-//       player.pause();
-//     } else {
-//       player.play();
-//       setDidInitiatePlayback(true);
-//     }
-//   }, [player, status?.isLoaded, status?.playing, playerError]);
-
-//   const goBack = useCallback(() => {
-//     if (!status?.isLoaded || !status.duration || playerError) return;
-//     player.seekTo(Math.max(0, status.currentTime - 15));
-//   }, [
-//     player,
-//     status?.isLoaded,
-//     status?.currentTime,
-//     status?.duration,
-//     playerError,
-//   ]);
-
-//   const goForward = useCallback(() => {
-//     if (!status?.isLoaded || !status.duration || playerError) return;
-//     player.seekTo(Math.min(status.duration, status.currentTime + 15));
-//   }, [
-//     player,
-//     status?.isLoaded,
-//     status?.currentTime,
-//     status?.duration,
-//     playerError,
-//   ]);
-
-//   const stopPlayback = useCallback(() => {
-//     if (!status?.isLoaded || playerError) return;
-//     player.pause();
-//     player.seekTo(0);
-//   }, [player, status?.isLoaded, playerError]);
-
-//   const handleSeek = useCallback(
-//     (value: number) => {
-//       if (!status?.isLoaded || !player) return;
-//       setIsSeeking(false);
-//       player.seekTo(value);
-//     },
-//     [player, status?.isLoaded]
-//   );
-
-//   // Render logic
-//   const isPlayerActuallyLoading = !!(sourceUri && !status?.isLoaded);
-//   const isPreparing = download.isPending;
-//   const isLoading = isPreparing || isPlayerActuallyLoading;
-//   const canPlay = !!status?.isLoaded;
-//   // Only show download button if nothing is playing/loaded yet
-//   const showInitialButton = !sourceUri && !isLoading && !playerError;
-//   const showPlaybackControls = sourceUri && canPlay;
-//   const showDownloadProgress = download.isPending;
-//   const controlsDisabled = isLoading || !canPlay || !!playerError || isSeeking;
-
-//   const formatTime = (secs?: number | null): string => {
-//     if (!secs || secs < 0 || isNaN(secs)) return "0:00";
-//     const total = Math.floor(secs);
-//     const m = Math.floor(total / 60);
-//     const s = total % 60;
-//     return `${m}:${s < 10 ? "0" : ""}${s}`;
-//   };
-
-//   // ★ Load favorite state on podcast change
-//   useEffect(() => {
-//     (async () => {
-//       if (!podcast.id) return;
-//       try {
-//         const fav = await isPodcastFavorited(podcast.id);
-//         setIsFavorite(fav);
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     })();
-//   }, [podcast.id]);
-
-//   // ★ Toggle favorite handler
-//   const onPressToggleFavorite = useCallback(async () => {
-//     if (!podcast.id) return;
-//     try {
-//       const newStatus = await togglePodcastFavorite(podcast.id);
-//       setIsFavorite(newStatus);
-//       triggerRefreshFavorites();
-//     } catch (error) {
-//       console.error("Error toggling podcast favorite:", error);
-//     }
-//   }, [podcast.id, triggerRefreshFavorites]);
-
-//   return (
-//     <ScrollView
-//       style={[
-//         styles.scrollStyle,
-//         { backgroundColor: Colors[colorScheme].background },
-//       ]}
-//       contentContainerStyle={styles.scrollContent}
-//     >
-//       <Stack.Screen
-//         options={{
-//           headerTitle: t("Podcast"),
-//         }}
-//       />
-//       <View
-//         style={[
-//           styles.headerContainer,
-//           { backgroundColor: Colors[colorScheme].contrast },
-//         ]}
-//       >
-//         <View style={styles.headerTopRow}>
-//           <ThemedText style={styles.title} type="titleSmall">
-//             {podcast.title}
-//           </ThemedText>
-
-//           <TouchableOpacity
-//             onPress={onPressToggleFavorite}
-//             style={styles.starButton}
-//           >
-//             {isFavorite ? (
-//               <AntDesign
-//                 name="star"
-//                 size={28}
-//                 color={Colors.universal.favorite}
-//               />
-//             ) : (
-//               <AntDesign
-//                 name="staro"
-//                 size={28}
-//                 color={Colors[colorScheme].defaultIcon}
-//               />
-//             )}
-//           </TouchableOpacity>
-//         </View>
-//         <ThemedText style={styles.descriptionText}>
-//           {podcast.description}
-//         </ThemedText>
-
-//         {status?.isLoaded && (
-//           <View style={{ flexDirection: "row", gap: 10 }}>
-//             <Text
-//               style={[
-//                 styles.descriptionText,
-//                 { fontWeight: "600", color: Colors.universal.primary },
-//               ]}
-//             >
-//               {formatTime(status.duration)} min
-//             </Text>
-//             <AntDesign
-//               name="clockcircleo"
-//               size={24}
-//               color={Colors.universal.primary}
-//             />
-//           </View>
-//         )}
-
-//         {showInitialButton && (
-//           <View style={styles.initialButtons}>
-//             <Button
-//               title="Download & Play"
-//               onPress={handleDownloadAndPlay}
-//               disabled={isLoading}
-//             />
-//             <AntDesign
-//               name="download"
-//               size={24}
-//               color={Colors[colorScheme].defaultIcon}
-//             />
-//           </View>
-//         )}
-//       </View>
-
-//       {playerError && (
-//         <Text style={styles.errorText}>Error: {playerError}</Text>
-//       )}
-
-//       {isLoading && !playerError && <ActivityIndicator style={styles.loader} />}
-
-//       {showDownloadProgress && (
-//         <>
-//           <View style={styles.progressContainer}>
-//             <View
-//               style={[
-//                 styles.progressBar,
-//                 { width: `${Math.round(downloadProgress * 100)}%` },
-//               ]}
-//             />
-//           </View>
-//           <Text style={styles.progressText}>
-//             Downloading: {Math.round(downloadProgress * 100)}%
-//           </Text>
-//         </>
-//       )}
-
-//       {/* *** Main playback UI *** */}
-//       {showPlaybackControls && !playerError && (
-//         <View style={styles.mainComponentsContainer}>
-//           <Image
-//             source={require("@/assets/images/logo.png")}
-//             style={styles.logo}
-//             contentFit="cover"
-//           />
-
-//           <View style={styles.timeContainer}>
-//             <Text style={styles.timeText}>
-//               {formatTime(status.currentTime)}
-//             </Text>
-//             <Text style={styles.timeText}>{formatTime(status.duration)}</Text>
-//           </View>
-
-//           <Slider
-//             style={styles.slider}
-//             value={Math.min(status.currentTime || 0, status.duration || 0)}
-//             minimumValue={0}
-//             maximumValue={status.duration || 0}
-//             onSlidingStart={() => setIsSeeking(true)}
-//             onSlidingComplete={handleSeek}
-//             minimumTrackTintColor="#3b82f6"
-//             maximumTrackTintColor="#d1d5db"
-//             thumbTintColor="#3b82f6"
-//             disabled={controlsDisabled}
-//           />
-
-//           <View style={styles.controls}>
-//             <TouchableOpacity
-//               style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
-//               onPress={goBack}
-//               disabled={controlsDisabled}
-//             >
-//               <AntDesign
-//                 name="stepbackward"
-//                 size={30}
-//                 color={Colors[colorScheme].defaultIcon}
-//               />
-//               <ThemedText disabled={controlsDisabled}>15 s</ThemedText>
-//             </TouchableOpacity>
-
-//             {status.playing ? (
-//               <AntDesign
-//                 name="pausecircleo"
-//                 size={30}
-//                 color={Colors[colorScheme].defaultIcon}
-//                 onPress={togglePlayPause}
-//                 disabled={controlsDisabled}
-//               />
-//             ) : (
-//               <AntDesign
-//                 name="playcircleo"
-//                 size={30}
-//                 color={Colors[colorScheme].defaultIcon}
-//                 onPress={togglePlayPause}
-//                 disabled={controlsDisabled}
-//               />
-//             )}
-
-//             <TouchableOpacity
-//               style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
-//               onPress={goForward}
-//               disabled={controlsDisabled}
-//             >
-//               <ThemedText disabled={controlsDisabled}>15 s</ThemedText>
-//               <AntDesign
-//                 name="stepforward"
-//                 size={30}
-//                 color={Colors[colorScheme].defaultIcon}
-//               />
-//             </TouchableOpacity>
-//           </View>
-
-//           <Feather
-//             style={{ alignSelf: "center" }}
-//             name="stop-circle"
-//             size={32}
-//             color={Colors[colorScheme].error}
-//             onPress={stopPlayback}
-//             disabled={controlsDisabled}
-//           />
-//         </View>
-//       )}
-//     </ScrollView>
-//   );
-// };
-
-// // --- Styles ---
-// const styles = StyleSheet.create({
-//   scrollStyle: {
-//     flex: 1,
-//   },
-//   scrollContent: {
-//     gap: 20,
-//   },
-//   headerContainer: {
-//     flexDirection: "column",
-//     alignItems: "center",
-//     padding: 20,
-//     gap: 10,
-//   },
-//   headerTopRow: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "space-between",
-//     width: "100%",
-//   },
-//   starButton: {
-//     padding: 4,
-//   },
-//   title: {
-//     flex: 1,
-//   },
-
-//   descriptionText: {
-//     fontSize: 18,
-//   },
-//   loader: {
-//     marginVertical: 16,
-//     alignSelf: "center",
-//   },
-//   initialButtons: {
-//     width: "100%",
-//     flexDirection: "row",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     gap: 8,
-//   },
-//   errorText: {
-//     color: "red",
-//     marginVertical: 8,
-//     textAlign: "center",
-//   },
-//   progressContainer: {
-//     width: "100%",
-//     height: 6,
-//     backgroundColor: "#e0e0e0",
-//     borderRadius: 3,
-//     overflow: "hidden",
-//     marginVertical: 8,
-//   },
-//   progressBar: {
-//     height: "100%",
-//     backgroundColor: "#3b82f6",
-//   },
-//   progressText: {
-//     textAlign: "center",
-//     fontSize: 12,
-//     color: "#444",
-//     marginBottom: 8,
-//   },
-//   timeContainer: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     marginVertical: 5,
-//     paddingHorizontal: 10,
-//   },
-//   timeText: {
-//     fontSize: 12,
-//     color: "#444",
-//   },
-//   mainComponentsContainer: {
-//     flex: 1,
-//   },
-//   logo: {
-//     width: "90%",
-//     height: 300,
-//     alignSelf: "center",
-//     marginBottom: 20,
-//   },
-//   slider: {
-//     width: "100%",
-//     height: 40,
-//     marginVertical: 5,
-//   },
-//   controls: {
-//     flexDirection: "row",
-//     justifyContent: "space-around",
-//     alignItems: "center",
-//     marginVertical: 12,
-//   },
-// });
-
 // import { PodcastPlayerPropsType } from "@/constants/Types";
 // import { useLanguage } from "@/contexts/LanguageContext";
 // import { usePodcasts } from "@/hooks/usePodcasts";
@@ -797,7 +284,7 @@
 //           }
 //           style={styles.heroSection}
 //         >
-//           <BlurView intensity={20} style={styles.blurOverlay}>
+//           <BlurView intensity={20} style={styles.headerContainer}>
 //             {/* Podcast Cover Art */}
 //             <View style={styles.coverArtContainer}>
 //               <Image
@@ -1042,7 +529,7 @@
 //     height: 400,
 //     position: "relative",
 //   },
-//   blurOverlay: {
+//   headerContainer: {
 //     flex: 1,
 //     padding: 20,
 //     paddingTop: 80,
@@ -1313,10 +800,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { usePodcasts } from "@/hooks/usePodcasts";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { isPodcastFavorited, togglePodcastFavorite } from "@/utils/favorites";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { AudioStatus, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useState } from "react";
@@ -1332,6 +818,8 @@ import {
   useColorScheme,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import HeaderLeftBackButton from "./HeaderLeftBackButton";
 
 export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   podcast,
@@ -1582,261 +1070,291 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   const isDark = colorScheme === "dark";
 
   return (
-    <ScrollView
-      style={[
-        styles.container,
-        { backgroundColor: Colors[colorScheme].background },
-      ]}
-      showsVerticalScrollIndicator={false}
+    <LinearGradient
+      colors={
+        isDark
+          ? ["#1a1a2e", "#16213e", "#0f3460"]
+          : ["#667eea", "#764ba2", "#f093fb"]
+      }
+      style={styles.heroSection}
     >
-      <Animated.View
-        style={[
-          styles.content,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
-      >
-        {/* Hero Section with Gradient Background */}
-        <LinearGradient
-          colors={
-            isDark
-              ? ["#1a1a2e", "#16213e", "#0f3460"]
-              : ["#667eea", "#764ba2", "#f093fb"]
-          }
-          style={styles.heroSection}
+      <SafeAreaView style={{ flex: 1 }} edges={["top", "left"]}>
+        <View style={{ marginLeft: 20 }}>
+          <HeaderLeftBackButton color={"black"} size={35} />
+        </View>
+        <ScrollView
+          style={[styles.container]}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 0 }}
         >
-          <BlurView intensity={20} style={styles.blurOverlay}>
-            {/* Podcast Cover Art */}
-            <View style={styles.coverArtContainer}>
-              <Image
-                source={require("@/assets/images/logo.png")}
-                style={styles.coverArt}
-                contentFit="cover"
-              />
-              <View style={styles.coverArtShadow} />
-            </View>
-
-            {/* Podcast Info */}
-            <View style={styles.podcastInfo}>
-              <Text style={styles.podcastTitle} numberOfLines={2}>
-                {podcast.title}
-              </Text>
-              <Text style={styles.podcastDescription} numberOfLines={3}>
-                {podcast.description}
-              </Text>
-
-              {status?.isLoaded && (
-                <View style={styles.durationContainer}>
-                  <Ionicons name="time-outline" size={16} color="#fff" />
-                  <Text style={styles.durationText}>
-                    {formatTime(status.duration)}
-                  </Text>
-                </View>
-              )}
-            </View>
-
-            {/* Favorite Button */}
-            <TouchableOpacity
-              onPress={onPressToggleFavorite}
-              style={styles.favoriteButton}
-            >
-              <Ionicons
-                name={isFavorite ? "heart" : "heart-outline"}
-                size={28}
-                color={isFavorite ? "#ff6b6b" : "#fff"}
-              />
-            </TouchableOpacity>
-          </BlurView>
-        </LinearGradient>
-
-        {/* Error Display */}
-        {playerError && (
-          <View style={styles.errorContainer}>
-            <Ionicons name="alert-circle" size={24} color="#ff6b6b" />
-            <Text style={styles.errorText}>{playerError}</Text>
-          </View>
-        )}
-
-        {/* Download Progress */}
-        {showDownloadProgress && (
-          <View style={styles.downloadContainer}>
-            <Text style={styles.downloadText}>
-              Downloading... {Math.round(downloadProgress * 100)}%
-            </Text>
-            <View style={styles.progressBarContainer}>
-              <View
-                style={[
-                  styles.progressBar,
-                  { width: `${Math.round(downloadProgress * 100)}%` },
-                ]}
-              />
-            </View>
-          </View>
-        )}
-
-        {/* Initial Download Button */}
-        {showInitialButton && (
-          <TouchableOpacity
-            style={styles.downloadButton}
-            onPress={handleDownload}
-            disabled={isLoading}
+          {/* Hero Section with Gradient Background */}
+          <Animated.View
+            style={[
+              styles.content,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
+              },
+            ]}
           >
-            <LinearGradient
-              colors={["#667eea", "#764ba2"]}
-              style={styles.downloadButtonGradient}
-            >
-              <Ionicons name="download" size={24} color="#fff" />
-              <Text style={styles.downloadButtonText}>Download to Listen</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
-
-        {/* Loading Indicator */}
-        {isLoading && !playerError && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#667eea" />
-            <Text style={styles.loadingText}>
-              {isPreparing ? "Preparing..." : "Loading..."}
-            </Text>
-          </View>
-        )}
-
-        {/* Main Player Controls */}
-        {showPlaybackControls && !playerError && (
-          <View style={styles.playerContainer}>
-            {/* Progress Section */}
-            <View style={styles.progressSection}>
-              <View style={styles.timeLabels}>
-                <Text style={styles.timeText}>
-                  {formatTime(status.currentTime)}
-                </Text>
-                <Text style={styles.timeText}>
-                  {formatTime(status.duration)}
-                </Text>
+            <View style={styles.headerContainer}>
+              {/* Podcast Cover Art */}
+              <View style={styles.coverArtContainer}>
+                <Image
+                  source={require("@/assets/images/logo.png")}
+                  style={styles.coverArt}
+                  contentFit="cover"
+                />
+                <View style={styles.coverArtShadow} />
               </View>
 
-              <Slider
-                style={styles.progressSlider}
-                value={Math.min(status.currentTime || 0, status.duration || 0)}
-                minimumValue={0}
-                maximumValue={status.duration || 0}
-                onSlidingStart={() => setIsSeeking(true)}
-                onSlidingComplete={handleSeek}
-                minimumTrackTintColor="#667eea"
-                maximumTrackTintColor={isDark ? "#333" : "#ddd"}
-                thumbTintColor="#667eea"
-                disabled={controlsDisabled}
-              />
-            </View>
+              {/* Podcast Info */}
+              <View style={styles.podcastInfo}>
+                <Text style={styles.podcastTitle} numberOfLines={2}>
+                  {podcast.title}
+                </Text>
+                <Text style={styles.podcastDescription} numberOfLines={3}>
+                  {podcast.description}
+                </Text>
 
-            {/* Main Controls */}
-            <View style={styles.mainControls}>
-              {/* Skip Back */}
-              <TouchableOpacity
-                style={styles.skipButton}
-                onPress={goBack}
-                disabled={controlsDisabled}
-              >
-                <Ionicons
-                  name="play-skip-back"
-                  size={32}
-                  color={controlsDisabled ? "#999" : isDark ? "#fff" : "#333"}
-                />
-                <Text style={styles.skipText}>15s</Text>
-              </TouchableOpacity>
-
-              {/* Play/Pause Button */}
-              <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-                <TouchableOpacity
-                  style={[
-                    styles.playButton,
-                    { opacity: controlsDisabled ? 0.5 : 1 },
-                  ]}
-                  onPress={togglePlayPause}
-                  disabled={controlsDisabled}
-                >
-                  <LinearGradient
-                    colors={["#667eea", "#764ba2"]}
-                    style={styles.playButtonGradient}
-                  >
-                    <Ionicons
-                      name={status?.playing ? "pause" : "play"}
-                      size={36}
-                      color="#fff"
-                    />
-                  </LinearGradient>
-                </TouchableOpacity>
-              </Animated.View>
-
-              {/* Skip Forward */}
-              <TouchableOpacity
-                style={styles.skipButton}
-                onPress={goForward}
-                disabled={controlsDisabled}
-              >
-                <Ionicons
-                  name="play-skip-forward"
-                  size={32}
-                  color={controlsDisabled ? "#999" : isDark ? "#fff" : "#333"}
-                />
-                <Text style={styles.skipText}>15s</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Secondary Controls */}
-            <View style={styles.secondaryControls}>
-              {/* Speed Control */}
-              <TouchableOpacity
-                style={styles.speedButton}
-                onPress={() => setShowSpeedMenu(!showSpeedMenu)}
-              >
-                <Text style={styles.speedText}>{playbackSpeed}x</Text>
-              </TouchableOpacity>
-
-              {/* Stop Button */}
-              <TouchableOpacity
-                style={styles.stopButton}
-                onPress={stopPlayback}
-                disabled={controlsDisabled}
-              >
-                <Ionicons
-                  name="stop"
-                  size={24}
-                  color={controlsDisabled ? "#999" : "#ff6b6b"}
-                />
-              </TouchableOpacity>
-            </View>
-
-            {/* Speed Menu */}
-            {showSpeedMenu && (
-              <View style={styles.speedMenu}>
-                {speedOptions.map((speed) => (
-                  <TouchableOpacity
-                    key={speed}
-                    style={[
-                      styles.speedOption,
-                      playbackSpeed === speed && styles.speedOptionActive,
-                    ]}
-                    onPress={() => handleSpeedChange(speed)}
-                  >
-                    <Text
-                      style={[
-                        styles.speedOptionText,
-                        playbackSpeed === speed && styles.speedOptionTextActive,
-                      ]}
-                    >
-                      {speed}x
+                {status?.isLoaded && (
+                  <View style={styles.durationContainer}>
+                    <Ionicons name="time-outline" size={16} color="#fff" />
+                    <Text style={styles.durationText}>
+                      {formatTime(status.duration)}
                     </Text>
-                  </TouchableOpacity>
-                ))}
+                  </View>
+                )}
+              </View>
+
+              {/* Favorite Button */}
+              <TouchableOpacity
+                onPress={onPressToggleFavorite}
+                style={styles.favoriteButton}
+              >
+                <AntDesign
+                  name={isFavorite ? "star" : "staro"}
+                  size={25}
+                  color={
+                    isFavorite
+                      ? Colors.universal.favorite
+                      : Colors[colorScheme].defaultIcon
+                  }
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Error Display */}
+            {playerError && (
+              <View style={styles.errorContainer}>
+                <Ionicons name="alert-circle" size={24} color="#ff6b6b" />
+                <Text style={styles.errorText}>{playerError}</Text>
               </View>
             )}
-          </View>
-        )}
-      </Animated.View>
-    </ScrollView>
+
+            {/* Download Progress */}
+            {showDownloadProgress && (
+              <View style={styles.downloadContainer}>
+                <Text style={styles.downloadText}>
+                  Downloading... {Math.round(downloadProgress * 100)}%
+                </Text>
+                <View style={styles.progressBarContainer}>
+                  <View
+                    style={[
+                      styles.progressBar,
+                      { width: `${Math.round(downloadProgress * 100)}%` },
+                    ]}
+                  />
+                </View>
+              </View>
+            )}
+
+            {/* Initial Download Button */}
+            {showInitialButton && (
+              <TouchableOpacity
+                style={styles.downloadButton}
+                onPress={handleDownload}
+                disabled={isLoading}
+              >
+                <LinearGradient
+                  colors={["#667eea", "#764ba2"]}
+                  style={styles.downloadButtonGradient}
+                >
+                  <Ionicons name="download" size={24} color="#fff" />
+                  <Text style={styles.downloadButtonText}>
+                    Download to Listen
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            )}
+
+            {/* Loading Indicator */}
+            {isLoading && !playerError && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#667eea" />
+                <Text style={styles.loadingText}>
+                  {isPreparing ? "Preparing..." : "Loading..."}
+                </Text>
+              </View>
+            )}
+
+            {/* Main Player Controls */}
+            {showPlaybackControls && !playerError && (
+              <View
+                style={[
+                  styles.playerContainer,
+                  {
+                    backgroundColor: Colors[colorScheme].contrast,
+                    shadowColor: Colors[colorScheme].border,
+                  },
+                ]}
+              >
+                {/* Progress Section */}
+                <View style={styles.progressSection}>
+                  <View style={styles.timeLabels}>
+                    <Text style={styles.timeText}>
+                      {formatTime(status.currentTime)}
+                    </Text>
+                    <Text style={styles.timeText}>
+                      {formatTime(status.duration)}
+                    </Text>
+                  </View>
+
+                  <Slider
+                    style={styles.progressSlider}
+                    value={Math.min(
+                      status.currentTime || 0,
+                      status.duration || 0
+                    )}
+                    minimumValue={0}
+                    maximumValue={status.duration || 0}
+                    onSlidingStart={() => setIsSeeking(true)}
+                    onSlidingComplete={handleSeek}
+                    minimumTrackTintColor="#667eea"
+                    maximumTrackTintColor={isDark ? "#333" : "#ddd"}
+                    thumbTintColor="#667eea"
+                    disabled={controlsDisabled}
+                  />
+                </View>
+
+                {/* Main Controls */}
+                <View style={styles.mainControls}>
+                  {/* Skip Back */}
+                  <TouchableOpacity
+                    style={styles.skipButton}
+                    onPress={goBack}
+                    disabled={controlsDisabled}
+                  >
+                    <Ionicons
+                      name="play-skip-back"
+                      size={32}
+                      color={
+                        controlsDisabled ? "#999" : isDark ? "#fff" : "#333"
+                      }
+                    />
+                    <Text style={styles.skipText}>15s</Text>
+                  </TouchableOpacity>
+
+                  {/* Play/Pause Button */}
+                  <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                    <TouchableOpacity
+                      style={[
+                        styles.playButton,
+                        { opacity: controlsDisabled ? 0.5 : 1 },
+                      ]}
+                      onPress={togglePlayPause}
+                      disabled={controlsDisabled}
+                    >
+                      <LinearGradient
+                        colors={["#667eea", "#764ba2"]}
+                        style={styles.playButtonGradient}
+                      >
+                        <Ionicons
+                          name={status?.playing ? "pause" : "play"}
+                          size={36}
+                          color="#fff"
+                        />
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </Animated.View>
+
+                  {/* Skip Forward */}
+                  <TouchableOpacity
+                    style={styles.skipButton}
+                    onPress={goForward}
+                    disabled={controlsDisabled}
+                  >
+                    <Ionicons
+                      name="play-skip-forward"
+                      size={32}
+                      color={
+                        controlsDisabled ? "#999" : isDark ? "#fff" : "#333"
+                      }
+                    />
+                    <Text style={styles.skipText}>15s</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Secondary Controls */}
+                <View style={styles.secondaryControls}>
+                  {/* Speed Control */}
+                  <TouchableOpacity
+                    style={styles.speedButton}
+                    onPress={() => setShowSpeedMenu(!showSpeedMenu)}
+                  >
+                    <Text style={styles.speedText}>{playbackSpeed}x</Text>
+                  </TouchableOpacity>
+
+                  {/* Stop Button */}
+                  <TouchableOpacity
+                    style={styles.stopButton}
+                    onPress={stopPlayback}
+                    disabled={controlsDisabled}
+                  >
+                    <Ionicons
+                      name="stop"
+                      size={24}
+                      color={controlsDisabled ? "#999" : "#ff6b6b"}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Speed Menu */}
+                {showSpeedMenu && (
+                  <View
+                    style={[
+                      styles.speedMenu,
+                      { backgroundColor: Colors[colorScheme].contrast },
+                    ]}
+                  >
+                    {speedOptions.map((speed) => (
+                      <TouchableOpacity
+                        key={speed}
+                        style={[
+                          styles.speedOption,
+                          playbackSpeed === speed && styles.speedOptionActive,
+                        ]}
+                        onPress={() => handleSpeedChange(speed)}
+                      >
+                        <Text
+                          style={[
+                            styles.speedOptionText,
+                            playbackSpeed === speed &&
+                              styles.speedOptionTextActive,
+                          ]}
+                        >
+                          {speed}x
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+            )}
+          </Animated.View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -1846,15 +1364,16 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    justifyContent: "flex-start",
   },
   heroSection: {
-    height: 400,
-    position: "relative",
-  },
-  blurOverlay: {
     flex: 1,
-    padding: 20,
-    paddingTop: 80,
+  },
+  headerContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 30,
     alignItems: "center",
   },
   coverArtContainer: {
@@ -1919,7 +1438,7 @@ const styles = StyleSheet.create({
   favoriteButton: {
     position: "absolute",
     top: 80,
-    right: 20,
+    right: 35,
     backgroundColor: "rgba(255,255,255,0.2)",
     padding: 12,
     borderRadius: 25,
@@ -2003,12 +1522,8 @@ const styles = StyleSheet.create({
   },
   playerContainer: {
     margin: 20,
-    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 6,
   },
@@ -2047,8 +1562,8 @@ const styles = StyleSheet.create({
   },
   playButton: {
     shadowColor: "#667eea",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 6,
   },
@@ -2065,7 +1580,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   speedButton: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#ccc",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -2078,17 +1593,15 @@ const styles = StyleSheet.create({
     color: "#495057",
   },
   stopButton: {
-    backgroundColor: "#fff5f5",
+    backgroundColor: "#fecaca",
     padding: 12,
     borderRadius: 25,
     borderWidth: 1,
-    borderColor: "#fecaca",
   },
   speedMenu: {
     position: "absolute",
     bottom: 80,
     left: 24,
-    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 8,
     shadowColor: "#000",
