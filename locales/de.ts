@@ -14,6 +14,7 @@ export const de = {
   // Podcasts
   podcastsTitle: "Podcast",
   podcastScreenTitle: "Podcasts",
+  listen: "HÖREN",
   // General
   retry: "Wiederholen",
   errorLoadingData: "Es gab einen Fehler beim laden der Daten",
@@ -39,6 +40,8 @@ export const de = {
   readMore: "Mehr",
   about: "Über",
   impressum: "Impressum",
+  questionsAreBeingLoadedTitle: "Fragen werden geladen!",
+  questionsAreBeingLoadedMessage: "Je nach Internetverbindung kann das einen Augenblick dauern.",
 
   // Navigation
   knowledge: "Wissen",
@@ -130,7 +133,7 @@ export const de = {
   // videos
   noVideoFound: "Es wurden keine Videos für diese Kategorie gefunden!",
 
-  //User questions
+  // User questions
   yourQuestions: "Deine Fragen",
   still_days_left: "Noch {{count}} Tag{{e}} übrig bis die Frage gelöscht wird",
   expires_today: "Läuft heute ab!",
@@ -139,6 +142,10 @@ export const de = {
   not_read_yet: "Noch nicht gelesen",
   day_plural: "e",
   day_singular: "",
+
+  // No internet
+  noInternetTitle: "Keine Internetverbindung",
+  noInternetMessage: "Einige Funktionen sind möglicherweise nicht verfügbar!",
 } as const;
 
 export default de;

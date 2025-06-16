@@ -11,6 +11,7 @@ import React, { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
+  Platform,
   Pressable,
   StyleSheet,
   View,
@@ -176,6 +177,20 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 8,
     borderRadius: 8,
+     ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 1,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 1,
+      },
+      android: {
+        elevation: 10,
+      },
+    }),
   },
   pinIconStyle: {
     flex: 1,

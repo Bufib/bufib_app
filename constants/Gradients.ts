@@ -1,43 +1,58 @@
 // export const newsArticleGradients = [
-//     // Subtle blues to navy
-//     ["#E0E5EC", "#C7D0DD", "#97A7C3"],
-//     // Soft greens
-//     ["#E8EEDA", "#C9DBC5", "#A6C4A1"],
-//     // Subdued earth tones
-//     ["#E6DFD9", "#D1C3BB", "#B3A59A"],
-//     // Muted lavender
-//     ["#E9E4F0", "#D3CCE3", "#B2A5D1"],
-//     // Beige to light brown
-//     ["#F0EAE2", "#E5D8C5", "#C7B299"],
-//     // Soft pastels
-//     ["#F4F7F9", "#E7EEF3", "#C5D5E4"],
-//     // Desert sand
-//     ["#F2EFEA", "#E5DACE", "#C9BAA7"],
-//     // Muted teal
-//     ["#E0EEE8", "#C4E0D9", "#96C0B7"],
-//     // Calm sunset
-//     ["#F6E8EA", "#E8CED3", "#D1ADBA"],
-//   ];
+//   // Peach to Warm Coral
+//   ["#FFF0E0", "#FFD1B8", "#FFA788"],
+
+//   // Soft Sky to Light Teal
+//   ["#E0F7FF", "#B8E6F5", "#89D4E6"],
+
+//   // Light Mint to Seafoam
+//   ["#E0FFEC", "#B8F5D3", "#7EDBB0"],
+
+//   // Pastel Lemon to Buttercream
+//   ["#FFFCE0", "#FFF9B8", "#FFF27D"],
+
+//   // Fresh Aqua to Pale Turquoise
+//   ["#E0FFF9", "#B8F5ED", "#7FE6D9"],
+
+//   // Gentle Orchid to Lilac
+//   ["#F0E0FF", "#D9C4F5", "#B799E6"],
+// ];
 
 
 export const newsArticleGradients = [
-  // Peach to Warm Coral
-  ["#FFF0E0", "#FFD1B8", "#FFA788"],
+  // Electric Sunset - Vibrant orange to deep pink
+  ["#FF6B35", "#F7931E", "#FF1744"],
 
-  // Soft Sky to Light Teal
-  ["#E0F7FF", "#B8E6F5", "#89D4E6"],
+  // Ocean Depths - Deep blue to cyan
+  ["#667eea", "#764ba2", "#00d2ff"],
 
-  // Light Mint to Seafoam
-  ["#E0FFEC", "#B8F5D3", "#7EDBB0"],
+  // Neon Dreams - Purple to pink to blue
+  ["#a8edea", "#fed6e3", "#667eea"],
 
-  // Pastel Lemon to Buttercream
-  ["#FFFCE0", "#FFF9B8", "#FFF27D"],
+  // Forest Mystique - Deep green to emerald
+  ["#134e5e", "#71b280", "#00b09b"],
 
-  // Fresh Aqua to Pale Turquoise
-  ["#E0FFF9", "#B8F5ED", "#7FE6D9"],
+  // Cosmic Purple - Deep purple to magenta
+  ["#667eea", "#764ba2", "#f093fb"],
 
-  // Gentle Orchid to Lilac
-  ["#F0E0FF", "#D9C4F5", "#B799E6"],
+  // Golden Hour - Warm amber to deep orange
+  ["#ffecd2", "#fcb69f", "#ff8a80"],
 
-];
+  // Arctic Aurora - Cool blue to teal
+  ["#a8edea", "#fed6e3", "#667eea"],
 
+  // Midnight Galaxy - Dark blue to purple
+  ["#2c3e50", "#4a569d", "#8360c3"],
+
+  // Tropical Vibes - Lime to turquoise
+  ["#11998e", "#38ef7d", "#00d2ff"],
+
+  // Rose Gold Luxury - Soft pink to gold
+  ["#ffecd2", "#fcb69f", "#ff9a9e"],
+
+  // Cyber Punk - Neon green to blue
+  ["#00f260", "#0575e6", "#667eea"],
+
+  // Volcanic Fire - Red to orange to yellow
+  ["#ff416c", "#ff4b2b", "#ffb347"],
+]

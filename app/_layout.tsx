@@ -1,9 +1,19 @@
-import { BackHandler } from "react-native";
-
-import LanguageSelection from "@/components/LanguageSelectionScreen"; // From Code 2
-import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext"; // From Code 2
-import { useColorScheme } from "@/hooks/useColorScheme"; // Used by both
-import "@/utils/i18n"; // initialize i18next (from Code 2)
+import AppReviewPrompt from "@/components/AppReviewPrompt";
+import LanguageSelection from "@/components/LanguageSelectionScreen";
+import { NoInternet } from "@/components/NoInternet";
+import ReMountManager from "@/components/ReMountManager";
+import { SupabaseRealtimeProvider } from "@/components/SupabaseRealtimeProvider";
+import { Colors } from "@/constants/Colors";
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { useConnectionStatus } from "@/hooks/useConnectionStatus";
+import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
+import { cleanupCache } from "@/hooks/usePodcasts";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useAuthStore } from "@/stores/authStore";
+import { useFontSizeStore } from "@/stores/fontSizeStore";
+import useNotificationStore from "@/stores/notificationStore";
+import "@/utils/i18n";
 import {
   DarkTheme,
   DefaultTheme,
@@ -12,34 +22,23 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { SQLiteProvider } from "expo-sqlite";
+import { Storage } from "expo-sqlite/kv-store";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Appearance,
+  BackHandler,
   Platform,
   Text,
   View,
 } from "react-native";
-import "react-native-reanimated";
-import Toast from "react-native-toast-message"; // Used by both
-
-import AppReviewPrompt from "@/components/AppReviewPrompt";
-import { NoInternet } from "@/components/NoInternet";
-import ReMountManager from "@/components/ReMountManager";
-import { SupabaseRealtimeProvider } from "@/components/SupabaseRealtimeProvider";
-import { Colors } from "@/constants/Colors"; // For loading screen
-import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
-import { cleanupCache } from "@/hooks/usePodcasts";
-import { usePushNotifications } from "@/hooks/usePushNotifications";
-import { useAuthStore } from "@/stores/authStore";
-import { useFontSizeStore } from "@/stores/fontSizeStore";
-import useNotificationStore from "@/stores/notificationStore";
-import { SQLiteProvider } from "expo-sqlite";
-import { Storage } from "expo-sqlite/kv-store";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MenuProvider } from "react-native-popup-menu";
+import "react-native-reanimated";
+import Toast from "react-native-toast-message";
 
 //! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
@@ -54,7 +53,7 @@ if (typeof (BackHandler as any).removeEventListener !== "function") {
   };
 }
 
-// Prevent the splash screen from auto-hiding before asset loading is complete. (From Code 1)
+// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 // Query client (defined at module level like in Code 2)
@@ -62,18 +61,17 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const colorScheme = useColorScheme() || "light";
-  const { ready: languageContextReady, language } = useLanguage(); // Renamed 'ready' to avoid conflict
-
-  // State and hooks from Code 1
+  const { ready: languageContextReady, language } = useLanguage();
   const dbInitialized = useInitializeDatabase();
   const restoreSession = useAuthStore((state) => state.restoreSession);
   const [isSessionRestored, setIsSessionRestored] = useState(false);
   const hasInternet = useConnectionStatus();
-  const { expoPushToken, notification } = usePushNotifications(); // Kept for completeness, original was commented
+  const { expoPushToken } = usePushNotifications();
   const [storesHydrated, setStoresHydrated] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+  const { t } = useTranslation();
 
-  // Effect to set color theme from Storage (from Code 1)
+  // Effect to set color theme from Storage
   useEffect(() => {
     const setColorTheme = () => {
       try {
@@ -91,7 +89,7 @@ function AppContent() {
     setColorTheme();
   }, []);
 
-  // Effect to hydrate stores (from Code 1)
+  // Effect to hydrate stores
   useEffect(() => {
     const hydrateStores = async () => {
       try {
@@ -112,35 +110,33 @@ function AppContent() {
     hydrateStores();
   }, []);
 
-  // Effect for iOS notification permission request (from Code 1)
+  // Effect for iOS notification permission request
   useEffect(() => {
     if (storesHydrated && Platform.OS === "ios") {
       const { getNotifications, permissionStatus, toggleGetNotifications } =
         useNotificationStore.getState();
       if (!getNotifications && permissionStatus === "undetermined") {
-        toggleGetNotifications(); // This likely triggers the permission prompt
+        toggleGetNotifications();
       }
     }
   }, [storesHydrated]);
 
-  // Effect for session restoration (from Code 1)
+  // Effect for session restoration
   useEffect(() => {
     const initSession = async () => {
       if (storesHydrated) {
-        // Ensure stores are hydrated before restoring session
         await restoreSession();
         setIsSessionRestored(true);
       }
     };
     if (storesHydrated) {
-      // Only run if stores are hydrated
       initSession();
     }
   }, [storesHydrated, restoreSession]);
 
-  // Debounce showing the loadingScreen for DB initialization (from Code 1)
+  // Debounce showing the loadingScreen for DB initialization
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: any;
     // Show loading screen only if DB is not initialized, we have internet,
     // and other essential services (language, stores, session) are ready.
     if (
@@ -182,8 +178,8 @@ function AppContent() {
       SplashScreen.hideAsync();
       Toast.show({
         type: "error",
-        text1: "Keine Internetverbindung", // TODO: Consider using i18n for this message
-        text2: "Einige Funktionen sind möglicherweise nicht verfügbar.", // TODO: i18n
+        text1: t("noInternetTitle"),
+        text2: t("noInternetMessage"),
         visibilityTime: 5000,
       });
     }
@@ -210,13 +206,6 @@ function AppContent() {
     }
   }, [expoPushToken]);
 
-  // //! Handle notifications (from Code 1, kept commented)
-  useEffect(() => {
-    if (notification) {
-      console.log("Received notification:", notification);
-    }
-  }, [notification]);
-
   // Conditional rendering based on loading states
   // 1. Wait for language context, store hydration, and session restoration
   if (!languageContextReady || !storesHydrated || !isSessionRestored) {
@@ -229,7 +218,7 @@ function AppContent() {
     return <LanguageSelection />;
   }
 
-  // 3. Show specific DB loading screen (from Code 1)
+  // 3. Show specific DB loading screen
   // This screen shows if DB is not ready, after a delay, and internet is available.
   if (!dbInitialized && showLoadingScreen && hasInternet) {
     return (
@@ -248,14 +237,14 @@ function AppContent() {
       >
         <Text
           style={{
-            fontSize: 28, // Slightly adjusted
+            fontSize: 28,
             color:
               colorScheme === "dark" ? Colors.dark.text : Colors.light.text,
             fontWeight: "700",
             textAlign: "center",
           }}
         >
-          Fragen werden geladen! {/* TODO: i18n */}
+          {t("questionsAreBeingLoadedTitle")}
         </Text>
         <ActivityIndicator
           size={"large"}
@@ -269,10 +258,9 @@ function AppContent() {
               colorScheme === "dark" ? Colors.dark.text : Colors.light.text,
           }}
         >
-          Je nach Internetverbindung kann das einen Augenblick dauern.
-          {/* TODO: i18n */}
+          {t("questionsAreBeingLoadedMessage")}
         </Text>
-        <Toast /> {/* Local Toast for this specific screen if needed */}
+        <Toast />
       </View>
     );
   }
@@ -299,15 +287,12 @@ function AppContent() {
                   databaseName="islam-fragen.db"
                   useSuspense={false}
                 >
-                  {/* Set useSuspense={false} for SQLiteProvider if not using React Suspense for DB loading */}
-                  {/* Or handle suspense boundary if dbInitialized is used with it */}
                   <Stack
                     screenOptions={{
                       headerTintColor:
-                        colorScheme === "dark" ? "#d0d0c0" : "#000", // From Code 1
+                        colorScheme === "dark" ? "#d0d0c0" : "#000",
                     }}
                   >
-                    {/* Merged Stack Screens */}
                     <Stack.Screen
                       name="index"
                       options={{ headerShown: false }}
@@ -324,7 +309,6 @@ function AppContent() {
                       name="(auth)"
                       options={{ headerShown: false }}
                     />
-
                     <Stack.Screen
                       name="(displayQuestion)"
                       options={{ headerShown: false }}
@@ -345,7 +329,6 @@ function AppContent() {
                       name="(podcast)"
                       options={{ headerShown: false }}
                     />
-
                     <Stack.Screen name="+not-found" />
                   </Stack>
                   <AppReviewPrompt />
@@ -354,7 +337,6 @@ function AppContent() {
               </SupabaseRealtimeProvider>
             </QueryClientProvider>
           </MenuProvider>
-
           <Toast />
         </ReMountManager>
       </ThemeProvider>

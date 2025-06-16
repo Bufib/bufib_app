@@ -13,6 +13,7 @@ export const ar = {
 
   // Podcasts
   podcastsTitle: "بودكاست",
+  listen: "يستمع",
 
   // General
   retry: "إعادة المحاولة",
@@ -39,6 +40,9 @@ export const ar = {
   removeConfirmPrayer: "هل تريد إزالة الصلاة من المجلد؟",
   about: "حول التطبيق",
   impressum: "البيانات القانونية",
+  questionsAreBeingLoadedTitle: "يتم تحميل الأسئلة",
+  questionsAreBeingLoadedMessage:
+    "قد يستغرق ذلك بعض الوقت حسب سرعة اتصال الإنترنت",
 
   // Navigation
   knowledge: "معرفة",
@@ -131,7 +135,7 @@ export const ar = {
   // videos
   noVideoFound: "لا توجد مقاطع فيديو لهذه الفئة",
 
-  //User questions
+  // User questions
   yourQuestions: "أسئلتك",
   still_days_left: "باقي {{count}} يوم",
   expires_today: "ينتهي اليوم!",
@@ -139,6 +143,10 @@ export const ar = {
   not_read_yet: "لم يُقرأ بعد",
   day_plural: "",
   day_singular: "",
+
+  // No internet
+  noInternetTitle: "لا يوجد اتصال بالإنترنت",
+  noInternetMessage: "قد تكون بعض الميزات غير متاحة!",
 } as const;
 
 export default ar;

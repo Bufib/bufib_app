@@ -1,7 +1,7 @@
 // src/hooks/useGradient.ts
-import { useState, useEffect } from "react";
 import { newsArticleGradients } from "@/constants/Gradients";
-import { UseGradientOptionsType} from "@/constants/Types";
+import { UseGradientOptionsType } from "@/constants/Types";
+import { useEffect, useState } from "react";
 
 export function useGradient(options: UseGradientOptionsType = {}) {
   const { customGradients, defaultIndex = 0 } = options;

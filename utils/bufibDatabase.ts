@@ -1,16 +1,4 @@
-import * as SQLite from "expo-sqlite";
-import { supabase } from "@/utils/supabase";
-import Storage from "expo-sqlite/kv-store";
-import { router } from "expo-router";
 import { databaseUpdate } from "@/constants/messages";
-import {
-  checkInternetConnection,
-  setupConnectivityListener,
-} from "./checkNetwork";
-import debounce from "lodash.debounce";
-import { Alert, Platform } from "react-native";
-import handleOpenExternalUrl from "./handleOpenExternalUrl";
-import Constants from "expo-constants";
 import {
   FavoritePrayerFolderType,
   FullPrayer,
@@ -19,8 +7,19 @@ import {
   PrayerWithCategory,
   PrayerWithTranslationType,
   QuestionType,
-  SearchResultQAType,
 } from "@/constants/Types";
+import { supabase } from "@/utils/supabase";
+import Constants from "expo-constants";
+import { router } from "expo-router";
+import * as SQLite from "expo-sqlite";
+import Storage from "expo-sqlite/kv-store";
+import debounce from "lodash.debounce";
+import { Alert, Platform } from "react-native";
+import {
+  checkInternetConnection,
+  setupConnectivityListener,
+} from "./checkNetwork";
+import handleOpenExternalUrl from "./handleOpenExternalUrl";
 import i18n from "./i18n";
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -38,8 +37,10 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
       CREATE TABLE IF NOT EXISTS question_categories (
         question_category_name TEXT PRIMARY KEY
       );
+
       CREATE TABLE IF NOT EXISTS question_subcategories (
         question_subcategory_name TEXT PRIMARY KEY
+
       );
       CREATE TABLE IF NOT EXISTS questions (
         id               INTEGER PRIMARY KEY,
@@ -106,17 +107,15 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         created_at    TEXT    DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(prayer_id, folder_name)  -- so you can still insert the same prayer into different folders
     );
-     
-      CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
-        ON favorite_prayers(prayer_id);
-
-
+    
       CREATE TABLE IF NOT EXISTS prayer_folders (
         name       TEXT PRIMARY KEY,
         color      TEXT NOT NULL,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
       );
-
+      
+      CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
+        ON favorite_prayers(prayer_id);
 
     `);
   }
@@ -785,31 +784,6 @@ export const isQuestionInFavorite = async (
     throw error;
   }
 };
-
-/**
- * Check whether a given prayer is currently in favorite.
- */
-
-// export const isPrayerInFavorite = async (
-//   prayer_id: number
-// ): Promise<boolean> => {
-//   try {
-//     const db = await getDatabase();
-//     const result = await db.getFirstAsync<{ count: number }>(
-//       `
-//       SELECT COUNT(*) as count FROM favorite_prayers WHERE prayer_id = ?;
-//     `,
-//       [prayer_id]
-//     );
-//     if (result && result.count !== undefined) {
-//       return result.count > 0;
-//     }
-//     return false;
-//   } catch (error) {
-//     console.error("Error checking favorite status:", error);
-//     throw error;
-//   }
-// };
 
 /**
  * Fetch all favorited questions.

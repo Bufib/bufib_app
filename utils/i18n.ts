@@ -1,10 +1,10 @@
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
 import * as Localization from "expo-localization";
 import { Storage } from "expo-sqlite/kv-store";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
-import de from "@/locales/de";
 import ar from "@/locales/ar";
+import de from "@/locales/de";
 import en from "@/locales/en";
 
 const languageDetector = {

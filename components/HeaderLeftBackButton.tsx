@@ -1,7 +1,8 @@
-import { StyleSheet, Text, useColorScheme, View } from 'react-native'
-import React from 'react'
+import { Colors } from '@/constants/Colors'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import React from 'react'
+import { StyleSheet, useColorScheme } from 'react-native'
 
 const HeaderLeftBackButton = () => {
     const colorScheme = useColorScheme() || "light";
@@ -11,7 +12,7 @@ const HeaderLeftBackButton = () => {
         size={30}
         style={{ marginLeft: -16 }}
         onPress={() => router.back()}
-        color={colorScheme === "dark" ? "#d0d0c0" : "#000"}
+        color={Colors.universal.link}
       /> 
   )
 }

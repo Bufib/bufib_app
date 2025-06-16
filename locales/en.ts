@@ -13,6 +13,8 @@ export const en = {
 
   // Podcasts
   podcastsTitle: "Podcast",
+  listen: "LISTEN",
+
 
   // General
   retry: "Retry",
@@ -39,6 +41,9 @@ export const en = {
   removeConfirmPrayer: "Do you want to remove this prayer from the folder?",
   about: "About",
   impressum: "Legal Notice",
+  questionsAreBeingLoadedTitle: "Questions are being loaded!",
+  questionsAreBeingLoadedMessage: "Depending on your internet connection, this may take a moment.",
+  
 
   // Navigation
   knowledge: "Knowledge",
@@ -132,7 +137,7 @@ export const en = {
   // videos
   noVideoFound: "There are no videos for this category!",
 
-  //User questions
+  // User questions
   yourQuestions: "Your questions",
   still_days_left: "Still {{count}} day{{s}} left till deletion",
   expires_today: "Expires today!",
@@ -140,6 +145,10 @@ export const en = {
   not_read_yet: "Not read yet",
   day_plural: "s",
   day_singular: "",
+
+  // No internet
+  noInternetTitle: "No Internet Connection",
+  noInternetMessage: "Some features may not be available!",
 } as const;
 
 export default en;

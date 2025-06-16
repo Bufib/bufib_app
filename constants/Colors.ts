@@ -90,6 +90,7 @@ export const Colors = {
   universal: {
     primary: "#2ea853",
     secondary: "#1D3E53",
+    third: "hsl(138, 88.50%, 27.30%)",
     grayedOut: "#888",
     link: "#0a84ff",
     questionLinks: "#2ea853",

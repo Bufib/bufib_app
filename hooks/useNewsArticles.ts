@@ -1,11 +1,11 @@
-import { useCallback } from "react";
-import { supabase } from "@/utils/supabase";
 import { NewsArticlesType } from "@/constants/Types";
+import { supabase } from "@/utils/supabase";
 import {
+  InfiniteData,
   useInfiniteQuery,
   useQueryClient,
-  InfiniteData,
 } from "@tanstack/react-query";
+import { useCallback } from "react";
 
 const PAGE_SIZE = 1;
 

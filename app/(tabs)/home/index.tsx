@@ -1,34 +1,32 @@
+import { LoadingIndicator } from "@/components/LoadingIndicator";
+import NewsArticlePreviewCard from "@/components/NewsArticlePreviewCard";
+import { NewsItem } from "@/components/NewsItem";
+import PodcastPreviewCard from "@/components/PodcastPreviewCard";
+import RetryButton from "@/components/RetryButton";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Colors } from "@/constants/Colors";
+import { NewsArticlesType, NewsType, PodcastType } from "@/constants/Types";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useNews } from "@/hooks/useNews";
+import { useNewsArticles } from "@/hooks/useNewsArticles";
+import { usePodcasts } from "@/hooks/usePodcasts";
+import { useAuthStore } from "@/stores/authStore";
+import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
-  View,
+  FlatList,
+  ScrollView,
   StyleSheet,
   Text,
-  FlatList,
-  useColorScheme,
   TouchableOpacity,
-  ScrollView,
-  Pressable,
-  Button,
+  useColorScheme,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTranslation } from "react-i18next";
-import NewsArticlePreviewCard from "@/components/NewsArticlePreviewCard";
-import { ThemedText } from "@/components/ThemedText";
-import { useNewsArticles } from "@/hooks/useNewsArticles";
-import { NewsArticlesType, NewsType, PodcastType } from "@/constants/Types";
-import { LoadingIndicator } from "@/components/LoadingIndicator";
-import RetryButton from "@/components/RetryButton";
-import { Colors } from "@/constants/Colors";
-import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
-import { router } from "expo-router";
-import { useNews } from "@/hooks/useNews";
-import { PodcastPreviewCard } from "@/components/PodcastPreviewCard";
-import { usePodcasts } from "@/hooks/usePodcasts";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { NewsItem } from "@/components/NewsItem";
-import { ThemedView } from "@/components/ThemedView";
-import { useAuthStore } from "@/stores/authStore";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -44,7 +42,7 @@ export default function HomeScreen() {
     fetchNextPage: newsArticlesFetchNextPage,
     hasNextPage: newsArticlesHasNextPage,
     isFetchingNextPage: newsArticlesIsFetchingNextPage,
-  } = useNewsArticles(language);
+  } = useNewsArticles(language || "de");
 
   const {
     data: newsData,
@@ -54,7 +52,7 @@ export default function HomeScreen() {
     fetchNextPage: newsfetchNextPage,
     hasNextPage: newHasNextPage,
     isFetchingNextPage: newsIsFetchingNextPage,
-  } = useNews(language);
+  } = useNews(language || "de");
 
   const {
     data: podcastPages,
@@ -64,7 +62,7 @@ export default function HomeScreen() {
     fetchNextPage: podcastsFetchNextPage,
     hasNextPage: podcastsHasNextPage,
     isFetchingNextPage: podcastsIsFetchingNextPage,
-  } = usePodcasts(language);
+  } = usePodcasts(language || "de");
 
   // flatten paginated data
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];
@@ -157,7 +155,6 @@ export default function HomeScreen() {
         )}
 
         {/* //!-------- Podcasts Section -------- */}
-
         {podcasts.length > 0 && (
           <View style={styles.podcastContainer}>
             <ThemedText type="titleSmall">{t("podcastsTitle")}</ThemedText>
@@ -226,7 +223,12 @@ export default function HomeScreen() {
               alignItems: "center",
             }}
           >
-            <ThemedText type="titleSmall">{t("newsTitle")}</ThemedText>
+            <ThemedText
+              type="titleSmall"
+              style={{ color: Colors.universal.third }}
+            >
+              {t("newsTitle")}
+            </ThemedText>
             {isAdmin && (
               <Ionicons
                 name="add-circle-outline"
@@ -306,11 +308,11 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   scrollContent: {
-    gap: 20,
+    gap: 40,
   },
   newsArticleContainer: {
     flex: 1,
-    gap: 10,
+    gap: 15,
   },
   newsEmptyContainer: {
     flex: 1,
@@ -332,10 +334,10 @@ const styles = StyleSheet.create({
   },
   podcastContainer: {
     flex: 1,
-    gap: 5,
+    gap: 15,
   },
   newsContainer: {
     flex: 1,
-    gap: 10,
+    gap: 15,
   },
 });
