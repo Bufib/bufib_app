@@ -149,8 +149,8 @@ const styles = StyleSheet.create({
   cardWrapper: {},
 
   vinylRecord: {
-    top: 5,
-    right: 5,
+    top: 8,
+    right: 8,
     width: 80,
     height: 80,
     borderRadius: 40,

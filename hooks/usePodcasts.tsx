@@ -1,15 +1,14 @@
+import { PodcastType } from "@/constants/Types"; // Matches your `episodes` schema
+import { supabase } from "@/utils/supabase"; // Your initialized Supabase client
 import {
+  InfiniteData,
+  QueryKey,
   useInfiniteQuery,
   useMutation,
   useQueryClient,
-  InfiniteData,
-  QueryKey,
 } from "@tanstack/react-query";
 import * as FileSystem from "expo-file-system";
-import { useEffect, useCallback, useRef } from "react";
-import { supabase } from "@/utils/supabase"; // Your initialized Supabase client
-import { PodcastType } from "@/constants/Types"; // Matches your `episodes` schema
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useCallback, useEffect, useRef } from "react";
 
 // --- CONFIGURATION ---
 const PAGE_SIZE = 3;
@@ -195,7 +194,6 @@ async function downloadToCache(
 }
 
 export function usePodcasts(language: string) {
-
   const qc = useQueryClient();
   const didInitialCleanup = useRef(false);
 

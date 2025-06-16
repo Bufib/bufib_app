@@ -57,7 +57,10 @@ export const NewsItem = ({
     <View
       style={[
         styles.newsItem,
-        { backgroundColor: Colors[colorScheme].contrast },
+        {
+          backgroundColor: Colors[colorScheme].contrast,
+          shadowColor: Colors[colorScheme].border,
+        },
       ]}
     >
       {is_pinned && (
@@ -177,9 +180,8 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 8,
     borderRadius: 8,
-     ...Platform.select({
+    ...Platform.select({
       ios: {
-        shadowColor: "#000",
         shadowOffset: {
           width: 0,
           height: 1,
