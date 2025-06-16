@@ -43,6 +43,8 @@ export const ar = {
   questionsAreBeingLoadedTitle: "يتم تحميل الأسئلة",
   questionsAreBeingLoadedMessage:
     "قد يستغرق ذلك بعض الوقت حسب سرعة اتصال الإنترنت",
+  font: "الخط",
+  source: "مصادر",
 
   // Navigation
   knowledge: "معرفة",

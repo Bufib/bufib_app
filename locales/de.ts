@@ -15,6 +15,7 @@ export const de = {
   podcastsTitle: "Podcast",
   podcastScreenTitle: "Podcasts",
   listen: "HÖREN",
+
   // General
   retry: "Wiederholen",
   errorLoadingData: "Es gab einen Fehler beim laden der Daten",
@@ -41,8 +42,10 @@ export const de = {
   about: "Über",
   impressum: "Impressum",
   questionsAreBeingLoadedTitle: "Fragen werden geladen!",
-  questionsAreBeingLoadedMessage: "Je nach Internetverbindung kann das einen Augenblick dauern.",
-
+  questionsAreBeingLoadedMessage:
+    "Je nach Internetverbindung kann das einen Augenblick dauern.",
+  font: "Schriftgröße",
+  source: "Quellen: ",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",

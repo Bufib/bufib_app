@@ -248,7 +248,6 @@
 //   },
 // });
 
-
 import { Colors } from "@/constants/Colors";
 import { NewsArticlesType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -262,24 +261,24 @@ import {
 import { formattedDate } from "@/utils/formate";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Stack } from "expo-router";
+import { Image } from "expo-image";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Dimensions,
   Pressable,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
   View,
 } from "react-native";
 import Markdown from "react-native-markdown-display";
+import { SafeAreaView } from "react-native-safe-area-context";
 import FontSizePickerModal from "./FontSizePickerModal";
+import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { LoadingIndicator } from "./LoadingIndicator";
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+import { ThemedText } from "./ThemedText";
+import { ThemedView } from "./ThemedView";
 
 export default function NewsArticleDetailScreen({
   articleId,
@@ -297,7 +296,7 @@ export default function NewsArticleDetailScreen({
   const [scrollY, setScrollY] = useState(0);
   const { triggerRefreshFavorites } = useRefreshFavorites();
   const { language, isArabic } = useLanguage();
-  const { fetchNewsArticleById } = useNewsArticles(language);
+  const { fetchNewsArticleById } = useNewsArticles(language || "de");
 
   useEffect(() => {
     if (!articleId) {
@@ -349,95 +348,94 @@ export default function NewsArticleDetailScreen({
     }
   }, [articleId, triggerRefreshFavorites]);
 
-  const handleScroll = (event) => {
+  const handleScroll = (event: any) => {
     setScrollY(event.nativeEvent.contentOffset.y);
   };
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
-        <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-        <Stack.Screen options={{ headerShown: false }} />
+      <ThemedView style={[styles.container]}>
         <View style={styles.loadingContainer}>
-          <View style={[styles.loadingCard, { backgroundColor: Colors[colorScheme].background }]}>
+          <View
+            style={[
+              styles.loadingCard,
+              { backgroundColor: Colors[colorScheme].background },
+            ]}
+          >
             <LoadingIndicator size="large" />
-            <Text style={[styles.loadingText, { color: Colors[colorScheme].text }]}>
-              Loading article...
-            </Text>
           </View>
         </View>
-      </View>
+      </ThemedView>
     );
   }
 
   if (error || !article) {
     return (
-      <View style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
-        <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-        <Stack.Screen options={{ headerShown: false }} />
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: Colors[colorScheme].background },
+        ]}
+      >
         <View style={styles.errorContainer}>
-          <Ionicons name="newspaper-outline" size={80} color={Colors[colorScheme].tabIconDefault} />
-          <Text style={[styles.errorTitle, { color: Colors[colorScheme].text }]}>
-            Article Not Found
+          <Ionicons
+            name="newspaper-outline"
+            size={80}
+            color={Colors[colorScheme].defaultIcon}
+          />
+          <Text
+            style={[styles.errorTitle, { color: Colors[colorScheme].text }]}
+          >
+            {t("error")}
           </Text>
-          <Text style={[styles.errorSubtitle, { color: Colors[colorScheme].tabIconDefault }]}>
+          <Text
+            style={[
+              styles.errorSubtitle,
+              { color: Colors[colorScheme].defaultIcon },
+            ]}
+          >
             {t("errorLoadingArticle")}
+          </Text>
+          <Text
+            style={[
+              styles.errorSubtitle,
+              { color: Colors[colorScheme].defaultIcon },
+            ]}
+          >
+            {error}
           </Text>
         </View>
       </View>
     );
   }
 
-  const headerOpacity = Math.min(scrollY / 200, 1);
-
   return (
-    <View style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
-      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-      <Stack.Screen options={{ headerShown: false }} />
-      
-      {/* Floating Header */}
-      <View 
-        style={[
-          styles.floatingHeader,
-          {
-            backgroundColor: Colors[colorScheme].background + 'F0',
-            opacity: headerOpacity,
-          },
-        ]}
-      >
-        <Pressable 
-          style={styles.backButton}
-          onPress={() => {/* Add navigation back logic */}}
-        >
-          <Ionicons name="arrow-back" size={24} color={Colors[colorScheme].text} />
-        </Pressable>
-        <Text 
-          style={[styles.floatingTitle, { color: Colors[colorScheme].text }]}
-          numberOfLines={1}
-        >
-          {article.title}
-        </Text>
-        <View style={styles.headerActions}>
-          <Pressable 
-            style={[styles.headerActionBtn, { backgroundColor: Colors[colorScheme].tint + '20' }]}
-            onPress={() => setShowFontSizePickerModal(true)}
-          >
-            <Ionicons name="text" size={18} color={Colors[colorScheme].tint} />
-          </Pressable>
-        </View>
-      </View>
-
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
+      edges={["top"]}
+    >
       <ScrollView
         style={styles.scrollView}
         onScroll={handleScroll}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero Section */}
         <View style={styles.heroSection}>
-          {/* Category Badge */}
-          <View style={[styles.categoryBadge, { backgroundColor: Colors[colorScheme].tint }]}>
-            <Text style={styles.categoryText}>NEWS</Text>
+          <View style={[styles.header]}>
+            <HeaderLeftBackButton />
+            <Text
+              style={[
+                styles.headerText,
+                {
+                  backgroundColor: Colors.universal.third,
+                },
+              ]}
+            >
+              {t("news").toUpperCase()}
+            </Text>
           </View>
 
           {/* Main Title */}
@@ -448,23 +446,66 @@ export default function NewsArticleDetailScreen({
           {/* Article Meta */}
           <View style={styles.articleMeta}>
             <View style={styles.metaLeft}>
-              <View style={[styles.authorAvatar, { backgroundColor: Colors[colorScheme].tint }]}>
-                <Ionicons name="person" size={16} color="white" />
+              <View
+                style={[
+                  styles.authorAvatar,
+                  {
+                    backgroundColor: Colors[colorScheme].contrast,
+                    borderColor: Colors[colorScheme].border,
+                  },
+                ]}
+              >
+                {article.scholar_type === 1 ? (
+                  <Image
+                    source={require("@/assets/images/1.png")}
+                    style={{ width: 50, height: 50, margin: 10 }}
+                    contentFit="fill"
+                  />
+                ) : article.scholar_type === 2 ? (
+                  <Image
+                    source={require("@/assets/images/2.png")}
+                    style={{ width: 50, height: 50, margin: 10 }}
+                  />
+                ) : (
+                  <Image
+                    source={require("@/assets/images/3.png")}
+                    style={{ width: 70, height: 70, margin: 0 }}
+                  />
+                )}
               </View>
               <View>
-                <Text style={[styles.authorName, { color: Colors[colorScheme].text }]}>
-                  News Editor
+                <Text
+                  style={[
+                    styles.authorName,
+                    { color: Colors[colorScheme].text },
+                  ]}
+                >
+                  {article.author}
                 </Text>
-                <Text style={[styles.publishDate, { color: Colors[colorScheme].tabIconDefault }]}>
+                <Text
+                  style={[
+                    styles.publishDate,
+                    { color: Colors.universal.grayedOut },
+                  ]}
+                >
                   {formattedDate(article.created_at)}
                 </Text>
               </View>
             </View>
-            
+
             <View style={styles.metaRight}>
               <View style={styles.readTime}>
-                <Ionicons name="time-outline" size={16} color={Colors[colorScheme].tabIconDefault} />
-                <Text style={[styles.readTimeText, { color: Colors[colorScheme].tabIconDefault }]}>
+                <Ionicons
+                  name="time-outline"
+                  size={16}
+                  color={Colors[colorScheme].defaultIcon}
+                />
+                <Text
+                  style={[
+                    styles.readTimeText,
+                    { color: Colors[colorScheme].defaultIcon },
+                  ]}
+                >
                   {article.read_time} min
                 </Text>
               </View>
@@ -473,44 +514,41 @@ export default function NewsArticleDetailScreen({
 
           {/* Action Bar */}
           <View style={styles.actionBar}>
-            <Pressable 
+            <Pressable
               style={[
                 styles.actionButton,
-                { backgroundColor: isFavorite ? Colors.universal.favorite + '20' : Colors[colorScheme].background }
+                {
+                  backgroundColor: Colors[colorScheme].contrast,
+                  borderColor: Colors[colorScheme].border,
+                },
+              ]}
+              onPress={() => setShowFontSizePickerModal(true)}
+            >
+              <Ionicons
+                name="text"
+                size={22}
+                color={Colors[colorScheme].defaultIcon}
+              />
+            </Pressable>
+            <Pressable
+              style={[
+                styles.actionButton,
+                {
+                  backgroundColor: Colors[colorScheme].contrast,
+                  borderColor: Colors[colorScheme].border,
+                },
               ]}
               onPress={onPressToggle}
             >
-              <AntDesign 
-                name={isFavorite ? "star" : "staro"} 
-                size={20} 
-                color={isFavorite ? Colors.universal.favorite : Colors[colorScheme].tabIconDefault} 
+              <AntDesign
+                name={isFavorite ? "star" : "staro"}
+                size={25}
+                color={
+                  isFavorite
+                    ? Colors.universal.favorite
+                    : Colors[colorScheme].defaultIcon
+                }
               />
-              <Text style={[
-                styles.actionText, 
-                { color: isFavorite ? Colors.universal.favorite : Colors[colorScheme].tabIconDefault }
-              ]}>
-                {isFavorite ? 'Saved' : 'Save'}
-              </Text>
-            </Pressable>
-
-            <Pressable 
-              style={[styles.actionButton, { backgroundColor: Colors[colorScheme].background }]}
-              onPress={() => {/* Add share logic */}}
-            >
-              <Ionicons name="share-outline" size={20} color={Colors[colorScheme].tabIconDefault} />
-              <Text style={[styles.actionText, { color: Colors[colorScheme].tabIconDefault }]}>
-                Share
-              </Text>
-            </Pressable>
-
-            <Pressable 
-              style={[styles.actionButton, { backgroundColor: Colors[colorScheme].background }]}
-              onPress={() => setShowFontSizePickerModal(true)}
-            >
-              <Ionicons name="text" size={20} color={Colors[colorScheme].tabIconDefault} />
-              <Text style={[styles.actionText, { color: Colors[colorScheme].tabIconDefault }]}>
-                Font
-              </Text>
             </Pressable>
           </View>
         </View>
@@ -518,14 +556,19 @@ export default function NewsArticleDetailScreen({
         {/* Content Section */}
         <View style={styles.contentSection}>
           {/* Reading Progress Bar */}
-          <View style={[styles.progressBar, { backgroundColor: Colors[colorScheme].border }]}>
-            <View 
+          <View
+            style={[
+              styles.progressBar,
+              { backgroundColor: Colors[colorScheme].border },
+            ]}
+          >
+            <View
               style={[
                 styles.progressFill,
-                { 
-                  backgroundColor: Colors[colorScheme].tint,
-                  width: `${Math.min((scrollY / 1000) * 100, 100)}%`
-                }
+                {
+                  backgroundColor: Colors.universal.third,
+                  width: `${Math.min((scrollY / 1000) * 100, 100)}%`,
+                },
               ]}
             />
           </View>
@@ -538,12 +581,12 @@ export default function NewsArticleDetailScreen({
                   color: Colors[colorScheme].text,
                   fontSize: fontSize,
                   lineHeight: lineHeight * 1.6,
-                  fontFamily: 'System',
+                  fontFamily: "System",
                 },
                 heading1: {
                   color: Colors[colorScheme].text,
                   fontSize: fontSize * 1.8,
-                  fontWeight: '800',
+                  fontWeight: "800",
                   marginBottom: 20,
                   marginTop: 32,
                   letterSpacing: -0.5,
@@ -551,7 +594,7 @@ export default function NewsArticleDetailScreen({
                 heading2: {
                   color: Colors[colorScheme].text,
                   fontSize: fontSize * 1.5,
-                  fontWeight: '700',
+                  fontWeight: "700",
                   marginBottom: 16,
                   marginTop: 28,
                   letterSpacing: -0.3,
@@ -561,31 +604,31 @@ export default function NewsArticleDetailScreen({
                   fontSize: fontSize,
                   lineHeight: lineHeight * 1.6,
                   marginBottom: 20,
-                  textAlign: 'justify',
+                  textAlign: "justify",
                 },
                 strong: {
                   color: Colors[colorScheme].text,
-                  fontWeight: '700',
+                  fontWeight: "700",
                 },
                 em: {
-                  color: Colors[colorScheme].tabIconDefault,
-                  fontStyle: 'italic',
+                  color: Colors[colorScheme].defaultIcon,
+                  fontStyle: "italic",
                 },
                 link: {
                   color: Colors[colorScheme].tint,
-                  textDecorationLine: 'underline',
+                  textDecorationLine: "underline",
                 },
                 blockquote: {
-                  backgroundColor: 'transparent',
+                  backgroundColor: "transparent",
                   borderLeftColor: Colors[colorScheme].tint,
                   borderLeftWidth: 4,
                   paddingLeft: 20,
                   paddingVertical: 16,
                   marginVertical: 24,
-                  fontStyle: 'italic',
+                  fontStyle: "italic",
                 },
                 code_inline: {
-                  backgroundColor: Colors[colorScheme].tint + '15',
+                  backgroundColor: Colors[colorScheme].tint + "15",
                   color: Colors[colorScheme].tint,
                   paddingHorizontal: 6,
                   paddingVertical: 2,
@@ -597,25 +640,73 @@ export default function NewsArticleDetailScreen({
               {article.content}
             </Markdown>
           </View>
-
-          {/* Article Footer */}
-          <View style={[styles.articleFooter, { borderTopColor: Colors[colorScheme].border }]}>
-            <Text style={[styles.footerText, { color: Colors[colorScheme].tabIconDefault }]}>
-              Published on {formattedDate(article.created_at)}
-            </Text>
-            <View style={styles.footerActions}>
-              <Pressable style={styles.footerAction} onPress={onPressToggle}>
-                <AntDesign 
-                  name={isFavorite ? "star" : "staro"} 
-                  size={24} 
-                  color={isFavorite ? Colors.universal.favorite : Colors[colorScheme].tabIconDefault} 
-                />
-              </Pressable>
-              <Pressable style={styles.footerAction}>
-                <Ionicons name="share-outline" size={24} color={Colors[colorScheme].tabIconDefault} />
-              </Pressable>
+          {article.source && (
+            <View
+              style={[
+                styles.footerContainer,
+                { borderColor: Colors[colorScheme].border },
+              ]}
+            >
+              <ThemedText
+                style={{
+                  fontWeight: "600",
+                  fontSize: fontSize,
+                  marginBottom: 5,
+                }}
+              >
+                {t("source")}
+              </ThemedText>
+              <Markdown
+                style={{
+                  body: {
+                    color: Colors[colorScheme].text,
+                    fontSize: 14,
+                    fontFamily: "System",
+                  },
+                  paragraph: {
+                    color: Colors[colorScheme].text,
+                    fontSize: 14,
+                    textAlign: "justify",
+                  },
+                  strong: {
+                    color: Colors[colorScheme].text,
+                    fontWeight: "700",
+                    fontSize: 14,
+                  },
+                  em: {
+                    color: Colors[colorScheme].defaultIcon,
+                    fontStyle: "italic",
+                    fontSize: 14,
+                  },
+                  link: {
+                    color: Colors[colorScheme].tint,
+                    textDecorationLine: "underline",
+                    fontSize: 14,
+                  },
+                  blockquote: {
+                    backgroundColor: "transparent",
+                    borderLeftColor: Colors[colorScheme].tint,
+                    borderLeftWidth: 4,
+                    paddingLeft: 20,
+                    paddingVertical: 16,
+                    marginVertical: 24,
+                    fontStyle: "italic",
+                    fontSize: 14,
+                  },
+                  code_inline: {
+                    backgroundColor: Colors[colorScheme].tint + "15",
+                    color: Colors[colorScheme].tint,
+                    paddingHorizontal: 6,
+                    paddingVertical: 2,
+                    borderRadius: 4,
+                    fontSize: 14,
+                  },
+                }}
+              >
+                {article.source}
+              </Markdown>
             </View>
-          </View>
+          )}
         </View>
       </ScrollView>
 
@@ -623,7 +714,7 @@ export default function NewsArticleDetailScreen({
         visible={showFontSizePickerModal}
         onClose={() => setShowFontSizePickerModal(false)}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -631,126 +722,89 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  floatingHeader: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 100,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-    zIndex: 1000,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  floatingTitle: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '600',
-    marginHorizontal: 12,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  headerActionBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   scrollView: {
     flex: 1,
   },
   heroSection: {
     paddingHorizontal: 24,
-    paddingTop: 120,
     paddingBottom: 32,
+    paddingTop: 10,
   },
-  categoryBadge: {
-    alignSelf: 'flex-start',
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  headerText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 1,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    marginBottom: 20,
-  },
-  categoryText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
   },
   heroTitle: {
     fontSize: 32,
-    fontWeight: '900',
+    fontWeight: "900",
     lineHeight: 40,
     marginBottom: 24,
     letterSpacing: -0.8,
   },
   articleMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 32,
   },
   metaLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   authorAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 99,
+    justifyContent: "center",
+    alignItems: "center",
   },
   authorName: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: "600",
   },
   publishDate: {
-    fontSize: 12,
+    fontSize: 14,
     marginTop: 2,
   },
   metaRight: {},
   readTime: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   readTimeText: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: "500",
   },
   actionBar: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   actionButton: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 8,
     paddingVertical: 12,
     borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
+    borderWidth: 0.5,
   },
   actionText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   contentSection: {
     flex: 1,
@@ -762,40 +816,21 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   progressFill: {
-    height: '100%',
+    height: "100%",
     borderRadius: 2,
   },
   articleContent: {
     paddingHorizontal: 24,
-    paddingBottom: 40,
   },
-  articleFooter: {
-    marginHorizontal: 24,
-    paddingTop: 24,
-    borderTopWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  footerText: {
-    fontSize: 14,
-  },
-  footerActions: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  footerAction: {
-    padding: 8,
-  },
+
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 40,
   },
   loadingCard: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 20,
     padding: 40,
     borderRadius: 20,
@@ -806,23 +841,30 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 40,
   },
   errorTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 20,
     marginBottom: 8,
   },
   errorSubtitle: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 24,
+  },
+  footerContainer: {
+    flexDirection: "column",
+    borderTopWidth: 0.5,
+    paddingTop: 20,
+    paddingBottom: 40,
+    paddingHorizontal: 24,
   },
 });

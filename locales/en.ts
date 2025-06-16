@@ -43,6 +43,8 @@ export const en = {
   impressum: "Legal Notice",
   questionsAreBeingLoadedTitle: "Questions are being loaded!",
   questionsAreBeingLoadedMessage: "Depending on your internet connection, this may take a moment.",
+font : "font",
+  source: "Sources: ",
   
 
   // Navigation

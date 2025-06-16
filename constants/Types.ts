@@ -30,6 +30,9 @@ export type NewsArticlesType = {
   is_external_link: boolean;
   external_link_url?: string;
   read_time?: string;
+  author: string;
+  source: string;
+  scholar_type: number
 };
 
 // News
