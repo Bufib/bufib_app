@@ -63,7 +63,7 @@ export const ar = {
 
   // Questions
   categories: "فئات",
-  newQuestions: "أسئلة جديدة",
+  latestQuestions: "أسئلة جديدة",
 
   // Questionslinks
   rechtsfragen: "مسائل قانونية",

@@ -5,10 +5,10 @@ export const returnSize = (width: number, height: number): Sizes => {
   const isMedium = width < 380 && height > 650;
 
   return {
-    elementSize: isLarge ? 125 : isMedium ? 105 : 90,
-    fontSize: isLarge ? 13 : isMedium ? 11 : 10,
-    iconSize: isLarge ? 65 : isMedium ? 50 : 45,
-    imageSize: isLarge ? 300 : isMedium ? 260 : 230,
+    elementSize: isLarge ? 125 : isMedium ? 105 : 100,
+    fontSize: isLarge ? 13 : isMedium ? 11 : 11,
+    iconSize: isLarge ? 65 : isMedium ? 50 : 50,
+    imageSize: isLarge ? 300 : isMedium ? 260 : 240,
     gap: isLarge ? 30 : isMedium ? 20 : 15,
     emptyIconSize: isLarge ? 60 : isMedium ? 40 : 30,
     emptyTextSize: isLarge ? 20 : isMedium ? 16 : 14,

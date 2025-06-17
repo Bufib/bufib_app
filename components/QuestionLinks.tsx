@@ -45,7 +45,7 @@ export default function QuestionLinks() {
   }, []);
 
   return (
-   <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.categoriesContainer}>
         <View style={styles.categories}>
           {questionCategories.map((category, index) => (
@@ -142,7 +142,7 @@ export default function QuestionLinks() {
             type="titleSmall"
             style={styles.footerHeaderContainerText}
           >
-            {t("newQuestions")}
+            {t("latestQuestions")}
           </ThemedText>
         </View>
         <LatestQuestions />
@@ -243,6 +243,7 @@ const styles = StyleSheet.create({
   },
   footerHeaderContainerText: {
     paddingHorizontal: 5,
+    paddingBottom: 3,
   },
   askQuestionButton: {
     position: "absolute",

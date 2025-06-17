@@ -230,7 +230,10 @@ export default function HomeScreen() {
           >
             <ThemedText
               type="titleSmall"
-              style={[{ color: Colors.universal.third }, styles.titleShadow]}
+              style={[
+                { color: Colors.universal.third, paddingBottom: 3 },
+                styles.titleShadow,
+              ]}
             >
               {t("newsTitle")}
             </ThemedText>
@@ -311,7 +314,6 @@ const styles = StyleSheet.create({
   },
   scrollStyles: {
     padding: 15,
-
   },
   scrollContent: {
     gap: 40,

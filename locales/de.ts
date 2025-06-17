@@ -65,7 +65,7 @@ export const de = {
 
   // Questions
   categories: "Kategorien",
-  newQuestions: "Neuesten Fragen",
+  latestQuestions: "Neuste Fragen",
 
   // Questionslinks
   rechtsfragen: "Rechtsfragen",
