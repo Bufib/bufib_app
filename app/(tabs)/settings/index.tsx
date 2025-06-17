@@ -14,7 +14,8 @@ import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import Storage from "expo-sqlite/kv-store";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Appearance,
@@ -25,6 +26,8 @@ import {
   Text,
   useColorScheme,
   View,
+  Animated,
+  Easing,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -44,13 +47,25 @@ const Settings = () => {
   const hasInternet = useConnectionStatus();
   const logout = useLogout();
   const effectiveEnabled = getNotifications && permissionStatus === "granted";
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const { t } = useTranslation();
+  
+  // animate opacity on mount
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const handleDeleteSuccess = () => {
     clearSession(); // SignOut and remove session
     router.replace("/(tabs)/home/");
     Toast.show({
       type: "success",
-      text1: "Account erfolgreich gelöscht!",
+      text1: t("successDeletion"),
       text1Style: { fontWeight: "500" },
       topOffset: 60,
     });
@@ -93,172 +108,174 @@ const Settings = () => {
   };
 
   return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        { backgroundColor: Colors[colorScheme].background },
-      ]}
-      edges={["top"]}
-    >
-      <View style={styles.header}>
-        <ThemedText style={styles.headerTitle} type="title">
-          Einstellungen
-        </ThemedText>
-
-        <Pressable
-          onPress={isLoggedIn ? logout : () => router.push("/(auth)/login")}
-          style={({ pressed }) => [
-            styles.buttonContainer,
-            {
-              opacity: pressed ? 0.8 : 1,
-              transform: [{ scale: pressed ? 0.98 : 1 }],
-            },
-          ]}
-        >
-          <ThemedText style={[styles.loginButtonText]}>
-            {isLoggedIn ? "Abmelden" : "Anmelden"}
-          </ThemedText>
-        </Pressable>
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: Colors[colorScheme].background },
+        ]}
+        edges={["top"]}
       >
-        <NoInternet showToast={false} showUI={true} />
-        <View style={styles.section}>
-          {isLoggedIn ? (
-            <ThemedText style={styles.sectionTitle}>
-              Darstellung & Benachrichtigung
-            </ThemedText>
-          ) : (
-            <ThemedText style={styles.sectionTitle}>Darstellung</ThemedText>
-          )}
-
-          <View style={styles.settingRow}>
-            <View>
-              <ThemedText style={styles.settingTitle}>Dunkelmodus</ThemedText>
-              <ThemedText style={styles.settingSubtitle}>
-                Dunkles Erscheinungsbild aktivieren
-              </ThemedText>
-            </View>
-            <Switch
-              value={isDarkMode}
-              onValueChange={toggleDarkMode}
-              trackColor={{
-                false: Colors.light.trackColor,
-                true: Colors.dark.trackColor,
-              }}
-              thumbColor={Colors[colorScheme].thumbColor}
-            />
-          </View>
-          <View style={styles.settingRow}>
-            <View>
-              <ThemedText style={styles.settingTitle}>
-                Benachrichtigungen
-              </ThemedText>
-              <ThemedText style={styles.settingSubtitle}>
-                Push-Benachrichtigungen erhalten
-              </ThemedText>
-            </View>
-            <Switch
-              value={effectiveEnabled}
-              onValueChange={() => {
-                if (!hasInternet) return;
-                toggleGetNotifications();
-              }}
-              trackColor={{
-                false: Colors.light.trackColor,
-                true: Colors.dark.trackColor,
-              }}
-              thumbColor={
-                isDarkMode ? Colors.light.thumbColor : Colors.dark.thumbColor
-              }
-            />
-          </View>
-          <LanguageSwitcher />
-        </View>
-
-        {isLoggedIn && (
-          <View style={styles.section}>
-            <ThemedText style={styles.sectionTitle}>Account</ThemedText>
-
-            <Pressable
-              style={styles.settingButton}
-              onPress={() => router.push("/(auth)/forgotPassword")}
-            >
-              <Text style={styles.settingButtonText}>Passwort ändern</Text>
-            </Pressable>
-
-            <Pressable
-              style={[styles.settingButton, styles.deleteButton]}
-              onPress={() => setOpenDeleteModal(true)}
-            >
-              <ThemedText
-                style={[styles.settingButtonText, styles.deleteButtonText]}
-              >
-                Account löschen
-              </ThemedText>
-            </Pressable>
-          </View>
-        )}
-
-        <Pressable
-          style={styles.paypalButton}
-          onPress={() => payPalLink && handleOpenExternalUrl(payPalLink)}
-        >
-          <Image
-            source={require("@/assets/images/paypal.png")}
-            style={styles.paypalImage}
-          />
-        </Pressable>
-
-        <View style={styles.infoSection}>
-          <ThemedText style={styles.questionCount}>
-            Fragen in der Datenbank: {questionCount}
+        <View style={styles.header}>
+          <ThemedText style={styles.headerTitle} type="title">
+            Einstellungen
           </ThemedText>
 
-          {isAdmin && isLoggedIn && (
-            <>
-              <ThemedText style={styles.versionText}>
-                Datenbank-version: {version}
-              </ThemedText>
-
-              <ThemedText style={styles.versionText}>
-                App-Version: {Constants.expoConfig?.version}
-              </ThemedText>
-            </>
-          )}
-        </View>
-
-        <View style={styles.footer}>
           <Pressable
-            onPress={() =>
-              handleOpenExternalUrl(
-                "https://bufib.github.io/Islam-Fragen-App-rechtliches/datenschutz"
-              )
-            }
+            onPress={isLoggedIn ? logout : () => router.push("/(auth)/login")}
+            style={({ pressed }) => [
+              styles.buttonContainer,
+              {
+                opacity: pressed ? 0.8 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              },
+            ]}
           >
-            <ThemedText style={styles.footerLink}>Datenschutz</ThemedText>
-          </Pressable>
-
-          <Pressable onPress={() => router.push("/settings/about")}>
-            <ThemedText style={styles.footerLink}>Über die App</ThemedText>
-          </Pressable>
-
-          <Pressable onPress={() => router.push("/settings/impressum")}>
-            <ThemedText style={styles.footerLink}>Impressum</ThemedText>
+            <ThemedText style={[styles.loginButtonText]}>
+              {isLoggedIn ? "Abmelden" : "Anmelden"}
+            </ThemedText>
           </Pressable>
         </View>
-      </ScrollView>
 
-      <DeleteUserModal
-        isVisible={openDeleteModal}
-        onClose={() => setOpenDeleteModal(false)}
-        onDeleteSuccess={handleDeleteSuccess}
-        serverUrl="https://ygtlsiifupyoepxfamcn.supabase.co/functions/v1/delete-account"
-      />
-    </SafeAreaView>
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          <NoInternet showToast={false} showUI={true} />
+          <View style={styles.section}>
+            {isLoggedIn ? (
+              <ThemedText style={styles.sectionTitle}>
+                Darstellung & Benachrichtigung
+              </ThemedText>
+            ) : (
+              <ThemedText style={styles.sectionTitle}>Darstellung</ThemedText>
+            )}
+
+            <View style={styles.settingRow}>
+              <View>
+                <ThemedText style={styles.settingTitle}>Dunkelmodus</ThemedText>
+                <ThemedText style={styles.settingSubtitle}>
+                  Dunkles Erscheinungsbild aktivieren
+                </ThemedText>
+              </View>
+              <Switch
+                value={isDarkMode}
+                onValueChange={toggleDarkMode}
+                trackColor={{
+                  false: Colors.light.trackColor,
+                  true: Colors.dark.trackColor,
+                }}
+                thumbColor={Colors[colorScheme].thumbColor}
+              />
+            </View>
+            <View style={styles.settingRow}>
+              <View>
+                <ThemedText style={styles.settingTitle}>
+                  Benachrichtigungen
+                </ThemedText>
+                <ThemedText style={styles.settingSubtitle}>
+                  Push-Benachrichtigungen erhalten
+                </ThemedText>
+              </View>
+              <Switch
+                value={effectiveEnabled}
+                onValueChange={() => {
+                  if (!hasInternet) return;
+                  toggleGetNotifications();
+                }}
+                trackColor={{
+                  false: Colors.light.trackColor,
+                  true: Colors.dark.trackColor,
+                }}
+                thumbColor={
+                  isDarkMode ? Colors.light.thumbColor : Colors.dark.thumbColor
+                }
+              />
+            </View>
+            <LanguageSwitcher />
+          </View>
+
+          {isLoggedIn && (
+            <View style={styles.section}>
+              <ThemedText style={styles.sectionTitle}>Account</ThemedText>
+
+              <Pressable
+                style={styles.settingButton}
+                onPress={() => router.push("/(auth)/forgotPassword")}
+              >
+                <Text style={styles.settingButtonText}>Passwort ändern</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.settingButton, styles.deleteButton]}
+                onPress={() => setOpenDeleteModal(true)}
+              >
+                <ThemedText
+                  style={[styles.settingButtonText, styles.deleteButtonText]}
+                >
+                  Account löschen
+                </ThemedText>
+              </Pressable>
+            </View>
+          )}
+
+          <Pressable
+            style={styles.paypalButton}
+            onPress={() => payPalLink && handleOpenExternalUrl(payPalLink)}
+          >
+            <Image
+              source={require("@/assets/images/paypal.png")}
+              style={styles.paypalImage}
+            />
+          </Pressable>
+
+          <View style={styles.infoSection}>
+            <ThemedText style={styles.questionCount}>
+              Fragen in der Datenbank: {questionCount}
+            </ThemedText>
+
+            {isAdmin && isLoggedIn && (
+              <>
+                <ThemedText style={styles.versionText}>
+                  Datenbank-version: {version}
+                </ThemedText>
+
+                <ThemedText style={styles.versionText}>
+                  App-Version: {Constants.expoConfig?.version}
+                </ThemedText>
+              </>
+            )}
+          </View>
+
+          <View style={styles.footer}>
+            <Pressable
+              onPress={() =>
+                handleOpenExternalUrl(
+                  "https://bufib.github.io/Islam-Fragen-App-rechtliches/datenschutz"
+                )
+              }
+            >
+              <ThemedText style={styles.footerLink}>Datenschutz</ThemedText>
+            </Pressable>
+
+            <Pressable onPress={() => router.push("/settings/about")}>
+              <ThemedText style={styles.footerLink}>Über die App</ThemedText>
+            </Pressable>
+
+            <Pressable onPress={() => router.push("/settings/impressum")}>
+              <ThemedText style={styles.footerLink}>Impressum</ThemedText>
+            </Pressable>
+          </View>
+        </ScrollView>
+
+        <DeleteUserModal
+          isVisible={openDeleteModal}
+          onClose={() => setOpenDeleteModal(false)}
+          onDeleteSuccess={handleDeleteSuccess}
+          serverUrl="https://ygtlsiifupyoepxfamcn.supabase.co/functions/v1/delete-account"
+        />
+      </SafeAreaView>
+    </Animated.View>
   );
 };
 

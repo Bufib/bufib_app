@@ -16,7 +16,6 @@ export const ar = {
   listen: "يستمع",
   download: "تحميل",
 
-
   // General
   retry: "إعادة المحاولة",
   errorLoadingData: "حدث خطأ أثناء تحميل البيانات",
@@ -152,6 +151,8 @@ export const ar = {
   // No internet
   noInternetTitle: "لا يوجد اتصال بالإنترنت",
   noInternetMessage: "قد تكون بعض الميزات غير متاحة!",
+
+  successDeletion: "تم حذف الحساب بنجاح!",
 } as const;
 
 export default ar;

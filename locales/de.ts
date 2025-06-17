@@ -48,6 +48,8 @@ export const de = {
   font: "Schriftgröße",
   source: "Quellen: ",
   copied: "Kopiert!",
+
+
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -151,6 +153,9 @@ export const de = {
   // No internet
   noInternetTitle: "Keine Internetverbindung",
   noInternetMessage: "Einige Funktionen sind möglicherweise nicht verfügbar!",
+
+  // Account
+  successDeletion: "Account erfolgreich gelöscht!"
 } as const;
 
 export default de;

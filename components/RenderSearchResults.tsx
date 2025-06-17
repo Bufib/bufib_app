@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   useColorScheme,
   TouchableOpacity,
+  Animated,
+  Easing,
 } from "react-native";
 import debounce from "lodash.debounce";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -40,6 +42,8 @@ const SearchScreen = () => {
   const podcastQuery = useSearchPodcasts(searchTerm);
   const newsArticleSearchQuery = useSearchNewsArticles(searchTerm); // Added
   const { t } = useTranslation();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
   const performManualSearch = async (term: string) => {
     if (term.trim().length === 0) {
       setQuestionAndPrayerResults([]);
@@ -81,6 +85,16 @@ const SearchScreen = () => {
       setManualLoading(false);
     }
   };
+
+  // animate opacity on mount
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const debouncedManualSearch = useCallback(
     debounce(performManualSearch, 300),
@@ -265,51 +279,58 @@ const SearchScreen = () => {
   };
 
   return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        { backgroundColor: Colors[colorScheme].background },
-      ]}
-      edges={["top"]}
+    <Animated.View
+      style={{
+        flex: 1,
+        opacity: fadeAnim,
+      }}
     >
-      <TextInput
+      <SafeAreaView
         style={[
-          styles.input,
-          {
-            backgroundColor: Colors[colorScheme].contrast,
-            color: Colors[colorScheme].text,
-          },
+          styles.container,
+          { backgroundColor: Colors[colorScheme].background },
         ]}
-        placeholder={t("searchPlaceholder")}
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-        autoCorrect={false}
-        autoCapitalize="none"
-      />
-
-      {isLoading && (
-        <ActivityIndicator
-          style={{ marginVertical: 12 }}
-          size="small"
-          color="#555"
+        edges={["top"]}
+      >
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: Colors[colorScheme].contrast,
+              color: Colors[colorScheme].text,
+            },
+          ]}
+          placeholder={t("searchPlaceholder")}
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          autoCorrect={false}
+          autoCapitalize="none"
         />
-      )}
 
-      <FlatList
-        data={combinedDisplayResults}
-        keyExtractor={(item, index) => item.renderId}
-        renderItem={renderItem}
-        ListEmptyComponent={
-          !isLoading && searchTerm.trim().length > 0 ? (
-            <ThemedText style={styles.emptyText}>
-              {t("noSearchResults")}
-            </ThemedText>
-          ) : null
-        }
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      />
-    </SafeAreaView>
+        {isLoading && (
+          <ActivityIndicator
+            style={{ marginVertical: 12 }}
+            size="small"
+            color="#555"
+          />
+        )}
+
+        <FlatList
+          data={combinedDisplayResults}
+          keyExtractor={(item, index) => item.renderId}
+          renderItem={renderItem}
+          ListEmptyComponent={
+            !isLoading && searchTerm.trim().length > 0 ? (
+              <ThemedText style={styles.emptyText}>
+                {t("noSearchResults")}
+              </ThemedText>
+            ) : null
+          }
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        />
+      </SafeAreaView>
+    </Animated.View>
   );
 };
 

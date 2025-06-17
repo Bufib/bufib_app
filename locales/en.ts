@@ -16,8 +16,6 @@ export const en = {
   listen: "LISTEN",
   download: "Download",
 
-
-
   // General
   retry: "Retry",
   errorLoadingData: "There was an error loading the data",
@@ -44,12 +42,11 @@ export const en = {
   about: "About",
   impressum: "Legal Notice",
   questionsAreBeingLoadedTitle: "Questions are being loaded!",
-  questionsAreBeingLoadedMessage: "Depending on your internet connection, this may take a moment.",
-font : "font",
+  questionsAreBeingLoadedMessage:
+    "Depending on your internet connection, this may take a moment.",
+  font: "font",
   source: "Sources: ",
   copied: "Copied!",
-
-  
 
   // Navigation
   knowledge: "Knowledge",
@@ -155,6 +152,9 @@ font : "font",
   // No internet
   noInternetTitle: "No Internet Connection",
   noInternetMessage: "Some features may not be available!",
+
+  // Account
+  successDeletion: "Account deleted successfully!",
 } as const;
 
 export default en;
