@@ -179,6 +179,7 @@ const styles = StyleSheet.create({
   newsItem: {
     padding: 15,
     borderRadius: 8,
+    marginBottom: 20,
     ...Platform.select({
       ios: {
         shadowOffset: {

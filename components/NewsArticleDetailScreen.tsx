@@ -360,7 +360,6 @@ export default function NewsArticleDetailScreen({
                   fontSize: fontSize,
                   lineHeight: lineHeight * 1.6,
                   marginBottom: 20,
-                  textAlign: "justify",
                 },
                 strong: {
                   color: Colors[colorScheme].text,
@@ -584,7 +583,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   articleContent: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
   },
 
   loadingContainer: {

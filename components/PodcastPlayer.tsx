@@ -816,6 +816,7 @@ import {
   Text,
   TouchableOpacity,
   useColorScheme,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -839,7 +840,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   const [pulseAnim] = useState(new Animated.Value(1));
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(50));
-
+  const { width } = useWindowDimensions();
   const { refreshTriggerFavorites, triggerRefreshFavorites } =
     useRefreshFavorites();
   const colorScheme = useColorScheme() || "light";
@@ -1117,9 +1118,34 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
 
               {/* Podcast Info */}
               <View style={styles.podcastInfo}>
-                <Text style={styles.podcastTitle} numberOfLines={2}>
-                  {podcast.title}
-                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: 10,
+                    marginBottom: 20
+                  }}
+                >
+                  <Text style={styles.podcastTitle} numberOfLines={2}>
+                    {podcast.title}
+                  </Text>
+                  {/* Favorite Button */}
+                  <TouchableOpacity
+                    onPress={onPressToggleFavorite}
+                    style={styles.favoriteButton}
+                  >
+                    <AntDesign
+                      name={isFavorite ? "star" : "staro"}
+                      size={25}
+                      color={
+                        isFavorite
+                          ? Colors.universal.favorite
+                          : Colors[colorScheme].defaultIcon
+                      }
+                    />
+                  </TouchableOpacity>
+                </View>
                 <Text style={styles.podcastDescription} numberOfLines={3}>
                   {podcast.description}
                 </Text>
@@ -1133,22 +1159,6 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
                   </View>
                 )}
               </View>
-
-              {/* Favorite Button */}
-              <TouchableOpacity
-                onPress={onPressToggleFavorite}
-                style={styles.favoriteButton}
-              >
-                <AntDesign
-                  name={isFavorite ? "star" : "staro"}
-                  size={25}
-                  color={
-                    isFavorite
-                      ? Colors.universal.favorite
-                      : Colors[colorScheme].defaultIcon
-                  }
-                />
-              </TouchableOpacity>
             </View>
 
             {/* Error Display */}
@@ -1188,9 +1198,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
                   style={styles.downloadButtonGradient}
                 >
                   <Ionicons name="download" size={24} color="#fff" />
-                  <Text style={styles.downloadButtonText}>
-                    {t("download")}
-                  </Text>
+                  <Text style={styles.downloadButtonText}>{t("download")}</Text>
                 </LinearGradient>
               </TouchableOpacity>
             )}
@@ -1408,6 +1416,7 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   podcastInfo: {
+    flexDirection: "column",
     alignItems: "center",
     paddingHorizontal: 20,
   },
@@ -1416,7 +1425,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
     textAlign: "center",
-    marginBottom: 8,
     textShadowColor: "rgba(0,0,0,0.3)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
@@ -1443,13 +1451,9 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   favoriteButton: {
-    position: "absolute",
-    top: 80,
-    right: 35,
     backgroundColor: "rgba(255,255,255,0.2)",
     padding: 12,
     borderRadius: 25,
-    backdropFilter: "blur(10px)",
   },
   errorContainer: {
     flexDirection: "row",

@@ -1,8 +1,10 @@
 // src/screens/LanguageSelection.tsx
 import React from "react";
-import { View, Button, StyleSheet, Text } from "react-native";
+import { View, Button, StyleSheet, Text, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ThemedText } from "./ThemedText";
+import { Colors } from "@/constants/Colors";
 
 const LANGUAGES = [
   { code: "en", label: "English" },
@@ -19,7 +21,11 @@ export default function LanguageSelection() {
       <Text style={styles.title}>{t("chooseLanguage")}</Text>
       {LANGUAGES.map(({ code, label }) => (
         <View key={code} style={styles.button}>
-          <Button title={label} onPress={() => setAppLanguage(code)} />
+          <Pressable onPress={() => setAppLanguage(code)}>
+            <ThemedText style={{ fontSize: 18, color: Colors.universal.link }}>
+              {label}
+            </ThemedText>
+          </Pressable>
         </View>
       ))}
     </View>
@@ -39,5 +45,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 8,
+    alignItems: "center"
   },
 });

@@ -6,6 +6,7 @@ import Markdown from "react-native-markdown-display";
 import { Colors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
 import { Stack } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function impressum() {
   const impressum = `
@@ -46,40 +47,23 @@ export default function impressum() {
   const { t } = useTranslation();
 
   return (
-    <ScrollView
-      style={[
-        styles.scrollStyle,
-        { backgroundColor: Colors[colorScheme].background },
-      ]}
-      contentContainerStyle={styles.scrollContent}
-      nestedScrollEnabled={true}
-      contentInsetAdjustmentBehavior="automatic"
-    >
-      <Stack.Screen
-        options={{
-          headerTitle: t("impressum"),
-        }}
-      />
-
-      <View style={styles.innerContainer}>
-        <Markdown
-          style={{
-            body: {
-              textAlign: "justify",
-              fontSize: 16,
-              lineHeight: 40,
-              color: Colors[colorScheme].text,
-            },
-            heading1: {
-              fontSize: 27,
-              lineHeight: 40,
-              color: Colors[colorScheme].text,
-            },
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+      <ScrollView
+        style={[
+          styles.scrollStyle,
+          { backgroundColor: Colors[colorScheme].background },
+        ]}
+        contentContainerStyle={styles.scrollContent}
+        nestedScrollEnabled={true}
+        contentInsetAdjustmentBehavior="automatic"
+      >
+        <Stack.Screen
+          options={{
+            headerTitle: t("impressum"),
           }}
-        >
-          {impressum}
-        </Markdown>
-        <ThemedView style={{ flexDirection: "row", gap: 5 }}>
+        />
+
+        <View style={styles.innerContainer}>
           <Markdown
             style={{
               body: {
@@ -95,28 +79,47 @@ export default function impressum() {
               },
             }}
           >
-            {quelle}
+            {impressum}
           </Markdown>
-          <Markdown
-            style={{
-              body: {
-                textAlign: "justify",
-                fontSize: 18,
-                lineHeight: 40,
-                color: "#93C024",
-              },
-              heading1: {
-                fontSize: 27,
-                lineHeight: 40,
-                color: Colors[colorScheme].text,
-              },
-            }}
-          >
-            {link}
-          </Markdown>
-        </ThemedView>
-      </View>
-    </ScrollView>
+          <ThemedView style={{ flexDirection: "row", gap: 5 }}>
+            <Markdown
+              style={{
+                body: {
+                  textAlign: "justify",
+                  fontSize: 16,
+                  lineHeight: 40,
+                  color: Colors[colorScheme].text,
+                },
+                heading1: {
+                  fontSize: 27,
+                  lineHeight: 40,
+                  color: Colors[colorScheme].text,
+                },
+              }}
+            >
+              {quelle}
+            </Markdown>
+            <Markdown
+              style={{
+                body: {
+                  textAlign: "justify",
+                  fontSize: 18,
+                  lineHeight: 40,
+                  color: "#93C024",
+                },
+                heading1: {
+                  fontSize: 27,
+                  lineHeight: 40,
+                  color: Colors[colorScheme].text,
+                },
+              }}
+            >
+              {link}
+            </Markdown>
+          </ThemedView>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

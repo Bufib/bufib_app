@@ -19,6 +19,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -88,7 +89,9 @@ export default function HomeScreen() {
 
         {articles.length > 0 && (
           <View style={styles.newsArticleContainer}>
-            <ThemedText type="titleSmall">{t("newsArticlesTitle")}</ThemedText>
+            <ThemedText type="titleSmall" style={styles.titleShadow}>
+              {t("newsArticlesTitle")}
+            </ThemedText>
 
             {newsArticlesIsLoading && (
               <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
@@ -157,7 +160,9 @@ export default function HomeScreen() {
         {/* //!-------- Podcasts Section -------- */}
         {podcasts.length > 0 && (
           <View style={styles.podcastContainer}>
-            <ThemedText type="titleSmall">{t("podcastsTitle")}</ThemedText>
+            <ThemedText type="titleSmall" style={styles.titleShadow}>
+              {t("podcastsTitle")}
+            </ThemedText>
 
             {podcastsLoading && (
               <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
@@ -225,7 +230,7 @@ export default function HomeScreen() {
           >
             <ThemedText
               type="titleSmall"
-              style={{ color: Colors.universal.third }}
+              style={[{ color: Colors.universal.third }, styles.titleShadow]}
             >
               {t("newsTitle")}
             </ThemedText>
@@ -306,6 +311,7 @@ const styles = StyleSheet.create({
   },
   scrollStyles: {
     padding: 15,
+
   },
   scrollContent: {
     gap: 40,
@@ -339,5 +345,20 @@ const styles = StyleSheet.create({
   newsContainer: {
     flex: 1,
     gap: 15,
+  },
+  titleShadow: {
+    ...Platform.select({
+      ios: {
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
 });

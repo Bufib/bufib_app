@@ -318,8 +318,8 @@ export default function tasbih() {
       >
         {/* Header */}
         <View style={styles.headerContainer}>
-          <View style={{alignSelf: "flex-start"}}>
-          <HeaderLeftBackButton />
+          <View style={{ alignSelf: "flex-start" }}>
+            <HeaderLeftBackButton />
           </View>
           <ThemedText style={styles.headerTitle} type="title">
             {t("tasbih")}
@@ -358,7 +358,7 @@ export default function tasbih() {
                   {t(preset.name)}
                 </ThemedText>
                 <ThemedText style={styles.prayerCardDescription}>
-                  {t(preset.description)}
+                  {t(preset.description || "")}
                 </ThemedText>
 
                 {preset.id !== "free" && (
@@ -410,6 +410,7 @@ export default function tasbih() {
                   key={`${item.dhikrId}-${index}`}
                   style={[
                     styles.presetProgressItem,
+                    {borderColor: Colors[colorScheme].border, backgroundColor: Colors.universal.grayedOut},
                     isStepActive && styles.presetProgressItemActive,
                     isStepCompleted && styles.presetProgressItemCompleted,
                   ]}
@@ -630,13 +631,16 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    textAlign: "center"
+    textAlign: "center",
   },
 
   cardsContainer: {
     padding: 10,
   },
-  cardsContent: {},
+  cardsContent: {
+    paddingRight: 20
+
+  },
   prayerCard: {
     height: 200,
     width: 170,
@@ -679,14 +683,13 @@ const styles = StyleSheet.create({
   presetProgressContainer: {},
   presetProgressItem: {
     flexShrink: 1,
-    paddingVertical: 6,
+    paddingVertical: 8,
     paddingHorizontal: 8,
     marginHorizontal: 4,
-    backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 8,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "transparent",
+
   },
   presetProgressItemActive: {
     backgroundColor: Colors.universal.primary,
@@ -707,7 +710,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   tabsContent: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     alignItems: "center",
   },
   tab: {
@@ -716,6 +719,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     borderRadius: 20,
     backgroundColor: "rgba(102,204,138,1)",
+
   },
   activeTab: {
     backgroundColor: Colors.universal.primary,
