@@ -48,7 +48,7 @@ export const de = {
   font: "Schriftgröße",
   source: "Quellen: ",
   copied: "Kopiert!",
-
+  loading: "Daten werden geladen!",
 
   // Navigation
   knowledge: "Wissen",
@@ -158,7 +158,33 @@ export const de = {
   noInternetMessage: "Einige Funktionen sind möglicherweise nicht verfügbar!",
 
   // Account
-  successDeletion: "Account erfolgreich gelöscht!"
+  successDeletion: "Account erfolgreich gelöscht!",
+
+  // Settings
+  logout: "Abmelden",
+  login: "Anmelden",
+  displayAndNotifications: "Darstellung & Benachrichtigung",
+  display: "Darstellung",
+  darkMode: "Dunkelmodus",
+  enableDarkMode: "Dunkles Erscheinungsbild aktivieren",
+  notifications: "Benachrichtigungen",
+  receivePushNotifications: "Push-Benachrichtigungen erhalten",
+  account: "Account",
+  changePassword: "Passwort ändern",
+  deleteAccount: "Account löschen",
+  questionsInDatabase: "Fragen in der Datenbank: {{count}}",
+  databaseVersion: "Datenbank-Version: {{version}}",
+  appVersion: "App-Version: {{version}}",
+  dataPrivacy: "Datenschutz",
+  aboutTheApp: "Über die App",
+  imprint: "Impressum",
+
+  // Language selector
+  language: "Sprache",
+  selectAppLanguage: "App-Sprache wählen",
+  deutsch: "Deutsch",
+  english: "English",
+  arabic: "العربية",
 } as const;
 
 export default de;

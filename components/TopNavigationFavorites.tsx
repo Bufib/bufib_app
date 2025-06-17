@@ -51,7 +51,15 @@ export default function TopNavigationFavorites() {
   }, []);
   return (
     <>
-      <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            opacity: fadeAnim,
+            backgroundColor: Colors[colorScheme].background,
+          },
+        ]}
+      >
         <SafeAreaView
           style={[{ backgroundColor: Colors[colorScheme].contrast }]}
           edges={["top"]}

@@ -45,7 +45,7 @@ export default function QuestionLinks() {
   }, []);
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background }]}>
       <View style={styles.categoriesContainer}>
         <View style={styles.categories}>
           {questionCategories.map((category, index) => (

@@ -3,6 +3,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { NoInternet } from "@/components/NoInternet";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
 import { useAuthStore } from "@/stores/authStore";
@@ -14,7 +15,7 @@ import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import Storage from "expo-sqlite/kv-store";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -39,7 +40,7 @@ const Settings = () => {
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const [payPalLink, setPayPalLink] = useState<string | null>("");
   const [version, setVersion] = useState<string | null>("");
-  const [questionCount, setQuestionCount] = useState<number | null>(0);
+  const [questionCount, setQuestionCount] = useState<number>(0);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const { getNotifications, toggleGetNotifications, permissionStatus } =
     useNotificationStore();
@@ -49,7 +50,7 @@ const Settings = () => {
   const effectiveEnabled = getNotifications && permissionStatus === "granted";
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const { t } = useTranslation();
-  
+  const { isArabic } = useLanguage();
   // animate opacity on mount
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -108,7 +109,12 @@ const Settings = () => {
   };
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <Animated.View
+      style={[
+        styles.container,
+        { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background },
+      ]}
+    >
       <SafeAreaView
         style={[
           styles.container,
@@ -116,9 +122,15 @@ const Settings = () => {
         ]}
         edges={["top"]}
       >
-        <View style={styles.header}>
-          <ThemedText style={styles.headerTitle} type="title">
-            Einstellungen
+        <View style={[styles.header, isArabic() && styles.rtl]}>
+          <ThemedText
+            style={[
+              styles.headerTitle,
+              isArabic() && { textAlign: "right", paddingRight: 15 },
+            ]}
+            type="title"
+          >
+            {t("settings")}
           </ThemedText>
 
           <Pressable
@@ -132,7 +144,7 @@ const Settings = () => {
             ]}
           >
             <ThemedText style={[styles.loginButtonText]}>
-              {isLoggedIn ? "Abmelden" : "Anmelden"}
+              {isLoggedIn ? t("logout") : t("login")}
             </ThemedText>
           </Pressable>
         </View>
@@ -143,19 +155,23 @@ const Settings = () => {
         >
           <NoInternet showToast={false} showUI={true} />
           <View style={styles.section}>
-            {isLoggedIn ? (
-              <ThemedText style={styles.sectionTitle}>
-                Darstellung & Benachrichtigung
-              </ThemedText>
-            ) : (
-              <ThemedText style={styles.sectionTitle}>Darstellung</ThemedText>
-            )}
-
-            <View style={styles.settingRow}>
+            <View style={[styles.settingRow, isArabic() && styles.rtl]}>
               <View>
-                <ThemedText style={styles.settingTitle}>Dunkelmodus</ThemedText>
-                <ThemedText style={styles.settingSubtitle}>
-                  Dunkles Erscheinungsbild aktivieren
+                <ThemedText
+                  style={[
+                    styles.settingTitle,
+                    isArabic() && { textAlign: "right" },
+                  ]}
+                >
+                  {t("darkMode")}
+                </ThemedText>
+                <ThemedText
+                  style={[
+                    styles.settingSubtitle,
+                    isArabic() && { textAlign: "right" },
+                  ]}
+                >
+                  {t("enableDarkMode")}
                 </ThemedText>
               </View>
               <Switch
@@ -168,13 +184,23 @@ const Settings = () => {
                 thumbColor={Colors[colorScheme].thumbColor}
               />
             </View>
-            <View style={styles.settingRow}>
+            <View style={[styles.settingRow, isArabic() && styles.rtl]}>
               <View>
-                <ThemedText style={styles.settingTitle}>
-                  Benachrichtigungen
+                <ThemedText
+                  style={[
+                    styles.settingTitle,
+                    isArabic() && { textAlign: "right" },
+                  ]}
+                >
+                  {t("notifications")}
                 </ThemedText>
-                <ThemedText style={styles.settingSubtitle}>
-                  Push-Benachrichtigungen erhalten
+                <ThemedText
+                  style={[
+                    styles.settingSubtitle,
+                    isArabic() && { textAlign: "right" },
+                  ]}
+                >
+                  {t("receivePushNotifications")}
                 </ThemedText>
               </View>
               <Switch
@@ -197,13 +223,22 @@ const Settings = () => {
 
           {isLoggedIn && (
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Account</ThemedText>
+              <ThemedText
+                style={[
+                  styles.sectionTitle,
+                  isArabic() && { textAlign: "right" },
+                ]}
+              >
+                {t("account")}
+              </ThemedText>
 
               <Pressable
                 style={styles.settingButton}
                 onPress={() => router.push("/(auth)/forgotPassword")}
               >
-                <Text style={styles.settingButtonText}>Passwort ändern</Text>
+                <Text style={[styles.settingButtonText]}>
+                  {t("changePassword")}
+                </Text>
               </Pressable>
 
               <Pressable
@@ -213,7 +248,7 @@ const Settings = () => {
                 <ThemedText
                   style={[styles.settingButtonText, styles.deleteButtonText]}
                 >
-                  Account löschen
+                  {t("deleteAccount")}
                 </ThemedText>
               </Pressable>
             </View>
@@ -230,24 +265,44 @@ const Settings = () => {
           </Pressable>
 
           <View style={styles.infoSection}>
-            <ThemedText style={styles.questionCount}>
-              Fragen in der Datenbank: {questionCount}
+            <ThemedText
+              style={[
+                styles.questionCount,
+                isArabic() && { textAlign: "right" },
+              ]}
+            >
+              {t("questionsInDatabase", { count: questionCount })}
             </ThemedText>
 
             {isAdmin && isLoggedIn && (
               <>
-                <ThemedText style={styles.versionText}>
-                  Datenbank-version: {version}
+                <ThemedText
+                  style={[
+                    styles.versionText,
+                    isArabic() && { textAlign: "right" },
+                  ]}
+                >
+                  {t("databaseVersion", { version: version })}
                 </ThemedText>
 
-                <ThemedText style={styles.versionText}>
-                  App-Version: {Constants.expoConfig?.version}
+                <ThemedText
+                  style={[
+                    styles.versionText,
+                    isArabic() && { textAlign: "right" },
+                  ]}
+                >
+                  {t("appVersion", { version: Constants.expoConfig?.version })}
                 </ThemedText>
               </>
             )}
           </View>
 
-          <View style={styles.footer}>
+          <View
+            style={[
+              styles.footer,
+              isArabic() && { flexDirection: "row-reverse" },
+            ]}
+          >
             <Pressable
               onPress={() =>
                 handleOpenExternalUrl(
@@ -255,15 +310,36 @@ const Settings = () => {
                 )
               }
             >
-              <ThemedText style={styles.footerLink}>Datenschutz</ThemedText>
+              <ThemedText
+                style={[
+                  styles.footerLink,
+                  isArabic() && { textAlign: "right" },
+                ]}
+              >
+                {t("dataPrivacy")}
+              </ThemedText>
             </Pressable>
 
             <Pressable onPress={() => router.push("/settings/about")}>
-              <ThemedText style={styles.footerLink}>Über die App</ThemedText>
+              <ThemedText
+                style={[
+                  styles.footerLink,
+                  isArabic() && { textAlign: "right" },
+                ]}
+              >
+                {t("aboutTheApp")}
+              </ThemedText>
             </Pressable>
 
             <Pressable onPress={() => router.push("/settings/impressum")}>
-              <ThemedText style={styles.footerLink}>Impressum</ThemedText>
+              <ThemedText
+                style={[
+                  styles.footerLink,
+                  isArabic() && { textAlign: "right" },
+                ]}
+              >
+                {t("imprint")}
+              </ThemedText>
             </Pressable>
           </View>
         </ScrollView>
@@ -295,7 +371,7 @@ const styles = StyleSheet.create({
   headerTitle: {},
   loginButton: {
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingLeft: 15,
   },
   buttonContainer: {
     paddingRight: 15,
@@ -384,6 +460,10 @@ const styles = StyleSheet.create({
   footerLink: {
     color: Colors.universal.link,
     fontSize: 16,
+  },
+  // New RTL style
+  rtl: {
+    flexDirection: "row-reverse",
   },
 });
 

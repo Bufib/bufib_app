@@ -47,6 +47,7 @@ export const en = {
   font: "font",
   source: "Sources: ",
   copied: "Copied!",
+  loading: "Daten is being loaded!",
 
   // Navigation
   knowledge: "Knowledge",
@@ -158,6 +159,32 @@ export const en = {
 
   // Account
   successDeletion: "Account deleted successfully!",
+
+  // Settings
+  logout: "Log out",
+  login: "Log in",
+  displayAndNotifications: "Display & Notifications",
+  display: "Display",
+  darkMode: "Dark Mode",
+  enableDarkMode: "Activate dark appearance",
+  notifications: "Notifications",
+  receivePushNotifications: "Receive push notifications",
+  account: "Account",
+  changePassword: "Change Password",
+  deleteAccount: "Delete Account",
+  questionsInDatabase: "Questions in database: {{count}}",
+  databaseVersion: "Database version: {{version}}",
+  appVersion: "App Version: {{version}}",
+  dataPrivacy: "Data Privacy",
+  aboutTheApp: "About the App",
+  imprint: "Imprint",
+
+  // Language selector
+  language: "Language",
+  selectAppLanguage: "Select app language",
+  deutsch: "Deutsch",
+  english: "English",
+  arabic: "العربية",
 } as const;
 
 export default en;

@@ -47,6 +47,7 @@ export const ar = {
   font: "الخط",
   source: "مصادر",
   copied: "منقول",
+  loading: "جارٍ تحميل البيانات",
 
   // Navigation
   knowledge: "معرفة",
@@ -157,6 +158,32 @@ export const ar = {
   noInternetMessage: "قد تكون بعض الميزات غير متاحة!",
 
   successDeletion: "تم حذف الحساب بنجاح!",
+
+  // Settings
+  logout: "تسجيل الخروج",
+  login: "تسجيل الدخول",
+  displayAndNotifications: "العرض والإشعارات",
+  display: "العرض",
+  darkMode: "الوضع الداكن",
+  enableDarkMode: "تفعيل المظهر الداكن",
+  notifications: "الإشعارات",
+  receivePushNotifications: "تلقي إشعارات الدفع",
+  account: "الحساب",
+  changePassword: "تغيير كلمة المرور",
+  deleteAccount: "حذف الحساب",
+  questionsInDatabase: "أسئلة في قاعدة البيانات: {{count}}",
+  databaseVersion: "إصدار قاعدة البيانات: {{version}}",
+  appVersion: "إصدار التطبيق: {{version}}",
+  dataPrivacy: "خصوصية البيانات",
+  aboutTheApp: "عن التطبيق",
+  imprint: "البصمة",
+
+  // Language selector
+  language: "اللغة",
+  selectAppLanguage: "اختر لغة التطبيق",
+  deutsch: "الألمانية",
+  english: "الإنجليزية",
+  arabic: "العربية",
 } as const;
 
 export default ar;

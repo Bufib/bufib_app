@@ -625,7 +625,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
-    borderBottomWidth: StyleSheet.hairlineWidth,
     paddingBottom: 10,
     marginTop: 10,
   },

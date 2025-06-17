@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   useColorScheme,
+  Platform,
 } from "react-native";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "@/components/ThemedText";
@@ -15,12 +16,13 @@ import { getFavoriteQuestions } from "@/utils/bufibDatabase";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { QuestionType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 function RenderFavoriteQuestions() {
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme();
   const { refreshTriggerFavorites } = useRefreshFavorites();
@@ -70,7 +72,7 @@ function RenderFavoriteQuestions() {
   if (isLoading) {
     return (
       <ThemedView style={styles.centeredContainer}>
-        <ThemedText>Favoriten werden geladen…</ThemedText>
+        <LoadingIndicator size="large" />
       </ThemedView>
     );
   }
@@ -78,9 +80,7 @@ function RenderFavoriteQuestions() {
   if (questions.length === 0 && !isLoading && !error) {
     return (
       <ThemedView style={styles.centeredContainer}>
-        <ThemedText style={styles.emptyText}>
-         {t("noFavorites")}
-        </ThemedText>
+        <ThemedText style={styles.emptyText}>{t("noFavorites")}</ThemedText>
       </ThemedView>
     );
   }
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   flatListStyle: {
-    paddingTop: 20,
+    paddingTop: 15,
     gap: 20,
   },
   item: {
@@ -149,6 +149,19 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     marginHorizontal: 10,
+    ...Platform.select({
+          ios: {
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 2,
+          },
+          android: {
+            elevation: 5,
+          },
+        }),
   },
   questionContainer: {
     flex: 1,

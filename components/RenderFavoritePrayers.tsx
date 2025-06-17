@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
   useColorScheme,
+  Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -128,7 +129,7 @@ const FavoritePrayersScreen: React.FC = () => {
       {/* Folder pills in a horizontal ScrollView */}
       <View style={styles.pillContainer}>
         {isLoadingFolders ? (
-          <LoadingIndicator size={"small"} />
+          <LoadingIndicator size={"large"} />
         ) : (
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {folders.map(renderFolderPill)}
@@ -139,11 +140,7 @@ const FavoritePrayersScreen: React.FC = () => {
       {/* Prayer list for the selected folder */}
       <View style={styles.prayerListContainer}>
         {isLoadingPrayers ? (
-          <ActivityIndicator
-            size="large"
-            color="#555"
-            style={{ marginTop: 20 }}
-          />
+          <LoadingIndicator size="large" />
         ) : prayers.length === 0 ? (
           <ThemedText style={styles.noPrayersText}>
             {t(
@@ -208,13 +205,19 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    // Shadow for iOS
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    // Elevation for Android
-    elevation: 2,
+    ...Platform.select({
+      ios: {
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   prayerName: {
     fontSize: 16,

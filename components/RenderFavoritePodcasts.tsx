@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   useColorScheme,
+  Platform,
 } from "react-native";
 import { usePodcasts } from "@/hooks/usePodcasts"; // adjust the import path as needed
 import { getFavoritePodcasts } from "@/utils/favorites";
@@ -20,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import { Entypo } from "@expo/vector-icons";
 import { formatDate } from "@/utils/formatDate";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 const RenderFavoritePodcasts = () => {
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -30,7 +32,7 @@ const RenderFavoritePodcasts = () => {
     isError,
     fetchNextPage,
     hasNextPage,
-  } = usePodcasts(language);
+  } = usePodcasts(language || "de");
 
   const { refreshTriggerFavorites, triggerRefreshFavorites } =
     useRefreshFavorites();
@@ -65,9 +67,9 @@ const RenderFavoritePodcasts = () => {
   // If still loading the first page of episodes, show a spinner
   if (isLoading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" />
-      </View>
+      <ThemedView style={styles.centered}>
+        <LoadingIndicator size="large" />
+      </ThemedView>
     );
   }
 
@@ -75,9 +77,7 @@ const RenderFavoritePodcasts = () => {
   if (isError) {
     return (
       <ThemedView style={styles.centered}>
-        <ThemedText style={styles.errorText}>
-          Failed to load episodes.
-        </ThemedText>
+        <ThemedText style={styles.errorText}>{t("error")}</ThemedText>
       </ThemedView>
     );
   }
@@ -152,13 +152,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
+    padding: 15,
   },
-  header: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 12,
-  },
+
   emptyText: {
     fontSize: 16,
     color: "#666",
@@ -180,9 +176,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 15,
-    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: "#ccc",
     borderRadius: 8,
+    ...Platform.select({
+          ios: {
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 2,
+          },
+          android: {
+            elevation: 5,
+          },
+        }),
   },
   itemTitle: {
     fontSize: 16,

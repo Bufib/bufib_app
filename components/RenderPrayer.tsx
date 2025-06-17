@@ -435,7 +435,6 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                       color: Colors[colorScheme].prayerTransliterationText,
                       fontStyle: "italic",
                       marginBottom: 16,
-                      borderBottomWidth: StyleSheet.hairlineWidth,
                       borderBottomColor: Colors[colorScheme].border,
                       paddingBottom: 16,
                     },

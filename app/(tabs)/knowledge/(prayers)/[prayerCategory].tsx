@@ -89,14 +89,14 @@ export default function CategoryScreen() {
         setChildCategories(categoryRows);
 
         // Fetch prayers depending on language
-        if (language.toUpperCase() === "AR") {
+        if (language === "ar") {
           const prayerRows = await getAllPrayersForArabic(categoryData.id);
           setAllPrayers(prayerRows);
           setFilteredPrayers(prayerRows);
         } else {
           const prayerRows = await getPrayersForCategory(
             categoryData.id,
-            language.toUpperCase()
+            language || "de"
           );
           setAllPrayers(prayerRows);
           setFilteredPrayers(prayerRows);

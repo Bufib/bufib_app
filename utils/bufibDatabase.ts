@@ -491,7 +491,8 @@ export const getQuestionCount = async (): Promise<number> => {
 
 //!
 export const getSubcategoriesForCategory = async (
-  question_category_name: string
+  question_category_name: string,
+  language: string
 ): Promise<string[]> => {
   try {
     const db = await getDatabase();
