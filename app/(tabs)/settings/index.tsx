@@ -1,34 +1,33 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Switch,
-  Appearance,
-  Pressable,
-  Text,
-  ScrollView,
-  Alert,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useColorScheme } from "react-native";
+import DeleteUserModal from "@/components/DeleteUserModal";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { NoInternet } from "@/components/NoInternet";
 import { ThemedText } from "@/components/ThemedText";
-import Storage from "expo-sqlite/kv-store";
 import { Colors } from "@/constants/Colors";
-import { router } from "expo-router";
+import { useConnectionStatus } from "@/hooks/useConnectionStatus";
+import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
 import { useAuthStore } from "@/stores/authStore";
-import { useLogout } from "@/utils/useLogout";
+import useNotificationStore from "@/stores/notificationStore";
 import { getQuestionCount } from "@/utils/bufibDatabase";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
-import { Image } from "expo-image";
-import DeleteUserModal from "@/components/DeleteUserModal";
-import Toast from "react-native-toast-message";
-import useNotificationStore from "@/stores/notificationStore";
-import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
-import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { NoInternet } from "@/components/NoInternet";
+import { useLogout } from "@/utils/useLogout";
 import Constants from "expo-constants";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import Storage from "expo-sqlite/kv-store";
+import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  Appearance,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  useColorScheme,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");

@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, Pressable, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Pressable,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -83,7 +89,7 @@ function RenderQuestionSubCategoryItems() {
         style={themeStyle.defaultBackgorundColor}
         contentContainerStyle={styles.flatListStyle}
         renderItem={({ item }) => (
-          <Pressable
+          <TouchableOpacity
             onPress={() =>
               router.push({
                 pathname: "/(displayQuestion)",
@@ -109,7 +115,7 @@ function RenderQuestionSubCategoryItems() {
                 color={colorScheme === "dark" ? "#fff" : "#000"}
               />
             </ThemedView>
-          </Pressable>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -125,8 +131,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  error: {
-  },
+  error: {},
   flatListStyle: {
     paddingTop: 10,
     paddingHorizontal: 10,

@@ -14,6 +14,8 @@ export const ar = {
   // Podcasts
   podcastsTitle: "بودكاست",
   listen: "يستمع",
+  download: "تحميل",
+
 
   // General
   retry: "إعادة المحاولة",
@@ -45,6 +47,7 @@ export const ar = {
     "قد يستغرق ذلك بعض الوقت حسب سرعة اتصال الإنترنت",
   font: "الخط",
   source: "مصادر",
+  copied: "منقول",
 
   // Navigation
   knowledge: "معرفة",

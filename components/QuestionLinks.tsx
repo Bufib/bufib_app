@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import {
   View,
   StyleSheet,
   useWindowDimensions,
   TouchableOpacity,
   Text,
+  Animated,
+  Easing,
 } from "react-native";
 import { router } from "expo-router";
 import { Image } from "expo-image";
@@ -28,10 +30,22 @@ export default function QuestionLinks() {
     height
   );
 
+  // fade-in animation value
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   const colorScheme = useColorScheme() || "light";
 
+  // animate opacity on mount
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
-    <ThemedView style={styles.container}>
+   <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.categoriesContainer}>
         <View style={styles.categories}>
           {questionCategories.map((category, index) => (
@@ -143,7 +157,7 @@ export default function QuestionLinks() {
           color="#fff"
         />
       </TouchableOpacity>
-    </ThemedView>
+    </Animated.View>
   );
 }
 const styles = StyleSheet.create({

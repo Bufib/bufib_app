@@ -1189,7 +1189,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
                 >
                   <Ionicons name="download" size={24} color="#fff" />
                   <Text style={styles.downloadButtonText}>
-                    Download to Listen
+                    {t("download")}
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>

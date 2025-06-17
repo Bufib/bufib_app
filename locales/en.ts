@@ -14,6 +14,8 @@ export const en = {
   // Podcasts
   podcastsTitle: "Podcast",
   listen: "LISTEN",
+  download: "Download",
+
 
 
   // General
@@ -45,6 +47,8 @@ export const en = {
   questionsAreBeingLoadedMessage: "Depending on your internet connection, this may take a moment.",
 font : "font",
   source: "Sources: ",
+  copied: "Copied!",
+
   
 
   // Navigation

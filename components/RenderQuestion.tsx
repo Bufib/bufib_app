@@ -14,6 +14,7 @@ import Feather from "@expo/vector-icons/Feather";
 import Markdown from "react-native-markdown-display";
 import { NoInternet } from "./NoInternet";
 import { QuestionType } from "@/constants/Types";
+import { useTranslation } from "react-i18next";
 type RenderQuestionProps = {
   category: string;
   subcategory: string;
@@ -33,7 +34,7 @@ const RenderQuestion = ({
   const [hasCopiedSingleAnswer, setHasCopiedSingleAnswer] = useState(false);
   const [hasCopiedKhamenei, setHasCopiedKhamenei] = useState(false);
   const [hasCopiedSistani, setHasCopiedSistani] = useState(false);
-
+  const { t } = useTranslation();
   useEffect(() => {
     const loadQuestion = async () => {
       try {
@@ -147,7 +148,7 @@ const RenderQuestion = ({
                     size={24}
                     color={colorScheme === "dark" ? "#fff" : "#000"}
                   />
-                  <ThemedText>Kopiert!</ThemedText>
+                  <ThemedText>{t("copied")}</ThemedText>
                 </View>
               ) : (
                 <AntDesign
@@ -185,7 +186,7 @@ const RenderQuestion = ({
                       size={24}
                       color={colorScheme === "dark" ? "#fff" : "#000"}
                     />
-                    <ThemedText>Kopiert!</ThemedText>
+                    <ThemedText>{t("copied")}</ThemedText>
                   </View>
                 ) : (
                   <AntDesign
@@ -225,7 +226,7 @@ const RenderQuestion = ({
                       size={24}
                       color={colorScheme === "dark" ? "#fff" : "#000"}
                     />
-                    <ThemedText>Kopiert!</ThemedText>
+                    <ThemedText>{t("copied")}</ThemedText>
                   </View>
                 ) : (
                   <AntDesign

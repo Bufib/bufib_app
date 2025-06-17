@@ -15,6 +15,7 @@ export const de = {
   podcastsTitle: "Podcast",
   podcastScreenTitle: "Podcasts",
   listen: "HÖREN",
+  download: "Herunterlanden",
 
   // General
   retry: "Wiederholen",
@@ -46,6 +47,7 @@ export const de = {
     "Je nach Internetverbindung kann das einen Augenblick dauern.",
   font: "Schriftgröße",
   source: "Quellen: ",
+  copied: "Kopiert!",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",

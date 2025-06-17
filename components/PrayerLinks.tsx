@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   StyleSheet,
   ColorSchemeName,
   TouchableOpacity,
   useWindowDimensions,
+  Animated,
+  Easing,
 } from "react-native";
 import { router } from "expo-router";
 import { useColorScheme } from "react-native";
@@ -45,6 +47,8 @@ const PrayerLinks = () => {
     dayIndex: null,
     todoId: null,
   });
+  // fade-in animation value
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // --- Effects ---
   const getCurrentDayIndex = useCallback((): number => {
@@ -55,6 +59,16 @@ const PrayerLinks = () => {
   useEffect(() => {
     setSelectedDay(getCurrentDayIndex());
   }, [getCurrentDayIndex]);
+
+  // animate opacity on mount
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   // --- Handlers ---
   const handleAddTodoConfirmed = useCallback(
@@ -126,7 +140,7 @@ const PrayerLinks = () => {
   );
 
   return (
-    <ThemedView style={styles.container}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.categoriesContainer}>
         <View style={styles.categories}>
           {prayerCategories.map((category, index) => (
@@ -235,7 +249,7 @@ const PrayerLinks = () => {
           />
         </>
       )}
-    </ThemedView>
+    </Animated.View>
   );
 };
 const styles = StyleSheet.create({

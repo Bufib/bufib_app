@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
-import { View, Pressable, StyleSheet, FlatList } from "react-native";
+import React, { useRef, useEffect, useState } from "react";
+import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useColorScheme } from "react-native";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { getSubcategoriesForCategory } from "../utils/bufibDatabase";
+import { useTranslation } from "react-i18next";
 
 function RenderQuestionCategoryItems({ category }: { category: string }) {
   const [subcategories, setSubcategories] = useState<string[]>([]);
@@ -15,7 +16,8 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme() || "light";
-
+  const { t } = useTranslation();
+  // fade-in animation value
   useEffect(() => {
     const loadSubcategories = async () => {
       setIsLoading(true);
@@ -67,6 +69,11 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   // Main render
   return (
     <View style={[styles.container, themeStyle.defaultBackgorundColor]}>
+      <Stack.Screen
+        options={{
+          headerTitle: t(category.toLowerCase()),
+        }}
+      />
       <FlatList
         data={subcategories}
         keyExtractor={(item) => item.toString()}
@@ -74,7 +81,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
         style={themeStyle.defaultBackgorundColor}
         contentContainerStyle={styles.flatListStyle}
         renderItem={({ item }) => (
-          <Pressable
+          <TouchableOpacity
             onPress={() =>
               router.push({
                 pathname: "/knowledge/questionSubcategories",
@@ -90,7 +97,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
                 color={colorScheme === "dark" ? "#fff" : "#000"}
               />
             </ThemedView>
-          </Pressable>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -106,8 +113,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  error: {
-  },
+  error: {},
   flatListStyle: {
     paddingTop: 10,
   },

@@ -178,19 +178,18 @@ export const NewsItem = ({
 const styles = StyleSheet.create({
   newsItem: {
     padding: 15,
-    marginVertical: 8,
     borderRadius: 8,
     ...Platform.select({
       ios: {
         shadowOffset: {
           width: 0,
-          height: 1,
+          height: 2,
         },
-        shadowOpacity: 0.15,
-        shadowRadius: 1,
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
       },
       android: {
-        elevation: 10,
+        elevation: 5,
       },
     }),
   },
