@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
+  Platform,
 } from "react-native";
 import debounce from "lodash.debounce";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -162,23 +163,26 @@ const SearchScreen = () => {
   const renderItem = ({ item }: { item: CombinedResult }) => {
     let itemTextContent = "";
     let itemTypeText = "";
-
+    let itemValue = "";
     switch (item.type) {
       case "question":
-        itemTypeText = "Question";
-        itemTextContent = item.question || item.title || "";
+        itemTypeText = t("question");
+        (itemValue = "question"),
+          (itemTextContent = item.question || item.title || "");
         break;
       case "prayer":
-        itemTypeText = "Prayer";
-        itemTextContent = item.name || item.arabic_text || "";
+        itemTypeText = t("prayer");
+        (itemValue = "prayer"),
+          (itemTextContent = item.name || item.arabic_text || "");
         break;
       case "podcast":
-        itemTypeText = "Podcast Episode";
-        itemTextContent = item.podcastEpisodeTitle || "";
+        itemTypeText = t("podcast");
+        (itemValue = "podcast"),
+          (itemTextContent = item.podcastEpisodeTitle || "");
         break;
       case "newsArticle":
-        itemTypeText = "News Article";
-        itemTextContent = item.newsTitle || "";
+        itemTypeText = t("newsArticle");
+        (itemValue = "newsArticle"), (itemTextContent = item.newsTitle || "");
         break;
       default:
         itemTextContent = "";
@@ -235,29 +239,33 @@ const SearchScreen = () => {
           >
             {itemTypeText}
           </ThemedText>
-          {itemTypeText === "Question" ? (
+          {itemValue === "question" ? (
             <AntDesign
               name="search1"
               size={24}
               color={Colors[colorScheme].defaultIcon}
+              style={styles.iconStyle}
             />
-          ) : itemTypeText === "Prayer" ? (
+          ) : itemValue === "prayer" ? (
             <Entypo
               name="open-book"
               size={24}
               color={Colors[colorScheme].defaultIcon}
+              style={styles.iconStyle}
             />
-          ) : itemTypeText === "Podcast Episode" ? (
+          ) : itemValue === "podcast" ? (
             <FontAwesome5
               name="headphones"
               size={24}
               color={Colors[colorScheme].defaultIcon}
+              style={styles.iconStyle}
             />
           ) : (
             <Entypo
               name="news"
               size={24}
               color={Colors[colorScheme].defaultIcon}
+              style={styles.iconStyle}
             />
           )}
         </View>
@@ -354,6 +362,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     padding: 10,
     borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   itemType: {
     fontSize: 12,
@@ -370,5 +391,20 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: "center",
     marginTop: 20,
+  },
+  iconStyle: {
+    ...Platform.select({
+      ios: {
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 1,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
 });

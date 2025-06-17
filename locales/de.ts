@@ -136,7 +136,10 @@ export const de = {
   //search
   noSearchResults: "Keine Suchergebnisse gefunden!",
   searchPlaceholder: "Suche nach Fragen, Gebeten, News-Artikel oder Podcasts",
-
+  question: "Frage",
+  prayer: "Gebet",
+  podcast: "Podcast",
+  newsArticle: "Neugikeiten",
   // videos
   noVideoFound: "Es wurden keine Videos für diese Kategorie gefunden!",
 

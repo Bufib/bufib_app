@@ -136,6 +136,10 @@ export const ar = {
   searchPlaceholder:
     "ابحث عن الأسئلة أو الأدعية أو المقالات الإخبارية أو الملفات الصوتية",
 
+  question: "سؤال",
+  prayer: "الصلاة",
+  podcast: "بودكاست",
+  newsArticle: "مقالات",
   // videos
   noVideoFound: "لا توجد مقاطع فيديو لهذه الفئة",
 
