@@ -67,7 +67,7 @@ const RenderFavoritePodcasts = () => {
   // If still loading the first page of episodes, show a spinner
   if (isLoading) {
     return (
-      <ThemedView style={styles.centered}>
+      <ThemedView style={styles.centeredContainer}>
         <LoadingIndicator size="large" />
       </ThemedView>
     );
@@ -76,7 +76,7 @@ const RenderFavoritePodcasts = () => {
   // If there was an error fetching episodes at all
   if (isError) {
     return (
-      <ThemedView style={styles.centered}>
+      <ThemedView style={styles.centeredContainer}>
         <ThemedText style={styles.errorText}>{t("error")}</ThemedText>
       </ThemedView>
     );
@@ -85,7 +85,7 @@ const RenderFavoritePodcasts = () => {
   // 4) If there are no favorites (or none of the favorites have been loaded yet), show placeholder
   if (favoriteIds.length === 0) {
     return (
-      <ThemedView style={styles.container}>
+      <ThemedView style={styles.centeredContainer}>
         <ThemedText style={styles.emptyText}>{t("noFavorites")}</ThemedText>
       </ThemedView>
     );
@@ -148,17 +148,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  centered: {
+
+  centeredContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 15,
+    paddingHorizontal: 20,
   },
-
   emptyText: {
-    fontSize: 16,
-    color: "#666",
     textAlign: "center",
+    fontWeight: "500",
+    fontSize: 16,
+    lineHeight: 22,
   },
   errorText: {
     fontSize: 16,
@@ -179,18 +180,18 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     ...Platform.select({
-          ios: {
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.1,
-            shadowRadius: 2,
-          },
-          android: {
-            elevation: 5,
-          },
-        }),
+      ios: {
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   itemTitle: {
     fontSize: 16,

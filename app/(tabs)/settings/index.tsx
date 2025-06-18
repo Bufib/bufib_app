@@ -83,7 +83,7 @@ const Settings = () => {
 
     try {
       // Get the version
-      const version = Storage.getItemSync("version");
+      const version = Storage.getItemSync("database_version");
       setVersion(version);
 
       // Get the paypalLink

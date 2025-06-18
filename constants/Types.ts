@@ -318,6 +318,21 @@ export type FullPrayer = PrayerType & {
   translations: PrayerWithTranslationType[];
 };
 
+export type PrayerRow  = {
+  id: number;
+  name: string;
+  arabic_title?: string;
+  category_id?: number;
+  arabic_introduction?: string;
+  arabic_text?: string;
+  arabic_notes?: string;
+  transliteration_text?: string;
+  source?: string;
+  translated_languages: string;    // <-- JSON in a TEXT column
+  created_at: string;
+  updated_at: string;
+}
+
 export type PrayerCategoryType = {
   id: number;
   title: string;

@@ -15,6 +15,7 @@ import { router, Stack } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { getSubcategoriesForCategory } from "../utils/bufibDatabase";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 function RenderQuestionCategoryItems({ category }: { category: string }) {
   const [subcategories, setSubcategories] = useState<string[]>([]);
@@ -23,12 +24,16 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
+  const { language } = useLanguage();
   // fade-in animation value
   useEffect(() => {
     const loadSubcategories = async () => {
       setIsLoading(true);
       try {
-        const subcategories = await getSubcategoriesForCategory(category);
+        const subcategories = await getSubcategoriesForCategory(
+          category,
+          language || "de"
+        );
         if (subcategories) {
           setSubcategories(subcategories);
           setError(null);

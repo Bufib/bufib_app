@@ -150,18 +150,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginHorizontal: 10,
     ...Platform.select({
-          ios: {
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.1,
-            shadowRadius: 2,
-          },
-          android: {
-            elevation: 5,
-          },
-        }),
+      ios: {
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   questionContainer: {
     flex: 1,

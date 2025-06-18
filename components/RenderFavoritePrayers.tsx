@@ -142,12 +142,9 @@ const FavoritePrayersScreen: React.FC = () => {
         {isLoadingPrayers ? (
           <LoadingIndicator size="large" />
         ) : prayers.length === 0 ? (
-          <ThemedText style={styles.noPrayersText}>
-            {t(
-              "FavoriteCategories.noPrayersInFolder",
-              "No prayers in this folder."
-            )}
-          </ThemedText>
+          <ThemedView style={styles.centeredContainer}>
+            <ThemedText style={styles.emptyText}>{t("noFavorites")}</ThemedText>
+          </ThemedView>
         ) : (
           <FlatList
             data={prayers}
@@ -228,9 +225,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: "italic",
   },
-  noPrayersText: {
-    marginTop: 20,
+  centeredContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  emptyText: {
     textAlign: "center",
+    fontWeight: "500",
     fontSize: 16,
+    lineHeight: 22,
   },
 });

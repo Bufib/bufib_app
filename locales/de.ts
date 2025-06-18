@@ -16,7 +16,8 @@ export const de = {
   podcastScreenTitle: "Podcasts",
   listen: "HÖREN",
   download: "Herunterlanden",
-
+  downloading: "Wird heruntergeladen",
+  preparing: "Wird vorbereitet",
   // General
   retry: "Wiederholen",
   errorLoadingData: "Es gab einen Fehler beim laden der Daten",
@@ -57,6 +58,7 @@ export const de = {
   prayerScreenTitle: "Gebete und mehr",
   newsArticleScreenTitle: "Artikel",
   home: "Home",
+  calenderScreenTitle: "Kalender",
 
   // Database
   updateAvailable: "Update Verfügbar",

@@ -23,7 +23,9 @@ export default function RenderQuestionVideosCategories() {
   const colorScheme = useColorScheme() || "light";
   const router = useRouter();
   const { language } = useLanguage();
-  const { categories, isLoading, error } = useFetchVideoCategories(language);
+  const { categories, isLoading, error } = useFetchVideoCategories(
+    language || "de"
+  );
   const { t } = useTranslation();
   if (isLoading) {
     return (
@@ -58,7 +60,7 @@ export default function RenderQuestionVideosCategories() {
         data={categories}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        style={{ backgroundColor: Colors[colorScheme].background }} // Apply background color from theme
+        style={ { backgroundColor: Colors[colorScheme].background }} 
         contentContainerStyle={styles.flatListStyle}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -104,7 +106,6 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     paddingTop: 10,
-    paddingHorizontal: 10,
   },
   item: {
     flexDirection: "row",
@@ -112,8 +113,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 15,
     marginBottom: 15,
-    borderRadius: 8,
-    borderWidth: 0.5,
+    borderTopWidth: 0.5,
+    borderBottomWidth: 0.5,
   },
   questionContainer: {
     flex: 1,

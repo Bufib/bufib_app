@@ -15,7 +15,8 @@ export const en = {
   podcastsTitle: "Podcast",
   listen: "LISTEN",
   download: "Download",
-
+  downloading: "Downloading",
+preparing: "Preparing",
   // General
   retry: "Retry",
   errorLoadingData: "There was an error loading the data",
@@ -56,6 +57,7 @@ export const en = {
   prayerScreenTitle: "Prayers and more",
   newsArticleScreenTitle: "Articles",
   podcastScreenTitle: "Podcasts",
+  calenderScreenTitle: "Calender",
 
   // Database
   updateAvailable: "New update available",

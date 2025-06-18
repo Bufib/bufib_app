@@ -15,6 +15,8 @@ export const ar = {
   podcastsTitle: "بودكاست",
   listen: "يستمع",
   download: "تحميل",
+  downloading: "جاري التحميل",
+preparing: "تحضير",
 
   // General
   retry: "إعادة المحاولة",
@@ -57,6 +59,8 @@ export const ar = {
   newsArticleScreenTitle: "مقالات",
   podcastScreenTitle: "بودكاست",
   home: "الرئيسية",
+  calenderScreenTitle: "تقويم",
+
   // Database
   updateAvailable: "تحديث جديد متوفر",
   newAppVersionAvailable: "إصدار جديد من التطبيق متوفّر في متجر التطبيقات!",

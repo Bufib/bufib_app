@@ -1124,7 +1124,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
                     justifyContent: "center",
                     alignItems: "center",
                     gap: 10,
-                    marginBottom: 20
+                    marginBottom: 20,
                   }}
                 >
                   <Text style={styles.podcastTitle} numberOfLines={2}>
@@ -1173,7 +1173,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
             {showDownloadProgress && (
               <View style={styles.downloadContainer}>
                 <Text style={styles.downloadText}>
-                  Downloading... {Math.round(downloadProgress * 100)}%
+                  {t("downloading")} {Math.round(downloadProgress * 100)}%
                 </Text>
                 <View style={styles.progressBarContainer}>
                   <View
@@ -1208,7 +1208,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#667eea" />
                 <Text style={styles.loadingText}>
-                  {isPreparing ? "Preparing..." : "Loading..."}
+                  {isPreparing ? t("preparing") : t("loading")}
                 </Text>
               </View>
             )}

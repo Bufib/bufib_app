@@ -161,7 +161,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
 
   const notesForLang = useMemo(() => {
     if (!prayer) return "";
-    if (language.toUpperCase() === "AR") return prayer.arabic_notes || "";
+    if (language == "ar") return prayer.arabic_notes || "";
     const tr = prayer.translations.find((t) => t.language_code === language);
     return tr?.translated_notes || "";
   }, [prayer, language]);
