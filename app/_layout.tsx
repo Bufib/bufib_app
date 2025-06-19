@@ -284,7 +284,7 @@ function AppContent() {
             <QueryClientProvider client={queryClient}>
               <SupabaseRealtimeProvider>
                 <SQLiteProvider
-                  databaseName="islam-fragen.db"
+                  databaseName="bufib.db"
                   useSuspense={false}
                 >
                   <Stack

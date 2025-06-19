@@ -16,7 +16,7 @@ export const ar = {
   listen: "يستمع",
   download: "تحميل",
   downloading: "جاري التحميل",
-preparing: "تحضير",
+  preparing: "تحضير",
 
   // General
   retry: "إعادة المحاولة",
@@ -188,6 +188,24 @@ preparing: "تحضير",
   deutsch: "الألمانية",
   english: "الإنجليزية",
   arabic: "العربية",
+
+  // Arabic
+
+  calendarTitle: "التقويم الإسلامي",
+  calendarYearRange: "{{range}} هـ",
+
+  filterAll: "جميع الأحداث",
+  filterMajor: "رئيسي",
+  filterMinor: "ثانوي",
+
+  legendHeader: "الدليل:",
+  legendToday: "اليوم",
+  legendUpcoming: "قريبًا",
+  legendMajorEvent: "حدث رئيسي",
+  legendMinorEvent: "حدث ثانوي",
+
+  countdownToday: "اليوم!",
+  countdownDaysToGo: "متبقي {{count}} يومًا",
 } as const;
 
 export default ar;

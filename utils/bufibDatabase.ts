@@ -974,6 +974,7 @@
 
 import { databaseUpdate } from "@/constants/messages";
 import {
+  calendarType,
   FavoritePrayerFolderType,
   FullPrayer,
   PrayerCategoryType,
@@ -1008,7 +1009,6 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
       PRAGMA journal_mode = WAL;
       PRAGMA foreign_keys = ON;
 
-      -- Question tables
       CREATE TABLE IF NOT EXISTS question_categories (
         question_category_name TEXT PRIMARY KEY
       );
@@ -1020,8 +1020,6 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
       CREATE TABLE IF NOT EXISTS questions (
         id               INTEGER PRIMARY KEY,
         title            TEXT    NOT NULL,
-        -- FIX: Removed UNIQUE constraint to prevent unintended row replacement
-        -- The PRIMARY KEY on 'id' is sufficient for uniqueness.
         question         TEXT    NOT NULL,
         answer           TEXT,
         answer_sistani   TEXT,
@@ -1032,7 +1030,6 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         language_code    TEXT    NOT NULL
       );
 
-      -- Prayer tables: parent_id as numeric array without foreign key
       CREATE TABLE IF NOT EXISTS prayer_categories (
         id        INTEGER PRIMARY KEY,
         title     TEXT    NOT NULL,
@@ -1049,7 +1046,7 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         arabic_notes         TEXT,
         transliteration_text TEXT,
         source               TEXT,
-        translated_languages TEXT,    -- JSON array, e.g. '["en","de"]'
+        translated_languages TEXT,   
         created_at           TEXT    DEFAULT CURRENT_TIMESTAMP,
         updated_at           TEXT    DEFAULT CURRENT_TIMESTAMP
       );
@@ -1082,7 +1079,7 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         folder_name   TEXT NOT NULL,
         folder_color  TEXT NOT NULL,
         created_at    TEXT    DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(prayer_id, folder_name)  -- so you can still insert the same prayer into different folders
+        UNIQUE(prayer_id, folder_name) 
     );
     
       CREATE TABLE IF NOT EXISTS prayer_folders (
@@ -1091,6 +1088,18 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
       );
       
+       CREATE TABLE IF NOT EXISTS calendar (
+        id             INTEGER PRIMARY KEY,
+        title          TEXT NOT NULL,
+        islamic_date   TEXT NOT NULL,
+        gregorian_date TEXT   NOT NULL,
+        description    TEXT NOT NULL,
+        type           TEXT NOT NULL,
+        countdown      INTEGER NOT NULL DEFAULT 1,
+        created_at     TEXT DEFAULT CURRENT_TIMESTAMP,
+        language_code  TEXT NOT NULL
+      );
+
       CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
         ON favorite_prayers(prayer_id);
 
@@ -1162,6 +1171,7 @@ export const initializeDatabase = async () => {
       const versionFromSupabase = await fetchVersionFromSupabase();
       if (versionFromSupabase && versionFromStorage !== versionFromSupabase) {
         await fetchQuestionsFromSupabase();
+        await fetchCalendarFromSupabase();
         await fetchPayPalLink();
         await fetchPrayersFromSupabase();
         await Storage.setItemAsync("database_version", versionFromSupabase);
@@ -1237,8 +1247,7 @@ const fetchQuestionsFromSupabase = async () => {
     const { data: questions, error } = await supabase
       .from("questions")
       .select("*")
-      .eq("language_code", i18n.language);
-
+      .eq("language_code", "de");
     if (error) {
       console.error("Error fetching questions from Supabase:", error.message);
       return;
@@ -1334,6 +1343,48 @@ const fetchQuestionsFromSupabase = async () => {
       "A critical error occurred in fetchQuestionsFromSupabase:",
       err
     );
+  }
+};
+
+const fetchCalendarFromSupabase = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("calendar")
+      .select("*")
+      .single();
+    if (error) {
+      console.error("Error fetching PayPal link from Supabase:", error.message);
+      return;
+    }
+    if (data) {
+      const db = await getDatabase();
+      await db.withExclusiveTransactionAsync(async (txn) => {
+        const stmt = await txn.prepareAsync(
+          `INSERT OR REPLACE INTO calendar
+            (id, title, islamic_date, gregorian_date, description, type, countdown, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?);`
+        );
+        try {
+          await stmt.executeAsync([
+            data.id,
+            data.title,
+            data.islamic_date,
+            data.gregorian_date,
+            data.description,
+            data.type,
+            data.countdown,
+            data.created_at,
+          ]);
+        } finally {
+          await stmt.finalizeAsync();
+        }
+      });
+      console.log("Calendar synced.");
+    } else {
+      console.warn("No calendar data found in Supabase.");
+    }
+  } catch (error) {
+    console.error("Unexpected error fetching PayPal link:", error);
   }
 };
 
@@ -1944,5 +1995,79 @@ export const togglePrayerFavorite = async (
       [prayerId]
     );
     return true;
+  }
+};
+
+/**
+ * Fetches all calendar events for the specified language from Supabase
+ * and upserts them into the local SQLite "calendar" table.
+ *
+ * @param {string} languageCode – ISO code of the language (e.g. 'en', 'ar')
+ */
+// fetcher.ts
+
+export const fetchCalendarEventsByLanguage = async (
+  language_code: string
+): Promise<calendarType[] | undefined> => {
+  try {
+    const { data, error } = await supabase
+      .from("calendar")
+      .select("*")
+      .eq("language_code", language_code);
+
+    if (error) {
+      console.error(
+        `Error fetching calendar events for "${language_code}":`,
+        error.message
+      );
+      return;
+    }
+    if (!data || data.length === 0) {
+      console.warn(`No calendar events found for language "${language_code}".`);
+      return [];
+    }
+
+    // Upsert into local DB
+    const db = await getDatabase();
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      const stmt = await txn.prepareAsync(
+        `INSERT OR REPLACE INTO calendar
+           (id, title, islamic_date, gregorian_date, description,
+            type, countdown, created_at, language_code)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`
+      );
+      try {
+        for (const row of data) {
+          await stmt.executeAsync([
+            row.id,
+            row.title,
+            row.islamic_date,
+            row.gregorian_date,
+            row.description,
+            row.type,
+            row.countdown,
+            row.created_at,
+            row.language_code,
+          ]);
+        }
+      } finally {
+        await stmt.finalizeAsync();
+      }
+    });
+
+    console.log(
+      `Synced ${data.length} calendar event(s) for "${language_code}".`
+    );
+
+    const parsed = (data as calendarType[]).map((row) => ({
+      ...row,
+      gregorian_date: new Date(row.gregorian_date),
+      created_at: new Date(row.created_at),
+    }));
+
+    return parsed;
+  } catch (err) {
+    console.error("Unexpected error syncing calendar events:", err);
+    return;
   }
 };

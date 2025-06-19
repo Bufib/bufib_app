@@ -1,14 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import RenderCalender from "@/components/RenderCalender";
 
 const indexCalender = () => {
-  return (
-    <View>
-      <Text>indexCalender</Text>
-    </View>
-  );
+  return <RenderCalender />;
 };
 
 export default indexCalender;
-
-const styles = StyleSheet.create({});

@@ -32,7 +32,7 @@ export type NewsArticlesType = {
   read_time?: string;
   author: string;
   source: string;
-  scholar_type: number
+  scholar_type: number;
 };
 
 // News
@@ -318,7 +318,7 @@ export type FullPrayer = PrayerType & {
   translations: PrayerWithTranslationType[];
 };
 
-export type PrayerRow  = {
+export type PrayerRow = {
   id: number;
   name: string;
   arabic_title?: string;
@@ -328,10 +328,10 @@ export type PrayerRow  = {
   arabic_notes?: string;
   transliteration_text?: string;
   source?: string;
-  translated_languages: string;    // <-- JSON in a TEXT column
+  translated_languages: string; // <-- JSON in a TEXT column
   created_at: string;
   updated_at: string;
-}
+};
 
 export type PrayerCategoryType = {
   id: number;
@@ -447,4 +447,16 @@ export type QuestionsFromUserType = {
   approval_status: string;
   has_read_answer: boolean;
   has_read_at: string;
+};
+
+// Calender
+export type calendarType = {
+  id: number;
+  title: string;
+  islamic_date: string;
+  gregorian_date: Date;
+  description: string;
+  type: string;
+  created_at: Date;
+  language_code: string
 };

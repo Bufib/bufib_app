@@ -13,12 +13,15 @@
       "bundleIdentifier": "BufiB",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select images.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select images.",
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": ["de", "en", "ar"],
+        "CFBundleLocalizations": [
+          "de",
+          "en",
+          "ar"
+        ],
         "CFBundleDevelopmentRegion": "de",
-        "NSUserNotificationsUsageDescription":
-          "Wir senden Push-Benachrichtigungen, u"
+        "NSUserNotificationsUsageDescription": "Wir senden Push-Benachrichtigungen, u"
       }
     },
     "android": {
@@ -51,7 +54,8 @@
       ],
       "expo-localization",
       "expo-sqlite",
-      "expo-audio"
+      "expo-audio",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -187,6 +187,23 @@ export const de = {
   deutsch: "Deutsch",
   english: "English",
   arabic: "العربية",
+
+  // Calendar
+  calendarTitle: "Islamischer Kalender",
+  calendarYearRange: "{{range}} n. H.",
+
+  filterAll: "Alle Ereignisse",
+  filterMajor: "Hauptfest",
+  filterMinor: "Nebentag",
+
+  legendHeader: "Legende:",
+  legendToday: "Heute",
+  legendUpcoming: "Bevorstehend",
+  legendMajorEvent: "Großes Ereignis",
+  legendMinorEvent: "Kleines Ereignis",
+
+  countdownToday: "Heute!",
+  countdownDaysToGo: "Noch {{count}} Tage",
 } as const;
 
 export default de;

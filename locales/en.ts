@@ -16,7 +16,7 @@ export const en = {
   listen: "LISTEN",
   download: "Download",
   downloading: "Downloading",
-preparing: "Preparing",
+  preparing: "Preparing",
   // General
   retry: "Retry",
   errorLoadingData: "There was an error loading the data",
@@ -187,6 +187,23 @@ preparing: "Preparing",
   deutsch: "Deutsch",
   english: "English",
   arabic: "العربية",
+
+  // calendar:
+  calendarTitle: "Islamic Calendar",
+  calendarYearRange: "{{range}} AH" /* example: “1445–1446 AH” */,
+
+  filterAll: "All Events",
+  filterMajor: "Major",
+  filterMinor: "Minor",
+
+  legendHeader: "Legend:",
+  legendToday: "Today",
+  legendUpcoming: "Upcoming",
+  legendMajorEvent: "Major Event",
+  legendMinorEvent: "Minor Event",
+
+  countdownToday: "Today!",
+  countdownDaysToGo: "{{count}} days to go",
 } as const;
 
 export default en;

@@ -35,10 +35,10 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
           language || "de"
         );
         if (subcategories) {
+
           setSubcategories(subcategories);
           setError(null);
         } else {
-          setSubcategories([]);
           setError("Kategorien konnten nicht geladen werden!");
           console.log("No subcategories found");
         }
