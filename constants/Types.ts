@@ -458,5 +458,20 @@ export type calendarType = {
   description: string;
   type: string;
   created_at: Date;
-  language_code: string
+  language_code: string;
+};
+
+// Quran
+
+export type QuranSuraType = {
+  id: number;
+  transliteration: string;
+  arabic_title: string;
+  german_title: string;
+  description: string;
+  main_topic: string;
+  sura_description: string;
+  verse_count: number;
+  created_at: string;
+  language_code: string;
 };

@@ -983,6 +983,7 @@ import {
   PrayerWithCategory,
   PrayerWithTranslationType,
   QuestionType,
+  QuranSuraType,
 } from "@/constants/Types";
 import { supabase } from "@/utils/supabase";
 import Constants from "expo-constants";
@@ -1100,6 +1101,19 @@ const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         language_code  TEXT NOT NULL
       );
 
+       CREATE TABLE IF NOT EXISTS quran_suras (
+        id                INTEGER PRIMARY KEY,
+        transliteration   TEXT NOT NULL,
+        arabic_title      TEXT NOT NULL,
+        german_title      TEXT NOT NULL,
+        description       TEXT NOT NULL,
+        main_topic        TEXT NOT NULL,
+        sura_description  TEXT NOT NULL,
+        verse_count       Numeric NOT NULL,
+        created_at        TEXT DEFAULT CURRENT_TIMESTAMP,
+        language_code     TEXT NOT NULL
+      );
+
       CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
         ON favorite_prayers(prayer_id);
 
@@ -1172,6 +1186,7 @@ export const initializeDatabase = async () => {
       if (versionFromSupabase && versionFromStorage !== versionFromSupabase) {
         await fetchQuestionsFromSupabase();
         await fetchCalendarFromSupabase();
+        fetchQuranSurasFromSupabase();
         await fetchPayPalLink();
         await fetchPrayersFromSupabase();
         await Storage.setItemAsync("database_version", versionFromSupabase);
@@ -1353,7 +1368,7 @@ const fetchCalendarFromSupabase = async () => {
       .select("*")
       .single();
     if (error) {
-      console.error("Error fetching PayPal link from Supabase:", error.message);
+      console.error("Error fetching calender from Supabase:", error.message);
       return;
     }
     if (data) {
@@ -1384,7 +1399,48 @@ const fetchCalendarFromSupabase = async () => {
       console.warn("No calendar data found in Supabase.");
     }
   } catch (error) {
-    console.error("Unexpected error fetching PayPal link:", error);
+    console.error("Unexpected error fetching calender:", error);
+  }
+};
+const fetchQuranSurasFromSupabase = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("quran_suras")
+      .select("*")
+      .single();
+    if (error) {
+      console.error("Error fetching quran_suras from Supabase:", error.message);
+      return;
+    }
+    if (data) {
+      const db = await getDatabase();
+      await db.withExclusiveTransactionAsync(async (txn) => {
+        const stmt = await txn.prepareAsync(
+          `INSERT OR REPLACE INTO quran_suras
+            (id, transliteration, arabic_title, german_title, description, verse_count, created_at, language_code)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?);`
+        );
+        try {
+          await stmt.executeAsync([
+            data.id,
+            data.transliteration,
+            data.arabic_title,
+            data.german_title,
+            data.description,
+            data.verse_count,
+            data.created_at,
+            data.language_code,
+          ]);
+        } finally {
+          await stmt.finalizeAsync();
+        }
+      });
+      console.log("Quran_suras synced.");
+    } else {
+      console.warn("No Quran_suras data found in Supabase.");
+    }
+  } catch (error) {
+    console.error("Unexpected error fetching Quran_suras:", error);
   }
 };
 
@@ -2069,5 +2125,23 @@ export const fetchCalendarEventsByLanguage = async (
   } catch (err) {
     console.error("Unexpected error syncing calendar events:", err);
     return;
+  }
+};
+
+export const getAllQuranSuras = async (
+  language_code: string
+): Promise<QuranSuraType[]> => {
+  try {
+    const db = await getDatabase();
+    const query = `
+      SELECT *
+        FROM quran_suras
+       WHERE language_code = ?
+    ORDER BY id;
+    `;
+    return await db.getAllAsync<QuranSuraType>(query, [language_code]);
+  } catch (error) {
+    console.error("Error fetching Quran suras:", error);
+    throw error;
   }
 };
