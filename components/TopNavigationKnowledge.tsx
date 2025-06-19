@@ -4,7 +4,7 @@ import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import indexPrayer from "@/app/(tabs)/knowledge/(prayers)/indexPrayer";
 import indexQuestion from "@/app/(tabs)/knowledge/(questions)/indexQuestion";
 import indexCalender from "@/app/(tabs)/knowledge/(calender)/indexCalender";
-import i18n from "@/utils/i18n";
+import indexQuran from "@/app/(tabs)/knowledge/(quran)/indexQuran";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -12,7 +12,8 @@ import { useTranslation } from "react-i18next";
 const renderScene = SceneMap({
   questionsScreen: indexQuestion,
   prayerScreen: indexPrayer,
-  calenderScreen: indexCalender
+  calenderScreen: indexCalender,
+  quranScreen: indexQuran
 });
 
 export default function TopNavigationKnowledge() {
@@ -26,6 +27,7 @@ export default function TopNavigationKnowledge() {
       { key: "questionsScreen", title: t("questionScreenTitle") },
       { key: "prayerScreen", title: t("prayerScreenTitle") },
       { key: "calenderScreen", title: t("calenderScreenTitle") },
+      { key: "quranScreen", title: t("quranScreen") },
     ],
     [t]
   );

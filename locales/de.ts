@@ -59,6 +59,7 @@ export const de = {
   newsArticleScreenTitle: "Artikel",
   home: "Home",
   calenderScreenTitle: "Kalender",
+  quranScreen: "Quran",
 
   // Database
   updateAvailable: "Update Verfügbar",

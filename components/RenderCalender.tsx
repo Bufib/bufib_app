@@ -1,94 +1,164 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  useColorScheme,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
+import { FlashList } from "@shopify/flash-list";
 import { fetchCalendarEventsByLanguage } from "@/utils/bufibDatabase";
 import type { calendarType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
+import { ThemedView } from "./ThemedView";
+import { ThemedText } from "./ThemedText";
+import { Colors } from "@/constants/Colors";
 
-// ────────────────────────────────────────────────────────────
-//  Calendar component
 // ────────────────────────────────────────────────────────────
 const RenderCalendar: React.FC = () => {
   const [filter, setFilter] = useState<"all" | "major" | "minor">("all");
   const [events, setEvents] = useState<calendarType[]>([]);
   const { language } = useLanguage();
-  const {t} = useTranslation()
-  /** 1. On mount + whenever language changes, load data. */
+  const { t } = useTranslation();
+  const colorScheme = useColorScheme() || "light"
+  // ─── load + parse once (or when language changes) ───
   useEffect(() => {
     (async () => {
-      try {
-        /** fetch raw rows (dates are ISO strings) */
-        const data = await fetchCalendarEventsByLanguage(language ?? "de");
-        if (data) {
-          const parsed = data.map((r) => ({
+      const data = await fetchCalendarEventsByLanguage(language ?? "de");
+      if (data) {
+        setEvents(
+          data.map((r) => ({
             ...r,
             gregorian_date: new Date(r.gregorian_date),
             created_at: new Date(r.created_at),
-          }));
-          setEvents(parsed);
-        }
-      } catch (err) {
-        console.log(err);
+          }))
+        );
       }
-    })();
+    })().catch(console.log);
   }, [language]);
 
-  /** 2. Utility: days until */
-  const getDaysUntil = (dt: Date) =>
-    Math.ceil((dt.getTime() - Date.now()) / 86_400_000); // 1000*60*60*24
+  // ─── helper ───
+  const getDaysUntil = (d: Date) =>
+    Math.ceil((d.getTime() - Date.now()) / 86_400_000);
 
-  /** 3-a. Filter by major/minor/all */
-  const filtered = events.filter((e) =>
-    filter === "all" ? true : e.type === filter
-  );
-
-  /** 3-b. Sort chronologically */
-  const chronSorted = [...filtered].sort(
-    (a, b) => a.gregorian_date.getTime() - b.gregorian_date.getTime()
-  );
-
-  /** 3-c. Bring TODAY (or next upcoming) to the top of the array */
-  const bringNextToTop = <T extends { gregorian_date: Date }>(
-    arr: T[]
-  ): T[] => {
+  // ─── expensive work memoised ───
+  const displayEvents = useMemo(() => {
     const todayMidnight = new Date();
     todayMidnight.setHours(0, 0, 0, 0);
-    const pivot = arr.findIndex((e) => e.gregorian_date >= todayMidnight);
-    return pivot > 0 ? [...arr.slice(pivot), ...arr.slice(0, pivot)] : arr;
-  };
 
-  const displayEvents = bringNextToTop(chronSorted);
+    // filter
+    const initial =
+      filter === "all" ? events : events.filter((e) => e.type === filter);
 
-  // ────────── UI helpers (unchanged) ──────────
+    // sort
+    const sorted = [...initial].sort(
+      (a, b) => a.gregorian_date.getTime() - b.gregorian_date.getTime()
+    );
+
+    // rotate so today / next on top
+    const pivot = sorted.findIndex((e) => e.gregorian_date >= todayMidnight);
+    return pivot > 0
+      ? [...sorted.slice(pivot), ...sorted.slice(0, pivot)]
+      : sorted;
+  }, [events, filter]);
+
+  // ─── UI helpers ───
   const FilterButton: React.FC<{
-    title: string;
-    isActive: boolean;
-    onPress: () => void;
-  }> = ({ title, isActive, onPress }) => (
+    labelKey: string;
+    value: "all" | "major" | "minor";
+  }> = ({ labelKey, value }) => (
     <TouchableOpacity
-      style={[styles.filterButton, isActive && styles.filterButtonActive]}
-      onPress={onPress}
+      style={[
+        styles.filterButton,
+        filter === value && styles.filterButtonActive, {borderColor: Colors[colorScheme].border}
+      ]}
+      onPress={() => setFilter(value)}
     >
       <Text
         style={[
           styles.filterButtonText,
-          isActive && styles.filterButtonTextActive,
+          filter === value && styles.filterButtonTextActive,
         ]}
       >
-        {title}
+        {t(labelKey)}
       </Text>
     </TouchableOpacity>
   );
 
+  // ─── card (memoised) ───
+  const EventCard = React.memo(({ event }: { event: calendarType }) => {
+    const days = getDaysUntil(event.gregorian_date);
+    const isPast = days < 0;
+    const isToday = days === 0;
+    const isUpcoming = days > 0 && days <= 30;
+    const status: "today" | "upcoming" | "past" = isToday
+      ? "today"
+      : isUpcoming
+      ? "upcoming"
+      : "past";
+
+    const cardStyle = [
+      styles.card,
+      isToday
+        ? styles.cardToday
+        : isUpcoming
+        ? styles.cardUpcoming
+        : isPast
+        ? styles.cardPast
+        : null,
+    ];
+
+    return (
+      <View style={cardStyle}>
+        <View style={styles.cardContent}>
+          <View style={styles.cardMain}>
+            {/* title row */}
+            <View style={styles.titleRow}>
+              <Text style={styles.eventTitle}>{event.title}</Text>
+              <Badge type={event.type as "major" | "minor"} />
+            </View>
+
+            <Text style={styles.description}>{event.description}</Text>
+
+            {/* dates */}
+            <View style={styles.datesContainer}>
+              <DateRow icon="calendar" text={event.islamic_date} bold />
+              <DateRow
+                icon="location"
+                text={event.gregorian_date.toLocaleDateString(
+                  language ?? "en",
+                  {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }
+                )}
+              />
+            </View>
+
+            {!isPast && (
+              <View style={styles.countdownRow}>
+                <Ionicons name="time" size={16} color="#f59e0b" />
+                <Text style={styles.countdownText}>
+                  {isToday
+                    ? t("countdownToday")
+                    : t("countdownDaysToGo", { count: days })}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <StatusIndicator status={status} />
+        </View>
+      </View>
+    );
+  });
+
+  // sub-helpers inside the component scope so they see styles
   const Badge: React.FC<{ type: "major" | "minor" }> = ({ type }) => (
     <View
       style={[
@@ -108,7 +178,7 @@ const RenderCalendar: React.FC = () => {
           type === "major" ? styles.badgeTextMajor : styles.badgeTextMinor,
         ]}
       >
-        {type}
+        {type === "major" ? t("filterMajor") : t("filterMinor")}
       </Text>
     </View>
   );
@@ -127,155 +197,93 @@ const RenderCalendar: React.FC = () => {
     );
   };
 
-  // ────────── Render ──────────
+  const DateRow = ({
+    icon,
+    text,
+    bold = false,
+  }: {
+    icon: string;
+    text: string;
+    bold?: boolean;
+  }) => (
+    <View style={styles.dateRow}>
+      <Ionicons name={icon as any} size={16} color="#6b7280" />
+      <Text style={bold ? styles.islamicDate : styles.gregorianDate}>
+        {text}
+      </Text>
+    </View>
+  );
+
+  // ─── render ───
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#ecfdf5" />
 
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTitle}>
           <Ionicons name="moon" size={24} color="#059669" />
-          <Text style={styles.title}>Islamic Calendar</Text>
+          <ThemedText style={styles.title}>{t("calendarTitle")}</ThemedText>
         </View>
-        <Text style={styles.subtitle}>1445–1446 AH</Text>
+        <ThemedText style={styles.subtitle}>
+          {t("calendarYearRange", { range: "1445–1446" })}
+        </ThemedText>
       </View>
 
       {/* Filters */}
       <View style={styles.filterContainer}>
-        <FilterButton
-          title="All Events"
-          isActive={filter === "all"}
-          onPress={() => setFilter("all")}
-        />
-        <FilterButton
-          title="Major"
-          isActive={filter === "major"}
-          onPress={() => setFilter("major")}
-        />
-        <FilterButton
-          title="Minor"
-          isActive={filter === "minor"}
-          onPress={() => setFilter("minor")}
-        />
+        <FilterButton labelKey="filterAll" value="all" />
+        <FilterButton labelKey="filterMajor" value="major" />
+        <FilterButton labelKey="filterMinor" value="minor" />
       </View>
 
-      {/* Events */}
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        {displayEvents.map((event) => {
-          const days = getDaysUntil(event.gregorian_date);
-          const isPast = days < 0;
-          const isToday = days === 0;
-          const isUpcoming = days > 0 && days <= 30;
-          const status: "today" | "upcoming" | "past" = isToday
-            ? "today"
-            : isUpcoming
-            ? "upcoming"
-            : "past";
-
-          const cardStyle = [
-            styles.card,
-            isToday
-              ? styles.cardToday
-              : isUpcoming
-              ? styles.cardUpcoming
-              : isPast
-              ? styles.cardPast
-              : null,
-          ];
-
-          return (
-            <View key={event.id} style={cardStyle}>
-              <View style={styles.cardContent}>
-                <View style={styles.cardMain}>
-                  {/* Title & Badge */}
-                  <View style={styles.titleRow}>
-                    <Text style={styles.eventTitle}>{event.title}</Text>
-                    <Badge type={event.type as "major" | "minor"} />
-                  </View>
-
-                  {/* Description */}
-                  <Text style={styles.description}>{event.description}</Text>
-
-                  {/* Dates */}
-                  <View style={styles.datesContainer}>
-                    <View style={styles.dateRow}>
-                      <Ionicons name="calendar" size={16} color="#059669" />
-                      <Text style={styles.islamicDate}>
-                        {event.islamic_date}
-                      </Text>
-                    </View>
-                    <View style={styles.dateRow}>
-                      <Ionicons name="location" size={16} color="#6b7280" />
-                      <Text style={styles.gregorianDate}>
-                        {event.gregorian_date.toLocaleDateString("en-US", {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {!isPast && (
-                    <View style={styles.countdownRow}>
-                      <Ionicons name="time" size={16} color="#f59e0b" />
-                      <Text style={styles.countdownText}>
-                        {isToday ? "Today!" : `${days} days to go`}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-
-                {/* Status Dot */}
-                <StatusIndicator status={status} />
-              </View>
-            </View>
-          );
-        })}
-
-        {/* Legend */}
-        <View style={styles.legend}>
-          <Text style={styles.legendTitle}>Legend:</Text>
-          <View style={styles.legendGrid}>
-            <View style={styles.legendItem}>
-              <View
-                style={[styles.legendDot, { backgroundColor: "#10b981" }]}
-              />
-              <Text style={styles.legendText}>Today</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View
-                style={[styles.legendDot, { backgroundColor: "#f59e0b" }]}
-              />
-              <Text style={styles.legendText}>Upcoming</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <Ionicons name="star" size={12} color="#6b7280" />
-              <Text style={styles.legendText}>Major Event</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <Ionicons name="moon" size={12} color="#6b7280" />
-              <Text style={styles.legendText}>Minor Event</Text>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </View>
+      {/* FlashList */}
+      <FlashList
+        data={displayEvents}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item }) => <EventCard event={item} />}
+        estimatedItemSize={160}
+        ListFooterComponent={<Legend />}
+      />
+    </ThemedView>
   );
+
+  // ─── footer legend ───
+  function Legend() {
+    return (
+      <View style={styles.legend}>
+        <Text style={styles.legendTitle}>{t("legendHeader")}</Text>
+        <View style={styles.legendGrid}>
+          <LegendDot color="#10b981" label={t("legendToday")} />
+          <LegendDot color="#f59e0b" label={t("legendUpcoming")} />
+          <LegendIcon icon="star" label={t("legendMajorEvent")} />
+          <LegendIcon icon="moon" label={t("legendMinorEvent")} />
+        </View>
+      </View>
+    );
+  }
 };
 
+// ────────────────────────────────────────────────────────────
 export default RenderCalendar;
 
-// ────────────────────────────────────────────────────────────
-//  Styles (unchanged from your original)
-// ────────────────────────────────────────────────────────────
+// ─── small legend helpers ───
+const LegendDot = ({ color, label }: { color: string; label: string }) => (
+  <View style={styles.legendItem}>
+    <View style={[styles.legendDot, { backgroundColor: color }]} />
+    <Text style={styles.legendText}>{label}</Text>
+  </View>
+);
+const LegendIcon = ({ icon, label }: { icon: any; label: string }) => (
+  <View style={styles.legendItem}>
+    <Ionicons name={icon} size={12} color="#6b7280" />
+    <Text style={styles.legendText}>{label}</Text>
+  </View>
+);
+
+// ─── styles (unchanged) ───
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f0fdf4" },
+  container: { flex: 1, padding: 15 },
   header: {
     alignItems: "center",
     paddingVertical: 20,
@@ -288,8 +296,13 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 4,
   },
-  title: { fontSize: 24, fontWeight: "bold", color: "#1f2937" },
-  subtitle: { fontSize: 14, color: "#6b7280" },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 14,
+  },
   filterContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -305,10 +318,16 @@ const styles = StyleSheet.create({
     borderColor: "#d1d5db",
     backgroundColor: "#ffffff",
   },
-  filterButtonActive: { backgroundColor: "#1f2937", borderColor: "#1f2937" },
-  filterButtonText: { fontSize: 14, color: "#6b7280", fontWeight: "500" },
+  filterButtonActive: {
+    backgroundColor: "#1f2937",
+    borderColor: "#1f2937",
+  },
+  filterButtonText: {
+    fontSize: 14,
+    color: "#6b7280",
+    fontWeight: "500",
+  },
   filterButtonTextActive: { color: "#ffffff" },
-  scrollView: { flex: 1, paddingHorizontal: 16 },
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 12,
@@ -386,111 +405,3 @@ const styles = StyleSheet.create({
   legendDot: { width: 8, height: 8, borderRadius: 4 },
   legendText: { fontSize: 12, color: "#6b7280" },
 });
-
-// (styles unchanged from your original)
-
-// import React, { useState } from 'react';
-// import {
-//   SafeAreaView,
-//   StatusBar,
-//   StyleSheet,
-// } from 'react-native';
-// import SuraList from './SuraList';
-// import SuraDetail from './SuraDetails';
-// import VerseText from './SuraDetails';
-// import VerseExplanation from './VerseExplaination';
-// import { suras } from '@/utils/suraData';
-
-// const RenderCalender = () => {
-//   const [currentView, setCurrentView] = useState('list'); // 'list', 'detail', 'verses', 'explanation'
-//   const [selectedSura, setSelectedSura] = useState(null);
-//   const [selectedVerse, setSelectedVerse] = useState(null);
-
-//   const handleSuraSelect = (sura) => {
-//     setSelectedSura(sura);
-//     setCurrentView('detail');
-//   };
-
-//   const handleShowVerses = () => {
-//     setCurrentView('verses');
-//   };
-
-//   const handleVerseSelect = (verse) => {
-//     setSelectedVerse(verse);
-//     setCurrentView('explanation');
-//   };
-
-//   const handleBackToList = () => {
-//     setCurrentView('list');
-//     setSelectedSura(null);
-//   };
-
-//   const handleBackToDetail = () => {
-//     setCurrentView('detail');
-//     setSelectedVerse(null);
-//   };
-
-//   const handleBackToVerses = () => {
-//     setCurrentView('verses');
-//     setSelectedVerse(null);
-//   };
-
-//   const renderCurrentView = () => {
-//     switch (currentView) {
-//       case 'list':
-//         return (
-//           <SuraList
-//             suras={suras}
-//             onSuraSelect={handleSuraSelect}
-//           />
-//         );
-//       case 'detail':
-//         return (
-//           <SuraDetail
-//             sura={selectedSura}
-//             onBack={handleBackToList}
-//             onShowVerses={handleShowVerses}
-//           />
-//         );
-//       case 'verses':
-//         return (
-//           <VerseText
-//             sura={selectedSura}
-//             onBack={handleBackToDetail}
-//             onVerseSelect={handleVerseSelect}
-//           />
-//         );
-//       case 'explanation':
-//         return (
-//           <VerseExplanation
-//             sura={selectedSura}
-//             verse={selectedVerse}
-//             onBack={handleBackToVerses}
-//           />
-//         );
-//       default:
-//         return (
-//           <SuraList
-//             suras={suras}
-//             onSuraSelect={handleSuraSelect}
-//           />
-//         );
-//     }
-//   };
-
-//   return (
-//     <SafeAreaView style={styles.container}>
-//       <StatusBar barStyle="light-content" backgroundColor="#065f46" />
-//       {renderCurrentView()}
-//     </SafeAreaView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f0fdf4',
-//   },
-// });
-
-// export default RenderCalender;

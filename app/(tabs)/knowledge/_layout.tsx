@@ -8,6 +8,7 @@ const _layout = () => {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(prayers)" options={{ headerShown: false }} />
       <Stack.Screen name="(questions)" options={{ headerShown: false }} />
+      <Stack.Screen name="(quran)" options={{ headerShown: false }} />
     </Stack>
   );
 };

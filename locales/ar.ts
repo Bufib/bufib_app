@@ -60,7 +60,7 @@ export const ar = {
   podcastScreenTitle: "بودكاست",
   home: "الرئيسية",
   calenderScreenTitle: "تقويم",
-
+  quranScreen: "قرآن",
   // Database
   updateAvailable: "تحديث جديد متوفر",
   newAppVersionAvailable: "إصدار جديد من التطبيق متوفّر في متجر التطبيقات!",
