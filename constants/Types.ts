@@ -405,7 +405,6 @@ export type PodcastType = {
   description: string;
   filename: string;
   language_code?: string;
-  published_at: string;
   created_at: string;
 };
 
