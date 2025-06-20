@@ -450,7 +450,7 @@ export type QuestionsFromUserType = {
 };
 
 // Calender
-export type calendarType = {
+export type CalendarType = {
   id: number;
   title: string;
   islamic_date: string;
