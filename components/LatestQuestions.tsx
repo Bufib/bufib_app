@@ -8,19 +8,21 @@ import {
   useColorScheme,
 } from "react-native";
 import { router } from "expo-router";
-import { getLatestQuestions } from "@/utils/bufibDatabase";
+import { getLatestQuestions } from "@/app/db/queries/questions";
 import { QuestionType } from "@/constants/Types";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
-import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
+import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const LatestQuestions: React.FC = () => {
   //State & Hooks
   const [latestQuestions, setLatestQuestions] = useState<QuestionType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const dbInitialized = useInitializeDatabase();
+  const {language} = useLanguage();
+  const dbInitialized = useDatabaseSync(language || "de");
   const themeStyles = CoustomTheme();
   const colorScheme = useColorScheme();
 

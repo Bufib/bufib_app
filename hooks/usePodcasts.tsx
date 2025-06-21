@@ -209,13 +209,13 @@ export function usePodcasts(language: string) {
   >({
     queryKey,
     queryFn: async ({ pageParam = 0 }) => {
-      // Fetch a page of size PAGE_SIZE, ordered by published_at DESC
+      // Fetch a page of size PAGE_SIZE, ordered by created_at DESC
       // Count returns overall count
       const { data, error, count } = await supabase
         .from("episodes")
         .select("*", { count: "exact" })
         .eq("language_code", language)
-        .order("published_at", { ascending: false })
+        .order("created_at", { ascending: false })
         .range(pageParam, pageParam + PAGE_SIZE - 1);
 
       if (error) {

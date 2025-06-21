@@ -21,7 +21,7 @@ export function useSearchPodcasts(searchTerm: string) {
         .from("episodes")
         .select("*")
         .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
-        .order("published_at", { ascending: false });
+        .order("created_at", { ascending: false });
 
       if (error) {
         console.error("Supabase query error:", error);

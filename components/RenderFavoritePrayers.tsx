@@ -12,11 +12,10 @@ import {
   Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-
 import {
-  getFavoritePrayerFolders,
   getFavoritePrayersForFolder,
-} from "@/utils/bufibDatabase";
+  getFavoritePrayerFolders,
+} from "@/app/db/queries/prayers";
 import { FavoritePrayerFolderType, PrayerType } from "@/constants/Types";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";

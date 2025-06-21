@@ -185,7 +185,7 @@ import { router } from "expo-router";
 import {
   isQuestionInFavorite,
   toggleQuestionFavorite,
-} from "@/utils/bufibDatabase";
+} from "../db/queries/questions";
 
 export default function Question() {
   const { category, subcategory, questionId, questionTitle } =

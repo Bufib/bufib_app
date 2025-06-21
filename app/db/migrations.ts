@@ -93,30 +93,6 @@ export const migrationSQL = `
         language_code  TEXT NOT NULL
     );
 
-    CREATE TABLE IF NOT EXISTS quran_suras (
-        id                INTEGER PRIMARY KEY,
-        transliteration   TEXT NOT NULL,
-        arabic_title      TEXT NOT NULL,
-        german_title      TEXT NOT NULL,
-        main_topic        TEXT,
-        sura_description  TEXT,
-        verse_count       INTEGER NOT NULL,
-        created_at        TEXT DEFAULT CURRENT_TIMESTAMP,
-        language_code     TEXT NOT NULL
-    );
-
-
-    CREATE TABLE IF NOT EXISTS quran_vers(
-        id                INTEGER PRIMARY KEY,
-        created_at        TEXT DEFAULT CURRENT_TIMESTAMP,
-        sura_number       INTEGER NOT NULL,
-        vers_number       INTEGER NOT NULL,
-        arabic_text       TEXT NOT NULL,
-        german_text       TEXT NOT NULL,
-        explanation       TEXT NOT NULL,
-        language_code     TEXT NOT NULL
-    );
-
     CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_id
         ON favorite_prayers(prayer_id);
 

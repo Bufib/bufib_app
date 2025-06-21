@@ -13,11 +13,11 @@ import {
 import { useLocalSearchParams, router } from "expo-router";
 import { PrayerCategoryType, PrayerWithCategory } from "@/constants/Types";
 import {
-  getChildCategories,
-  getPrayersForCategory,
   getCategoryByTitle,
-  getAllPrayersForArabic,
-} from "@/utils/bufibDatabase";
+  getChildCategories,
+} from "@/app/db/queries/prayers";
+import { getPrayersForCategory } from "@/app/db/queries/prayers";
+import { getAllPrayersForArabic } from "@/app/db/queries/prayers";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -132,7 +132,7 @@ export default function CategoryScreen() {
     try {
       const subcategoryPrayers = await getPrayersForCategory(
         cat.id,
-        language.toUpperCase()
+        language || "de"
       );
       setFilteredPrayers(subcategoryPrayers);
     } catch {

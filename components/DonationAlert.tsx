@@ -7,9 +7,10 @@ import { useColorScheme } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState } from "react";
 import { Storage } from "expo-sqlite/kv-store";
-import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import Toast from "react-native-toast-message";
+import { useDatabaseSync } from "@/hooks/useDatabaseSync";
+import { useLanguage } from "@/contexts/LanguageContext";
 type DonationAlertProps = {
   isVisible: boolean;
   onClose: () => void;
@@ -19,8 +20,10 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
   isVisible,
   onClose,
 }) => {
+
   const colorScheme = useColorScheme();
-  const dbInitialized = useInitializeDatabase();
+  const {language} = useLanguage();
+  const dbInitialized = useDatabaseSync(language || "de");
   const [payPalLink, setPayPalLink] = useState<string | null>(null);
 
   // paypal

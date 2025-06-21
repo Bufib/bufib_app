@@ -9,25 +9,25 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
-import { fetchCalendarEventsByLanguage } from "@/utils/bufibDatabase";
-import type { calendarType } from "@/constants/Types";
+import { CalendarType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import { Colors } from "@/constants/Colors";
+import { getAllCalendarEvents } from "@/app/db/queries/calendar";
 
 // ────────────────────────────────────────────────────────────
 const RenderCalendar: React.FC = () => {
   const [filter, setFilter] = useState<"all" | "major" | "minor">("all");
-  const [events, setEvents] = useState<calendarType[]>([]);
+  const [events, setEvents] = useState<CalendarType[]>([]);
   const { language } = useLanguage();
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light"
   // ─── load + parse once (or when language changes) ───
   useEffect(() => {
     (async () => {
-      const data = await fetchCalendarEventsByLanguage(language ?? "de");
+      const data = await getAllCalendarEvents(language || "de");
       if (data) {
         setEvents(
           data.map((r) => ({
@@ -89,7 +89,7 @@ const RenderCalendar: React.FC = () => {
   );
 
   // ─── card (memoised) ───
-  const EventCard = React.memo(({ event }: { event: calendarType }) => {
+  const EventCard = React.memo(({ event }: { event: CalendarType }) => {
     const days = getDaysUntil(event.gregorian_date);
     const isPast = days < 0;
     const isToday = days === 0;

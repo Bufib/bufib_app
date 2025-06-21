@@ -5,10 +5,10 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
+
 import { useAuthStore } from "@/stores/authStore";
 import useNotificationStore from "@/stores/notificationStore";
-import { getQuestionCount } from "@/utils/bufibDatabase";
+import { getQuestionCount } from "@/app/db/queries/questions";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import { useLogout } from "@/utils/useLogout";
 import Constants from "expo-constants";
@@ -32,6 +32,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
+import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
@@ -44,13 +45,13 @@ const Settings = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const { getNotifications, toggleGetNotifications, permissionStatus } =
     useNotificationStore();
-  const dbInitialized = useInitializeDatabase();
+  const { isArabic, language } = useLanguage();
+  const dbInitialized = useDatabaseSync(language || "de");
   const hasInternet = useConnectionStatus();
   const logout = useLogout();
   const effectiveEnabled = getNotifications && permissionStatus === "granted";
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const { t } = useTranslation();
-  const { isArabic } = useLanguage();
   // animate opacity on mount
   useEffect(() => {
     Animated.timing(fadeAnim, {

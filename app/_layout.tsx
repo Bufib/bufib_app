@@ -7,7 +7,7 @@ import { Colors } from "@/constants/Colors";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { useInitializeDatabase } from "@/hooks/useInitializeDatabase.ts";
+import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 import { cleanupCache } from "@/hooks/usePodcasts";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useAuthStore } from "@/stores/authStore";
@@ -62,7 +62,6 @@ const queryClient = new QueryClient();
 function AppContent() {
   const colorScheme = useColorScheme() || "light";
   const { ready: languageContextReady, language } = useLanguage();
-  const dbInitialized = useInitializeDatabase();
   const restoreSession = useAuthStore((state) => state.restoreSession);
   const [isSessionRestored, setIsSessionRestored] = useState(false);
   const hasInternet = useConnectionStatus();
@@ -70,6 +69,7 @@ function AppContent() {
   const [storesHydrated, setStoresHydrated] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const { t } = useTranslation();
+  const isDbReady = useDatabaseSync(language|| "de");
 
   // Effect to set color theme from Storage
   useEffect(() => {
@@ -143,7 +143,7 @@ function AppContent() {
       languageContextReady &&
       storesHydrated &&
       isSessionRestored &&
-      !dbInitialized &&
+      !isDbReady &&
       hasInternet
     ) {
       timer = setTimeout(() => {
@@ -158,7 +158,7 @@ function AppContent() {
     languageContextReady,
     storesHydrated,
     isSessionRestored,
-    dbInitialized,
+    isDbReady,
     hasInternet,
   ]);
 
@@ -168,7 +168,7 @@ function AppContent() {
       languageContextReady &&
       storesHydrated &&
       isSessionRestored &&
-      dbInitialized;
+      isDbReady;
 
     if (allAppReady) {
       SplashScreen.hideAsync();
@@ -184,12 +184,12 @@ function AppContent() {
       });
     }
     // If not all ready but hasInternet, splash remains visible.
-    // The specific DB loading screen will appear if dbInitialized is false after timeout.
+    // The specific DB loading screen will appear if isDbReady is false after timeout.
   }, [
     languageContextReady,
     storesHydrated,
     isSessionRestored,
-    dbInitialized,
+    isDbReady,
     hasInternet,
   ]);
 
@@ -220,7 +220,7 @@ function AppContent() {
 
   // 3. Show specific DB loading screen
   // This screen shows if DB is not ready, after a delay, and internet is available.
-  if (!dbInitialized && showLoadingScreen && hasInternet) {
+  if (!isDbReady && showLoadingScreen && hasInternet) {
     return (
       <View
         style={{
@@ -269,7 +269,7 @@ function AppContent() {
   // (e.g. timeout not elapsed, or no internet and splash already handled),
   // returning null will keep the splash screen visible or show a blank screen if splash was hidden due to no internet.
   // This prevents rendering the main app structure prematurely.
-  if (!dbInitialized && hasInternet) {
+  if (!isDbReady && hasInternet) {
     // If still waiting for DB with internet, and not showing the specific loader.
     return null; // Keep splash or show blank
   }
@@ -283,10 +283,7 @@ function AppContent() {
             <NoInternet showUI={!hasInternet} showToast={true} />
             <QueryClientProvider client={queryClient}>
               <SupabaseRealtimeProvider>
-                <SQLiteProvider
-                  databaseName="bufib.db"
-                  useSuspense={false}
-                >
+                <SQLiteProvider databaseName="bufib.db" useSuspense={false}>
                   <Stack
                     screenOptions={{
                       headerTintColor:

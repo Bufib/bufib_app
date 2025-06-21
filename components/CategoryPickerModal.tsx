@@ -406,13 +406,11 @@ import {
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import {
-  getFavoritePrayerFolders,
-  getFoldersForPrayer,
-  createFolder,
-  addPrayerToFolder,
-  removePrayerFromFolder,
-} from "@/utils/bufibDatabase";
+import { createFolder } from "@/app/db/queries/prayers";
+import { getFoldersForPrayer } from "@/app/db/queries/prayers";
+import { getFavoritePrayerFolders } from "@/app/db/queries/prayers";
+import { removePrayerFromFolder } from "@/app/db/queries/prayers";
+import { addPrayerToFolder } from "@/app/db/queries/prayers";
 import { FavoritePrayerFolderType } from "@/constants/Types";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 
@@ -611,7 +609,7 @@ export default function CategoryPickerBottomSheet({
           style={styles.input}
           editable={!loading}
         />
-         <Text style={styles.sectionTitle}>{t("pickColor")}</Text>
+        <Text style={styles.sectionTitle}>{t("pickColor")}</Text>
         <View style={styles.colorsWrap}>
           {COLORS.map((c) => (
             <TouchableOpacity

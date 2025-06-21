@@ -12,7 +12,7 @@ import { ThemedView } from "@/components/ThemedView";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useColorScheme } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { getQuestionsForSubcategory } from "../utils/bufibDatabase";
+import { getQuestionsForSubcategory } from "@/app/db/queries/questions";
 import { QuestionType } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 
