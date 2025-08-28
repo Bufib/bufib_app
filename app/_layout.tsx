@@ -344,8 +344,8 @@ export default function RootLayout() {
         databaseName="bufib.db"
         useSuspense={false}
         onInit={async (db) => {
-          setDatabase(db);
           await db.execAsync(migrationSQL);
+          setDatabase(db);
         }}
       >
         <AppContent />

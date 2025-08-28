@@ -51,7 +51,7 @@ export async function fetchVersionFromSupabase(): Promise<DatasetVersionsType | 
     const { data, error } = await supabase
       .from("versions")
       .select(
-        "question_data_version, quran_data_version, calendar_data_version, dua_data_version, app_version"
+        "question_data_version, quran_data_version, calendar_data_version, prayer_data_version, app_version"
       )
       .order("id", { ascending: false })
       .limit(1)
@@ -68,7 +68,7 @@ export async function fetchVersionFromSupabase(): Promise<DatasetVersionsType | 
       question_data_version: row.question_data_version ?? null,
       quran_data_version: row.quran_data_version ?? null,
       calendar_data_version: row.calendar_data_version ?? null,
-      dua_data_version: row.dua_data_version ?? null,
+      prayer_data_version: row.prayer_data_version ?? null,
       app_version: row.app_version ?? null,
     };
   } catch (err) {

@@ -1,7 +1,8 @@
 export const migrationSQL = `
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
-
+    PRAGMA busy_timeout = 5000;
+    
     CREATE TABLE IF NOT EXISTS question_categories (
         question_category_name TEXT PRIMARY KEY
     );
@@ -26,7 +27,7 @@ export const migrationSQL = `
     CREATE TABLE IF NOT EXISTS prayer_categories (
         id        INTEGER PRIMARY KEY,
         title     TEXT    NOT NULL,
-        parent_id TEXT    -- JSON array of numeric IDs, no FK
+        parent_id TEXT    
     );
 
     CREATE TABLE IF NOT EXISTS prayers (
@@ -120,15 +121,15 @@ export const migrationSQL = `
     CREATE UNIQUE INDEX IF NOT EXISTS ux_prayer_translations_pid_lang
     ON prayer_translations (prayer_id, language_code);
 
-        -- === Quran dataset ===========================================================
-    -- Ayah texts per language + transliteration
     CREATE TABLE IF NOT EXISTS aya_ar (
     id INTEGER PRIMARY KEY,
     sura INTEGER NOT NULL,
     aya  INTEGER NOT NULL,
     quran_arabic_text TEXT NOT NULL
     );
+
     CREATE UNIQUE INDEX IF NOT EXISTS ux_aya_ar_sura_aya ON aya_ar(sura, aya);
+    
     CREATE INDEX IF NOT EXISTS idx_aya_ar_sura        ON aya_ar(sura);
 
     CREATE TABLE IF NOT EXISTS aya_de (
@@ -137,6 +138,7 @@ export const migrationSQL = `
     aya  INTEGER NOT NULL,
     quran_german_text TEXT NOT NULL
     );
+
     CREATE UNIQUE INDEX IF NOT EXISTS ux_aya_de_sura_aya ON aya_de(sura, aya);
     CREATE INDEX IF NOT EXISTS idx_aya_de_sura        ON aya_de(sura);
 
@@ -144,9 +146,11 @@ export const migrationSQL = `
     id INTEGER PRIMARY KEY,
     sura INTEGER NOT NULL,
     aya  INTEGER NOT NULL,
-    "desc" TEXT NOT NULL              -- matches Supabase column name
+    "desc" TEXT NOT NULL             
     );
+
     CREATE UNIQUE INDEX IF NOT EXISTS ux_aya_en_sura_aya ON aya_en(sura, aya);
+    
     CREATE INDEX IF NOT EXISTS idx_aya_en_sura        ON aya_en(sura);
 
     CREATE TABLE IF NOT EXISTS aya_en_transliteration (
@@ -155,10 +159,11 @@ export const migrationSQL = `
     aya  INTEGER NOT NULL,
     quran_transliteration_text TEXT NOT NULL
     );
+
     CREATE UNIQUE INDEX IF NOT EXISTS ux_aya_en_tr_sura_aya ON aya_en_transliteration(sura, aya);
+    
     CREATE INDEX IF NOT EXISTS idx_aya_en_tr_sura        ON aya_en_transliteration(sura);
 
-    -- Hizb markers
     CREATE TABLE IF NOT EXISTS hizb (
     id   INTEGER PRIMARY KEY,
     sura INTEGER NOT NULL,
@@ -166,17 +171,17 @@ export const migrationSQL = `
     );
     CREATE INDEX IF NOT EXISTS idx_hizb_sura_aya ON hizb(sura, aya);
 
-    -- Juz + page markers
     CREATE TABLE IF NOT EXISTS juz (
     id   INTEGER PRIMARY KEY,
     sura INTEGER NOT NULL,
     aya  INTEGER NOT NULL,
     page INTEGER NOT NULL
     );
+
     CREATE INDEX IF NOT EXISTS idx_juz_page      ON juz(page);
+    
     CREATE INDEX IF NOT EXISTS idx_juz_sura_aya  ON juz(sura, aya);
 
-    -- Ruku markers
     CREATE TABLE IF NOT EXISTS ruku (
     id   INTEGER PRIMARY KEY,
     sura INTEGER NOT NULL,
@@ -184,16 +189,16 @@ export const migrationSQL = `
     );
     CREATE INDEX IF NOT EXISTS idx_ruku_sura_aya ON ruku(sura, aya);
 
-    -- Sajda markers
     CREATE TABLE IF NOT EXISTS sajda (
     id   INTEGER PRIMARY KEY,
     sura INTEGER NOT NULL,
     aya  INTEGER NOT NULL,
     type INTEGER
     );
+
     CREATE INDEX IF NOT EXISTS idx_sajda_sura_aya ON sajda(sura, aya);
 
-        CREATE TABLE IF NOT EXISTS sura (
+    CREATE TABLE IF NOT EXISTS sura (
     id         INTEGER PRIMARY KEY,
     label      TEXT    NOT NULL UNIQUE,
     label_en   TEXT,
@@ -209,8 +214,10 @@ export const migrationSQL = `
     );
 
     CREATE INDEX IF NOT EXISTS idx_sura_orderId   ON sura(orderId);
-    CREATE INDEX IF NOT EXISTS idx_sura_startPage ON sura(startPage);
-    CREATE INDEX IF NOT EXISTS idx_sura_endPage   ON sura(endPage);
-    CREATE INDEX IF NOT EXISTS idx_sura_makki     ON sura(makki);
 
+    CREATE INDEX IF NOT EXISTS idx_sura_startPage ON sura(startPage);
+
+    CREATE INDEX IF NOT EXISTS idx_sura_endPage   ON sura(endPage);
+
+    CREATE INDEX IF NOT EXISTS idx_sura_makki     ON sura(makki);
      `;

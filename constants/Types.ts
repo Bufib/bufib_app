@@ -80,7 +80,7 @@ export type DatasetVersionsType = {
   question_data_version: string | null;
   quran_data_version: string | null;
   calendar_data_version: string | null;
-  dua_data_version: string | null;
+  prayer_data_version: string | null;
   app_version: string | null;
 };
 

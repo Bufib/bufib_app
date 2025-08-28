@@ -217,7 +217,7 @@ import { whenDatabaseReady, safeInitializeDatabase } from "@/db";
  * Manages local DB sync with Supabase.
  * - Waits for SQLiteProvider onInit (migrations + handle ready)
  * - Offline fallback: if local questions exist, app can start
- * - Per-dataset, per-language versions (questions, quran, calendar, dua)
+ * - Per-dataset, per-language versions (questions, quran, calendar, prayer)
  * - Realtime listeners to re-sync when any dataset version changes
  *
  * @param language i18n language code (e.g. 'en', 'de')
@@ -260,7 +260,7 @@ export function useDatabaseSync(language: string = i18n.language): boolean {
       //   question_data_version: string,
       //   app_version: string,
       //   quran_data_version?: string,
-      //   dua_data_version?: string,
+      //   prayer_data_version?: string,
       //   calendar_data_version?: string
       // }
       const remote = await fetchVersionFromSupabase();
@@ -270,7 +270,7 @@ export function useDatabaseSync(language: string = i18n.language): boolean {
           question_data_version: questionsVer,
           quran_data_version: quranVer,
           calendar_data_version: calendarVer,
-          dua_data_version: duaVer,
+          prayer_data_version: prayerVer,
         } = remote;
 
         // helper to sync one dataset with version + language awareness
@@ -307,37 +307,67 @@ export function useDatabaseSync(language: string = i18n.language): boolean {
           return false;
         };
 
-        // Run per-dataset syncs (in parallel)
-        const results = await Promise.allSettled([
-          syncDataset(
-            "questions_version",
-            "synced_questions",
-            questionsVer,
-            () => syncQuestions(language),
-            true
-          ),
-          syncDataset(
-            "quran_version",
-            "synced_quran",
-            quranVer,
-            () => syncQuran(language),
-            true // treat Quran as language-scoped (you can set false if you prefer)
-          ),
-          syncDataset(
-            "calendar_version",
-            "synced_calendar",
-            calendarVer,
-            () => syncCalendar(language),
-            true
-          ),
-          syncDataset(
-            "dua_version",
-            "synced_dua",
-            duaVer,
-            () => syncPrayers(language),
-            true
-          ),
-        ]);
+        // // Run per-dataset syncs (in parallel)
+        // const results = await Promise.allSettled([
+        //   syncDataset(
+        //     "questions_version",
+        //     "synced_questions",
+        //     questionsVer,
+        //     () => syncQuestions(language),
+        //     true
+        //   ),
+        //   syncDataset(
+        //     "quran_version",
+        //     "synced_quran",
+        //     quranVer,
+        //     () => syncQuran(language),
+        //     true // treat Quran as language-scoped (you can set false if you prefer)
+        //   ),
+        //   syncDataset(
+        //     "calendar_version",
+        //     "synced_calendar",
+        //     calendarVer,
+        //     () => syncCalendar(language),
+        //     true
+        //   ),
+        //   syncDataset(
+        //     "dua_version",
+        //     "synced_prayers",
+        //     prayerVer,
+        //     () => syncPrayers(language),
+        //     true
+        //   ),
+        // ]);
+
+        // useDatabaseSync.ts — run sequentially to avoid lock contention
+        await syncDataset(
+          "question_data_version",
+          "synced_questions",
+          questionsVer,
+          () => syncQuestions(language),
+          true
+        );
+        await syncDataset(
+          "quran_data_version",
+          "synced_quran",
+          quranVer,
+          () => syncQuran(language),
+          true
+        );
+        await syncDataset(
+          "calendar_data_version",
+          "synced_calendar",
+          calendarVer,
+          () => syncCalendar(language),
+          true
+        );
+        await syncDataset(
+          "prayer_data_version",
+          "synced_prayers",
+          prayerVer,
+          () => syncPrayers(language),
+          true
+        );
 
         // Keep PayPal up-to-date during normal runs as well
         await syncPayPal();
@@ -391,9 +421,9 @@ export function useDatabaseSync(language: string = i18n.language): boolean {
       const quranChanged = n?.quran_data_version !== o?.quran_data_version;
       const calendarChanged =
         n?.calendar_data_version !== o?.calendar_data_version;
-      const duaChanged = n?.dua_data_version !== o?.dua_data_version;
+      const prayerChanged = n?.prayer_data_version !== o?.prayer_data_version;
 
-      if (questionsChanged || quranChanged || calendarChanged || duaChanged) {
+      if (questionsChanged || quranChanged || calendarChanged || prayerChanged) {
         await initializeSafely();
         router.replace("/(tabs)/home");
         databaseUpdate();

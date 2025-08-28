@@ -12,10 +12,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { PrayerCategoryType, PrayerWithCategory } from "@/constants/Types";
-import {
-  getCategoryByTitle,
-  getChildCategories,
-} from "@/db/queries/prayers";
+import { getCategoryByTitle, getChildCategories } from "@/db/queries/prayers";
 import { getPrayersForCategory } from "@/db/queries/prayers";
 import { getAllPrayersForArabic } from "@/db/queries/prayers";
 import { CoustomTheme } from "@/utils/coustomTheme";
