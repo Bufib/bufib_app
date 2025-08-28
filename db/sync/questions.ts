@@ -222,7 +222,6 @@
 
 // export default syncQuestions;
 
-
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
 import { QuestionType } from "@/constants/Types";
@@ -272,7 +271,9 @@ async function syncQuestions(language: string): Promise<void> {
         // a) Sync categories
         const categories = Array.from(
           new Set(
-            (questions as QuestionType[]).map((q) => q.question_category_name).filter(Boolean)
+            (questions as QuestionType[])
+              .map((q) => q.question_category_name)
+              .filter(Boolean)
           )
         );
         for (const name of categories) {
@@ -281,7 +282,9 @@ async function syncQuestions(language: string): Promise<void> {
         // b) Sync subcategories
         const subcategories = Array.from(
           new Set(
-            (questions as QuestionType[]).map((q) => q.question_subcategory_name).filter(Boolean)
+            (questions as QuestionType[])
+              .map((q) => q.question_subcategory_name)
+              .filter(Boolean)
           )
         );
         for (const name of subcategories) {
@@ -300,10 +303,9 @@ async function syncQuestions(language: string): Promise<void> {
           );
         } else {
           // No remote rows => clear all for this language
-          await txn.runAsync(
-            `DELETE FROM questions WHERE language_code = ?;`,
-            [language]
-          );
+          await txn.runAsync(`DELETE FROM questions WHERE language_code = ?;`, [
+            language,
+          ]);
         }
 
         // d) Insert or replace questions
@@ -321,7 +323,6 @@ async function syncQuestions(language: string): Promise<void> {
             q.language_code,
           ]);
         }
-
       } catch (txnError) {
         console.error("Transaction error in syncQuestions:", txnError);
       } finally {
@@ -339,5 +340,3 @@ async function syncQuestions(language: string): Promise<void> {
 }
 
 export default syncQuestions;
-
-

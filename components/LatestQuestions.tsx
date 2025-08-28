@@ -8,7 +8,7 @@ import {
   useColorScheme,
 } from "react-native";
 import { router } from "expo-router";
-import { getLatestQuestions } from "@/app/db/queries/questions";
+import { getLatestQuestions } from "@/db/queries/questions";
 import { QuestionType } from "@/constants/Types";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "./ThemedText";

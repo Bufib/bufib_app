@@ -33,7 +33,7 @@
     "@types/lodash.debounce": "^4.0.9",
     "base64-arraybuffer": "^1.0.2",
     "cloudinary-react-native": "^1.0.1",
-    "expo": "53.0.12",
+    "expo": "^53.0.20",
     "expo-audio": "~0.4.6",
     "expo-blur": "~14.1.5",
     "expo-clipboard": "~7.1.4",

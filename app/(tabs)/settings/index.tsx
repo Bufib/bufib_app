@@ -8,7 +8,7 @@ import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 
 import { useAuthStore } from "@/stores/authStore";
 import useNotificationStore from "@/stores/notificationStore";
-import { getQuestionCount } from "@/app/db/queries/questions";
+import { getQuestionCount } from "@/db/queries/questions";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import { useLogout } from "@/utils/useLogout";
 import Constants from "expo-constants";

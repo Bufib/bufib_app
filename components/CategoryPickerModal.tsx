@@ -406,11 +406,11 @@ import {
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { createFolder } from "@/app/db/queries/prayers";
-import { getFoldersForPrayer } from "@/app/db/queries/prayers";
-import { getFavoritePrayerFolders } from "@/app/db/queries/prayers";
-import { removePrayerFromFolder } from "@/app/db/queries/prayers";
-import { addPrayerToFolder } from "@/app/db/queries/prayers";
+import { createFolder } from "@/db/queries/prayers";
+import { getFoldersForPrayer } from "@/db/queries/prayers";
+import { getFavoritePrayerFolders } from "@/db/queries/prayers";
+import { removePrayerFromFolder } from "@/db/queries/prayers";
+import { addPrayerToFolder } from "@/db/queries/prayers";
 import { FavoritePrayerFolderType } from "@/constants/Types";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 

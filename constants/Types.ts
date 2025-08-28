@@ -56,6 +56,8 @@ export type NewsCardType = {
 };
 
 // General
+export type Language = "ar" | "en" | "de";
+
 export type Sizes = {
   elementSize: number;
   fontSize: number;
@@ -72,6 +74,14 @@ export type Sizes = {
 export type triggerRefreshFavoritesType = {
   refreshTriggerFavorites: number;
   triggerRefreshFavorites: () => void;
+};
+
+export type DatasetVersionsType = {
+  question_data_version: string | null;
+  quran_data_version: string | null;
+  calendar_data_version: string | null;
+  dua_data_version: string | null;
+  app_version: string | null;
 };
 
 // Prayer and Question ButtonLinks
@@ -473,4 +483,78 @@ export type QuranSuraType = {
   verse_count: number;
   created_at: string;
   language_code: string;
+};
+
+export interface SuraType {
+  id: number;
+  label: string;
+  label_en?: string;
+  label_de: string;
+  nbAyat: number;
+  nbWord: number;
+  nbLetter: number;
+  orderId: number;
+  makki: number;
+  startPage: number;
+  endPage: number;
+  ruku?: number;
+}
+
+export interface AyahType {
+  id: number;
+  sura: number;
+  aya: number;
+  text: string;
+  transliteration?: string;
+}
+
+export interface QuranMarkerType {
+  id: number;
+  sura: number;
+  aya: number;
+  type?: number;
+  page?: number;
+}
+
+export interface QuranDisplayData {
+  sura: SuraType;
+  ayahs: AyahType[];
+  markers: {
+    hizb?: QuranMarkerType[];
+    juz?: QuranMarkerType[];
+    ruku?: QuranMarkerType[];
+    sajda?: QuranMarkerType[];
+  };
+}
+
+export type QuranVerseType = {
+  sura: number; // 1..114
+  aya: number; // 1..n
+  text: string; // verse text in the chosen language
+  transliteration?: string | null; // en only
+};
+
+export type SuraRowType = {
+  id: number; // source id
+  orderId: number; // canonical surah number (1..114)
+  label: string; // Arabic name
+  label_en: string | null;
+  label_de: string | null;
+  nbAyat: number;
+  nbWord: number;
+  nbLetter: number;
+  startPage: number;
+  endPage: number;
+  makki: number; // 1/0
+  ruku: number | null;
+};
+
+export type MarkerRowType = {
+  id: number;
+  sura: number;
+  aya: number;
+};
+
+export type JuzRow = MarkerRowType & {
+  page: number;
 };

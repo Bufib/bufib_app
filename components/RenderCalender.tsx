@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import { Colors } from "@/constants/Colors";
-import { getAllCalendarEvents } from "@/app/db/queries/calendar";
+import { getAllCalendarEvents } from "@/db/queries/calendar";
 
 // ────────────────────────────────────────────────────────────
 const RenderCalendar: React.FC = () => {

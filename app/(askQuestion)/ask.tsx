@@ -23,7 +23,7 @@ import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
 import { askQuestionQuestionSendSuccess } from "@/constants/messages";
 import { SearchResults } from "@/utils/types";
-import { searchQuestions } from "../db/queries/questions";
+import { searchQuestions } from "../../db/queries/questions";
 import { FlatList } from "react-native";
 import DonationAlert from "@/components/DonationAlert";
 import { NoInternet } from "@/components/NoInternet";

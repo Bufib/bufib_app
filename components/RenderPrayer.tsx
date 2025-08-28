@@ -19,7 +19,7 @@ import {
   StatusBar,
   TextStyle,
 } from "react-native";
-import { getPrayerWithTranslations } from "@/app/db/queries/prayers";
+import { getPrayerWithTranslations } from "@/db/queries/prayers";
 import { PrayerType, PrayerWithTranslationType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemedView } from "./ThemedView";

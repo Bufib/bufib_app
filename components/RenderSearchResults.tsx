@@ -14,8 +14,8 @@ import {
 } from "react-native";
 import debounce from "lodash.debounce";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { searchQuestions } from "@/app/db/queries/questions";
-import { searchPrayers } from "@/app/db/queries/prayers";
+import { searchQuestions } from "@/db/queries/questions";
+import { searchPrayers } from "@/db/queries/prayers";
 import { useSearchPodcasts } from "@/hooks/useSearchPodcasts";
 import { useSearchNewsArticles } from "@/hooks/useSearchNewsArticles";
 import {

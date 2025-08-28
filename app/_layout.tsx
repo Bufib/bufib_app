@@ -39,6 +39,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MenuProvider } from "react-native-popup-menu";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
+import { migrationSQL } from "../db/migrations";
+import { setDatabase } from "../db";
 
 //! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
@@ -69,7 +71,7 @@ function AppContent() {
   const [storesHydrated, setStoresHydrated] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const { t } = useTranslation();
-  const isDbReady = useDatabaseSync(language|| "de");
+  const isDbReady = useDatabaseSync(language || "de");
 
   // Effect to set color theme from Storage
   useEffect(() => {
@@ -164,17 +166,11 @@ function AppContent() {
 
   // Combined SplashScreen hiding logic
   useEffect(() => {
-    const allAppReady =
-      languageContextReady &&
-      storesHydrated &&
-      isSessionRestored &&
-      isDbReady;
+    const essentialsReady =
+      languageContextReady && storesHydrated && isSessionRestored;
 
-    if (allAppReady) {
-      SplashScreen.hideAsync();
-    } else if (!hasInternet && languageContextReady && storesHydrated) {
-      // If critical initializations (language, stores) are done but there's no internet,
-      // and DB might be pending or session restoration.
+    if (!hasInternet && languageContextReady && storesHydrated) {
+      // No internet: show toast and let user into the app shell
       SplashScreen.hideAsync();
       Toast.show({
         type: "error",
@@ -182,15 +178,20 @@ function AppContent() {
         text2: t("noInternetMessage"),
         visibilityTime: 5000,
       });
+      return;
     }
-    // If not all ready but hasInternet, splash remains visible.
-    // The specific DB loading screen will appear if isDbReady is false after timeout.
+
+    // If essentials are ready, hide splash so our in-app DB loader can show
+    if (essentialsReady || showLoadingScreen) {
+      SplashScreen.hideAsync();
+    }
   }, [
     languageContextReady,
     storesHydrated,
     isSessionRestored,
-    isDbReady,
     hasInternet,
+    showLoadingScreen,
+    t,
   ]);
 
   // Run cleanup once on app mount
@@ -283,54 +284,49 @@ function AppContent() {
             <NoInternet showUI={!hasInternet} showToast={true} />
             <QueryClientProvider client={queryClient}>
               <SupabaseRealtimeProvider>
-                <SQLiteProvider databaseName="bufib.db" useSuspense={false}>
-                  <Stack
-                    screenOptions={{
-                      headerTintColor:
-                        colorScheme === "dark" ? "#d0d0c0" : "#000",
-                    }}
-                  >
-                    <Stack.Screen
-                      name="index"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(tabs)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(addNews)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(auth)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(displayQuestion)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(newsArticle)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(displayPrayer)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(askQuestion)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(podcast)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen name="+not-found" />
-                  </Stack>
-                  <AppReviewPrompt />
-                  <StatusBar style="auto" />
-                </SQLiteProvider>
+                <Stack
+                  screenOptions={{
+                    headerTintColor:
+                      colorScheme === "dark" ? "#d0d0c0" : "#000",
+                  }}
+                >
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(addNews)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(auth)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(displayQuestion)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(newsArticle)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(displayPrayer)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(askQuestion)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(podcast)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+                <AppReviewPrompt />
+                <StatusBar style="auto" />
               </SupabaseRealtimeProvider>
             </QueryClientProvider>
           </MenuProvider>
@@ -344,7 +340,16 @@ function AppContent() {
 export default function RootLayout() {
   return (
     <LanguageProvider>
-      <AppContent />
+      <SQLiteProvider
+        databaseName="bufib.db"
+        useSuspense={false}
+        onInit={async (db) => {
+          setDatabase(db);
+          await db.execAsync(migrationSQL);
+        }}
+      >
+        <AppContent />
+      </SQLiteProvider>
     </LanguageProvider>
   );
 }

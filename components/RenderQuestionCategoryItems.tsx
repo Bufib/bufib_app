@@ -13,7 +13,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useColorScheme } from "react-native";
 import { router, Stack } from "expo-router";
 import { Colors } from "@/constants/Colors";
-import { getSubcategoriesForCategory } from "@/app/db/queries/questions";
+import { getSubcategoriesForCategory } from "@/db/queries/questions";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
 

@@ -15,9 +15,9 @@ import { PrayerCategoryType, PrayerWithCategory } from "@/constants/Types";
 import {
   getCategoryByTitle,
   getChildCategories,
-} from "@/app/db/queries/prayers";
-import { getPrayersForCategory } from "@/app/db/queries/prayers";
-import { getAllPrayersForArabic } from "@/app/db/queries/prayers";
+} from "@/db/queries/prayers";
+import { getPrayersForCategory } from "@/db/queries/prayers";
+import { getAllPrayersForArabic } from "@/db/queries/prayers";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -75,7 +75,6 @@ export default function CategoryScreen() {
       try {
         setLoading(true);
         setSelectedSubcategory(null);
-
         // Fetch prayerCategory by title
         const categoryData = await getCategoryByTitle(prayerCategory);
         if (!categoryData) {

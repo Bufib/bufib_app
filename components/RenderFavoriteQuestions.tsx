@@ -12,7 +12,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
-import { getFavoriteQuestions } from "@/app/db/queries/questions";
+import { getFavoriteQuestions } from "@/db/queries/questions";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { QuestionType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";

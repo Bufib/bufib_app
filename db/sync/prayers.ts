@@ -97,8 +97,6 @@
 //   }
 // }
 
-
-
 // import { supabase } from "@/utils/supabase";
 // import { getDatabase } from "..";
 
@@ -211,7 +209,11 @@
 
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
-import { PrayerCategoryType, PrayerType, PrayerWithTranslationType } from "@/constants/Types";
+import {
+  PrayerCategoryType,
+  PrayerType,
+  PrayerWithTranslationType,
+} from "@/constants/Types";
 
 /**
  * Syncs prayer categories, prayers, and translations from Supabase into local SQLite.
@@ -223,7 +225,7 @@ async function syncPrayers(language: string): Promise<void> {
     // 1) Fetch remote categories
     const { data: categories, error: catErr } = await supabase
       .from("prayer_categories")
-      .select("id, title, parent_id");
+      .select("id, title, parent_id, language_code");
     if (catErr) throw catErr;
 
     // 2) Fetch remote prayers
@@ -234,6 +236,7 @@ async function syncPrayers(language: string): Promise<void> {
          arabic_text, arabic_notes, transliteration_text, source,
          translated_languages, created_at, updated_at`
       );
+
     if (prayerErr) throw prayerErr;
 
     // 3) Fetch translations for current language
@@ -244,6 +247,7 @@ async function syncPrayers(language: string): Promise<void> {
          translated_text, translated_notes, source, created_at, updated_at`
       )
       .eq("language_code", language);
+
     if (transErr) throw transErr;
 
     const db = await getDatabase();
@@ -269,7 +273,7 @@ async function syncPrayers(language: string): Promise<void> {
 
       try {
         // a) Sync categories
-        for (const c of (categories as PrayerCategoryType[])) {
+        for (const c of categories as PrayerCategoryType[]) {
           const parentField = Array.isArray(c.parent_id)
             ? JSON.stringify(c.parent_id)
             : null;
@@ -277,7 +281,7 @@ async function syncPrayers(language: string): Promise<void> {
         }
 
         // b) Sync prayers
-        for (const p of (prayers as PrayerType[])) {
+        for (const p of prayers as PrayerType[]) {
           await prayerStmt.executeAsync([
             p.id,
             p.name,
@@ -289,13 +293,17 @@ async function syncPrayers(language: string): Promise<void> {
             p.transliteration_text ?? null,
             p.source ?? null,
             JSON.stringify(p.translated_languages ?? []),
-            typeof p.created_at === "string" ? p.created_at : p.created_at?.toISOString(),
-            typeof p.updated_at === "string" ? p.updated_at : p.updated_at?.toISOString(),
+            typeof p.created_at === "string"
+              ? p.created_at
+              : p.created_at?.toISOString(),
+            typeof p.updated_at === "string"
+              ? p.updated_at
+              : p.updated_at?.toISOString(),
           ]);
         }
 
         // c) Sync translations
-        for (const t of (translations as PrayerWithTranslationType[])) {
+        for (const t of translations as PrayerWithTranslationType[]) {
           await transStmt.executeAsync([
             t.id,
             t.prayer_id,
@@ -304,8 +312,12 @@ async function syncPrayers(language: string): Promise<void> {
             t.translated_text ?? null,
             t.translated_notes ?? null,
             t.source ?? null,
-            typeof t.created_at === "string" ? t.created_at : t.created_at?.toISOString(),
-            typeof t.updated_at === "string" ? t.updated_at : t.updated_at?.toISOString(),
+            typeof t.created_at === "string"
+              ? t.created_at
+              : t.created_at?.toISOString(),
+            typeof t.updated_at === "string"
+              ? t.updated_at
+              : t.updated_at?.toISOString(),
           ]);
         }
       } catch (e) {
