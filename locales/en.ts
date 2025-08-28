@@ -187,6 +187,11 @@ export const en = {
   deutsch: "Deutsch",
   english: "English",
   arabic: "العربية",
+  languages: {
+    en: "English",
+    de: "Deutsch",
+    ar: "العربية",
+  },
 
   // calendar:
   calendarTitle: "Islamic Calendar",
@@ -204,6 +209,19 @@ export const en = {
 
   countdownToday: "Today!",
   countdownDaysToGo: "{{count}} days to go",
+
+  // Quran
+  quranTitle: "Holy Quran",
+  quranSubtitle: "Chapter List (Suras)",
+  selectLanguage: "Select Language",
+  totalSuras: "Total Suras",
+  ayatCount: "Verses",
+  revelationOrder: "Revelation Order",
+  type: "Type",
+  words: "Words",
+  letters: "Letters",
+  makki: "Makki",
+  madani: "Madani",
 } as const;
 
 export default en;

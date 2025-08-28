@@ -132,12 +132,11 @@ export async function getSurahList(): Promise<SuraRowType[]> {
       id, orderId, label, label_en, label_de,
       nbAyat, nbWord, nbLetter, startPage, endPage, makki, ruku
     FROM sura
-    ORDER BY orderId;
+    ORDER BY id;
     `
   );
 }
 
-/** Get one surah’s metadata by canonical number (1..114). */
 export async function getSurahInfoByNumber(
   surahNumber: number
 ): Promise<SuraRowType | null> {
@@ -148,7 +147,7 @@ export async function getSurahInfoByNumber(
       id, orderId, label, label_en, label_de,
       nbAyat, nbWord, nbLetter, startPage, endPage, makki, ruku
     FROM sura
-    WHERE orderId = ?
+    WHERE id = ?          
     LIMIT 1;
     `,
     [surahNumber]

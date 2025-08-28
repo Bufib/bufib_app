@@ -471,25 +471,12 @@ export type CalendarType = {
 };
 
 // Quran
-
-export type QuranSuraType = {
-  id: number;
-  transliteration: string;
-  arabic_title: string;
-  german_title: string;
-  description: string;
-  main_topic: string;
-  sura_description: string;
-  verse_count: number;
-  created_at: string;
-  language_code: string;
-};
-
-export interface SuraType {
+export type SuraType ={
   id: number;
   label: string;
   label_en?: string;
   label_de: string;
+  label_ar: string,
   nbAyat: number;
   nbWord: number;
   nbLetter: number;
@@ -508,7 +495,7 @@ export interface AyahType {
   transliteration?: string;
 }
 
-export interface QuranMarkerType {
+export type QuranMarkerType  = {
   id: number;
   sura: number;
   aya: number;

@@ -11,6 +11,7 @@ const _layout = () => {
   return (
     <Stack>
       <Stack.Screen name="indexQuran" options={{ headerShown: false }} />
+      <Stack.Screen name="sura" options={{ headerShown: false }} />
     </Stack>
   );
 };

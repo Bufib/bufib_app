@@ -188,6 +188,11 @@ export const ar = {
   deutsch: "الألمانية",
   english: "الإنجليزية",
   arabic: "العربية",
+  languages: {
+    en: "English",
+    de: "Deutsch",
+    ar: "العربية",
+  },
 
   // Arabic
 
@@ -206,6 +211,19 @@ export const ar = {
 
   countdownToday: "اليوم!",
   countdownDaysToGo: "متبقي {{count}} يومًا",
+
+  // Quran
+  quranTitle: "القرآن الكريم",
+  quranSubtitle: "قائمة السور",
+  selectLanguage: "اختر اللغة",
+  totalSuras: "مجموع السور",
+  ayatCount: "الآيات",
+  revelationOrder: "ترتيب النزول",
+  type: "النوع",
+  words: "الكلمات",
+  letters: "الحروف",
+  makki: "مكية",
+  madani: "مدنية",
 } as const;
 
 export default ar;

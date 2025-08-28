@@ -188,6 +188,11 @@ export const de = {
   deutsch: "Deutsch",
   english: "English",
   arabic: "العربية",
+  languages: {
+      en: "English",
+      de: "Deutsch",
+      ar: "العربية",
+    },
 
   // Calendar
   calendarTitle: "Islamischer Kalender",
@@ -205,6 +210,19 @@ export const de = {
 
   countdownToday: "Heute!",
   countdownDaysToGo: "Noch {{count}} Tage",
+
+  // Quran
+  quranTitle: "Edler Quran",
+  quranSubtitle: "Kapitelliste (Suren)",
+  selectLanguage: "Sprache wählen",
+  totalSuras: "Suren insgesamt",
+  ayatCount: "Verse",
+  revelationOrder: "Offenbarungsreihenfolge",
+  type: "Typ",
+  words: "Wörter",
+  letters: "Buchstaben",
+  makki: "Mekkanisch",
+  madani: "Medinensisch",
 } as const;
 
 export default de;

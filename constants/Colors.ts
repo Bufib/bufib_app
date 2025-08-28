@@ -41,7 +41,7 @@ export const Colors = {
     prayerBookmark: "#B3D7EC",
 
     //search
-    itemTypeColor: "#666"
+    itemTypeColor: "#666",
   },
 
   dark: {
@@ -84,8 +84,8 @@ export const Colors = {
     prayerBookmark: "#4B7E94",
     grayedOut: "#B0BEC5",
 
-       //search
-    itemTypeColor: "#ccc"
+    //search
+    itemTypeColor: "#ccc",
   },
   universal: {
     primary: "#2ea853",
