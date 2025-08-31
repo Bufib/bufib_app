@@ -10,7 +10,7 @@
 // import { useEffect, useMemo, useState } from "react";
 // import { useLocalSearchParams, router } from "expo-router";
 // import { useTranslation } from "react-i18next";
-
+// import Feather from "@expo/vector-icons/Feather";
 // import { ThemedView } from "@/components/ThemedView";
 // import { ThemedText } from "@/components/ThemedText";
 // import { LoadingIndicator } from "@/components/LoadingIndicator";
@@ -26,6 +26,7 @@
 // } from "@/db/queries/quran";
 // import { SafeAreaView } from "react-native-safe-area-context";
 // import HeaderLeftBackButton from "./HeaderLeftBackButton";
+// import { color } from "@cloudinary/url-gen/qualifiers/background";
 
 // const SuraScreen = () => {
 //   const { t } = useTranslation();
@@ -38,6 +39,7 @@
 
 //   const [loading, setLoading] = useState(true);
 //   const [verses, setVerses] = useState<QuranVerseType[]>([]);
+//   const [arabicVerses, setArabicVerses] = useState<QuranVerseType[]>([]);
 //   const [suraInfo, setSuraInfo] = useState<SuraRowType | null>(null);
 //   const [displayName, setDisplayName] = useState<string>("");
 
@@ -46,14 +48,16 @@
 //     (async () => {
 //       try {
 //         setLoading(true);
-//         const [vers, info, name] = await Promise.all([
+//         const [vers, arabicVers, info, name] = await Promise.all([
 //           getSurahVerses(lang, suraNumber),
+//           getSurahVerses("ar", suraNumber),
 //           getSurahInfoByNumber(suraNumber),
 //           getSurahDisplayName(suraNumber, lang),
 //         ]);
 
 //         if (!cancelled) {
 //           setVerses((vers ?? []) as QuranVerseType[]);
+//           setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
 //           setSuraInfo(info ?? null);
 //           setDisplayName(name ?? "");
 //         }
@@ -61,6 +65,7 @@
 //         console.error("Failed to load surah:", error);
 //         if (!cancelled) {
 //           setVerses([]);
+//           setArabicVerses([]);
 //           setSuraInfo(null);
 //           setDisplayName("");
 //         }
@@ -87,51 +92,89 @@
 //             >
 //               {displayName || suraInfo?.label_en || suraInfo?.label || ""}
 //             </ThemedText>
-//             <Text style={styles.subMeta} numberOfLines={1}>
+//             <ThemedText style={styles.subMeta} numberOfLines={1}>
 //               {t("ayatCount")}: {suraInfo?.nbAyat ?? "—"} ·{" "}
 //               {isMakki ? t("makki") : t("madani")}
-//             </Text>
+//             </ThemedText>
 //           </View>
-
-//           <View style={styles.idBadge}>
-//             <Text style={styles.idBadgeText}>{suraNumber}</Text>
+//           <View
+//             style={[
+//               styles.idBadge,
+//               {
+//                 backgroundColor: Colors[colorScheme].contrast,
+//                 borderColor: Colors[colorScheme].border,
+//               },
+//             ]}
+//           >
+//             <ThemedText style={styles.idBadgeText}>{suraNumber}</ThemedText>
 //           </View>
 //         </View>
 //       </SafeAreaView>
 //     );
 //   };
 
-//   const renderVerse = ({ item }: { item: QuranVerseType }) => {
-//     const accent = suraInfo?.makki ? "#00a8ff" : "#44bd32";
+//   const renderVerse = ({
+//     item,
+//     index,
+//   }: {
+//     item: QuranVerseType;
+//     index: number;
+//   }) => {
+//     // Find corresponding Arabic verse
+//     const arabicVerse = arabicVerses.find((v) => v.aya === item.aya);
 
 //     return (
 //       <View
-//         style={[styles.verseRow, { borderColor: Colors[colorScheme].border }]}
+//         style={[
+//           styles.verseCard,
+//           { backgroundColor: Colors[colorScheme].contrast },
+//         ]}
 //       >
-//         <View style={[styles.ayaPill, { borderColor: accent }]}>
-//           <Text style={[styles.ayaPillText, { color: accent }]}>
-//             {item.aya}
-//           </Text>
+//         <View style={styles.verseHeader}>
+//           <View style={styles.verseNumberBadge}>
+//             <ThemedText style={styles.verseNumberText}>{item.aya}</ThemedText>
+//           </View>
+
+//           <View style={styles.actionButtons}>
+//             <TouchableOpacity
+//               style={[
+//                 styles.actionButton,
+//                 { backgroundColor: Colors[colorScheme].background },
+//               ]}
+//             >
+//               <ThemedText style={styles.actionButtonText}>▶</ThemedText>
+//             </TouchableOpacity>
+//             <TouchableOpacity
+//               style={[
+//                 styles.actionButton,
+//                 { backgroundColor: Colors[colorScheme].background },
+//               ]}
+//             >
+//               <Feather
+//                 name="bookmark"
+//                 size={20.5}
+//                 color={Colors[colorScheme].defaultIcon}
+//               />
+//             </TouchableOpacity>
+//           </View>
 //         </View>
 
-//         <View style={styles.verseBody}>
-//           <Text
-//             style={[
-//               styles.verseText,
-//               isArabic() && styles.verseTextAr,
-//               { color: Colors[colorScheme].text },
-//             ]}
-//           >
-//             {item.text}
-//           </Text>
+//         <View style={styles.verseContent}>
+//           {/* Arabic text */}
+//           {arabicVerse && (
+//             <ThemedText style={styles.arabicText}>
+//               {arabicVerse.text}
+//             </ThemedText>
+//           )}
 
-//           {/* transliteration only for English if present */}
+//           {/* Translation */}
+//           <ThemedText style={styles.translationText}>{item.text}</ThemedText>
+
+//           {/* Transliteration for English */}
 //           {language === "en" && !!(item as any)?.transliteration && (
-//             <Text
-//               style={[styles.translit, { color: Colors.universal.grayedOut }]}
-//             >
+//             <ThemedText style={styles.transliterationText}>
 //               {(item as any).transliteration}
-//             </Text>
+//             </ThemedText>
 //           )}
 //         </View>
 //       </View>
@@ -164,18 +207,22 @@
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,
-//     justifyContent: "center",
 //   },
 
-//   loadingWrap: { paddingTop: 32 },
+//   loadingWrap: {
+//     paddingTop: 32,
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
 
 //   listContent: {
-//     paddingHorizontal: 14,
+//     paddingHorizontal: 16,
 //     paddingBottom: 24,
 //   },
-//   headerContainer: {
-//     flex: 1,
-//   },
+
+//   headerContainer: {},
+
 //   headerContent: {
 //     flexDirection: "row",
 //     alignItems: "center",
@@ -183,92 +230,125 @@
 //     paddingHorizontal: 15,
 //     marginBottom: 20,
 //   },
+
 //   headerTextContainer: {
+//     flex: 1,
+//     marginHorizontal: 16,
+//     gap: 5,
 //   },
 
-//   backBtn: {
-//     paddingHorizontal: 8,
-//     paddingVertical: 6,
-//     borderRadius: 10,
-//   },
-//   backGlyph: {
-//     fontSize: 26,
-//     fontWeight: "700",
-//     backgroundColor: "green",
-//   },
 //   suraName: {},
+//   subMeta: {
+//     fontSize: 14,
+//     fontWeight: "600",
+//     color: Colors.universal.grayedOut,
+//   },
 //   suraNameAr: {
 //     textAlign: "right",
+//     fontSize: 24,
 //   },
-//   subMeta: {
-//     marginTop: 2,
-//     fontSize: 12,
-//     fontWeight: "700",
-//     color: "#6F7A94",
-//   },
+
 //   idBadge: {
 //     minWidth: 44,
 //     height: 44,
 //     paddingHorizontal: 10,
-//     borderRadius: 12,
-//     borderWidth: 2,
-//     borderColor: "#A7B0C8",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     backgroundColor: "#FFFFFF",
-//   },
-//   idBadgeText: { fontSize: 16, fontWeight: "900", color: "#5B657F" },
-//   accentBar: {
-//     height: 8,
-//     marginTop: 10,
-//     marginHorizontal: 12,
-//     borderRadius: 999,
-//   },
-
-//   // Verse row
-//   verseRow: {
-//     flexDirection: "row",
-//     gap: 10,
-//     paddingVertical: 12,
-//     borderBottomWidth: 1,
-//   },
-//   ayaPill: {
-//     minWidth: 36,
-//     height: 36,
-//     borderRadius: 9,
+//     borderRadius: 22,
 //     borderWidth: 2,
 //     alignItems: "center",
 //     justifyContent: "center",
-//     backgroundColor: "#FFFFFF",
 //   },
-//   ayaPillText: { fontSize: 14, fontWeight: "900" },
 
-//   verseBody: { flex: 1, minWidth: 0 },
-//   verseText: {
+//   idBadgeText: {
 //     fontSize: 16,
-//     lineHeight: 26,
-//     fontWeight: "600",
+//     fontWeight: "800",
 //   },
-//   verseTextAr: {
-//     textAlign: "right",
-//     fontSize: 20,
-//     lineHeight: 36,
-//     letterSpacing: 0.2,
+
+//   verseCard: {
+//     backgroundColor: "#FFFFFF",
+//     borderRadius: 16,
+//     marginBottom: 12,
+//     padding: 16,
+//     shadowColor: "#000",
+//     shadowOffset: {
+//       width: 0,
+//       height: 2,
+//     },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 8,
+//     elevation: 3,
 //   },
-//   translit: {
-//     marginTop: 6,
-//     fontSize: 12,
+
+//   verseHeader: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     marginBottom: 16,
+//   },
+
+//   verseNumberBadge: {
+//     width: 40,
+//     height: 40,
+//     borderRadius: 20,
+//     backgroundColor: "#8B5CF6",
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+
+//   verseNumberText: {
+//     color: "#FFFFFF",
+//     fontSize: 16,
 //     fontWeight: "700",
 //   },
 
-//   emptyText: { textAlign: "center", padding: 24 },
+//   actionButtons: {
+//     flexDirection: "row",
+//     gap: 8,
+//   },
+
+//   actionButton: {
+//     width: 36,
+//     height: 36,
+//     borderRadius: 18,
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+
+//   actionButtonText: {
+//     fontSize: 14,
+//   },
+
+//   verseContent: {
+//     gap: 12,
+//   },
+
+//   arabicText: {
+//     fontSize: 24,
+//     lineHeight: 40,
+//     textAlign: "right",
+//     fontWeight: "400",
+//     letterSpacing: 0.5,
+//   },
+
+//   translationText: {
+//     fontSize: 16,
+//     lineHeight: 24,
+//     fontWeight: "500",
+//   },
+
+//   transliterationText: {
+//     fontSize: 14,
+//     lineHeight: 20,
+//     fontStyle: "italic",
+//     fontWeight: "400",
+//   },
+
+//   emptyText: {
+//     textAlign: "center",
+//     padding: 24,
+//   },
 // });
 
 // export default SuraScreen;
-
-
-
-
 
 import type React from "react";
 import {
@@ -278,8 +358,11 @@ import {
   FlatList,
   TouchableOpacity,
   useColorScheme,
+  Animated,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
 } from "react-native";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Feather from "@expo/vector-icons/Feather";
@@ -298,7 +381,11 @@ import {
 } from "@/db/queries/quran";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderLeftBackButton from "./HeaderLeftBackButton";
-import { color } from "@cloudinary/url-gen/qualifiers/background";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { Ionicons } from "@expo/vector-icons";
+const HEADER_MAX_HEIGHT = 120;
+const HEADER_MIN_HEIGHT = 60;
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const SuraScreen = () => {
   const { t } = useTranslation();
@@ -314,6 +401,9 @@ const SuraScreen = () => {
   const [arabicVerses, setArabicVerses] = useState<QuranVerseType[]>([]);
   const [suraInfo, setSuraInfo] = useState<SuraRowType | null>(null);
   const [displayName, setDisplayName] = useState<string>("");
+
+  // Animation refs
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     let cancelled = false;
@@ -350,38 +440,91 @@ const SuraScreen = () => {
     };
   }, [lang, suraNumber]);
 
-  const Header = () => {
+  // Animation interpolations
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: "clamp",
+  });
+
+  const headerTitleOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
+    outputRange: [1, 0.5, 0],
+    extrapolate: "clamp",
+  });
+
+  const headerSubtitleOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE / 3],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
+  const headerTitleScale = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [1, 0.8],
+    extrapolate: "clamp",
+  });
+
+  const badgeOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE / 2],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
+  const AnimatedHeader = () => {
     const isMakki = !!suraInfo?.makki;
 
     return (
-      <SafeAreaView edges={["top"]} style={styles.headerContainer}>
-        <View style={styles.headerContent}>
-          <HeaderLeftBackButton />
-          <View style={styles.headerTextContainer}>
-            <ThemedText
-              type="title"
-              style={[styles.suraName, isArabic() && styles.suraNameAr]}
+      <Animated.View
+        style={[
+          styles.headerWrapper,
+          {
+            height: headerHeight,
+            backgroundColor: Colors[colorScheme].background,
+          },
+        ]}
+      >
+        <SafeAreaView edges={["top"]} style={styles.headerContainer}>
+          <View style={styles.headerContent}>
+            <HeaderLeftBackButton />
+            <Animated.View
+              style={[
+                styles.headerTextContainer,
+                {
+                  opacity: headerTitleOpacity,
+                  transform: [{ scale: headerTitleScale }],
+                },
+              ]}
             >
-              {displayName || suraInfo?.label_en || suraInfo?.label || ""}
-            </ThemedText>
-            <ThemedText style={styles.subMeta} numberOfLines={1}>
-              {t("ayatCount")}: {suraInfo?.nbAyat ?? "—"} ·{" "}
-              {isMakki ? t("makki") : t("madani")}
-            </ThemedText>
+              <ThemedText
+                type="title"
+                style={[styles.suraName, isArabic() && styles.suraNameAr]}
+                numberOfLines={1}
+              >
+                {displayName || suraInfo?.label_en || suraInfo?.label || ""}
+              </ThemedText>
+              <Animated.View style={{ opacity: headerSubtitleOpacity }}>
+                <ThemedText style={styles.subMeta} numberOfLines={1}>
+                  {t("ayatCount")}: {suraInfo?.nbAyat ?? "—"} ·{" "}
+                  {isMakki ? t("makki") : t("madani")}
+                </ThemedText>
+              </Animated.View>
+            </Animated.View>
+            <Animated.View
+              style={[
+                styles.idBadge,
+                {
+                  backgroundColor: Colors[colorScheme].contrast,
+                  borderColor: Colors[colorScheme].border,
+                  opacity: badgeOpacity,
+                },
+              ]}
+            >
+              <ThemedText style={styles.idBadgeText}>{suraNumber}</ThemedText>
+            </Animated.View>
           </View>
-          <View
-            style={[
-              styles.idBadge,
-              {
-                backgroundColor: Colors[colorScheme].contrast,
-                borderColor: Colors[colorScheme].border,
-              },
-            ]}
-          >
-            <ThemedText style={styles.idBadgeText}>{suraNumber}</ThemedText>
-          </View>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </Animated.View>
     );
   };
 
@@ -414,7 +557,11 @@ const SuraScreen = () => {
                 { backgroundColor: Colors[colorScheme].background },
               ]}
             >
-              <ThemedText style={styles.actionButtonText}>▶</ThemedText>
+              <AntDesign
+                name="playcircleo"
+                size={21}
+                color={Colors[colorScheme].defaultIcon}
+              />
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -424,7 +571,19 @@ const SuraScreen = () => {
             >
               <Feather
                 name="bookmark"
-                size={20.5}
+                size={21}
+                color={Colors[colorScheme].defaultIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.actionButton,
+                { backgroundColor: Colors[colorScheme].background },
+              ]}
+            >
+              <Ionicons
+                name="information-circle-outline"
+                size={24}
                 color={Colors[colorScheme].defaultIcon}
               />
             </TouchableOpacity>
@@ -455,18 +614,26 @@ const SuraScreen = () => {
 
   return (
     <ThemedView style={styles.container}>
+      <AnimatedHeader />
       {loading ? (
         <View style={styles.loadingWrap}>
           <LoadingIndicator size="large" />
         </View>
       ) : (
-        <FlatList
+        <Animated.FlatList
           data={verses}
           keyExtractor={(v) => `${v.sura}-${v.aya}`}
-          ListHeaderComponent={Header}
           renderItem={renderVerse}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingTop: HEADER_MAX_HEIGHT + 10 },
+          ]}
           showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
           ListEmptyComponent={
             <ThemedText style={styles.emptyText}>{t("noData")}</ThemedText>
           }
@@ -493,14 +660,24 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
 
-  headerContainer: {},
+  headerWrapper: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+  },
+
+  headerContainer: {
+    flex: 1,
+    justifyContent: "center",
+  },
 
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 15,
-    marginBottom: 20,
   },
 
   headerTextContainer: {
@@ -509,12 +686,17 @@ const styles = StyleSheet.create({
     gap: 5,
   },
 
-  suraName: {},
+  suraName: {
+    fontSize: 20,
+    fontWeight: "700",
+  },
+
   subMeta: {
     fontSize: 14,
     fontWeight: "600",
     color: Colors.universal.grayedOut,
   },
+
   suraNameAr: {
     textAlign: "right",
     fontSize: 24,
@@ -621,4 +803,3 @@ const styles = StyleSheet.create({
 });
 
 export default SuraScreen;
-
