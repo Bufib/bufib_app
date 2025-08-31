@@ -50,6 +50,7 @@ export const ar = {
   source: "مصادر",
   copied: "منقول",
   loading: "جارٍ تحميل البيانات",
+  noData: "لا توجد بيانات متاحة",
 
   // Navigation
   knowledge: "معرفة",
@@ -224,6 +225,8 @@ export const ar = {
   letters: "الحروف",
   makki: "مكية",
   madani: "مدنية",
+  lastRead: "آخر قراءة"
+
 } as const;
 
 export default ar;

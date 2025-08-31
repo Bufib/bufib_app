@@ -13,38 +13,37 @@ import { Colors } from "../constants/Colors";
 import Entypo from "@expo/vector-icons/Entypo";
 import { whenDatabaseReady } from "@/db";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Language, SuraRowType } from "@/constants/Types";
+import { Language, LanguageCode, SuraRowType } from "@/constants/Types";
 import { getSurahList } from "@/db/queries/quran";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { router } from "expo-router";
+import { Image } from "expo-image";
+import { Color } from "@cloudinary/url-gen/qualifiers";
 
 const SuraList: React.FC = () => {
   const { t } = useTranslation();
-  const { language } = useLanguage();
-  const lang = useMemo(
-    () => (language || "en").split("-")[0] as Language,
-    [language]
-  );
+  const { language, isArabic } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
 
   const [suras, setSuras] = useState<SuraRowType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const colorScheme = useColorScheme() || "light";
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         await whenDatabaseReady();
         const rows = await getSurahList();
         if (!cancelled) setSuras(rows ?? []);
-      } catch (e) {
-        console.error("Failed to load suras:", e);
+      } catch (error) {
+        console.error("Failed to load suras:", error);
         if (!cancelled) setSuras([]);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     })();
     return () => {
@@ -52,6 +51,7 @@ const SuraList: React.FC = () => {
     };
   }, [lang]);
 
+  //!
   const getSuraName = (s: SuraRowType) => {
     if (lang === "ar") return s.label ?? s.label_en ?? s.label_de ?? "";
     if (lang === "de") return s.label_de ?? s.label_en ?? s.label ?? "";
@@ -61,6 +61,14 @@ const SuraList: React.FC = () => {
   const renderSuraItem = ({ item }: { item: SuraRowType }) => {
     const name = getSuraName(item);
     const isMakki = !!item.makki;
+
+    if (isLoading) {
+      return (
+        <ThemedView style={styles.centerContainer}>
+          <LoadingIndicator size={"large"} />
+        </ThemedView>
+      );
+    }
 
     return (
       <TouchableOpacity
@@ -136,23 +144,72 @@ const SuraList: React.FC = () => {
 
   return (
     <ThemedView style={styles.container}>
-      {loading ? (
-        <View style={styles.loadingWrap}>
-          <LoadingIndicator size={"large"} />
+      <View style={styles.headerContainer}>
+        <View
+          style={[
+            styles.headerLeft,
+            { backgroundColor: Colors[colorScheme].contrast },
+          ]}
+        >
+          <View style={styles.headerDescriptionContainer}>
+            <ThemedText
+              type="default"
+              style={{
+                fontSize: 19,
+                fontWeight: "700",
+                color: Colors.universal.primary,
+              }}
+            >
+              {t("lastRead")}
+            </ThemedText>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              paddingHorizontal: 10,
+            }}
+          >
+            <ThemedText
+              type="default"
+              style={{ fontSize: 20, fontWeight: "600" }}
+            >
+              Die Familie Imrans (6)
+            </ThemedText>
+          </View>
         </View>
-      ) : (
-        <FlatList
-          data={suras}
-          style={{ marginTop: 10 }}
-          renderItem={renderSuraItem}
-          keyExtractor={(item) => item.id.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
+
+        <View
+          style={[
+            styles.headerRight,
+            { backgroundColor: Colors[colorScheme].contrast },
+          ]}
+        >
+          <Image
+            source={require("@/assets/images/quranImage2.png")}
+            style={{
+              height: 140,
+              width: 170,
+              bottom: 10,
+              right: 5,
+            }}
+            contentFit="cover"
+          />
+        </View>
+      </View>
+
+      <FlatList
+        data={suras}
+        style={{ marginTop: 10 }}
+        renderItem={renderSuraItem}
+        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContentStyle}
+        ListEmptyComponent={
+          <ThemedView style={styles.centerContainer}>
             <ThemedText style={styles.emptyText}>{t("noData")}</ThemedText>
-          }
-        />
-      )}
+          </ThemedView>
+        }
+      />
     </ThemedView>
   );
 };
@@ -162,59 +219,45 @@ const CARD_RADIUS = 16;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    gap: 10,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+    paddingHorizontal: 16,
+  },
+  headerLeft: {
+    flex: 1,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+
+    gap: 15,
+  },
+  headerRight: {
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    borderRightWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
+  headerDescriptionContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+    paddingLeft: 10,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
   },
 
-  // Header
-  headerWrap: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 12,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "800",
-    letterSpacing: 0.3,
-  },
-  headerSubtitle: {
-    marginTop: 4,
-    fontSize: 13,
-    fontWeight: "500",
-  },
-  legendRow: {
-    flexDirection: "row",
-    gap: 16,
-    marginTop: 12,
-    alignItems: "center",
-  },
-  legendItem: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderWidth: 1,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  legendText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-
-  listContent: {
+  listContentStyle: {
     paddingHorizontal: 16,
     paddingBottom: 24,
   },
 
-  loadingWrap: {
-    paddingTop: 32,
-  },
-
-  // Card
   card: {
     backgroundColor: Colors.light.contrast,
     borderRadius: CARD_RADIUS,
@@ -332,7 +375,6 @@ const styles = StyleSheet.create({
 
   emptyText: {
     textAlign: "center",
-    padding: 24,
   },
 });
 

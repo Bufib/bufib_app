@@ -201,7 +201,7 @@ export const migrationSQL = `
     CREATE TABLE IF NOT EXISTS sura (
     id         INTEGER PRIMARY KEY,
     label      TEXT    NOT NULL UNIQUE,
-    label_en   TEXT,
+    label_en   TEXT,              -- transliteration
     label_de   TEXT    NOT NULL UNIQUE,
     nbAyat     INTEGER NOT NULL,
     nbWord     INTEGER NOT NULL,

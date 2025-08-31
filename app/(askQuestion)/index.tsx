@@ -25,6 +25,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
+import { LoadingIndicator } from "@/components/LoadingIndicator";
 export default function Index() {
   // 1. Check auth state from the store
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -97,14 +98,10 @@ export default function Index() {
     [themeStyles]
   );
 
-  // 7. Return early if loading
   if (isLoading) {
     return (
       <ThemedView style={[styles.container, styles.centered]}>
-        <ActivityIndicator
-          size="large"
-          color={colorScheme === "dark" ? "#fff" : "#000"}
-        />
+        <LoadingIndicator size="large" />
         <ThemedText style={styles.loadingText}>
           Fragen werden geladen
         </ThemedText>

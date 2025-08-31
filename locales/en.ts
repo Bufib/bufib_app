@@ -49,6 +49,7 @@ export const en = {
   source: "Sources: ",
   copied: "Copied!",
   loading: "Daten is being loaded!",
+  noData: "No data available",
 
   // Navigation
   knowledge: "Knowledge",
@@ -222,6 +223,8 @@ export const en = {
   letters: "Letters",
   makki: "Makki",
   madani: "Madani",
+  lastRead: "Last read"
+
 } as const;
 
 export default en;

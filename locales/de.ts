@@ -18,6 +18,7 @@ export const de = {
   download: "Herunterlanden",
   downloading: "Wird heruntergeladen",
   preparing: "Wird vorbereitet",
+
   // General
   retry: "Wiederholen",
   errorLoadingData: "Es gab einen Fehler beim laden der Daten",
@@ -50,7 +51,7 @@ export const de = {
   source: "Quellen: ",
   copied: "Kopiert!",
   loading: "Daten werden geladen!",
-
+  noData: "Keine Daten vorhanden",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -223,6 +224,7 @@ export const de = {
   letters: "Buchstaben",
   makki: "Mekkanisch",
   madani: "Medinensisch",
+  lastRead: "Zuletzt gelesen"
 } as const;
 
 export default de;
