@@ -1,398 +1,51 @@
-// import type React from "react";
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   FlatList,
-//   TouchableOpacity,
-//   useColorScheme,
-// } from "react-native";
-// import { useEffect, useMemo, useState } from "react";
-// import { useLocalSearchParams, router } from "expo-router";
-// import { useTranslation } from "react-i18next";
-// import Feather from "@expo/vector-icons/Feather";
-// import { ThemedView } from "@/components/ThemedView";
-// import { ThemedText } from "@/components/ThemedText";
-// import { LoadingIndicator } from "@/components/LoadingIndicator";
-// import { Colors } from "@/constants/Colors";
-
-// import { whenDatabaseReady } from "@/db";
-// import { useLanguage } from "@/contexts/LanguageContext";
-// import { SuraRowType, QuranVerseType, LanguageCode } from "@/constants/Types";
-// import {
-//   getSurahVerses,
-//   getSurahDisplayName,
-//   getSurahInfoByNumber,
-// } from "@/db/queries/quran";
-// import { SafeAreaView } from "react-native-safe-area-context";
-// import HeaderLeftBackButton from "./HeaderLeftBackButton";
-// import { color } from "@cloudinary/url-gen/qualifiers/background";
-
-// const SuraScreen = () => {
-//   const { t } = useTranslation();
-//   const colorScheme = useColorScheme() || "light";
-//   const { language, isArabic } = useLanguage();
-//   const lang = (language ?? "de") as LanguageCode;
-
-//   const { suraId } = useLocalSearchParams<{ suraId: string }>();
-//   const suraNumber = useMemo(() => Number(suraId ?? 1), [suraId]);
-
-//   const [loading, setLoading] = useState(true);
-//   const [verses, setVerses] = useState<QuranVerseType[]>([]);
-//   const [arabicVerses, setArabicVerses] = useState<QuranVerseType[]>([]);
-//   const [suraInfo, setSuraInfo] = useState<SuraRowType | null>(null);
-//   const [displayName, setDisplayName] = useState<string>("");
-
-//   useEffect(() => {
-//     let cancelled = false;
-//     (async () => {
-//       try {
-//         setLoading(true);
-//         const [vers, arabicVers, info, name] = await Promise.all([
-//           getSurahVerses(lang, suraNumber),
-//           getSurahVerses("ar", suraNumber),
-//           getSurahInfoByNumber(suraNumber),
-//           getSurahDisplayName(suraNumber, lang),
-//         ]);
-
-//         if (!cancelled) {
-//           setVerses((vers ?? []) as QuranVerseType[]);
-//           setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
-//           setSuraInfo(info ?? null);
-//           setDisplayName(name ?? "");
-//         }
-//       } catch (error) {
-//         console.error("Failed to load surah:", error);
-//         if (!cancelled) {
-//           setVerses([]);
-//           setArabicVerses([]);
-//           setSuraInfo(null);
-//           setDisplayName("");
-//         }
-//       } finally {
-//         if (!cancelled) setLoading(false);
-//       }
-//     })();
-//     return () => {
-//       cancelled = true;
-//     };
-//   }, [lang, suraNumber]);
-
-//   const Header = () => {
-//     const isMakki = !!suraInfo?.makki;
-
-//     return (
-//       <SafeAreaView edges={["top"]} style={styles.headerContainer}>
-//         <View style={styles.headerContent}>
-//           <HeaderLeftBackButton />
-//           <View style={styles.headerTextContainer}>
-//             <ThemedText
-//               type="title"
-//               style={[styles.suraName, isArabic() && styles.suraNameAr]}
-//             >
-//               {displayName || suraInfo?.label_en || suraInfo?.label || ""}
-//             </ThemedText>
-//             <ThemedText style={styles.subMeta} numberOfLines={1}>
-//               {t("ayatCount")}: {suraInfo?.nbAyat ?? "—"} ·{" "}
-//               {isMakki ? t("makki") : t("madani")}
-//             </ThemedText>
-//           </View>
-//           <View
-//             style={[
-//               styles.idBadge,
-//               {
-//                 backgroundColor: Colors[colorScheme].contrast,
-//                 borderColor: Colors[colorScheme].border,
-//               },
-//             ]}
-//           >
-//             <ThemedText style={styles.idBadgeText}>{suraNumber}</ThemedText>
-//           </View>
-//         </View>
-//       </SafeAreaView>
-//     );
-//   };
-
-//   const renderVerse = ({
-//     item,
-//     index,
-//   }: {
-//     item: QuranVerseType;
-//     index: number;
-//   }) => {
-//     // Find corresponding Arabic verse
-//     const arabicVerse = arabicVerses.find((v) => v.aya === item.aya);
-
-//     return (
-//       <View
-//         style={[
-//           styles.verseCard,
-//           { backgroundColor: Colors[colorScheme].contrast },
-//         ]}
-//       >
-//         <View style={styles.verseHeader}>
-//           <View style={styles.verseNumberBadge}>
-//             <ThemedText style={styles.verseNumberText}>{item.aya}</ThemedText>
-//           </View>
-
-//           <View style={styles.actionButtons}>
-//             <TouchableOpacity
-//               style={[
-//                 styles.actionButton,
-//                 { backgroundColor: Colors[colorScheme].background },
-//               ]}
-//             >
-//               <ThemedText style={styles.actionButtonText}>▶</ThemedText>
-//             </TouchableOpacity>
-//             <TouchableOpacity
-//               style={[
-//                 styles.actionButton,
-//                 { backgroundColor: Colors[colorScheme].background },
-//               ]}
-//             >
-//               <Feather
-//                 name="bookmark"
-//                 size={20.5}
-//                 color={Colors[colorScheme].defaultIcon}
-//               />
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-
-//         <View style={styles.verseContent}>
-//           {/* Arabic text */}
-//           {arabicVerse && (
-//             <ThemedText style={styles.arabicText}>
-//               {arabicVerse.text}
-//             </ThemedText>
-//           )}
-
-//           {/* Translation */}
-//           <ThemedText style={styles.translationText}>{item.text}</ThemedText>
-
-//           {/* Transliteration for English */}
-//           {language === "en" && !!(item as any)?.transliteration && (
-//             <ThemedText style={styles.transliterationText}>
-//               {(item as any).transliteration}
-//             </ThemedText>
-//           )}
-//         </View>
-//       </View>
-//     );
-//   };
-
-//   return (
-//     <ThemedView style={styles.container}>
-//       {loading ? (
-//         <View style={styles.loadingWrap}>
-//           <LoadingIndicator size="large" />
-//         </View>
-//       ) : (
-//         <FlatList
-//           data={verses}
-//           keyExtractor={(v) => `${v.sura}-${v.aya}`}
-//           ListHeaderComponent={Header}
-//           renderItem={renderVerse}
-//           contentContainerStyle={styles.listContent}
-//           showsVerticalScrollIndicator={false}
-//           ListEmptyComponent={
-//             <ThemedText style={styles.emptyText}>{t("noData")}</ThemedText>
-//           }
-//         />
-//       )}
-//     </ThemedView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-
-//   loadingWrap: {
-//     paddingTop: 32,
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-
-//   listContent: {
-//     paddingHorizontal: 16,
-//     paddingBottom: 24,
-//   },
-
-//   headerContainer: {},
-
-//   headerContent: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "space-between",
-//     paddingHorizontal: 15,
-//     marginBottom: 20,
-//   },
-
-//   headerTextContainer: {
-//     flex: 1,
-//     marginHorizontal: 16,
-//     gap: 5,
-//   },
-
-//   suraName: {},
-//   subMeta: {
-//     fontSize: 14,
-//     fontWeight: "600",
-//     color: Colors.universal.grayedOut,
-//   },
-//   suraNameAr: {
-//     textAlign: "right",
-//     fontSize: 24,
-//   },
-
-//   idBadge: {
-//     minWidth: 44,
-//     height: 44,
-//     paddingHorizontal: 10,
-//     borderRadius: 22,
-//     borderWidth: 2,
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-
-//   idBadgeText: {
-//     fontSize: 16,
-//     fontWeight: "800",
-//   },
-
-//   verseCard: {
-//     backgroundColor: "#FFFFFF",
-//     borderRadius: 16,
-//     marginBottom: 12,
-//     padding: 16,
-//     shadowColor: "#000",
-//     shadowOffset: {
-//       width: 0,
-//       height: 2,
-//     },
-//     shadowOpacity: 0.1,
-//     shadowRadius: 8,
-//     elevation: 3,
-//   },
-
-//   verseHeader: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     marginBottom: 16,
-//   },
-
-//   verseNumberBadge: {
-//     width: 40,
-//     height: 40,
-//     borderRadius: 20,
-//     backgroundColor: "#8B5CF6",
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-
-//   verseNumberText: {
-//     color: "#FFFFFF",
-//     fontSize: 16,
-//     fontWeight: "700",
-//   },
-
-//   actionButtons: {
-//     flexDirection: "row",
-//     gap: 8,
-//   },
-
-//   actionButton: {
-//     width: 36,
-//     height: 36,
-//     borderRadius: 18,
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-
-//   actionButtonText: {
-//     fontSize: 14,
-//   },
-
-//   verseContent: {
-//     gap: 12,
-//   },
-
-//   arabicText: {
-//     fontSize: 24,
-//     lineHeight: 40,
-//     textAlign: "right",
-//     fontWeight: "400",
-//     letterSpacing: 0.5,
-//   },
-
-//   translationText: {
-//     fontSize: 16,
-//     lineHeight: 24,
-//     fontWeight: "500",
-//   },
-
-//   transliterationText: {
-//     fontSize: 14,
-//     lineHeight: 20,
-//     fontStyle: "italic",
-//     fontWeight: "400",
-//   },
-
-//   emptyText: {
-//     textAlign: "center",
-//     padding: 24,
-//   },
-// });
-
-// export default SuraScreen;
-
 import type React from "react";
 import {
   View,
-  Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   useColorScheme,
   Animated,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
+  Alert,
 } from "react-native";
-import { useEffect, useMemo, useState, useRef } from "react";
-import { useLocalSearchParams, router } from "expo-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import Feather from "@expo/vector-icons/Feather";
+import { SafeAreaView } from "react-native-safe-area-context";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { Ionicons } from "@expo/vector-icons";
+import { Storage } from "expo-sqlite/kv-store";
+import RenderHTML from "react-native-render-html";
+import { useWindowDimensions } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
-import { Colors } from "@/constants/Colors";
+import HeaderLeftBackButton from "./HeaderLeftBackButton";
+import { useLastSuraStore } from "@/stores/useLastSura";
 
-import { whenDatabaseReady } from "@/db";
+import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SuraRowType, QuranVerseType, LanguageCode } from "@/constants/Types";
+
 import {
   getSurahVerses,
   getSurahDisplayName,
   getSurahInfoByNumber,
 } from "@/db/queries/quran";
-import { SafeAreaView } from "react-native-safe-area-context";
-import HeaderLeftBackButton from "./HeaderLeftBackButton";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { Ionicons } from "@expo/vector-icons";
+import { whenDatabaseReady } from "@/db";
+
 const HEADER_MAX_HEIGHT = 120;
 const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-const SuraScreen = () => {
+const SuraScreen: React.FC = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
   const { language, isArabic } = useLanguage();
   const lang = (language ?? "de") as LanguageCode;
+  const { width } = useWindowDimensions();
 
+  // account for list + card paddings (16 + 16 on both sides)
+  const translitContentWidth = Math.max(0, width - 64);
   const { suraId } = useLocalSearchParams<{ suraId: string }>();
   const suraNumber = useMemo(() => Number(suraId ?? 1), [suraId]);
 
@@ -401,6 +54,14 @@ const SuraScreen = () => {
   const [arabicVerses, setArabicVerses] = useState<QuranVerseType[]>([]);
   const [suraInfo, setSuraInfo] = useState<SuraRowType | null>(null);
   const [displayName, setDisplayName] = useState<string>("");
+  const [bookmarkedVerses, setBookmarkedVerses] = useState<Set<number>>(
+    new Set()
+  );
+
+  const setLastSura = useLastSuraStore((s) => s.setLastSura);
+  useEffect(() => {
+    setLastSura(suraNumber);
+  }, [suraNumber]);
 
   // Animation refs
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -410,18 +71,23 @@ const SuraScreen = () => {
     (async () => {
       try {
         setLoading(true);
+        await whenDatabaseReady();
+
         const [vers, arabicVers, info, name] = await Promise.all([
-          getSurahVerses(lang, suraNumber),
-          getSurahVerses("ar", suraNumber),
+          getSurahVerses(lang, suraNumber), // includes transliteration (via JOIN)
+          getSurahVerses("ar", suraNumber), // Arabic lines
           getSurahInfoByNumber(suraNumber),
           getSurahDisplayName(suraNumber, lang),
         ]);
+
+        const loadedBookmarks = await loadBookmarkedVerses(suraNumber);
 
         if (!cancelled) {
           setVerses((vers ?? []) as QuranVerseType[]);
           setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
           setSuraInfo(info ?? null);
           setDisplayName(name ?? "");
+          setBookmarkedVerses(loadedBookmarks);
         }
       } catch (error) {
         console.error("Failed to load surah:", error);
@@ -440,7 +106,88 @@ const SuraScreen = () => {
     };
   }, [lang, suraNumber]);
 
-  // Animation interpolations
+  // O(1) verse lookup for Arabic lines
+  const arabicByAya = useMemo(
+    () => new Map(arabicVerses.map((v) => [v.aya, v])),
+    [arabicVerses]
+  );
+
+  const handleBookmarkVerse = async (verseNumber: number) => {
+    try {
+      const bookmarksKey = `bookmarks_sura_${suraNumber}`;
+
+      // Tapping the same verse toggles it off
+      if (bookmarkedVerses.has(verseNumber)) {
+        const newSet = new Set(bookmarkedVerses);
+        newSet.delete(verseNumber);
+        setBookmarkedVerses(newSet);
+        const arr = Array.from(newSet);
+        if (arr.length) {
+          await Storage.setItemAsync(bookmarksKey, JSON.stringify(arr));
+        } else {
+          await Storage.removeItemAsync(bookmarksKey);
+        }
+        await Storage.removeItemAsync(
+          `bookmark_s${suraNumber}_v${verseNumber}_${lang}`
+        );
+        return;
+      }
+      // Another verse is already bookmarked → ask to replace
+      if (bookmarkedVerses.size > 0) {
+        const prev = Array.from(bookmarkedVerses)[0];
+        Alert.alert(t("confirmBookmarkChange"), t("bookmarkReplaceQuestion"), [
+          { text: t("cancel"), style: "cancel" },
+          {
+            text: "Ersetzen",
+            style: "destructive",
+            onPress: async () => {
+              // remove all previous individual entries
+              for (const v of bookmarkedVerses) {
+                await Storage.removeItemAsync(
+                  `bookmark_s${suraNumber}_v${v}_${lang}`
+                );
+              }
+              const newSet = new Set<number>([verseNumber]);
+              setBookmarkedVerses(newSet);
+              await Storage.setItemAsync(
+                bookmarksKey,
+                JSON.stringify([verseNumber])
+              );
+              await Storage.setItemAsync(
+                `bookmark_s${suraNumber}_v${verseNumber}_${lang}`,
+                JSON.stringify({
+                  suraNumber,
+                  verseNumber,
+                  language: lang,
+                  suraName: displayName,
+                  timestamp: Date.now(),
+                })
+              );
+            },
+          },
+        ]);
+        return;
+      }
+
+      // No existing bookmark → add this one
+      const newSet = new Set<number>([verseNumber]);
+      setBookmarkedVerses(newSet);
+      await Storage.setItemAsync(bookmarksKey, JSON.stringify([verseNumber]));
+      await Storage.setItemAsync(
+        `bookmark_s${suraNumber}_v${verseNumber}_${lang}`,
+        JSON.stringify({
+          suraNumber,
+          verseNumber,
+          language: lang,
+          suraName: displayName,
+          timestamp: Date.now(),
+        })
+      );
+    } catch (error) {
+      console.error("Error handling bookmark:", error);
+    }
+  };
+
   const headerHeight = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
     outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
@@ -473,7 +220,6 @@ const SuraScreen = () => {
 
   const AnimatedHeader = () => {
     const isMakki = !!suraInfo?.makki;
-
     return (
       <Animated.View
         style={[
@@ -528,21 +274,20 @@ const SuraScreen = () => {
     );
   };
 
-  const renderVerse = ({
-    item,
-    index,
-  }: {
-    item: QuranVerseType;
-    index: number;
-  }) => {
-    // Find corresponding Arabic verse
-    const arabicVerse = arabicVerses.find((v) => v.aya === item.aya);
+  const renderVerse = ({ item }: { item: QuranVerseType; index: number }) => {
+    const arabicVerse = arabicByAya.get(item.aya);
+    const isVerseBookmarked = bookmarkedVerses.has(item.aya);
+    const transliterationText = item.transliteration ?? "";
 
     return (
       <View
         style={[
           styles.verseCard,
-          { backgroundColor: Colors[colorScheme].contrast },
+          {
+            backgroundColor: isVerseBookmarked
+              ? Colors.universal.primary
+              : Colors[colorScheme].contrast,
+          },
         ]}
       >
         <View style={styles.verseHeader}>
@@ -568,11 +313,16 @@ const SuraScreen = () => {
                 styles.actionButton,
                 { backgroundColor: Colors[colorScheme].background },
               ]}
+              onPress={() => handleBookmarkVerse(item.aya)}
             >
-              <Feather
-                name="bookmark"
+              <Ionicons
+                name={isVerseBookmarked ? "bookmark" : "bookmark-outline"}
                 size={21}
-                color={Colors[colorScheme].defaultIcon}
+                color={
+                  isVerseBookmarked
+                    ? "#8B5CF6"
+                    : Colors[colorScheme].defaultIcon
+                }
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -591,22 +341,32 @@ const SuraScreen = () => {
         </View>
 
         <View style={styles.verseContent}>
-          {/* Arabic text */}
-          {arabicVerse && (
+          {/* Arabic line */}
+          {!!arabicVerse && (
             <ThemedText style={styles.arabicText}>
               {arabicVerse.text}
             </ThemedText>
           )}
 
+          {/* Transliteration */}
+          {!!transliterationText && (
+            <RenderHTML
+              contentWidth={translitContentWidth}
+              source={{ html: `<div>${transliterationText}</div>` }}
+              // make it look like your old style
+              baseStyle={StyleSheet.flatten(styles.arabicTransliterationText)}
+              defaultTextProps={{ selectable: true }}
+              // safety & tiny tweaks
+              ignoredDomTags={["script", "style"]}
+              tagsStyles={{
+                u: { textDecorationLine: "underline" },
+                b: { fontWeight: "700" },
+                i: { fontStyle: "italic" },
+              }}
+            />
+          )}
           {/* Translation */}
           <ThemedText style={styles.translationText}>{item.text}</ThemedText>
-
-          {/* Transliteration for English */}
-          {language === "en" && !!(item as any)?.transliteration && (
-            <ThemedText style={styles.transliterationText}>
-              {(item as any).transliteration}
-            </ThemedText>
-          )}
         </View>
       </View>
     );
@@ -643,23 +403,29 @@ const SuraScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+async function loadBookmarkedVerses(suraNumber: number): Promise<Set<number>> {
+  try {
+    const bookmarksKey = `bookmarks_sura_${suraNumber}`;
+    const storedBookmarks = await Storage.getItemAsync(bookmarksKey);
+    if (storedBookmarks) {
+      const arr = JSON.parse(storedBookmarks) as number[];
+      return new Set(arr);
+    }
+  } catch (error) {
+    console.error("Error loading bookmarks:", error);
+  }
+  return new Set();
+}
 
+const styles = StyleSheet.create({
+  container: { flex: 1 },
   loadingWrap: {
     paddingTop: 32,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-
-  listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 24,
-  },
-
+  listContent: { paddingHorizontal: 16, paddingBottom: 24 },
   headerWrapper: {
     position: "absolute",
     top: 0,
@@ -667,41 +433,21 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 1000,
   },
-
-  headerContainer: {
-    flex: 1,
-    justifyContent: "center",
-  },
-
+  headerContainer: { flex: 1, justifyContent: "center" },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 15,
   },
-
-  headerTextContainer: {
-    flex: 1,
-    marginHorizontal: 16,
-    gap: 5,
-  },
-
-  suraName: {
-    fontSize: 20,
-    fontWeight: "700",
-  },
-
+  headerTextContainer: { flex: 1, marginHorizontal: 16, gap: 5 },
+  suraName: { fontSize: 20, fontWeight: "700" },
   subMeta: {
     fontSize: 14,
     fontWeight: "600",
     color: Colors.universal.grayedOut,
   },
-
-  suraNameAr: {
-    textAlign: "right",
-    fontSize: 24,
-  },
-
+  suraNameAr: { textAlign: "right", fontSize: 24 },
   idBadge: {
     minWidth: 44,
     height: 44,
@@ -711,34 +457,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
-  idBadgeText: {
-    fontSize: 16,
-    fontWeight: "800",
-  },
-
+  idBadgeText: { fontSize: 16, fontWeight: "800" },
   verseCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     marginBottom: 12,
     padding: 16,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
   },
-
   verseHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
   },
-
   verseNumberBadge: {
     width: 40,
     height: 40,
@@ -747,18 +483,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
-  verseNumberText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-
-  actionButtons: {
-    flexDirection: "row",
-    gap: 8,
-  },
-
+  verseNumberText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700" },
+  actionButtons: { flexDirection: "row", gap: 8 },
   actionButton: {
     width: 36,
     height: 36,
@@ -766,15 +492,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
-  actionButtonText: {
-    fontSize: 14,
-  },
-
-  verseContent: {
-    gap: 12,
-  },
-
+  verseContent: { gap: 12 },
   arabicText: {
     fontSize: 24,
     lineHeight: 40,
@@ -782,24 +500,16 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     letterSpacing: 0.5,
   },
-
-  translationText: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: "500",
-  },
-
-  transliterationText: {
-    fontSize: 14,
-    lineHeight: 20,
+  translationText: { fontSize: 16, lineHeight: 24, fontWeight: "500" },
+  arabicTransliterationText: {
+    fontSize: 15,
+    lineHeight: 22,
     fontStyle: "italic",
     fontWeight: "400",
+    textAlign: "left", // keeps it visually paired with the translation
+    color: Colors.universal.grayedOut,
   },
-
-  emptyText: {
-    textAlign: "center",
-    padding: 24,
-  },
+  emptyText: { textAlign: "center", padding: 24 },
 });
 
 export default SuraScreen;

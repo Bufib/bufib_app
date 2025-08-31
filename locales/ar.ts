@@ -51,7 +51,8 @@ export const ar = {
   copied: "منقول",
   loading: "جارٍ تحميل البيانات",
   noData: "لا توجد بيانات متاحة",
-
+  confirmBookmarkChange: "تغيير العلامة المرجعية؟",
+  bookmarkReplaceQuestion: "هل تريد تغيير العلامة المرجعية؟",
   // Navigation
   knowledge: "معرفة",
   settings: "إعدادات",
@@ -117,7 +118,7 @@ export const ar = {
   cancel: "إلغاء",
   noPrayersForDay: "لا توجد صلوات لهذا اليوم",
   undo: "الغاء الكل",
-
+  replace: "استبدال",
   // Days of week
   days: {
     short: ["إث", "ثل", "أر", "خم", "جم", "سب", "أح"],
@@ -225,8 +226,7 @@ export const ar = {
   letters: "الحروف",
   makki: "مكية",
   madani: "مدنية",
-  lastRead: "آخر قراءة"
-
+  lastRead: "آخر قراءة",
 } as const;
 
 export default ar;

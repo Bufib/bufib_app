@@ -146,7 +146,7 @@ export const migrationSQL = `
     id INTEGER PRIMARY KEY,
     sura INTEGER NOT NULL,
     aya  INTEGER NOT NULL,
-    "desc" TEXT NOT NULL             
+    quran_english_text TEXT NOT NULL             
     );
 
     CREATE UNIQUE INDEX IF NOT EXISTS ux_aya_en_sura_aya ON aya_en(sura, aya);

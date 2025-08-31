@@ -21,6 +21,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { router } from "expo-router";
 import { Image } from "expo-image";
 import { Color } from "@cloudinary/url-gen/qualifiers";
+import { useLastSuraStore } from "@/stores/useLastSura";
 
 const SuraList: React.FC = () => {
   const { t } = useTranslation();
@@ -57,6 +58,20 @@ const SuraList: React.FC = () => {
     if (lang === "de") return s.label_de ?? s.label_en ?? s.label ?? "";
     return s.label_en ?? s.label_de ?? s.label ?? "";
   };
+
+  // Zustand: last used sura number
+  const lastSuraNumber = useLastSuraStore((s) => s.lastSura);
+
+  const lastSuraRow = useMemo(
+    () =>
+      lastSuraNumber != null
+        ? suras.find((s) => s.id === lastSuraNumber) ?? null
+        : null,
+    [suras, lastSuraNumber]
+  );
+  const lastSuraTitle = lastSuraRow
+    ? `${getSuraName(lastSuraRow)} (${lastSuraRow.id})`
+    : "—";
 
   const renderSuraItem = ({ item }: { item: SuraRowType }) => {
     const name = getSuraName(item);
@@ -144,44 +159,88 @@ const SuraList: React.FC = () => {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.headerContainer}>
+      <TouchableOpacity
+        style={[
+          styles.headerContainer,
+
+          isArabic()
+            ? { flexDirection: "row-reverse" }
+            : { flexDirection: "row" },
+        ]}
+        activeOpacity={lastSuraRow ? 0.7 : 1}
+        onPress={() => {
+          if (lastSuraRow) {
+            router.push({
+              pathname: "./knowledge/(quran)/sura",
+              params: { suraId: String(lastSuraRow.id) },
+            });
+          }
+        }}
+      >
         <View
           style={[
             styles.headerLeft,
             { backgroundColor: Colors[colorScheme].contrast },
+            isArabic()
+              ? {
+                  alignItems: "flex-end",
+                  paddingRight: 20,
+                  borderTopRightRadius: 20,
+                  borderBottomRightRadius: 20,
+                  borderRightWidth: 1,
+                  borderTopWidth: 1,
+                  borderBottomWidth: 1,
+                }
+              : {
+                  alignItems: "flex-start",
+                  paddingLeft: 20,
+                  borderTopLeftRadius: 20,
+                  borderBottomLeftRadius: 20,
+                  borderLeftWidth: 1,
+                  borderTopWidth: 1,
+                  borderBottomWidth: 1,
+                },
           ]}
         >
-          <View style={styles.headerDescriptionContainer}>
-            <ThemedText
-              type="default"
-              style={{
-                fontSize: 19,
-                fontWeight: "700",
-                color: Colors.universal.primary,
-              }}
-            >
-              {t("lastRead")}
-            </ThemedText>
-          </View>
-          <View
+          <ThemedText
+            type="default"
             style={{
-              flex: 1,
-              paddingHorizontal: 10,
+              fontSize: 19,
+              fontWeight: "700",
+              color: Colors.universal.primary,
             }}
           >
-            <ThemedText
-              type="default"
-              style={{ fontSize: 20, fontWeight: "600" }}
-            >
-              Die Familie Imrans (6)
-            </ThemedText>
-          </View>
+            {t("lastRead")}
+          </ThemedText>
+
+          <ThemedText
+            type="default"
+            style={{ fontSize: 20, fontWeight: "600" }}
+          >
+            {lastSuraTitle}
+          </ThemedText>
         </View>
 
         <View
           style={[
             styles.headerRight,
             { backgroundColor: Colors[colorScheme].contrast },
+            isArabic()
+              ? {
+                  paddingLeft: 10,
+                  borderTopLeftRadius: 20,
+                  borderBottomLeftRadius: 20,
+                  borderLeftWidth: 1,
+                  borderTopWidth: 1,
+                  borderBottomWidth: 1,
+                }
+              : {
+                  borderTopRightRadius: 20,
+                  borderBottomRightRadius: 20,
+                  borderRightWidth: 1,
+                  borderTopWidth: 1,
+                  borderBottomWidth: 1,
+                },
           ]}
         >
           <Image
@@ -195,7 +254,7 @@ const SuraList: React.FC = () => {
             contentFit="cover"
           />
         </View>
-      </View>
+      </TouchableOpacity>
 
       <FlatList
         data={suras}
@@ -222,32 +281,16 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   headerContainer: {
-    flexDirection: "row",
     marginTop: 10,
     paddingHorizontal: 16,
   },
   headerLeft: {
     flex: 1,
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
-    borderLeftWidth: 1,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-
     gap: 15,
+    paddingTop: 10,
   },
-  headerRight: {
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
-    borderRightWidth: 1,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-  },
-  headerDescriptionContainer: {
-    flexDirection: "row",
-    marginTop: 10,
-    paddingLeft: 10,
-  },
+  headerRight: {},
+
   centerContainer: {
     flex: 1,
     justifyContent: "center",

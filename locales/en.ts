@@ -50,6 +50,9 @@ export const en = {
   copied: "Copied!",
   loading: "Daten is being loaded!",
   noData: "No data available",
+ confirmBookmarkChange: "Change Bookmark?",
+  bookmarkReplaceQuestion: "Do you want to change the Bookmark?",
+  replace: "Replace",
 
   // Navigation
   knowledge: "Knowledge",

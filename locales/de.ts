@@ -52,6 +52,9 @@ export const de = {
   copied: "Kopiert!",
   loading: "Daten werden geladen!",
   noData: "Keine Daten vorhanden",
+  confirmBookmarkChange: "Lesezeichen Ändern?",
+  bookmarkReplaceQuestion: "Willst du das Lesezeichen Ändern?",
+  replace: "Ersetzen",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
