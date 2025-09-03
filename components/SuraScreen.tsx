@@ -514,7 +514,7 @@ import {
   Animated,
   Alert,
 } from "react-native";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -523,6 +523,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { Storage } from "expo-sqlite/kv-store";
 import RenderHTML from "react-native-render-html";
 import { useWindowDimensions } from "react-native";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
@@ -541,12 +546,6 @@ import {
 import { whenDatabaseReady } from "@/db";
 import { FlashList } from "@shopify/flash-list";
 
-// 👇 NEW: bottom sheet
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet";
-
 const HEADER_MAX_HEIGHT = 120;
 const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
@@ -558,6 +557,7 @@ const SuraScreen: React.FC = () => {
   const lang = (language ?? "de") as LanguageCode;
   const { width } = useWindowDimensions();
 
+  // account for list + card paddings (16 + 16 on both sides)
   const translitContentWidth = Math.max(0, width - 64);
   const { suraId } = useLocalSearchParams<{ suraId: string }>();
   const suraNumber = useMemo(() => Number(suraId ?? 1), [suraId]);
@@ -571,22 +571,11 @@ const SuraScreen: React.FC = () => {
   const [bookmarkedVerses, setBookmarkedVerses] = useState<Set<number>>(
     new Set()
   );
-
-  // 👇 NEW: bottom sheet state/refs
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["40%", "85%"], []);
-  const [sheetVerse, setSheetVerse] = useState<QuranVerseType | null>(null);
-
-  const openSheet = (v: QuranVerseType, ar?: QuranVerseType | undefined) => {
-    setSheetVerse({
-      ...v,
-      // ensure we always have arabic/transliteration shown inside the sheet:
-      text: v.text,
-      transliteration: v.transliteration ?? "",
-      // we’ll render Arabic from the map below
-    });
-    bottomSheetRef.current?.present();
-  };
+  const [selectedVerse, setSelectedVerse] = useState<QuranVerseType | null>(
+    null
+  );
+  const [selectedArabicVerse, setSelectedArabicVerse] =
+    useState<QuranVerseType | null>(null);
 
   const setLastSura = useLastSuraStore((s) => s.setLastSura);
   useEffect(() => {
@@ -596,6 +585,10 @@ const SuraScreen: React.FC = () => {
   // Animation refs
   const scrollY = useRef(new Animated.Value(0)).current;
 
+  // Bottom Sheet ref
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ["75%"], []);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -604,7 +597,7 @@ const SuraScreen: React.FC = () => {
         await whenDatabaseReady();
 
         const [vers, arabicVers, info, name] = await Promise.all([
-          getSurahVerses(lang, suraNumber), // includes transliteration via JOIN
+          getSurahVerses(lang, suraNumber), // includes transliteration (via JOIN)
           getSurahVerses("ar", suraNumber), // Arabic lines
           getSurahInfoByNumber(suraNumber),
           getSurahDisplayName(suraNumber, lang),
@@ -642,10 +635,34 @@ const SuraScreen: React.FC = () => {
     [arabicVerses]
   );
 
+  // Handle opening the info bottom sheet
+  const handleOpenInfo = useCallback(
+    (verse: QuranVerseType, arabicVerse: QuranVerseType | undefined) => {
+      setSelectedVerse(verse);
+      setSelectedArabicVerse(arabicVerse || null);
+      bottomSheetRef.current?.expand();
+    },
+    []
+  );
+
+  // Render backdrop for bottom sheet
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5}
+      />
+    ),
+    []
+  );
+
   const handleBookmarkVerse = async (verseNumber: number) => {
     try {
       const bookmarksKey = `bookmarks_sura_${suraNumber}`;
 
+      // Tapping the same verse toggles it off
       if (bookmarkedVerses.has(verseNumber)) {
         const newSet = new Set(bookmarkedVerses);
         newSet.delete(verseNumber);
@@ -661,7 +678,7 @@ const SuraScreen: React.FC = () => {
         );
         return;
       }
-
+      // Another verse is already bookmarked → ask to replace
       if (bookmarkedVerses.size > 0) {
         const prev = Array.from(bookmarkedVerses)[0];
         Alert.alert(t("confirmBookmarkChange"), t("bookmarkReplaceQuestion"), [
@@ -670,6 +687,7 @@ const SuraScreen: React.FC = () => {
             text: "Ersetzen",
             style: "destructive",
             onPress: async () => {
+              // remove all previous individual entries
               for (const v of bookmarkedVerses) {
                 await Storage.removeItemAsync(
                   `bookmark_s${suraNumber}_v${v}_${lang}`
@@ -697,6 +715,7 @@ const SuraScreen: React.FC = () => {
         return;
       }
 
+      // No existing bookmark -> add this one
       const newSet = new Set<number>([verseNumber]);
       setBookmarkedVerses(newSet);
       await Storage.setItemAsync(bookmarksKey, JSON.stringify([verseNumber]));
@@ -810,7 +829,7 @@ const SuraScreen: React.FC = () => {
             <ThemedText style={styles.verseNumberText}>{item.aya}</ThemedText>
           </View>
 
-          <View className="flex-row" style={styles.actionButtons}>
+          <View style={styles.actionButtons}>
             <TouchableOpacity
               style={[
                 styles.actionButton,
@@ -823,7 +842,6 @@ const SuraScreen: React.FC = () => {
                 color={Colors[colorScheme].defaultIcon}
               />
             </TouchableOpacity>
-
             <TouchableOpacity
               style={[
                 styles.actionButton,
@@ -841,13 +859,12 @@ const SuraScreen: React.FC = () => {
                 }
               />
             </TouchableOpacity>
-
             <TouchableOpacity
               style={[
                 styles.actionButton,
                 { backgroundColor: Colors[colorScheme].background },
               ]}
-              onPress={() => openSheet(item, arabicVerse)}
+              onPress={() => handleOpenInfo(item, arabicVerse)}
             >
               {hasTafsir && (
                 <Ionicons
@@ -861,18 +878,22 @@ const SuraScreen: React.FC = () => {
         </View>
 
         <View style={styles.verseContent}>
+          {/* Arabic line */}
           {!!arabicVerse && (
             <ThemedText style={styles.arabicText}>
               {arabicVerse.text}
             </ThemedText>
           )}
 
+          {/* Transliteration */}
           {!!transliterationText && (
             <RenderHTML
               contentWidth={translitContentWidth}
               source={{ html: `<div>${transliterationText}</div>` }}
+              // make it look like your old style
               baseStyle={StyleSheet.flatten(styles.arabicTransliterationText)}
               defaultTextProps={{ selectable: true }}
+              // safety & tiny tweaks
               ignoredDomTags={["script", "style"]}
               tagsStyles={{
                 u: { textDecorationLine: "underline" },
@@ -881,14 +902,13 @@ const SuraScreen: React.FC = () => {
               }}
             />
           )}
-
+          {/* Translation */}
           <ThemedText style={styles.translationText}>{item.text}</ThemedText>
         </View>
       </View>
     );
   };
 
-  // ---- RENDER ----
   return (
     <ThemedView style={styles.container}>
       <AnimatedHeader />
@@ -920,50 +940,105 @@ const SuraScreen: React.FC = () => {
         />
       )}
 
-      {/* 👇 Bottom Sheet Modal */}
-      <BottomSheetModal
+      {/* Bottom Sheet for Verse Info */}
+      <BottomSheet
         ref={bottomSheetRef}
+        index={-1}
         snapPoints={snapPoints}
-        enablePanDownToClose
-        onDismiss={() => setSheetVerse(null)}
-        backgroundStyle={{
-          backgroundColor: Colors[colorScheme].contrast,
-          borderRadius: 18,
+        backdropComponent={renderBackdrop}
+        enablePanDownToClose={true}
+        backgroundStyle={{ backgroundColor: Colors[colorScheme].background }}
+        handleIndicatorStyle={{
+          backgroundColor: Colors[colorScheme].defaultIcon,
         }}
-        handleIndicatorStyle={{ backgroundColor: Colors.universal.grayedOut }}
       >
-        <View style={{ padding: 16, gap: 12 }}>
-          <ThemedText type="subtitle" style={{ fontWeight: "700" }}>
-            {displayName} · {t("ayatCount").replace(":", "")} {sheetVerse?.aya}
-          </ThemedText>
+        <BottomSheetScrollView style={styles.bottomSheetContent}>
+          {selectedVerse && (
+            <>
+              {/* Header */}
+              <View style={styles.bottomSheetHeader}>
+                <ThemedText style={styles.bottomSheetTitle}>
+                  {displayName} - {t("ayah")} {selectedVerse.aya}
+                </ThemedText>
+                <TouchableOpacity
+                  onPress={() => bottomSheetRef.current?.close()}
+                  style={styles.closeButton}
+                >
+                  <Ionicons
+                    name="close-circle"
+                    size={28}
+                    color={Colors[colorScheme].defaultIcon}
+                  />
+                </TouchableOpacity>
+              </View>
 
-          {/* Arabic */}
-          {!!sheetVerse && arabicByAya.get(sheetVerse.aya) && (
-            <ThemedText style={[styles.arabicText, { marginTop: 4 }]}>
-              {arabicByAya.get(sheetVerse.aya)?.text}
-            </ThemedText>
+              {/* Divider */}
+              <View
+                style={[
+                  styles.divider,
+                  { backgroundColor: Colors[colorScheme].border },
+                ]}
+              />
+
+              {/* Content */}
+              <View style={styles.infoContent}>
+                {/* Arabic Text */}
+                {selectedArabicVerse && (
+                  <View style={styles.infoSection}>
+                    <ThemedText style={styles.infoLabel}>
+                      {t("arabicText")}:
+                    </ThemedText>
+                    <ThemedText style={styles.infoArabicText}>
+                      {selectedArabicVerse.text}
+                    </ThemedText>
+                  </View>
+                )}
+
+                {/* Translation */}
+                <View style={styles.infoSection}>
+                  <ThemedText style={styles.infoLabel}>
+                    {t("translation")}:
+                  </ThemedText>
+                  <ThemedText style={styles.infoTranslation}>
+                    {selectedVerse.text}
+                  </ThemedText>
+                </View>
+
+                {/* Tafsir/Commentary */}
+                <View style={styles.infoSection}>
+                  <ThemedText style={styles.infoLabel}>
+                    {t("tafsir")}:
+                  </ThemedText>
+                  <ThemedText style={styles.infoTafsir}>
+                    {/* You can replace this with actual Tafsir data from your database */}
+                    {t("tafsirPlaceholder") ||
+                      "Detailed explanation and commentary for this verse will appear here. This can include historical context, interpretations, and scholarly insights."}
+                  </ThemedText>
+                </View>
+
+                {/* Additional Info */}
+                <View style={styles.infoSection}>
+                  <ThemedText style={styles.infoLabel}>
+                    {t("additionalInfo")}:
+                  </ThemedText>
+                  <View style={styles.metaInfo}>
+                    <ThemedText style={styles.metaText}>
+                      • {t("surahNumber")}: {suraNumber}
+                    </ThemedText>
+                    <ThemedText style={styles.metaText}>
+                      • {t("verseNumber")}: {selectedVerse.aya}
+                    </ThemedText>
+                    <ThemedText style={styles.metaText}>
+                      • {t("revelation")}:{" "}
+                      {suraInfo?.makki ? t("makki") : t("madani")}
+                    </ThemedText>
+                  </View>
+                </View>
+              </View>
+            </>
           )}
-
-          {/* Transliteration */}
-          {!!sheetVerse?.transliteration && (
-            <RenderHTML
-              contentWidth={Math.max(0, translitContentWidth)}
-              source={{ html: `<div>${sheetVerse.transliteration}</div>` }}
-              baseStyle={StyleSheet.flatten(styles.arabicTransliterationText)}
-              defaultTextProps={{ selectable: true }}
-            />
-          )}
-
-          {/* Translation */}
-          {!!sheetVerse?.text && (
-            <ThemedText style={styles.translationText}>
-              {sheetVerse.text}
-            </ThemedText>
-          )}
-
-          {/* You can add tafsir, references, actions here */}
-        </View>
-      </BottomSheetModal>
+        </BottomSheetScrollView>
+      </BottomSheet>
     </ThemedView>
   );
 };
@@ -997,14 +1072,20 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 1000,
   },
-  headerContainer: { flex: 1, justifyContent: "center" },
+  headerContainer: {
+    flex: 1,
+    justifyContent: "center",
+  },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 15,
   },
-  headerTextContainer: { flex: 1, marginHorizontal: 16 },
+  headerTextContainer: {
+    flex: 1,
+    marginHorizontal: 16,
+  },
   suraName: { fontSize: 20, fontWeight: "700" },
   subMeta: {
     fontSize: 14,
@@ -1014,6 +1095,7 @@ const styles = StyleSheet.create({
   suraNameAr: { textAlign: "right", fontSize: 24 },
 
   verseCard: {
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     marginBottom: 12,
     padding: 16,
@@ -1064,6 +1146,64 @@ const styles = StyleSheet.create({
     color: Colors.universal.grayedOut,
   },
   emptyText: { textAlign: "center", padding: 24 },
+
+  // Bottom Sheet Styles
+  bottomSheetContent: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  bottomSheetHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 16,
+  },
+  bottomSheetTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    flex: 1,
+  },
+  closeButton: {
+    padding: 4,
+  },
+  divider: {
+    height: 1,
+    marginBottom: 16,
+  },
+  infoContent: {
+    paddingBottom: 20,
+  },
+  infoSection: {
+    marginBottom: 20,
+  },
+  infoLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: Colors.universal.grayedOut,
+    marginBottom: 8,
+  },
+  infoArabicText: {
+    fontSize: 22,
+    lineHeight: 36,
+    textAlign: "right",
+    fontWeight: "400",
+  },
+  infoTranslation: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  infoTafsir: {
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: "justify",
+  },
+  metaInfo: {
+    gap: 4,
+  },
+  metaText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
 });
 
 export default SuraScreen;

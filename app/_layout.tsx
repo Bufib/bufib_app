@@ -1,4 +1,3 @@
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import "react-native-gesture-handler";
 import "react-native-reanimated";
 import AppReviewPrompt from "@/components/AppReviewPrompt";
@@ -280,68 +279,61 @@ function AppContent() {
   // Main app content
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <ReMountManager>
-            <MenuProvider>
-              <NoInternet showUI={!hasInternet} showToast={true} />
-              <QueryClientProvider client={queryClient}>
-                <SupabaseRealtimeProvider>
-                  <Stack
-                    screenOptions={{
-                      headerTintColor:
-                        colorScheme === "dark" ? "#d0d0c0" : "#000",
-                    }}
-                  >
-                    <Stack.Screen
-                      name="index"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(tabs)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(addNews)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(auth)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(displayQuestion)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(newsArticle)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(displayPrayer)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(askQuestion)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(podcast)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen name="+not-found" />
-                  </Stack>
-                  <AppReviewPrompt />
-                  <StatusBar style="auto" />
-                </SupabaseRealtimeProvider>
-              </QueryClientProvider>
-            </MenuProvider>
-            <Toast />
-          </ReMountManager>
-        </ThemeProvider>
-      </BottomSheetModalProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <ReMountManager>
+          <MenuProvider>
+            <NoInternet showUI={!hasInternet} showToast={true} />
+            <QueryClientProvider client={queryClient}>
+              <SupabaseRealtimeProvider>
+                <Stack
+                  screenOptions={{
+                    headerTintColor:
+                      colorScheme === "dark" ? "#d0d0c0" : "#000",
+                  }}
+                >
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(addNews)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(auth)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(displayQuestion)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(newsArticle)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(displayPrayer)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(askQuestion)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(podcast)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+                <AppReviewPrompt />
+                <StatusBar style="auto" />
+              </SupabaseRealtimeProvider>
+            </QueryClientProvider>
+          </MenuProvider>
+          <Toast />
+        </ReMountManager>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }
