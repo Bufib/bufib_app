@@ -18,6 +18,7 @@ import { router } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Button,
   FlatList,
   Platform,
   ScrollView,
@@ -28,6 +29,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as FileSystem from "expo-file-system";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
@@ -69,6 +71,22 @@ export default function HomeScreen() {
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];
   const news: NewsType[] = newsData?.pages.flat() ?? [];
   const podcasts: PodcastType[] = podcastPages?.pages.flat() ?? [];
+
+  //! Clear database function
+  // async function clearDatabase(dbName = "bufib.db") {
+  //   const dbPath = `${FileSystem.documentDirectory}SQLite/${dbName}`;
+  //   try {
+  //     const info = await FileSystem.getInfoAsync(dbPath);
+  //     if (info.exists) {
+  //       await FileSystem.deleteAsync(dbPath, { idempotent: true });
+  //       console.log("Database deleted:", dbPath);
+  //     } else {
+  //       console.log("No database file found at:", dbPath);
+  //     }
+  //   } catch (e) {
+  //     console.error("Error deleting DB:", e);
+  //   }
+  // }
 
   return (
     <SafeAreaView
@@ -219,6 +237,10 @@ export default function HomeScreen() {
           </View>
         )}
 
+        <Button
+          onPress={() => router.push("./home/visualizeDatabase")}
+          title="db"
+        />
         {/* //!----------- News ----------- */}
         <View style={styles.newsContainer}>
           <View
