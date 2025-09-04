@@ -5,6 +5,7 @@ import indexPrayer from "@/app/(tabs)/knowledge/(prayers)/indexPrayer";
 import indexQuestion from "@/app/(tabs)/knowledge/(questions)/indexQuestion";
 import indexCalender from "@/app/(tabs)/knowledge/(calender)/indexCalender";
 import indexQuran from "@/app/(tabs)/knowledge/(quran)/indexQuran";
+import indexHistory from "@/app/(tabs)/knowledge/(history)/indexHistory";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -13,7 +14,8 @@ const renderScene = SceneMap({
   questionsScreen: indexQuestion,
   prayerScreen: indexPrayer,
   calenderScreen: indexCalender,
-  quranScreen: indexQuran
+  quranScreen: indexQuran,
+  historyScreen: indexHistory,
 });
 
 export default function TopNavigationKnowledge() {
@@ -28,6 +30,7 @@ export default function TopNavigationKnowledge() {
       { key: "prayerScreen", title: t("prayerScreenTitle") },
       { key: "calenderScreen", title: t("calenderScreenTitle") },
       { key: "quranScreen", title: t("quranScreen") },
+      { key: "historyScreen", title: t("historyScreen") },
     ],
     [t]
   );

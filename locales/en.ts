@@ -63,6 +63,8 @@ export const en = {
   podcastScreenTitle: "Podcasts",
   calenderScreenTitle: "Calender",
   quranScreen: "Quran",
+  historyScreen: "History",
+
   // Database
   updateAvailable: "New update available",
   newAppVersionAvailable:

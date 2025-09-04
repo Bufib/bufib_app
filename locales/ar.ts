@@ -63,6 +63,8 @@ export const ar = {
   home: "الرئيسية",
   calenderScreenTitle: "تقويم",
   quranScreen: "قرآن",
+  historyScreen: "تاريخ",
+
   // Database
   updateAvailable: "تحديث جديد متوفر",
   newAppVersionAvailable: "إصدار جديد من التطبيق متوفّر في متجر التطبيقات!",
