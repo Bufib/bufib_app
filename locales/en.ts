@@ -50,7 +50,7 @@ export const en = {
   copied: "Copied!",
   loading: "Daten is being loaded!",
   noData: "No data available",
- confirmBookmarkChange: "Change Bookmark?",
+  confirmBookmarkChange: "Change Bookmark?",
   bookmarkReplaceQuestion: "Do you want to change the Bookmark?",
   replace: "Replace",
 
@@ -228,8 +228,54 @@ export const en = {
   letters: "Letters",
   makki: "Makki",
   madani: "Madani",
-  lastRead: "Last read"
+  lastRead: "Last read",
 
+  // History
+  sections: {
+    prophets: "Prophets",
+    ahlulbayt: "Ahlul-Bayt",
+    ashura: "Ashura",
+  },
+  prophets: {
+    adam: "Adam (pbuh)",
+    nuh: "Noah (pbuh)",
+    ibrahim: "Abraham (pbuh)",
+    lut: "Lot (pbuh)",
+    ismail: "Ishmael (pbuh)",
+    yaqub: "Jacob (pbuh)",
+    yusuf: "Joseph (pbuh)",
+    ayyub: "Job (pbuh)",
+    musa: "Moses (pbuh)",
+    harun: "Aaron (pbuh)",
+    dawud: "David (pbuh)",
+    sulayman: "Solomon (pbuh)",
+    yunus: "Jonah (pbuh)",
+    zakariya: "Zechariah (pbuh)",
+    yahya: "John (pbuh)",
+    isa: "Jesus (pbuh)",
+    muhammad: "Muhammad (pbuh)",
+  },
+  ahlulbayt: {
+    ali: "Ali",
+    fatima: "Fatima",
+    hassan: "Hassan",
+    hussein: "Hussein",
+    zainab: "Zainab",
+    abbas: "Abbas",
+    sajjad: "Sajjad",
+  },
+  ashura: {
+    day1: "Day 1",
+    day2: "Day 2",
+    day3: "Day 3",
+    day4: "Day 4",
+    day5: "Day 5",
+    day6: "Day 6",
+    day7: "Day 7",
+    day8: "Day 8",
+    day9: "Day 9",
+    day10: "Day 10",
+  },
 } as const;
 
 export default en;

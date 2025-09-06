@@ -228,7 +228,54 @@ export const de = {
   letters: "Buchstaben",
   makki: "Mekkanisch",
   madani: "Medinensisch",
-  lastRead: "Zuletzt gelesen"
+  lastRead: "Zuletzt gelesen",
+
+  // History
+    sections: {
+    prophets: "Propheten",
+    ahlulbayt: "Ahlul-Bayt",
+    ashura: "Ashura",
+  },
+  prophets: {
+    adam: "Adam (s.)",
+    nuh: "Nuh (s.)",
+    ibrahim: "Ibrahim (s.)",
+    lut: "Lut (s.)",
+    ismail: "Ismail (s.)",
+    yaqub: "Yaqub (s.)",
+    yusuf: "Yusuf (s.)",
+    ayyub: "Ayyub (s.)",
+    musa: "Musa (s.)",
+    harun: "Harun (s.)",
+    dawud: "Dawud (s.)",
+    sulayman: "Sulayman (s.)",
+    yunus: "Yunus (s.)",
+    zakariya: "Zakariya (s.)",
+    yahya: "Yahya (s.)",
+    isa: "Isa (s.)",
+    muhammad: "Muhammad (s.)",
+  },
+  ahlulbayt: {
+    ali: "Ali",
+    fatima: "Fatima",
+    hassan: "Hassan",
+    hussein: "Hussein",
+    zainab: "Zainab",
+    abbas: "Abbas",
+    sajjad: "Sajjad",
+  },
+  ashura: {
+    day1: "Tag 1",
+    day2: "Tag 2",
+    day3: "Tag 3",
+    day4: "Tag 4",
+    day5: "Tag 5",
+    day6: "Tag 6",
+    day7: "Tag 7",
+    day8: "Tag 8",
+    day9: "Tag 9",
+    day10: "Tag 10",
+  }
 } as const;
 
 export default de;

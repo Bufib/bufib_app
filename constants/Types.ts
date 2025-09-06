@@ -553,3 +553,16 @@ export type ChapterSectionType = {
   title: string;
   data: LevelType[];
 };
+
+export type ProphetType ={
+  id: string; 
+  nameKey: string; 
+  route: string; 
+}
+
+export type SectionType = {
+  id: string; 
+  titleKey: string; 
+  backgroundImage: any;
+  levels: ProphetType[];
+}

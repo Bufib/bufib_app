@@ -1,11 +1,11 @@
 import * as React from "react";
 import { useWindowDimensions, useColorScheme } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import indexPrayer from "@/app/(tabs)/knowledge/(prayers)/indexPrayer";
-import indexQuestion from "@/app/(tabs)/knowledge/(questions)/indexQuestion";
-import indexCalender from "@/app/(tabs)/knowledge/(calender)/indexCalender";
-import indexQuran from "@/app/(tabs)/knowledge/(quran)/indexQuran";
-import indexHistory from "@/app/(tabs)/knowledge/(history)/indexHistory";
+import indexPrayer from "@/app/(tabs)/knowledge/prayers/indexPrayer";
+import indexQuestion from "@/app/(tabs)/knowledge/questions/indexQuestion";
+import indexCalender from "@/app/(tabs)/knowledge/calendar/indexCalender";
+import indexQuran from "@/app/(tabs)/knowledge/quran/indexQuran";
+import indexHistory from "@/app/(tabs)/knowledge/history/indexHistory";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";

@@ -241,6 +241,10 @@ export default function HomeScreen() {
           onPress={() => router.push("./home/visualizeDatabase")}
           title="db"
         />
+        <Button
+          onPress={() => router.push("../knowledge/history/prophets/adam/")}
+          title="adam"
+        />
         {/* //!----------- News ----------- */}
         <View style={styles.newsContainer}>
           <View

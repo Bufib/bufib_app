@@ -229,6 +229,53 @@ export const ar = {
   makki: "مكية",
   madani: "مدنية",
   lastRead: "آخر قراءة",
+
+  // History
+  sections: {
+    prophets: "الأنبياء",
+    ahlulbayt: "أهل البيت",
+    ashura: "عاشوراء",
+  },
+  prophets: {
+    adam: "آدم (ع)",
+    nuh: "نوح (ع)",
+    ibrahim: "إبراهيم (ع)",
+    lut: "لوط (ع)",
+    ismail: "إسماعيل (ع)",
+    yaqub: "يعقوب (ع)",
+    yusuf: "يوسف (ع)",
+    ayyub: "أيوب (ع)",
+    musa: "موسى (ع)",
+    harun: "هارون (ع)",
+    dawud: "داود (ع)",
+    sulayman: "سليمان (ع)",
+    yunus: "يونس (ع)",
+    zakariya: "زكريا (ع)",
+    yahya: "يحيى (ع)",
+    isa: "عيسى (ع)",
+    muhammad: "محمد (ص)",
+  },
+  ahlulbayt: {
+    ali: "علي",
+    fatima: "فاطمة",
+    hassan: "الحسن",
+    hussein: "الحسين",
+    zainab: "زينب",
+    abbas: "العباس",
+    sajjad: "السجاد",
+  },
+  ashura: {
+    day1: "اليوم الأول",
+    day2: "اليوم الثاني",
+    day3: "اليوم الثالث",
+    day4: "اليوم الرابع",
+    day5: "اليوم الخامس",
+    day6: "اليوم السادس",
+    day7: "اليوم السابع",
+    day8: "اليوم الثامن",
+    day9: "اليوم التاسع",
+    day10: "اليوم العاشر",
+  },
 } as const;
 
 export default ar;

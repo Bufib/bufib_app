@@ -8,8 +8,8 @@ const _layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
     <Stack>
-      <Stack.Screen name="indexHistory" options={{ headerShown: true }} />
-          </Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+    </Stack>
   );
 };
 
