@@ -522,7 +522,7 @@ const SuraList: React.FC = () => {
         activeOpacity={0.8}
         onPress={() =>
           router.push({
-            pathname: "./knowledge/(quran)/sura",
+            pathname: "/knowledge/quran/sura",
             params: {
               suraId: item.id.toString(),
             },

@@ -45,7 +45,12 @@ export default function QuestionLinks() {
   }, []);
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background }]}>
+    <Animated.View
+      style={[
+        styles.container,
+        { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background },
+      ]}
+    >
       <View style={styles.categoriesContainer}>
         <View style={styles.categories}>
           {questionCategories.map((category, index) => (
@@ -53,7 +58,7 @@ export default function QuestionLinks() {
               key={index}
               onPress={() => {
                 router.push({
-                  pathname: "/knowledge/questionCategories",
+                  pathname: "/knowledge/questions/questionCategories",
                   params: {
                     category: category.value,
                     categoryName: category.name,
@@ -100,7 +105,8 @@ export default function QuestionLinks() {
           <TouchableOpacity
             onPress={() => {
               router.push({
-                pathname: "/knowledge/questionVideosCategories",
+                pathname:
+                  "/(tabs)/knowledge/questions/questionVideosCategories",
                 params: { category: "Videos", categoryName: t("videos") },
               });
             }}
@@ -139,7 +145,7 @@ export default function QuestionLinks() {
       <View style={styles.footerContainer}>
         <View style={styles.footerHeaderContainer}>
           <ThemedText
-            type="titleSmall"
+            type="titleBiggerLessBold"
             style={styles.footerHeaderContainerText}
           >
             {t("latestQuestions")}

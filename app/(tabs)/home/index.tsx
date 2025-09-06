@@ -107,7 +107,7 @@ export default function HomeScreen() {
 
         {articles.length > 0 && (
           <View style={styles.newsArticleContainer}>
-            <ThemedText type="titleSmall" style={styles.titleShadow}>
+            <ThemedText type="titleBiggerLessBold" style={styles.titleShadow}>
               {t("newsArticlesTitle")}
             </ThemedText>
 
@@ -178,7 +178,7 @@ export default function HomeScreen() {
         {/* //!-------- Podcasts Section -------- */}
         {podcasts.length > 0 && (
           <View style={styles.podcastContainer}>
-            <ThemedText type="titleSmall" style={styles.titleShadow}>
+            <ThemedText type="titleBiggerLessBold" style={styles.titleShadow}>
               {t("podcastsTitle")}
             </ThemedText>
 
@@ -237,14 +237,11 @@ export default function HomeScreen() {
           </View>
         )}
 
-        <Button
+        {/* <Button
           onPress={() => router.push("./home/visualizeDatabase")}
           title="db"
-        />
-        <Button
-          onPress={() => router.push("../knowledge/history/prophets/adam/")}
-          title="adam"
-        />
+        /> */}
+
         {/* //!----------- News ----------- */}
         <View style={styles.newsContainer}>
           <View
@@ -255,7 +252,7 @@ export default function HomeScreen() {
             }}
           >
             <ThemedText
-              type="titleSmall"
+              type="titleBiggerLessBold"
               style={[
                 { color: Colors.universal.third, paddingBottom: 3 },
                 styles.titleShadow,
@@ -375,18 +372,14 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   titleShadow: {
-    ...Platform.select({
-      ios: {
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+
+    elevation: 2,
   },
 });

@@ -62,7 +62,7 @@ export const de = {
   prayerScreenTitle: "Gebete und mehr",
   newsArticleScreenTitle: "Artikel",
   home: "Home",
-  calenderScreenTitle: "Kalender",
+  calendarScreenTitle: "Kalender",
   quranScreen: "Quran",
   historyScreen: "Geschichtliches",
 

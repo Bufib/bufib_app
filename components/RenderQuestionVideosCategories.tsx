@@ -66,7 +66,7 @@ export default function RenderQuestionVideosCategories() {
           <TouchableOpacity
             onPress={() =>
               router.push({
-                pathname: "/knowledge/questionVideos",
+                pathname: "/(tabs)/knowledge/questions/questionVideos",
                 params: { categoryName: item.video_category },
               })
             }

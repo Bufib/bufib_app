@@ -59,7 +59,6 @@ export const NewsItem = ({
         styles.newsItem,
         {
           backgroundColor: Colors[colorScheme].contrast,
-          shadowColor: Colors[colorScheme].border,
         },
       ]}
     >
@@ -180,19 +179,15 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     marginBottom: 20,
-    ...Platform.select({
-      ios: {
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+
+    elevation: 3,
   },
   pinIconStyle: {
     flex: 1,

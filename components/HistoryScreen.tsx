@@ -570,29 +570,23 @@ const HistoryScreen: React.FC = () => {
 
         {/* Status indicator */}
 
-        {status === "completed" ||
-          (status === "locked" && (
-            <View style={styles.statusIndicator}>
-              {status === "completed" && (
-                <ThemedText style={styles.statusIcon}>
-                  <Ionicons
-                    name="checkmark"
-                    size={24}
-                    color={Colors[colorScheme].defaultIcon}
-                  />
-                </ThemedText>
-              )}
-              {status === "locked" && (
-                <ThemedText style={[styles.statusIcon, { color: "#999" }]}>
-                  <Feather
-                    name="lock"
-                    size={24}
-                    color={Colors[colorScheme].defaultIcon}
-                  />
-                </ThemedText>
-              )}
-            </View>
-          ))}
+        {(status === "completed" || status === "locked") && (
+          <View style={styles.statusIndicator}>
+            {status === "completed" ? (
+              <Ionicons
+                name="checkmark"
+                size={24}
+                color={Colors[colorScheme].defaultIcon}
+              />
+            ) : (
+              <Feather
+                name="lock"
+                size={24}
+                color="#999" // gray lock
+              />
+            )}
+          </View>
+        )}
       </TouchableOpacity>
     );
   };

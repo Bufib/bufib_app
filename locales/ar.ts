@@ -61,7 +61,7 @@ export const ar = {
   newsArticleScreenTitle: "مقالات",
   podcastScreenTitle: "بودكاست",
   home: "الرئيسية",
-  calenderScreenTitle: "تقويم",
+  calendarScreenTitle: "تقويم",
   quranScreen: "قرآن",
   historyScreen: "تاريخ",
 

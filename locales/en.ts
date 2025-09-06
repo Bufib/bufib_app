@@ -61,7 +61,7 @@ export const en = {
   prayerScreenTitle: "Prayers and more",
   newsArticleScreenTitle: "Articles",
   podcastScreenTitle: "Podcasts",
-  calenderScreenTitle: "Calender",
+  calendarScreenTitle: "Calender",
   quranScreen: "Quran",
   historyScreen: "History",
 

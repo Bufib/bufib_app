@@ -82,9 +82,9 @@ const PodcastPreviewCard: FC<PodcastProps> = ({ podcast }) => {
   );
 
   return (
-    <View style={styles.cardWrapper}>
+    <View style={styles.container}>
       <LinearGradient
-        style={styles.container}
+        style={styles.cardWrapper}
         colors={gradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -140,13 +140,14 @@ export default PodcastPreviewCard;
 
 const styles = StyleSheet.create({
   container: {
+  },
+  cardWrapper: {
     height: 280,
     width: 220,
     borderRadius: 32,
     position: "relative",
     overflow: "hidden",
   },
-  cardWrapper: {},
 
   vinylRecord: {
     top: 8,
