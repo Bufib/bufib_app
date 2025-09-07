@@ -8,7 +8,8 @@ import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 export default function Names() {
   const { language } = useLanguage();
-    const { t } = useTranslation();
+  const { t } = useTranslation();
+
   return (
     <>
       <Stack.Screen

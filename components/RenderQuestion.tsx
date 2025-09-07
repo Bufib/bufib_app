@@ -15,6 +15,10 @@ import Markdown from "react-native-markdown-display";
 import { NoInternet } from "./NoInternet";
 import { QuestionType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
+import { SafeAreaView } from "react-native-safe-area-context";
+import HeaderLeftBackButton from "./HeaderLeftBackButton";
+import { Colors } from "@/constants/Colors";
+import { color } from "@cloudinary/url-gen/qualifiers/background";
 type RenderQuestionProps = {
   category: string;
   subcategory: string;
@@ -30,7 +34,7 @@ const RenderQuestion = ({
   const [isLoading, setIsLoading] = useState(true);
   const [question, setQuestion] = useState<QuestionType | null>(null);
   const { fontSize, lineHeight } = useFontSizeStore();
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() || "light";
   const [hasCopiedSingleAnswer, setHasCopiedSingleAnswer] = useState(false);
   const [hasCopiedKhamenei, setHasCopiedKhamenei] = useState(false);
   const [hasCopiedSistani, setHasCopiedSistani] = useState(false);
@@ -110,159 +114,173 @@ const RenderQuestion = ({
     }, 1000);
   };
   return (
-    <ScrollView
-      style={[styles.scrollViewStyles, themeStyles.defaultBackgorundColor]}
-      contentContainerStyle={styles.scrollViewContent}
-      showsVerticalScrollIndicator={false}
+    <SafeAreaView
+      edges={["top"]}
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
     >
-      <NoInternet showUI={true} showToast={false} />
-      <View
-        style={[
-          styles.questionContainer,
-          themeStyles.contrast,
-          {
-            // iOS Shadow
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 }, // X: 0, Y: 2
-            shadowOpacity: 0.2,
-            shadowRadius: 4,
-            // Android Shadow
-            elevation: 5, // Adjust for stronger or softer shadow
-            backgroundColor: colorScheme === "dark" ? "#34495e" : "#fff",
-          },
-        ]}
+      <HeaderLeftBackButton style={{ marginLeft: 5 }} />
+      <ScrollView
+        style={[styles.scrollViewStyles, themeStyles.defaultBackgorundColor]}
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
       >
-        <ThemedText style={[styles.questionText, { fontSize, lineHeight }]}>
-          {question?.question}
-        </ThemedText>
-      </View>
+        <NoInternet showUI={true} showToast={false} />
+        <View
+          style={[
+            styles.questionContainer,
+            themeStyles.contrast,
+            {
+              // iOS Shadow
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 }, // X: 0, Y: 2
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              // Android Shadow
+              elevation: 5, // Adjust for stronger or softer shadow
+            },
+          ]}
+        >
+          <ThemedText style={[styles.questionText, { fontSize, lineHeight }]}>
+            {question?.question}
+          </ThemedText>
+        </View>
 
-      <View style={styles.answerContainer}>
-        {question?.answer ? (
-          <ThemedView style={[styles.singleAnswer, themeStyles.contrast]}>
-            <View style={styles.textIconContainer}>
-              {hasCopiedSingleAnswer ? (
-                <View style={styles.hasCopiedContainer}>
-                  <Feather
-                    name="check"
+        <View style={styles.answerContainer}>
+          {question?.answer ? (
+            <ThemedView style={[styles.singleAnswer, themeStyles.contrast]}>
+              <View style={styles.textIconContainer}>
+                {hasCopiedSingleAnswer ? (
+                  <View style={styles.hasCopiedContainer}>
+                    <Feather
+                      name="check"
+                      size={24}
+                      color={colorScheme === "dark" ? "#fff" : "#000"}
+                    />
+                    <ThemedText>{t("copied")}</ThemedText>
+                  </View>
+                ) : (
+                  <AntDesign
+                    name="copy1"
                     size={24}
                     color={colorScheme === "dark" ? "#fff" : "#000"}
+                    style={styles.copyIcon}
+                    onPress={() => {
+                      copyToClipboardSingleAnswer(question?.answer);
+                      copyIconChangeSingleAnswer();
+                    }}
                   />
-                  <ThemedText>{t("copied")}</ThemedText>
+                )}
+                <Markdown
+                  style={{
+                    body: {
+                      ...themeStyles.text,
+                      fontSize: fontSize,
+                      lineHeight: lineHeight,
+                    },
+                  }}
+                >
+                  {question?.answer || "Antwort wird geladen"}
+                </Markdown>
+              </View>
+            </ThemedView>
+          ) : (
+            <>
+              <Collapsible title="Sayid al-Khamenei" marja="khamenei">
+                <View style={styles.textIconContainer}>
+                  {hasCopiedKhamenei ? (
+                    <View style={styles.hasCopiedContainer}>
+                      <Feather
+                        name="check"
+                        size={24}
+                        color={colorScheme === "dark" ? "#fff" : "#000"}
+                      />
+                      <ThemedText>{t("copied")}</ThemedText>
+                    </View>
+                  ) : (
+                    <AntDesign
+                      name="copy1"
+                      size={24}
+                      color={colorScheme === "dark" ? "#fff" : "#000"}
+                      style={styles.copyIcon}
+                      onPress={() => {
+                        copyToClipboardMarja(
+                          question?.answer_khamenei,
+                          "khamenei"
+                        );
+                        copyIconChangeMarja("khamenei");
+                      }}
+                    />
+                  )}
+                  <Markdown
+                    style={{
+                      body: {
+                        ...themeStyles.text,
+                        fontSize: fontSize,
+                        lineHeight: lineHeight,
+                      },
+                    }}
+                  >
+                    {question?.answer_khamenei || "Antwort wird geladen"}
+                  </Markdown>
                 </View>
-              ) : (
-                <AntDesign
-                  name="copy1"
-                  size={24}
-                  color={colorScheme === "dark" ? "#fff" : "#000"}
-                  style={styles.copyIcon}
-                  onPress={() => {
-                    copyToClipboardSingleAnswer(question?.answer);
-                    copyIconChangeSingleAnswer();
-                  }}
-                />
-              )}
-              <Markdown
-                style={{
-                  body: {
-                    ...themeStyles.text,
-                    fontSize: fontSize,
-                    lineHeight: lineHeight,
-                  },
-                }}
-              >
-                {question?.answer || "Antwort wird geladen"}
-              </Markdown>
-            </View>
-          </ThemedView>
-        ) : (
-          <>
-            <Collapsible title="Sayid al-Khamenei" marja="khamenei">
-              <View style={styles.textIconContainer}>
-                {hasCopiedKhamenei ? (
-                  <View style={styles.hasCopiedContainer}>
-                    <Feather
-                      name="check"
-                      size={24}
-                      color={colorScheme === "dark" ? "#fff" : "#000"}
-                    />
-                    <ThemedText>{t("copied")}</ThemedText>
-                  </View>
-                ) : (
-                  <AntDesign
-                    name="copy1"
-                    size={24}
-                    color={colorScheme === "dark" ? "#fff" : "#000"}
-                    style={styles.copyIcon}
-                    onPress={() => {
-                      copyToClipboardMarja(
-                        question?.answer_khamenei,
-                        "khamenei"
-                      );
-                      copyIconChangeMarja("khamenei");
-                    }}
-                  />
-                )}
-                <Markdown
-                  style={{
-                    body: {
-                      ...themeStyles.text,
-                      fontSize: fontSize,
-                      lineHeight: lineHeight,
-                    },
-                  }}
-                >
-                  {question?.answer_khamenei || "Antwort wird geladen"}
-                </Markdown>
-              </View>
-            </Collapsible>
+              </Collapsible>
 
-            <Collapsible title="Sayid as-Sistani" marja="sistani">
-              <View style={styles.textIconContainer}>
-                {hasCopiedSistani ? (
-                  <View style={styles.hasCopiedContainer}>
-                    <Feather
-                      name="check"
+              <Collapsible title="Sayid as-Sistani" marja="sistani">
+                <View style={styles.textIconContainer}>
+                  {hasCopiedSistani ? (
+                    <View style={styles.hasCopiedContainer}>
+                      <Feather
+                        name="check"
+                        size={24}
+                        color={colorScheme === "dark" ? "#fff" : "#000"}
+                      />
+                      <ThemedText>{t("copied")}</ThemedText>
+                    </View>
+                  ) : (
+                    <AntDesign
+                      name="copy1"
                       size={24}
                       color={colorScheme === "dark" ? "#fff" : "#000"}
+                      style={styles.copyIcon}
+                      onPress={() => {
+                        copyToClipboardMarja(
+                          question?.answer_sistani,
+                          "sistani"
+                        );
+                        copyIconChangeMarja("sistani");
+                      }}
                     />
-                    <ThemedText>{t("copied")}</ThemedText>
-                  </View>
-                ) : (
-                  <AntDesign
-                    name="copy1"
-                    size={24}
-                    color={colorScheme === "dark" ? "#fff" : "#000"}
-                    style={styles.copyIcon}
-                    onPress={() => {
-                      copyToClipboardMarja(question?.answer_sistani, "sistani");
-                      copyIconChangeMarja("sistani");
+                  )}
+                  <Markdown
+                    style={{
+                      body: {
+                        ...themeStyles.text,
+                        fontSize: fontSize,
+                        lineHeight: lineHeight,
+                      },
                     }}
-                  />
-                )}
-                <Markdown
-                  style={{
-                    body: {
-                      ...themeStyles.text,
-                      fontSize: fontSize,
-                      lineHeight: lineHeight,
-                    },
-                  }}
-                >
-                  {question?.answer_sistani || "Antwort wird geladen"}
-                </Markdown>
-              </View>
-            </Collapsible>
-          </>
-        )}
-      </View>
-    </ScrollView>
+                  >
+                    {question?.answer_sistani || "Antwort wird geladen"}
+                  </Markdown>
+                </View>
+              </Collapsible>
+            </>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 export default RenderQuestion;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   scrollViewStyles: {
     flex: 1,
   },

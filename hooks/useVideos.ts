@@ -46,15 +46,10 @@
 //   } as const satisfies UseVideosResult & typeof query;
 // }
 
-// src/hooks/useVideos.ts
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
-import { VideoType } from "@/constants/Types"; // Assuming VideoType now has a 'video_category' property
-
-export interface UseVideosResult {
-  categories: string[];
-  videosByCategory: Record<string, VideoType[]>;
-}
+import { UseVideosResultType, VideoType } from "@/constants/Types"; 
 
 export function useVideos(language: string) {
   const query = useQuery<VideoType[], Error>({
@@ -89,5 +84,5 @@ export function useVideos(language: string) {
     ...query,
     categories,
     videosByCategory,
-  } as const satisfies UseVideosResult & typeof query;
+  } as const satisfies UseVideosResultType & typeof query;
 }

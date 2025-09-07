@@ -439,6 +439,10 @@ export type VideoCategoryType = {
   language_code: string;
 };
 
+export type UseVideosResultType = {
+  categories: string[];
+  videosByCategory: Record<string, VideoType[]>;
+}
 // User question
 export type QuestionsFromUserType = {
   id: string;

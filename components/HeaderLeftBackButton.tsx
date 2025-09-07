@@ -19,7 +19,9 @@ const HeaderLeftBackButton = ({
       name="chevron-back-outline"
       size={size ? size : 30}
       style={style ? style : { marginLeft: -16 }}
-      onPress={() => router.back()}
+      onPress={() => {
+        router.back();
+      }}
       color={color ? color : Colors.universal.link}
     />
   );

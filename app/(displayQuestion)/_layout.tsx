@@ -38,7 +38,7 @@ export default function RootLayout() {
       >
         <Stack.Screen
           name="index"
-          options={{ headerShown: true, }}
+          options={{ headerShown: false, }}
         />
       </Stack>
     </ThemeProvider>

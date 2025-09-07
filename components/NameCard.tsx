@@ -14,6 +14,7 @@ type Name = {
 const NameCard = ({ name }: { name: Name }) => {
   const colorScheme = useColorScheme() || "light";
   const { language } = useLanguage();
+  
   return (
     <ThemedView
       style={[styles.card, { backgroundColor: Colors[colorScheme].contrast }]}

@@ -73,7 +73,7 @@ export const de = {
 
   // Questions
   categories: "Kategorien",
-  latestQuestions: "Neuste Fragen",
+  latestQuestions: "Neueste Fragen",
 
   // Questionslinks
   rechtsfragen: "Rechtsfragen",

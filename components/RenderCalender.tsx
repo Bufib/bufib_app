@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  StatusBar,
   useColorScheme,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,13 +16,12 @@ import { ThemedText } from "./ThemedText";
 import { Colors } from "@/constants/Colors";
 import { getAllCalendarEvents } from "@/db/queries/calendar";
 
-// ────────────────────────────────────────────────────────────
 const RenderCalendar: React.FC = () => {
   const [filter, setFilter] = useState<"all" | "major" | "minor">("all");
   const [events, setEvents] = useState<CalendarType[]>([]);
   const { language } = useLanguage();
   const { t } = useTranslation();
-  const colorScheme = useColorScheme() || "light"
+  const colorScheme = useColorScheme() || "light";
   // ─── load + parse once (or when language changes) ───
   useEffect(() => {
     (async () => {
@@ -73,7 +71,8 @@ const RenderCalendar: React.FC = () => {
     <TouchableOpacity
       style={[
         styles.filterButton,
-        filter === value && styles.filterButtonActive, {borderColor: Colors[colorScheme].border}
+        filter === value && styles.filterButtonActive,
+        { borderColor: Colors[colorScheme].border },
       ]}
       onPress={() => setFilter(value)}
     >
@@ -112,7 +111,9 @@ const RenderCalendar: React.FC = () => {
     ];
 
     return (
-      <View style={cardStyle}>
+      <View
+        style={[cardStyle, { backgroundColor: Colors[colorScheme].contrast }]}
+      >
         <View style={styles.cardContent}>
           <View style={styles.cardMain}>
             {/* title row */}
@@ -217,8 +218,6 @@ const RenderCalendar: React.FC = () => {
   // ─── render ───
   return (
     <ThemedView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ecfdf5" />
-
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTitle}>
@@ -264,7 +263,6 @@ const RenderCalendar: React.FC = () => {
   }
 };
 
-// ────────────────────────────────────────────────────────────
 export default RenderCalendar;
 
 // ─── small legend helpers ───
@@ -329,7 +327,6 @@ const styles = StyleSheet.create({
   },
   filterButtonTextActive: { color: "#ffffff" },
   card: {
-    backgroundColor: "#ffffff",
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,

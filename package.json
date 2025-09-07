@@ -11,7 +11,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
-    "@cloudinary/url-gen": "^1.21.0",
+    "@cloudinary/url-gen": "^1.22.0",
     "@expo/config-plugins": "~10.1.1",
     "@expo/metro-config": "^0.20.15",
     "@expo/prebuild-config": "~9.0.0",
@@ -32,7 +32,6 @@
     "@tanstack/react-query": "^5.79.0",
     "@types/lodash.debounce": "^4.0.9",
     "base64-arraybuffer": "^1.0.2",
-    "cloudinary-react-native": "^1.2.0",
     "expo": "53.0.22",
     "expo-audio": "~0.4.9",
     "expo-blur": "~14.1.5",
@@ -93,11 +92,6 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0",
     "typescript": "~5.8.3"
-  },
-  "overrides": {
-    "cloudinary-react-native": {
-      "expo-modules-core": "2.5.0"
-    }
   },
   "private": true
 }
