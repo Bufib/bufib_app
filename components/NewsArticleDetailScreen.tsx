@@ -176,7 +176,7 @@ export default function NewsArticleDetailScreen({
         style={styles.scrollView}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
         ref={scrollViewRef}
       >
         <View style={styles.heroSection}>
@@ -323,7 +323,6 @@ export default function NewsArticleDetailScreen({
                 styles.progressFill,
                 {
                   backgroundColor: Colors.universal.third,
-                  width: `${Math.min((scrollY / 1000) * 100, 100)}%`,
                 },
               ]}
             />

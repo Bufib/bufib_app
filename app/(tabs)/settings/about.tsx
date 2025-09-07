@@ -6,7 +6,6 @@ import {
   ScrollView,
   useColorScheme,
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import { Image } from "expo-image";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";

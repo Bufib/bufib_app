@@ -6,7 +6,6 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useTranslation } from "react-i18next";
-import { StatusBar } from "expo-status-bar";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -21,7 +20,6 @@ export default function TabLayout() {
           tabBarBackground: TabBarBackground,
         }}
       >
-      <StatusBar style="auto" />
         <Tabs.Screen
           name="home"
           options={{

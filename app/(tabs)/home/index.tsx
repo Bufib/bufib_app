@@ -384,7 +384,6 @@
 //   },
 // });
 
-
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import NewsArticlePreviewCard from "@/components/NewsArticlePreviewCard";
 import { NewsItem } from "@/components/NewsItem";
@@ -497,7 +496,7 @@ export default function HomeScreen() {
         ]}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          Platform.OS !== 'web' ? (
+          Platform.OS !== "web" ? (
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={handlePullToRefresh}
@@ -509,7 +508,13 @@ export default function HomeScreen() {
         {/* News Articles Section */}
         {articles.length > 0 && (
           <View style={styles.newsArticleContainer}>
-            <ThemedText type="titleBiggerLessBold" style={styles.titleShadow}>
+            <ThemedText
+              type="titleBiggerLessBold"
+              style={[
+                styles.titleShadow,
+                { shadowColor: Colors[colorScheme].shadow },
+              ]}
+            >
               {t("newsArticlesTitle")}
             </ThemedText>
 
@@ -580,7 +585,13 @@ export default function HomeScreen() {
         {/* Podcasts Section */}
         {podcasts.length > 0 && (
           <View style={styles.podcastContainer}>
-            <ThemedText type="titleBiggerLessBold" style={styles.titleShadow}>
+            <ThemedText
+              type="titleBiggerLessBold"
+              style={[
+                styles.titleShadow,
+                { shadowColor: Colors[colorScheme].shadow },
+              ]}
+            >
               {t("podcastsTitle")}
             </ThemedText>
 
@@ -651,7 +662,11 @@ export default function HomeScreen() {
             <ThemedText
               type="titleBiggerLessBold"
               style={[
-                { color: Colors.universal.third, paddingBottom: 3 },
+                {
+                  color: Colors.universal.third,
+                  paddingBottom: 3,
+                  shadowColor: Colors.universal.third
+                },
                 styles.titleShadow,
               ]}
             >
@@ -673,11 +688,12 @@ export default function HomeScreen() {
             <TouchableOpacity
               style={[
                 styles.updateButton,
-                { 
-                  backgroundColor: colorScheme === "dark" 
-                    ? Colors.universal.secondary 
-                    : Colors.universal.primary 
-                }
+                {
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? Colors.universal.secondary
+                      : Colors.universal.primary,
+                },
               ]}
               onPress={handleRefresh}
               activeOpacity={0.8}
@@ -690,7 +706,8 @@ export default function HomeScreen() {
                   style={styles.updateButtonIcon}
                 />
                 <Text style={styles.updateButtonText}>
-                  {t("newNewsAvailable") || "New items available - Tap to refresh"}
+                  {t("newNewsAvailable") ||
+                    "New items available - Tap to refresh"}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -812,7 +829,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   titleShadow: {
-    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 1,

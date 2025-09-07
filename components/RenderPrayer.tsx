@@ -16,7 +16,6 @@ import {
   ScrollView,
   useColorScheme,
   Alert,
-  StatusBar,
   TextStyle,
 } from "react-native";
 import { getPrayerWithTranslations } from "@/db/queries/prayers";

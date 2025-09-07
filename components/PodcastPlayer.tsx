@@ -348,7 +348,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
                       color={
                         isFavorite
                           ? Colors.universal.favorite
-                          : Colors[colorScheme].defaultIcon
+                          : "#fff"
                       }
                     />
                   </TouchableOpacity>
