@@ -108,15 +108,15 @@ const PrayerLinks = () => {
       router.push(
         prayerLink.value === "Tasbih"
           ? {
-              pathname: "/(tabs)/knowledge/(prayers)/tasbih",
+              pathname: "/knowledge/prayers/tasbih",
             }
           : prayerLink.value === "Names"
           ? {
-              pathname: "/(tabs)/knowledge/(prayers)/names",
+              pathname: "/knowledge/prayers/names",
               params: { prayerLink: prayerLink.value },
             }
           : {
-              pathname: "/(tabs)/knowledge/(prayers)/[prayerCategory]",
+              pathname: "/knowledge/prayers/[prayerCategory]",
               params: { prayerCategory: prayerLink.value },
             }
       );
@@ -140,7 +140,12 @@ const PrayerLinks = () => {
   );
 
   return (
-   <Animated.View style={[styles.container, { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background }]}>
+    <Animated.View
+      style={[
+        styles.container,
+        { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background },
+      ]}
+    >
       <View style={styles.categoriesContainer}>
         <View style={styles.categories}>
           {prayerCategories.map((category, index) => (

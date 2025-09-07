@@ -292,7 +292,10 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
     >
       <SafeAreaView style={{ flex: 1 }} edges={["top", "left"]}>
         <View style={{ marginLeft: 20 }}>
-          <HeaderLeftBackButton color={"black"} size={35} />
+          <HeaderLeftBackButton
+            color={colorScheme === "dark" ? "#fff" : "#000"}
+            size={35}
+          />
         </View>
         <ScrollView
           style={[styles.container]}

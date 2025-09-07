@@ -1,3 +1,390 @@
+// import { LoadingIndicator } from "@/components/LoadingIndicator";
+// import NewsArticlePreviewCard from "@/components/NewsArticlePreviewCard";
+// import { NewsItem } from "@/components/NewsItem";
+// import PodcastPreviewCard from "@/components/PodcastPreviewCard";
+// import RetryButton from "@/components/RetryButton";
+// import { ThemedText } from "@/components/ThemedText";
+// import { ThemedView } from "@/components/ThemedView";
+// import { Colors } from "@/constants/Colors";
+// import { NewsArticlesType, NewsType, PodcastType } from "@/constants/Types";
+// import { useLanguage } from "@/contexts/LanguageContext";
+// import { useNews } from "@/hooks/useNews";
+// import { useNewsArticles } from "@/hooks/useNewsArticles";
+// import { usePodcasts } from "@/hooks/usePodcasts";
+// import { useAuthStore } from "@/stores/authStore";
+// import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
+// import { Ionicons } from "@expo/vector-icons";
+// import { router } from "expo-router";
+// import React from "react";
+// import { useTranslation } from "react-i18next";
+// import {
+//   Button,
+//   FlatList,
+//   Platform,
+//   ScrollView,
+//   StyleSheet,
+//   Text,
+//   TouchableOpacity,
+//   useColorScheme,
+//   View,
+// } from "react-native";
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import * as FileSystem from "expo-file-system";
+
+// export default function HomeScreen() {
+//   const colorScheme = useColorScheme() ?? "light";
+//   const { t } = useTranslation();
+//   const { language } = useLanguage();
+//   const isAdmin = useAuthStore((state) => state.isAdmin);
+
+//   const {
+//     data: newsArticlesData,
+//     isLoading: newsArticlesIsLoading,
+//     isError: newsArticlesIsError,
+//     error: newsArticlesError,
+//     fetchNextPage: newsArticlesFetchNextPage,
+//     hasNextPage: newsArticlesHasNextPage,
+//     isFetchingNextPage: newsArticlesIsFetchingNextPage,
+//   } = useNewsArticles(language || "de");
+
+//   const {
+//     data: newsData,
+//     isLoading: newsIsLoading,
+//     isError: newsIsError,
+//     error: newsError,
+//     fetchNextPage: newsfetchNextPage,
+//     hasNextPage: newHasNextPage,
+//     isFetchingNextPage: newsIsFetchingNextPage,
+//   } = useNews(language || "de");
+
+//   const {
+//     data: podcastPages,
+//     isLoading: podcastsLoading,
+//     isError: podcastsError,
+//     error: podcastsErrorObj,
+//     fetchNextPage: podcastsFetchNextPage,
+//     hasNextPage: podcastsHasNextPage,
+//     isFetchingNextPage: podcastsIsFetchingNextPage,
+//   } = usePodcasts(language || "de");
+
+//   // flatten paginated data
+//   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];
+//   const news: NewsType[] = newsData?.pages.flat() ?? [];
+//   const podcasts: PodcastType[] = podcastPages?.pages.flat() ?? [];
+
+//   //! Clear database function
+//   // async function clearDatabase(dbName = "bufib.db") {
+//   //   const dbPath = `${FileSystem.documentDirectory}SQLite/${dbName}`;
+//   //   try {
+//   //     const info = await FileSystem.getInfoAsync(dbPath);
+//   //     if (info.exists) {
+//   //       await FileSystem.deleteAsync(dbPath, { idempotent: true });
+//   //       console.log("Database deleted:", dbPath);
+//   //     } else {
+//   //       console.log("No database file found at:", dbPath);
+//   //     }
+//   //   } catch (e) {
+//   //     console.error("Error deleting DB:", e);
+//   //   }
+//   // }
+
+//   return (
+//     <SafeAreaView
+//       style={[
+//         styles.container,
+//         { backgroundColor: Colors[colorScheme].background },
+//       ]}
+//       edges={["top"]}
+//     >
+//       <ScrollView
+//         style={[
+//           styles.scrollStyles,
+//           { backgroundColor: Colors[colorScheme].background },
+//         ]}
+//         contentContainerStyle={styles.scrollContent}
+//       >
+//         {/* //!----------- News articles ----------- */}
+
+//         {articles.length > 0 && (
+//           <View style={styles.newsArticleContainer}>
+//             <ThemedText type="titleBiggerLessBold" style={styles.titleShadow}>
+//               {t("newsArticlesTitle")}
+//             </ThemedText>
+
+//             {newsArticlesIsLoading && (
+//               <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
+//             )}
+
+//             {newsArticlesIsError && (
+//               <View style={styles.errorContainer}>
+//                 <Text
+//                   style={[
+//                     styles.errorText,
+//                     { color: Colors[colorScheme].error },
+//                   ]}
+//                 >
+//                   {newsArticlesError?.message ?? t("errorLoadingData")}
+//                 </Text>
+//                 <RetryButton onPress={() => newsArticlesFetchNextPage()} />
+//               </View>
+//             )}
+
+//             {!newsArticlesIsLoading && !newsArticlesIsError && (
+//               <FlatList
+//                 horizontal
+//                 contentContainerStyle={styles.flatListContentContainer}
+//                 data={articles}
+//                 keyExtractor={(item: NewsArticlesType) => item.id.toString()}
+//                 renderItem={({ item }: { item: NewsArticlesType }) => (
+//                   <TouchableOpacity
+//                     onPress={() =>
+//                       item.is_external_link
+//                         ? handleOpenExternalUrl(item.external_link_url || "")
+//                         : router.push({
+//                             pathname: "/(newsArticle)",
+//                             params: {
+//                               articleId: item.id,
+//                             },
+//                           })
+//                     }
+//                   >
+//                     <NewsArticlePreviewCard
+//                       title={item.title}
+//                       is_external_link={item.is_external_link}
+//                       created_at={item.created_at}
+//                     />
+//                   </TouchableOpacity>
+//                 )}
+//                 showsHorizontalScrollIndicator={false}
+//                 onEndReached={() => {
+//                   if (
+//                     newsArticlesHasNextPage &&
+//                     !newsArticlesIsFetchingNextPage
+//                   ) {
+//                     newsArticlesFetchNextPage();
+//                   }
+//                 }}
+//                 onEndReachedThreshold={0.5}
+//                 ListFooterComponent={() =>
+//                   newsArticlesIsFetchingNextPage ? (
+//                     <LoadingIndicator size="small" />
+//                   ) : null
+//                 }
+//               />
+//             )}
+//           </View>
+//         )}
+
+//         {/* //!-------- Podcasts Section -------- */}
+//         {podcasts.length > 0 && (
+//           <View style={styles.podcastContainer}>
+//             <ThemedText type="titleBiggerLessBold" style={styles.titleShadow}>
+//               {t("podcastsTitle")}
+//             </ThemedText>
+
+//             {podcastsLoading && (
+//               <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
+//             )}
+
+//             {podcastsError && (
+//               <View style={styles.errorContainer}>
+//                 <Text
+//                   style={[
+//                     styles.errorText,
+//                     { color: Colors[colorScheme].error },
+//                   ]}
+//                 >
+//                   {podcastsErrorObj?.message ?? t("errorLoadingData")}
+//                 </Text>
+//                 <RetryButton onPress={() => podcastsFetchNextPage()} />
+//               </View>
+//             )}
+
+//             {!podcastsLoading && !podcastsError && (
+//               <FlatList
+//                 horizontal
+//                 contentContainerStyle={styles.flatListContentContainer}
+//                 data={podcasts}
+//                 keyExtractor={(item) => item.id.toString()}
+//                 renderItem={({ item }) => (
+//                   <TouchableOpacity
+//                     onPress={() =>
+//                       router.push({
+//                         pathname: "/(podcast)",
+//                         params: {
+//                           podcast: JSON.stringify(item),
+//                         },
+//                       })
+//                     }
+//                   >
+//                     <PodcastPreviewCard podcast={item} />
+//                   </TouchableOpacity>
+//                 )}
+//                 showsVerticalScrollIndicator={false}
+//                 onEndReached={() => {
+//                   if (podcastsHasNextPage && !podcastsIsFetchingNextPage) {
+//                     podcastsFetchNextPage();
+//                   }
+//                 }}
+//                 onEndReachedThreshold={0.5}
+//                 ListFooterComponent={() =>
+//                   podcastsIsFetchingNextPage ? (
+//                     <LoadingIndicator size="small" />
+//                   ) : null
+//                 }
+//               />
+//             )}
+//           </View>
+//         )}
+
+//         {/* <Button
+//           onPress={() => router.push("./home/visualizeDatabase")}
+//           title="db"
+//         /> */}
+
+//         {/* //!----------- News ----------- */}
+//         <View style={styles.newsContainer}>
+//           <View
+//             style={{
+//               flexDirection: "row",
+//               justifyContent: "space-between",
+//               alignItems: "center",
+//             }}
+//           >
+//             <ThemedText
+//               type="titleBiggerLessBold"
+//               style={[
+//                 { color: Colors.universal.third, paddingBottom: 3 },
+//                 styles.titleShadow,
+//               ]}
+//             >
+//               {t("newsTitle")}
+//             </ThemedText>
+//             {isAdmin && (
+//               <Ionicons
+//                 name="add-circle-outline"
+//                 size={35}
+//                 color={colorScheme === "dark" ? "#fff" : "#000"}
+//                 style={{ color: Colors[colorScheme].defaultIcon }}
+//                 onPress={() => router.push("/(addNews)/")}
+//               />
+//             )}
+//           </View>
+//           {newsIsLoading && (
+//             <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
+//           )}
+
+//           {newsIsError && (
+//             <View style={styles.errorContainer}>
+//               <Text
+//                 style={[styles.errorText, { color: Colors[colorScheme].error }]}
+//               >
+//                 {newsError?.message ?? t("errorLoadingData")}
+//               </Text>
+//               <RetryButton onPress={() => newsfetchNextPage()} />
+//             </View>
+//           )}
+
+//           {news.length === 0 && (
+//             <ThemedView style={styles.newsEmptyContainer}>
+//               <ThemedText style={styles.newsEmptyText} type="subtitle">
+//                 {t("newsEmpty")}
+//               </ThemedText>
+//             </ThemedView>
+//           )}
+
+//           {!newsIsLoading && !newsIsError && (
+//             <View style={styles.flatListContentContainer}>
+//               {/* Render each item */}
+//               {news.map((item, index) => (
+//                 <NewsItem
+//                   key={item.id.toString()}
+//                   id={item.id}
+//                   language_code={item.language_code}
+//                   is_pinned={item.is_pinned}
+//                   title={item.title}
+//                   content={item.content}
+//                   created_at={item.created_at}
+//                   images_url={item.images_url}
+//                   internal_urls={item.internal_urls}
+//                   external_urls={item.external_urls}
+//                 />
+//               ))}
+
+//               {/* Trigger next-page fetch when the user scrolls near the bottom */}
+//               <View
+//                 onLayout={({ nativeEvent }) => {
+//                   const { height } = nativeEvent.layout;
+
+//                   if (newHasNextPage && !newsIsFetchingNextPage) {
+//                     newsfetchNextPage();
+//                   }
+//                 }}
+//               />
+
+//               {newsIsFetchingNextPage && <LoadingIndicator size="small" />}
+//             </View>
+//           )}
+//         </View>
+//       </ScrollView>
+//     </SafeAreaView>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//   },
+//   scrollStyles: {
+//     padding: 15,
+//   },
+//   scrollContent: {
+//     gap: 40,
+//   },
+//   newsArticleContainer: {
+//     flex: 1,
+//     gap: 15,
+//   },
+//   newsEmptyContainer: {
+//     flex: 1,
+//     justifyContent: "center",
+//     marginTop: 20,
+//   },
+//   newsEmptyText: {
+//     textAlign: "center",
+//   },
+//   errorContainer: {
+//     alignItems: "center",
+//     gap: 10,
+//   },
+//   errorText: {
+//     fontSize: 20,
+//   },
+//   flatListContentContainer: {
+//     gap: 10,
+//   },
+//   podcastContainer: {
+//     flex: 1,
+//     gap: 15,
+//   },
+//   newsContainer: {
+//     flex: 1,
+//     gap: 15,
+//   },
+//   titleShadow: {
+//     shadowColor: "#000",
+//     shadowOffset: {
+//       width: 0,
+//       height: 1,
+//     },
+//     shadowOpacity: 0.22,
+//     shadowRadius: 2.22,
+
+//     elevation: 2,
+//   },
+// });
+
+
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import NewsArticlePreviewCard from "@/components/NewsArticlePreviewCard";
 import { NewsItem } from "@/components/NewsItem";
@@ -21,6 +408,7 @@ import {
   Button,
   FlatList,
   Platform,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -37,6 +425,7 @@ export default function HomeScreen() {
   const { language } = useLanguage();
   const isAdmin = useAuthStore((state) => state.isAdmin);
 
+  // News Articles Hook
   const {
     data: newsArticlesData,
     isLoading: newsArticlesIsLoading,
@@ -47,16 +436,22 @@ export default function HomeScreen() {
     isFetchingNextPage: newsArticlesIsFetchingNextPage,
   } = useNewsArticles(language || "de");
 
+  // News Hook - Using the enhanced useNews hook with realtime features
   const {
-    data: newsData,
+    allNews,
+    showUpdateButton,
+    isRefreshing,
+    handlePullToRefresh,
+    handleRefresh,
+    handleLoadMore,
     isLoading: newsIsLoading,
     isError: newsIsError,
     error: newsError,
-    fetchNextPage: newsfetchNextPage,
-    hasNextPage: newHasNextPage,
+    hasNextPage: newsHasNextPage,
     isFetchingNextPage: newsIsFetchingNextPage,
   } = useNews(language || "de");
 
+  // Podcasts Hook
   const {
     data: podcastPages,
     isLoading: podcastsLoading,
@@ -67,12 +462,11 @@ export default function HomeScreen() {
     isFetchingNextPage: podcastsIsFetchingNextPage,
   } = usePodcasts(language || "de");
 
-  // flatten paginated data
+  // Flatten paginated data
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];
-  const news: NewsType[] = newsData?.pages.flat() ?? [];
   const podcasts: PodcastType[] = podcastPages?.pages.flat() ?? [];
 
-  //! Clear database function
+  //! Clear database function (commented out for production)
   // async function clearDatabase(dbName = "bufib.db") {
   //   const dbPath = `${FileSystem.documentDirectory}SQLite/${dbName}`;
   //   try {
@@ -102,9 +496,17 @@ export default function HomeScreen() {
           { backgroundColor: Colors[colorScheme].background },
         ]}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          Platform.OS !== 'web' ? (
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handlePullToRefresh}
+              tintColor={Colors[colorScheme].tint}
+            />
+          ) : undefined
+        }
       >
-        {/* //!----------- News articles ----------- */}
-
+        {/* News Articles Section */}
         {articles.length > 0 && (
           <View style={styles.newsArticleContainer}>
             <ThemedText type="titleBiggerLessBold" style={styles.titleShadow}>
@@ -175,7 +577,7 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* //!-------- Podcasts Section -------- */}
+        {/* Podcasts Section */}
         {podcasts.length > 0 && (
           <View style={styles.podcastContainer}>
             <ThemedText type="titleBiggerLessBold" style={styles.titleShadow}>
@@ -237,20 +639,15 @@ export default function HomeScreen() {
           </View>
         )}
 
+        {/* Database Visualization Button (commented out for production) */}
         {/* <Button
           onPress={() => router.push("./home/visualizeDatabase")}
           title="db"
         /> */}
 
-        {/* //!----------- News ----------- */}
+        {/* News Section */}
         <View style={styles.newsContainer}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <View style={styles.newsTitleContainer}>
             <ThemedText
               type="titleBiggerLessBold"
               style={[
@@ -270,10 +667,41 @@ export default function HomeScreen() {
               />
             )}
           </View>
+
+          {/* New News Available Button */}
+          {showUpdateButton && (
+            <TouchableOpacity
+              style={[
+                styles.updateButton,
+                { 
+                  backgroundColor: colorScheme === "dark" 
+                    ? Colors.universal.secondary 
+                    : Colors.universal.primary 
+                }
+              ]}
+              onPress={handleRefresh}
+              activeOpacity={0.8}
+            >
+              <View style={styles.updateButtonContent}>
+                <Ionicons
+                  name="refresh-circle"
+                  size={20}
+                  color="#fff"
+                  style={styles.updateButtonIcon}
+                />
+                <Text style={styles.updateButtonText}>
+                  {t("newNewsAvailable") || "New items available - Tap to refresh"}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
+          {/* Loading State */}
           {newsIsLoading && (
             <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
           )}
 
+          {/* Error State */}
           {newsIsError && (
             <View style={styles.errorContainer}>
               <Text
@@ -281,11 +709,12 @@ export default function HomeScreen() {
               >
                 {newsError?.message ?? t("errorLoadingData")}
               </Text>
-              <RetryButton onPress={() => newsfetchNextPage()} />
+              <RetryButton onPress={handleRefresh} />
             </View>
           )}
 
-          {news.length === 0 && (
+          {/* Empty State */}
+          {allNews.length === 0 && !newsIsLoading && (
             <ThemedView style={styles.newsEmptyContainer}>
               <ThemedText style={styles.newsEmptyText} type="subtitle">
                 {t("newsEmpty")}
@@ -293,10 +722,10 @@ export default function HomeScreen() {
             </ThemedView>
           )}
 
-          {!newsIsLoading && !newsIsError && (
+          {/* News Items List */}
+          {!newsIsLoading && !newsIsError && allNews.length > 0 && (
             <View style={styles.flatListContentContainer}>
-              {/* Render each item */}
-              {news.map((item, index) => (
+              {allNews.map((item) => (
                 <NewsItem
                   key={item.id.toString()}
                   id={item.id}
@@ -311,18 +740,23 @@ export default function HomeScreen() {
                 />
               ))}
 
-              {/* Trigger next-page fetch when the user scrolls near the bottom */}
-              <View
-                onLayout={({ nativeEvent }) => {
-                  const { height } = nativeEvent.layout;
-
-                  if (newHasNextPage && !newsIsFetchingNextPage) {
-                    newsfetchNextPage();
-                  }
-                }}
-              />
-
-              {newsIsFetchingNextPage && <LoadingIndicator size="small" />}
+              {/* Load More Section */}
+              {newsHasNextPage && (
+                <View style={styles.loadMoreContainer}>
+                  {newsIsFetchingNextPage ? (
+                    <LoadingIndicator size="small" />
+                  ) : (
+                    <TouchableOpacity
+                      onPress={handleLoadMore}
+                      style={styles.loadMoreButton}
+                    >
+                      <Text style={styles.loadMoreText}>
+                        {t("loadMore") || "Load More"}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -349,6 +783,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     marginTop: 20,
+    backgroundColor: "transparent",
   },
   newsEmptyText: {
     textAlign: "center",
@@ -371,6 +806,11 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 15,
   },
+  newsTitleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   titleShadow: {
     shadowColor: "#000",
     shadowOffset: {
@@ -379,7 +819,48 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
-
     elevation: 2,
+  },
+  updateButton: {
+    marginVertical: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  updateButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  updateButtonIcon: {
+    marginRight: 8,
+  },
+  updateButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  loadMoreContainer: {
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  loadMoreButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
+  },
+  loadMoreText: {
+    fontSize: 16,
+    fontWeight: "500",
   },
 });

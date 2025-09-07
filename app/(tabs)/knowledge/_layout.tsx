@@ -2,9 +2,11 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Stack } from "expo-router";
 import i18n from "@/utils/i18n";
+import { StatusBar } from "expo-status-bar";
 const _layout = () => {
   return (
     <Stack>
+      <StatusBar style="auto"/>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="prayers" options={{ headerShown: false }} />
       <Stack.Screen name="questions" options={{ headerShown: false }} />

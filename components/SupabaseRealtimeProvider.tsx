@@ -134,7 +134,8 @@ export const SupabaseRealtimeProvider = ({
    * - On DELETE: invalidateQueries({ queryKey: […] })
    * - On INSERT/UPDATE: patch the existing cache pages directly
   //  */
-  //! Doesn't inviladta the query just merges
+
+  // //! Invalidates the whoel query
   // useEffect(() => {
   //   const newsChannel = supabase
   //     .channel("all_news_changes")
@@ -145,81 +146,23 @@ export const SupabaseRealtimeProvider = ({
   //         schema: "public",
   //         table: "news",
   //       },
-  //       (payload) => {
-  //         const { eventType, new: newRec, old: oldRec } = payload;
-  //         let recordLang: string | undefined;
+  //       async (payload) => {
+  //         // For INSERT, UPDATE or DELETE, just invalidate the whole news query:
+  //         await queryClient.invalidateQueries({
+  //           queryKey: ["news"],
+  //           refetchType: "all",
+  //         });
 
-  //         if (eventType === "INSERT" || eventType === "UPDATE") {
-  //           recordLang = (newRec as NewsType)?.language_code;
-  //         } else if (eventType === "DELETE") {
-  //           recordLang = (oldRec as Partial<NewsType>)?.language_code;
-
-  //           if (!recordLang && oldRec?.id) {
-  //             console.warn(
-  //               `News DELETE: language_code missing for id ${oldRec.id}. Invalidating entire "news" cache.`
-  //             );
-  //             queryClient.invalidateQueries({ queryKey: ["news"] });
-  //             return;
-  //           }
-
-  //           // If we have a valid recordLang, only invalidate that language's cache:
-  //           if (recordLang) {
-  //             queryClient.invalidateQueries({ queryKey: ["news", recordLang] });
-  //           }
-  //           return;
-  //         }
-
-  //         // If neither INSERT nor UPDATE, and no recordLang found, bail out:
-  //         if (!recordLang) {
-  //           console.warn(
-  //             "News event without determinable language_code. Skipping cache update.",
-  //             payload
-  //           );
-  //           return;
-  //         }
-
-  //         const queryKeyForNews: [string, string] = ["news", recordLang];
-
-  //         if (eventType === "INSERT" && newRec) {
-  //           const inserted = newRec as NewsType;
-  //           queryClient.setQueryData<InfiniteData<NewsType[]> | undefined>(
-  //             queryKeyForNews,
-  //             (oldData) => {
-  //               if (!oldData) return oldData;
-  //               const firstPage = oldData.pages[0] || [];
-  //               return {
-  //                 ...oldData,
-  //                 pages: [[inserted, ...firstPage], ...oldData.pages.slice(1)],
-  //               };
-  //             }
-  //           );
+  //         // If you still want to show the “new data” banner for non-admins:
+  //         if (
+  //           payload.eventType === "INSERT" ||
+  //           payload.eventType === "UPDATE"
+  //         ) {
   //           if (!isAdmin) setHasNewNewsData(true);
-  //           return;
-  //         }
-
-  //         if (eventType === "UPDATE" && newRec) {
-  //           const updated = newRec as NewsType;
-  //           queryClient.setQueryData<InfiniteData<NewsType[]> | undefined>(
-  //             queryKeyForNews,
-  //             (oldData) => {
-  //               if (!oldData) return oldData;
-  //               const newPages = oldData.pages.map((page) =>
-  //                 page.map((item) => (item.id === updated.id ? updated : item))
-  //               );
-  //               return { ...oldData, pages: newPages };
-  //             }
-  //           );
-  //           if (!isAdmin) setHasNewNewsData(true);
-  //           return;
   //         }
   //       }
   //     )
-  //     .subscribe((status, err) => {
-  //       if (err) {
-  //         console.error(`Error subscribing to all_news_changes channel:`, err);
-  //       }
-  //       console.log(`Subscribed to all_news_changes with status: ${status}`);
-  //     });
+  //     .subscribe();
 
   //   return () => {
   //     supabase
@@ -228,7 +171,9 @@ export const SupabaseRealtimeProvider = ({
   //   };
   // }, [queryClient, isAdmin]);
 
-  //! Invalidates the whoel query
+  /**
+   * News subscription - INSERT shows button, UPDATE/DELETE refresh immediately
+   */
   useEffect(() => {
     const newsChannel = supabase
       .channel("all_news_changes")
@@ -240,29 +185,85 @@ export const SupabaseRealtimeProvider = ({
           table: "news",
         },
         async (payload) => {
-          // For INSERT, UPDATE or DELETE, just invalidate the whole news query:
-          await queryClient.invalidateQueries({
-            queryKey: ["news"],
-            refetchType: "all",
-          });
+          const { eventType, new: newRec, old: oldRec } = payload;
 
-          // If you still want to show the “new data” banner for non-admins:
-          if (
-            payload.eventType === "INSERT" ||
-            payload.eventType === "UPDATE"
-          ) {
-            if (!isAdmin) setHasNewNewsData(true);
+          // Get the language of the changed record
+          let recordLang: string | undefined;
+          if (eventType === "INSERT" || eventType === "UPDATE") {
+            recordLang = (newRec as NewsType)?.language_code;
+          } else if (eventType === "DELETE") {
+            recordLang = (oldRec as Partial<NewsType>)?.language_code;
+          }
+
+          // Only process if the change is for the current language
+          if (recordLang === language) {
+            console.log(
+              `News change detected for language ${recordLang}:`,
+              eventType
+            );
+
+            if (eventType === "INSERT") {
+              // For INSERT: Just show the button, don't refresh
+              if (!isAdmin) {
+                setHasNewNewsData(true);
+              } else {
+                // Admins see changes immediately
+                await queryClient.invalidateQueries({
+                  queryKey: ["news", recordLang],
+                  refetchType: "all",
+                });
+              }
+            } else if (eventType === "UPDATE") {
+              // For UPDATE: Update the specific item in cache
+              const updated = newRec as NewsType;
+              queryClient.setQueryData<InfiniteData<NewsType[]> | undefined>(
+                ["news", recordLang],
+                (oldData) => {
+                  if (!oldData) return oldData;
+                  const newPages = oldData.pages.map((page) =>
+                    page.map((item) =>
+                      item.id === updated.id ? updated : item
+                    )
+                  );
+                  return { ...oldData, pages: newPages };
+                }
+              );
+              // Clear the flag if it was set
+              setHasNewNewsData(false);
+            } else if (eventType === "DELETE") {
+              // For DELETE: Remove the item from cache immediately
+              const deletedId = (oldRec as Partial<NewsType>)?.id;
+              if (deletedId) {
+                queryClient.setQueryData<InfiniteData<NewsType[]> | undefined>(
+                  ["news", recordLang],
+                  (oldData) => {
+                    if (!oldData) return oldData;
+                    const newPages = oldData.pages.map((page) =>
+                      page.filter((item) => item.id !== deletedId)
+                    );
+                    return { ...oldData, pages: newPages };
+                  }
+                );
+                // Clear the flag if it was set
+                setHasNewNewsData(false);
+              }
+            }
           }
         }
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (err) {
+          console.error(`Error subscribing to all_news_changes channel:`, err);
+        }
+        console.log(`Subscribed to all_news_changes with status: ${status}`);
+      });
 
     return () => {
       supabase
         .removeChannel(newsChannel)
         .catch((err) => console.error("Error removing news channel", err));
     };
-  }, [queryClient, isAdmin]);
+  }, [queryClient, isAdmin, language]);
 
   /**
    * News Articles subscription

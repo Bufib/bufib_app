@@ -612,7 +612,7 @@ const SuraList: React.FC = () => {
         onPress={() => {
           if (lastSuraRow) {
             router.push({
-              pathname: "./knowledge/(quran)/sura",
+              pathname: "/knowledge/quran/sura",
               params: { suraId: String(lastSuraRow.id) },
             });
           }

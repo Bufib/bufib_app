@@ -99,7 +99,13 @@
 // }
 
 import * as React from "react";
-import { useWindowDimensions, useColorScheme } from "react-native";
+import {
+  useWindowDimensions,
+  useColorScheme,
+  View,
+  Animated,
+  Easing,
+} from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import indexPrayer from "@/app/(tabs)/knowledge/prayers/indexPrayer";
 import indexQuestion from "@/app/(tabs)/knowledge/questions/indexQuestion";
@@ -111,6 +117,7 @@ import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 import { Image } from "expo-image";
+import { useRef } from "react";
 const renderScene = SceneMap({
   questionsScreen: indexQuestion,
   prayerScreen: indexPrayer,
@@ -124,6 +131,7 @@ export default function TopNavigationKnowledge() {
   const [index, setIndex] = React.useState(0);
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const routes = React.useMemo(
     () => [
@@ -156,8 +164,23 @@ export default function TopNavigationKnowledge() {
     [t]
   );
 
+  // animate opacity on mount
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
-    <>
+    <Animated.View
+      style={[
+        { flex: 1 },
+        { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background },
+      ]}
+    >
       <SafeAreaView
         style={[{ backgroundColor: Colors[colorScheme].contrast }]}
         edges={["top"]}
@@ -167,7 +190,7 @@ export default function TopNavigationKnowledge() {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
-         options={{
+        options={{
           questionsScreen: {
             icon: ({ route, focused, color }) => (
               <Image
@@ -246,6 +269,6 @@ export default function TopNavigationKnowledge() {
           />
         )}
       />
-    </>
+    </Animated.View>
   );
 }

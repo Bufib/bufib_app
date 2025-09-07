@@ -280,6 +280,7 @@ function AppContent() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <StatusBar style="auto" />
         <ReMountManager>
           <MenuProvider>
             <NoInternet showUI={!hasInternet} showToast={true} />
@@ -327,7 +328,6 @@ function AppContent() {
                   <Stack.Screen name="+not-found" />
                 </Stack>
                 <AppReviewPrompt />
-                <StatusBar style="auto" />
               </SupabaseRealtimeProvider>
             </QueryClientProvider>
           </MenuProvider>

@@ -31,7 +31,7 @@ export function useAddNews() {
       content: "",
       external_urls: "",
       internal_urls: "",
-      language_code: "en",
+      language_code: "de",
       is_pinned: false,
     },
   });

@@ -126,12 +126,6 @@ export default function AddNews() {
           render={({ field: { onChange, value } }) => (
             <View style={styles.langContainer}>
               <LanguageButton
-                code="en"
-                label="EN"
-                selected={value === "en"}
-                onPress={onChange}
-              />
-              <LanguageButton
                 code="de"
                 label="DE"
                 selected={value === "de"}
@@ -141,6 +135,12 @@ export default function AddNews() {
                 code="ar"
                 label="AR"
                 selected={value === "ar"}
+                onPress={onChange}
+              />
+              <LanguageButton
+                code="en"
+                label="EN"
+                selected={value === "en"}
                 onPress={onChange}
               />
             </View>
@@ -232,7 +232,11 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 5,
   },
-  label: { fontSize: 16, fontWeight: "600", marginBottom: 5 },
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 5,
+  },
   input: {
     borderWidth: 1,
     borderRadius: 8,
