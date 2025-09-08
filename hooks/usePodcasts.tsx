@@ -212,14 +212,14 @@ export function usePodcasts(language: string) {
       // Fetch a page of size PAGE_SIZE, ordered by created_at DESC
       // Count returns overall count
       const { data, error, count } = await supabase
-        .from("episodes")
+        .from("podcasts")
         .select("*", { count: "exact" })
         .eq("language_code", language)
         .order("created_at", { ascending: false })
         .range(pageParam, pageParam + PAGE_SIZE - 1);
 
       if (error) {
-        console.error("Error fetching episodes:", error);
+        console.error("Error fetching podcasts:", error);
         throw error;
       }
       return data || [];

@@ -584,7 +584,7 @@ export type ChapterSectionType = {
   data: LevelType[];
 };
 
-export type ProphetType = {
+export type historyDataType = {
   id: string;
   nameKey: string;
   route: string;
@@ -594,5 +594,5 @@ export type SectionType = {
   id: string;
   titleKey: string;
   backgroundImage: any;
-  levels: ProphetType[];
+  levels: historyDataType[];
 };

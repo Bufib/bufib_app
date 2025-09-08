@@ -1,4 +1,3 @@
-// components/VerseCard.tsx
 import React, { useMemo } from "react";
 import {
   View,

@@ -72,7 +72,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   if (isLoading) {
     return (
       <ThemedView style={styles.centeredContainer}>
-        <ThemedText>Kategorien werden geladen...</ThemedText>
+        <ThemedText>{t("loading")}</ThemedText>
       </ThemedView>
     );
   }

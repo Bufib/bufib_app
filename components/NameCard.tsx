@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
   },
   arabicName: {
     lineHeight: 40,
+    letterSpacing: 0
   },
   transliteration: {
     fontStyle: "italic",

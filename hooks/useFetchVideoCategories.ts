@@ -23,8 +23,6 @@ export function useFetchVideoCategories(languageCode: string) {
         .eq("language_code", languageCode) // languageCode is guaranteed to be present
         .order("created_at", { ascending: true });
 
-      console.log("Fetched video categories:", data); // Log the fetched data for debugging
-
       if (error) {
         console.error("Error fetching video categories:", error); // Log the error for debugging
         throw error;

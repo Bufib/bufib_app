@@ -18,7 +18,7 @@ export function useSearchPodcasts(searchTerm: string) {
       // 3) Supabase query: Searches for the searchTerm in the 'title' or 'description'
       //    fields of the 'episodes' table.
       const { data, error } = await supabase
-        .from("episodes")
+        .from("podcasts")
         .select("*")
         .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
         .order("created_at", { ascending: false });
