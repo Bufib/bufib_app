@@ -114,14 +114,12 @@ const RenderQuestion = ({
     }, 1000);
   };
   return (
-    <SafeAreaView
-      edges={["top"]}
+    <View
       style={[
         styles.container,
         { backgroundColor: Colors[colorScheme].background },
       ]}
     >
-      <HeaderLeftBackButton style={{ marginLeft: 5 }} />
       <ScrollView
         style={[styles.scrollViewStyles, themeStyles.defaultBackgorundColor]}
         contentContainerStyle={styles.scrollViewContent}
@@ -271,7 +269,7 @@ const RenderQuestion = ({
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

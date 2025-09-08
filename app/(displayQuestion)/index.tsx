@@ -163,7 +163,7 @@
 //     fontSize: 16,
 //     fontWeight: "700",
 //   },
-// });
+//
 
 import {
   View,
@@ -186,6 +186,8 @@ import {
   isQuestionInFavorite,
   toggleQuestionFavorite,
 } from "../../db/queries/questions";
+import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Question() {
   const { category, subcategory, questionId, questionTitle } =
@@ -246,51 +248,33 @@ export default function Question() {
   }, [parsedId, triggerRefreshFavorites]);
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: questionTitle,
-
-          headerRight: () => {
-            return (
-              <View style={styles.headerRightContainer}>
-                <Ionicons
-                  name="text"
-                  size={25}
-                  color={colorScheme === "dark" ? "#fff" : "#000"}
-                  onPress={() => setModalVisible(true)}
-                />
-                {isFavorite ? (
-                  <AntDesign
-                    name="star"
-                    size={32}
-                    color={Colors.universal.favorite}
-                    onPress={onPressToggle}
-                  />
-                ) : (
-                  <AntDesign
-                    name="staro"
-                    size={32}
-                    color={Colors[colorScheme].defaultIcon}
-                    onPress={onPressToggle}
-                  />
-                )}
-              </View>
-            );
-          },
-
-          headerLeft: () => (
-            <Ionicons
-              name="chevron-back-outline"
-              size={30}
-              color={colorScheme === "dark" ? "#d0d0c0" : "#000"}
-              style={{ marginLeft: -16 }}
-              onPress={() => router.back()}
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.headerContainer}>
+        <HeaderLeftBackButton style={{ marginLeft: 5 }} />
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginRight: 15 }}>
+          <Ionicons
+            name="text"
+            size={28}
+            color={colorScheme === "dark" ? "#fff" : "#000"}
+            onPress={() => setModalVisible(true)}
+          />
+          {isFavorite ? (
+            <AntDesign
+              name="star"
+              size={28}
+              color={Colors.universal.favorite}
+              onPress={onPressToggle}
             />
-          ),
-        }}
-      />
-
+          ) : (
+            <AntDesign
+              name="staro"
+              size={28}
+              color={Colors[colorScheme].defaultIcon}
+              onPress={onPressToggle}
+            />
+          )}
+        </View>
+      </View>
       <RenderQuestion
         category={category}
         subcategory={subcategory}
@@ -300,7 +284,7 @@ export default function Question() {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -308,10 +292,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  headerRightContainer: {
+  headerContainer: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: 10,
-    marginRight: 10,
   },
 });
