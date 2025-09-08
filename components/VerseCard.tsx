@@ -127,7 +127,7 @@ function VerseCard({
           <ThemedText
             style={[
               styles.arabic,
-              { fontSize: fontSize * 1.7, lineHeight: lineHeight * 2 },
+              { fontSize: fontSize * 1.7, lineHeight: lineHeight * 2.1 },
             ]}
           >
             {arabicVerse.text}
@@ -179,7 +179,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
- 
   },
   header: {
     flexDirection: "row",
@@ -217,7 +216,7 @@ const styles = StyleSheet.create({
   arabic: {
     textAlign: "right",
     fontWeight: "400",
-    letterSpacing: 0.5,
+    letterSpacing: 0,
   },
   translation: {
     fontWeight: "500",
