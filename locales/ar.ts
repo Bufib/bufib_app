@@ -53,6 +53,8 @@ export const ar = {
   noData: "لا توجد بيانات متاحة",
   confirmBookmarkChange: "تغيير العلامة المرجعية؟",
   bookmarkReplaceQuestion: "هل تريد تغيير العلامة المرجعية؟",
+  startsAt: "يبدأ من",
+
   // Navigation
   knowledge: "معرفة",
   settings: "إعدادات",
@@ -229,6 +231,8 @@ export const ar = {
   makki: "مكية",
   madani: "مدنية",
   lastRead: "آخر قراءة",
+  juz: "جزء",
+  sura: "سورة",
 
   // History
   sections: {

@@ -442,7 +442,7 @@ export type VideoCategoryType = {
 export type UseVideosResultType = {
   categories: string[];
   videosByCategory: Record<string, VideoType[]>;
-}
+};
 // User question
 export type QuestionsFromUserType = {
   id: string;
@@ -550,6 +550,32 @@ export type JuzRow = MarkerRowType & {
   page: number;
 };
 
+export type JuzStartType = {
+  juz: number;
+  sura: number;
+  aya: number;
+  page: number | null;
+};
+
+export type JuzBoundsType = {
+  startSura: number;
+  startAya: number;
+  endSura: number | null;   // null = goes to end of Quran
+  endAya: number | null;
+};
+
+export type VerseCardProps = {
+  item: QuranVerseType;
+  arabicVerse?: QuranVerseType;
+  isBookmarked: boolean;
+  isJuzMode: boolean;
+  translitContentWidth: number;
+  hasTafsir: boolean;
+  onBookmark: (verse: QuranVerseType) => void;
+  onOpenInfo: (verse: QuranVerseType, arabicVerse?: QuranVerseType) => void;
+  translitBaseStyle: any;
+  language: string;
+};
 // History
 export type LevelType = string;
 
@@ -558,15 +584,15 @@ export type ChapterSectionType = {
   data: LevelType[];
 };
 
-export type ProphetType ={
-  id: string; 
-  nameKey: string; 
-  route: string; 
-}
+export type ProphetType = {
+  id: string;
+  nameKey: string;
+  route: string;
+};
 
 export type SectionType = {
-  id: string; 
-  titleKey: string; 
+  id: string;
+  titleKey: string;
   backgroundImage: any;
   levels: ProphetType[];
-}
+};

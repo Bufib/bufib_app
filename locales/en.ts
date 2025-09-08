@@ -53,6 +53,7 @@ export const en = {
   confirmBookmarkChange: "Change Bookmark?",
   bookmarkReplaceQuestion: "Do you want to change the Bookmark?",
   replace: "Replace",
+  startsAt: "Starts from:",
 
   // Navigation
   knowledge: "Knowledge",
@@ -229,6 +230,10 @@ export const en = {
   makki: "Makki",
   madani: "Madani",
   lastRead: "Last read",
+  juz: "Juz",
+  sura: "Sura",
+
+
 
   // History
   sections: {

@@ -207,6 +207,9 @@
 
 // export default syncPrayers;
 
+
+
+
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
 import {

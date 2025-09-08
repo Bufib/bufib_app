@@ -55,6 +55,7 @@ export const de = {
   confirmBookmarkChange: "Lesezeichen Ändern?",
   bookmarkReplaceQuestion: "Willst du das Lesezeichen Ändern?",
   replace: "Ersetzen",
+  startsAt: "Startet von:",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -229,6 +230,8 @@ export const de = {
   makki: "Mekkanisch",
   madani: "Medinensisch",
   lastRead: "Zuletzt gelesen",
+  juz: "Juz",
+  sura: "Sura",
 
   // History
     sections: {

@@ -213,11 +213,14 @@ export const migrationSQL = `
     ruku       INTEGER
     );
 
-    CREATE INDEX IF NOT EXISTS idx_sura_orderId   ON sura(orderId);
+    CREATE INDEX IF NOT EXISTS idx_sura_orderId ON sura(orderId);
 
     CREATE INDEX IF NOT EXISTS idx_sura_startPage ON sura(startPage);
 
-    CREATE INDEX IF NOT EXISTS idx_sura_endPage   ON sura(endPage);
+    CREATE INDEX IF NOT EXISTS idx_sura_endPage ON sura(endPage);
 
-    CREATE INDEX IF NOT EXISTS idx_sura_makki     ON sura(makki);
+    CREATE INDEX IF NOT EXISTS idx_sura_makki ON sura(makki);
+
      `;
+
+
