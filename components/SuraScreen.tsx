@@ -2427,6 +2427,8 @@ import {
   getJuzBounds,
 } from "@/db/queries/quran";
 import { whenDatabaseReady } from "@/db";
+import FontSizePickerModal from "./FontSizePickerModal";
+import { useFontSizeStore } from "@/stores/fontSizeStore";
 
 // constants / helpers
 const HEADER_MAX_HEIGHT = 120;
@@ -2460,6 +2462,7 @@ const SuraScreen: React.FC = () => {
   const [verses, setVerses] = useState<QuranVerseType[]>([]);
   const [arabicVerses, setArabicVerses] = useState<QuranVerseType[]>([]);
   const [suraInfo, setSuraInfo] = useState<SuraRowType | null>(null);
+  const { fontSize, lineHeight } = useFontSizeStore();
 
   // Header bits
   const [displayName, setDisplayName] = useState<string>(""); // Surah title (surah mode)
@@ -2715,6 +2718,9 @@ const SuraScreen: React.FC = () => {
     const isMakki = !!suraInfo?.makki;
     const showJuz = !!juzHeader;
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const colorScheme = useColorScheme() || "light";
+
     return (
       <Animated.View
         style={[
@@ -2728,6 +2734,7 @@ const SuraScreen: React.FC = () => {
         <SafeAreaView edges={["top"]} style={styles.headerContainer}>
           <View style={styles.headerContent}>
             <HeaderLeftBackButton />
+
             <Animated.View
               style={[
                 styles.headerTextContainer,
@@ -2739,12 +2746,12 @@ const SuraScreen: React.FC = () => {
             >
               {showJuz ? (
                 <>
-                  <ThemedText type="title" style={styles.suraName}>
+                  <ThemedText  style={styles.suraName}>
                     {juzHeader?.title}
                   </ThemedText>
                   {!!juzHeader?.subtitle && (
                     <Animated.View style={{ opacity: headerSubtitleOpacity }}>
-                      <ThemedText style={styles.subMeta} numberOfLines={1}>
+                      <ThemedText type="default" style={[styles.subMeta]}>
                         {juzHeader.subtitle}
                       </ThemedText>
                     </Animated.View>
@@ -2753,14 +2760,13 @@ const SuraScreen: React.FC = () => {
               ) : (
                 <>
                   <ThemedText
-                    type="title"
                     style={[styles.suraName, isArabic() && styles.suraNameAr]}
                   >
                     {displayName || suraInfo?.label_en || suraInfo?.label || ""}{" "}
                     ({suraNumber})
                   </ThemedText>
                   <Animated.View style={{ opacity: headerSubtitleOpacity }}>
-                    <ThemedText style={styles.subMeta} numberOfLines={1}>
+                    <ThemedText style={styles.subMeta} type="default">
                       {t("ayatCount")}: {suraInfo?.nbAyat ?? "—"} ·{" "}
                       {isMakki ? t("makki") : t("madani")}
                     </ThemedText>
@@ -2768,7 +2774,18 @@ const SuraScreen: React.FC = () => {
                 </>
               )}
             </Animated.View>
+            <Ionicons
+              name="text"
+              size={28}
+              color={Colors[colorScheme].defaultIcon}
+              onPress={() => setModalVisible(true)}
+              style={{ marginRight: 15 }}
+            />
           </View>
+          <FontSizePickerModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+          />
         </SafeAreaView>
       </Animated.View>
     );
@@ -2776,7 +2793,7 @@ const SuraScreen: React.FC = () => {
 
   // PLAIN object for RenderHTML baseStyle inside VerseCard
   const translitBaseStyle = useMemo(
-    () => StyleSheet.flatten(styles.arabicTransliterationText),
+    () => StyleSheet.flatten([styles.arabicTransliterationText]),
     []
   );
 
@@ -2841,7 +2858,9 @@ const SuraScreen: React.FC = () => {
             { useNativeDriver: false }
           )}
           ListEmptyComponent={
-            <ThemedText style={styles.emptyText}>{t("noData")}</ThemedText>
+            <ThemedText style={[styles.emptyText, { fontSize: fontSize }]}>
+              {t("noData")}
+            </ThemedText>
           }
         />
       )}
@@ -2863,7 +2882,9 @@ const SuraScreen: React.FC = () => {
             <>
               {/* Header */}
               <View style={styles.bottomSheetHeader}>
-                <ThemedText style={styles.bottomSheetTitle}>
+                <ThemedText
+                  style={[styles.bottomSheetTitle, { fontSize: fontSize }]}
+                >
                   {juzHeader
                     ? `${juzHeader.title} – ${t("ayah")} ${
                         selectedVerse.sura
@@ -2892,10 +2913,20 @@ const SuraScreen: React.FC = () => {
                 {/* Arabic Text */}
                 {selectedArabicVerse && (
                   <View style={styles.infoSection}>
-                    <ThemedText style={styles.infoLabel}>
+                    <ThemedText
+                      style={[styles.infoLabel, { fontSize: fontSize }]}
+                    >
                       {t("arabicText")}:
                     </ThemedText>
-                    <ThemedText style={styles.infoArabicText}>
+                    <ThemedText
+                      style={[
+                        styles.infoArabicText,
+                        {
+                          fontSize: fontSize * 1.3,
+                          lineHeight: lineHeight * 1.5,
+                        },
+                      ]}
+                    >
                       {selectedArabicVerse.text}
                     </ThemedText>
                   </View>
@@ -2904,10 +2935,14 @@ const SuraScreen: React.FC = () => {
                 {/* Translation */}
                 {lang !== "ar" && (
                   <View style={styles.infoSection}>
-                    <ThemedText style={styles.infoLabel}>
+                    <ThemedText
+                      style={[styles.infoLabel, { fontSize: fontSize }]}
+                    >
                       {t("translation")}:
                     </ThemedText>
-                    <ThemedText style={styles.infoTranslation}>
+                    <ThemedText
+                      style={[styles.infoTranslation, { fontSize: fontSize }]}
+                    >
                       {selectedVerse.text}
                     </ThemedText>
                   </View>
@@ -2915,10 +2950,14 @@ const SuraScreen: React.FC = () => {
 
                 {/* Tafsir/Commentary */}
                 <View style={styles.infoSection}>
-                  <ThemedText style={styles.infoLabel}>
+                  <ThemedText
+                    style={[styles.infoLabel, { fontSize: fontSize }]}
+                  >
                     {t("tafsir")}:
                   </ThemedText>
-                  <ThemedText style={styles.infoTafsir}>
+                  <ThemedText
+                    style={[styles.infoTafsir, { fontSize: fontSize }]}
+                  >
                     {t("tafsirPlaceholder") ||
                       "Detailed explanation and commentary for this verse will appear here. This can include historical context, interpretations, and scholarly insights."}
                   </ThemedText>
@@ -2926,21 +2965,29 @@ const SuraScreen: React.FC = () => {
 
                 {/* Additional Info */}
                 <View style={styles.infoSection}>
-                  <ThemedText style={styles.infoLabel}>
+                  <ThemedText
+                    style={[styles.infoLabel, { fontSize: fontSize }]}
+                  >
                     {t("additionalInfo")}:
                   </ThemedText>
                   <View style={styles.metaInfo}>
                     {!juzHeader && (
-                      <ThemedText style={styles.metaText}>
+                      <ThemedText
+                        style={[styles.metaText, { fontSize: fontSize }]}
+                      >
                         • {t("surahNumber")}: {suraNumber}
                       </ThemedText>
                     )}
-                    <ThemedText style={styles.metaText}>
+                    <ThemedText
+                      style={[styles.metaText, { fontSize: fontSize }]}
+                    >
                       • {t("verseNumber")}: {selectedVerse.sura}:
                       {selectedVerse.aya}
                     </ThemedText>
                     {!juzHeader && (
-                      <ThemedText style={styles.metaText}>
+                      <ThemedText
+                        style={[styles.metaText, { fontSize: fontSize }]}
+                      >
                         • {t("revelation")}:{" "}
                         {suraInfo?.makki ? t("makki") : t("madani")}
                       </ThemedText>
@@ -3009,25 +3056,32 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 16,
   },
-  suraName: { fontSize: 20, fontWeight: "700" },
+  suraName: {
+    paddingTop: 5,
+    fontSize: 30,
+    lineHeight: 35,
+    fontWeight: "700",
+  },
+
   subMeta: {
-    fontSize: 14,
     fontWeight: "600",
     color: Colors.universal.grayedOut,
   },
-  suraNameAr: { textAlign: "right", fontSize: 24 },
-
+  suraNameAr: {
+    textAlign: "right",
+    fontSize: 24,
+  },
   arabicTransliterationText: {
-    fontSize: 15,
-    lineHeight: 22,
     fontStyle: "italic",
     fontWeight: "400",
     textAlign: "left",
     color: Colors.universal.grayedOut,
   },
-  emptyText: { textAlign: "center", padding: 24 },
+  emptyText: {
+    textAlign: "center",
+    padding: 24,
+  },
 
-  // Bottom Sheet Styles
   bottomSheetContent: {
     flex: 1,
     paddingHorizontal: 20,
@@ -3039,7 +3093,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   bottomSheetTitle: {
-    fontSize: 18,
     fontWeight: "700",
     flex: 1,
   },
@@ -3057,31 +3110,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   infoLabel: {
-    fontSize: 14,
     fontWeight: "600",
     color: Colors.universal.grayedOut,
     marginBottom: 8,
   },
   infoArabicText: {
-    fontSize: 22,
-    lineHeight: 36,
     textAlign: "right",
     fontWeight: "400",
   },
-  infoTranslation: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
+  infoTranslation: {},
   infoTafsir: {
-    fontSize: 15,
-    lineHeight: 22,
     textAlign: "justify",
   },
   metaInfo: {
     gap: 4,
   },
-  metaText: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
+  metaText: {},
 });

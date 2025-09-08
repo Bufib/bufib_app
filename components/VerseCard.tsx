@@ -12,6 +12,7 @@ import RenderHTML from "react-native-render-html";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { QuranVerseType } from "@/constants/Types";
+import { useFontSizeStore } from "@/stores/fontSizeStore";
 
 // --- keep these as plain objects (NOT from StyleSheet.create) for RenderHTML ---
 const TAGS_STYLES = Object.freeze({
@@ -55,6 +56,8 @@ function VerseCard({
     [transliterationText]
   );
   const colorScheme = useColorScheme() || "light";
+  const { fontSize, lineHeight } = useFontSizeStore();
+
   return (
     <View
       style={[
@@ -121,14 +124,28 @@ function VerseCard({
 
       <View style={styles.content}>
         {!!arabicVerse && (
-          <ThemedText style={styles.arabic}>{arabicVerse.text}</ThemedText>
+          <ThemedText
+            style={[
+              styles.arabic,
+              { fontSize: fontSize * 1.7, lineHeight: lineHeight * 2 },
+            ]}
+          >
+            {arabicVerse.text}
+          </ThemedText>
         )}
 
         {!!transliterationText && (
           <RenderHTML
             contentWidth={translitContentWidth}
             source={source}
-            baseStyle={translitBaseStyle}
+            // baseStyle={translitBaseStyle}
+            baseStyle={{
+              fontStyle: "italic",
+              fontWeight: "400",
+              textAlign: "left",
+              color: Colors.universal.grayedOut,
+              fontSize: fontSize * 1,
+            }}
             defaultTextProps={DEFAULT_TEXT_PROPS}
             ignoredDomTags={IGNORED_TAGS as any}
             tagsStyles={TAGS_STYLES as any}
@@ -136,7 +153,14 @@ function VerseCard({
         )}
 
         {language !== "ar" && (
-          <ThemedText style={styles.translation}>{item.text}</ThemedText>
+          <ThemedText
+            style={[
+              styles.translation,
+              { fontSize: fontSize * 1.1, lineHeight: lineHeight * 1.1 },
+            ]}
+          >
+            {item.text}
+          </ThemedText>
         )}
       </View>
     </View>
@@ -155,6 +179,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
+ 
   },
   header: {
     flexDirection: "row",
@@ -170,8 +195,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  badgeText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700" },
-  actions: { flexDirection: "row", gap: 8 },
+  badgeText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  actions: {
+    flexDirection: "row",
+    gap: 8,
+  },
   actionBtn: {
     width: 36,
     height: 36,
@@ -179,13 +211,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  content: { gap: 12 },
+  content: {
+    gap: 20,
+  },
   arabic: {
-    fontSize: 24,
-    lineHeight: 40,
     textAlign: "right",
     fontWeight: "400",
     letterSpacing: 0.5,
   },
-  translation: { fontSize: 16, lineHeight: 24, fontWeight: "500" },
+  translation: {
+    fontWeight: "500",
+  },
 });
