@@ -220,6 +220,7 @@ function AppContent() {
     return <LanguageSelection />;
   }
 
+  //! Screen sometimes appears 
   // 3. Show specific DB loading screen
   // This screen shows if DB is not ready, after a delay, and internet is available.
   if (!isDbReady && showLoadingScreen && hasInternet) {

@@ -21,10 +21,14 @@ import { LanguageCode } from "@/constants/Types";
 
 const ProphetText = ({
   title,
-  textContent,
+  textContentDE,
+  textContentEN,
+  textContentAR,
   prophetID,
 }: {
-  textContent: string;
+  textContentDE: string;
+  textContentEN: string;
+  textContentAR: string;
   title: string;
   prophetID: string;
 }) => {
@@ -97,7 +101,11 @@ const ProphetText = ({
             bullet_list: { paddingLeft: 8 }, // indent whole list
           }}
         >
-          {textContent}
+          {lang === "de"
+            ? textContentDE
+            : lang === "en"
+            ? textContentEN
+            : textContentAR}
         </Markdown>
         <TouchableOpacity
           style={[

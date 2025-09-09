@@ -17,6 +17,8 @@ export const en = {
   download: "Download",
   downloading: "Downloading",
   preparing: "Preparing",
+  stream: "Stream",
+
   // General
   retry: "Retry",
   errorLoadingData: "There was an error loading the data",

@@ -18,6 +18,7 @@ export const de = {
   download: "Herunterlanden",
   downloading: "Wird heruntergeladen",
   preparing: "Wird vorbereitet",
+  stream: "Streamen",
 
   // General
   retry: "Wiederholen",

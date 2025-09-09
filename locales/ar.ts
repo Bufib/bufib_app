@@ -17,6 +17,8 @@ export const ar = {
   download: "تحميل",
   downloading: "جاري التحميل",
   preparing: "تحضير",
+  stream: "تدفق",
+
 
   // General
   retry: "إعادة المحاولة",
