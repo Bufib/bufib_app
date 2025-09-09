@@ -13,8 +13,9 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useColorScheme } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { getQuestionsForSubcategory } from "@/db/queries/questions";
-import { QuestionType } from "@/constants/Types";
+import { LanguageCode, QuestionType } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 function RenderQuestionSubCategoryItems() {
   const { category, subcategory } = useLocalSearchParams<{
@@ -26,6 +27,8 @@ function RenderQuestionSubCategoryItems() {
   const [isLoading, setIsLoading] = useState(true);
   const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme() || "light";
+  const { language } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
 
   useEffect(() => {
     const loadQuestions = async () => {
@@ -33,7 +36,8 @@ function RenderQuestionSubCategoryItems() {
         setIsLoading(true);
         const questions = await getQuestionsForSubcategory(
           category,
-          subcategory
+          subcategory,
+          lang
         );
 
         if (questions) {
@@ -54,7 +58,7 @@ function RenderQuestionSubCategoryItems() {
     };
 
     loadQuestions();
-  }, [category, subcategory]);
+  }, [category, subcategory, lang]);
 
   //  Display error state
   if (error && !isLoading && questions.length === 0) {
@@ -134,16 +138,23 @@ const styles = StyleSheet.create({
   error: {},
   flatListStyle: {
     paddingTop: 10,
-    paddingHorizontal: 10,
+    gap: 15,
   },
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 8,
-    borderWidth: 0.5,
+    padding: 20,
+    marginHorizontal: 10,
+    borderWidth: 0.3,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   questionContainer: {
     flex: 1,

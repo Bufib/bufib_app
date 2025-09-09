@@ -16,6 +16,7 @@ import { Colors } from "@/constants/Colors";
 import { getSubcategoriesForCategory } from "@/db/queries/questions";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageCode } from "@/constants/Types";
 
 function RenderQuestionCategoryItems({ category }: { category: string }) {
   const [subcategories, setSubcategories] = useState<string[]>([]);
@@ -24,18 +25,16 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { language } = useLanguage();
+  const { language, isArabic } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
+
   // fade-in animation value
   useEffect(() => {
     const loadSubcategories = async () => {
       setIsLoading(true);
       try {
-        const subcategories = await getSubcategoriesForCategory(
-          category,
-          language || "de"
-        );
+        const subcategories = await getSubcategoriesForCategory(category, lang);
         if (subcategories) {
-
           setSubcategories(subcategories);
           setError(null);
         } else {
@@ -52,7 +51,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
     };
 
     loadSubcategories();
-  }, [category]);
+  }, [category, lang]);
 
   //  Display error state
   if (error && !isLoading && subcategories.length === 0) {
@@ -100,13 +99,27 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
               })
             }
           >
-            <ThemedView style={[styles.item, themeStyle.contrast]}>
-              <ThemedText style={styles.tableText}>{item}</ThemedText>
-              <Entypo
-                name="chevron-thin-right"
-                size={24}
-                color={colorScheme === "dark" ? "#fff" : "#000"}
-              />
+            <ThemedView
+              style={[
+                styles.item,
+                { backgroundColor: Colors[colorScheme].contrast },
+                isArabic() && { flexDirection: "row-reverse" },
+              ]}
+            >
+              <ThemedText style={[styles.tableText]}>{item}</ThemedText>
+              {isArabic() ? (
+                <Entypo
+                  name="chevron-thin-left"
+                  size={24}
+                  color={colorScheme === "dark" ? "#fff" : "#000"}
+                />
+              ) : (
+                <Entypo
+                  name="chevron-thin-right"
+                  size={24}
+                  color={colorScheme === "dark" ? "#fff" : "#000"}
+                />
+              )}
             </ThemedView>
           </TouchableOpacity>
         )}
@@ -127,18 +140,26 @@ const styles = StyleSheet.create({
   error: {},
   flatListStyle: {
     paddingTop: 10,
+    gap: 15,
   },
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 15,
-    marginBottom: 15,
-    borderTopWidth: 0.5,
-    borderBottomWidth: 0.5,
+    padding: 20,
+    marginHorizontal: 10,
+    borderWidth: 0.3,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   tableText: {
     fontSize: 18,
-    textAlign: "left",
     fontWeight: 500,
   },
 });

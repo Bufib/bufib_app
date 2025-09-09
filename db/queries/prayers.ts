@@ -83,7 +83,7 @@ export async function getPrayersForCategory(
        ON p.id = t.prayer_id
        AND t.language_code = ?
      WHERE p.category_id = ?
-     ORDER BY p.name;`,
+     ORDER BY p.name COLLATE NOCASE;`,
     [languageCode, categoryId]
   );
 }
@@ -117,7 +117,7 @@ export async function getAllPrayersForArabic(
        category_id
      FROM prayers
      WHERE category_id = ?
-     ORDER BY name;`,
+     ORDER BY name COLLATE NOCASE;`,
     [categoryId]
   );
 }
@@ -127,7 +127,7 @@ export const getFoldersForPrayer = async (
 ): Promise<string[]> => {
   const db = await getDatabase();
   const rows = await db.getAllAsync<{ folder_name: string }>(
-    `SELECT folder_name FROM favorite_prayers WHERE prayer_id = ?;`,
+    `SELECT DISTINCT folder_name FROM favorite_prayers WHERE prayer_id = ?;`,
     [prayerId]
   );
   return rows.map((r) => r.folder_name);
@@ -165,11 +165,11 @@ export const getFavoritePrayers = async (): Promise<PrayerType[]> => {
   try {
     const db = await getDatabase();
     return await db.getAllAsync<PrayerType>(`
-      SELECT p.*
-      FROM prayers     AS p
-      JOIN favorite_prayers   AS f
-        ON p.id = f.prayer_id
+      SELECT DISTINCT p.*
+      FROM prayers p
+      JOIN favorite_prayers f ON p.id = f.prayer_id
       ORDER BY datetime(f.created_at) DESC;
+
     `);
   } catch (error) {
     console.error("Error retrieving favorite prayers:", error);
@@ -215,24 +215,29 @@ export async function removePrayerFromFolder(
 }
 
 export const togglePrayerFavorite = async (
-  prayerId: number
+  prayerId: number,
+  folder: { name: string; color: string }
 ): Promise<boolean> => {
   const db = await getDatabase();
   const row = await db.getFirstAsync<{ count: number }>(
-    `SELECT COUNT(*) AS count FROM favorite_prayers WHERE prayer_id = ?;`,
-    [prayerId]
+    `SELECT COUNT(*) AS count
+       FROM favorite_prayers
+      WHERE prayer_id = ? AND folder_name = ?;`,
+    [prayerId, folder.name]
   );
   const exists = (row?.count ?? 0) > 0;
 
   if (exists) {
-    await db.runAsync(`DELETE FROM favorite_prayers WHERE prayer_id = ?;`, [
-      prayerId,
-    ]);
+    await db.runAsync(
+      `DELETE FROM favorite_prayers WHERE prayer_id = ? AND folder_name = ?;`,
+      [prayerId, folder.name]
+    );
     return false;
   } else {
     await db.runAsync(
-      `INSERT OR IGNORE INTO favorite_prayers (prayer_id) VALUES (?);`,
-      [prayerId]
+      `INSERT OR IGNORE INTO favorite_prayers (prayer_id, folder_name, folder_color)
+       VALUES (?, ?, ?);`,
+      [prayerId, folder.name, folder.color]
     );
     return true;
   }

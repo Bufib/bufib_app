@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { getLatestQuestions } from "@/db/queries/questions";
-import { QuestionType } from "@/constants/Types";
+import { LanguageCode, QuestionType } from "@/constants/Types";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
@@ -21,8 +21,9 @@ const LatestQuestions: React.FC = () => {
   //State & Hooks
   const [latestQuestions, setLatestQuestions] = useState<QuestionType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const {language} = useLanguage();
-  const dbInitialized = useDatabaseSync(language || "de");
+  const { language } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
+  const dbInitialized = useDatabaseSync(lang);
   const themeStyles = CoustomTheme();
   const colorScheme = useColorScheme();
 
@@ -33,7 +34,7 @@ const LatestQuestions: React.FC = () => {
     const loadLatestQuestions = async () => {
       setIsLoading(true);
       try {
-        const questions = await getLatestQuestions();
+        const questions = await getLatestQuestions(lang);
         setLatestQuestions(questions);
       } catch (error) {
         console.error("Error loading latest questions:", error);
@@ -43,7 +44,7 @@ const LatestQuestions: React.FC = () => {
     };
 
     loadLatestQuestions();
-  }, [dbInitialized]);
+  }, [dbInitialized, lang]);
 
   // loading
   if (isLoading) {
@@ -158,8 +159,7 @@ const styles = StyleSheet.create({
   questionPreview: {
     fontSize: 14,
   },
-  categoryContainer: {
-  },
+  categoryContainer: {},
   categoryText: {
     fontSize: 12,
     color: "#888",

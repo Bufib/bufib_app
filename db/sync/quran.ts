@@ -466,7 +466,9 @@
 // // }
 
 // // export default syncQuran;
+
 // app/db/sync/quran.ts
+
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
 
@@ -512,7 +514,6 @@ async function syncQuran(): Promise<void> {
       .select("id, sura, aya, type")
       .range(0, 7000)
       .order("id", { ascending: true });
-
     const ayaArFetch = supabase
       .from("aya_ar")
       .select("id, sura, aya, quran_arabic_text")
@@ -533,6 +534,11 @@ async function syncQuran(): Promise<void> {
       .select("id, sura, aya, quran_transliteration_text")
       .range(0, 7000)
       .order("id", { ascending: true });
+    const pageFetch = supabase
+      .from("page")
+      .select("id, sura, aya")
+      .range(0, 7000)
+      .order("id");
 
     // --- Execute in parallel ---
     const [
@@ -545,6 +551,7 @@ async function syncQuran(): Promise<void> {
       { data: ayaDeRows, error: ayaDeErr },
       { data: ayaEnRows, error: ayaEnErr },
       { data: ayaTrRows, error: ayaTrErr },
+      { data: pageRows, error: pageErr },
     ] = await Promise.all([
       suraFetch,
       hizbFetch,
@@ -555,6 +562,7 @@ async function syncQuran(): Promise<void> {
       ayaDeFetch,
       ayaEnFetch,
       ayaTrFetch,
+      pageFetch,
     ]);
 
     if (suraErr) throw suraErr;
@@ -566,6 +574,7 @@ async function syncQuran(): Promise<void> {
     if (ayaDeErr) throw ayaDeErr;
     if (ayaEnErr) throw ayaEnErr;
     if (ayaTrErr) throw ayaTrErr;
+    if (pageErr) throw pageErr;
 
     const db = await getDatabase();
 
@@ -581,6 +590,7 @@ async function syncQuran(): Promise<void> {
       await txn.execAsync("DELETE FROM aya_de;");
       await txn.execAsync("DELETE FROM aya_en;");
       await txn.execAsync("DELETE FROM aya_en_transliteration;");
+      await txn.execAsync("DELETE FROM page;");
 
       // Prepare statements
       const suraStmt = await txn.prepareAsync(
@@ -612,14 +622,16 @@ async function syncQuran(): Promise<void> {
       const ayaTrStmt = await txn.prepareAsync(
         `INSERT OR REPLACE INTO aya_en_transliteration (id, sura, aya, quran_transliteration_text) VALUES (?, ?, ?, ?);`
       );
-
+      const pageStmt = await txn.prepareAsync(
+        `INSERT OR REPLACE INTO page (id, sura, aya) VALUES (?, ?, ?);`
+      );
       try {
         for (const s of suraRows ?? []) {
           await suraStmt.executeAsync([
             s.id,
             s.label,
             s.label_en ?? null,
-            s.label_de ?? null,
+            s.label_de,
             s.nbAyat,
             s.nbWord,
             s.nbLetter,
@@ -666,6 +678,9 @@ async function syncQuran(): Promise<void> {
             t.aya,
             t.quran_transliteration_text,
           ]);
+        for (const p of pageRows ?? []) {
+          await pageStmt.executeAsync([p.id, p.sura, p.aya]);
+        }
       } finally {
         await suraStmt.finalizeAsync();
         await hizbStmt.finalizeAsync();
@@ -676,6 +691,7 @@ async function syncQuran(): Promise<void> {
         await ayaDeStmt.finalizeAsync();
         await ayaEnStmt.finalizeAsync();
         await ayaTrStmt.finalizeAsync();
+        await pageStmt.finalizeAsync();
       }
     });
 

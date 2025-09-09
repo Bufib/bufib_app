@@ -390,7 +390,7 @@ import { Colors } from "@/constants/Colors";
 import { useLevelProgressStore } from "@/stores/levelProgressStore";
 import { router } from "expo-router";
 import { SECTIONS_DATA, getLevelOrder } from "@/data/historyData";
-import { SectionType, ProphetType, LanguageCode } from "@/constants/Types";
+import { SectionType, HistoryDataType, LanguageCode } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -531,7 +531,7 @@ const HistoryScreen: React.FC = () => {
     index,
     section,
   }: {
-    item: ProphetType;
+    item: HistoryDataType;
     index: number;
     section: SectionType;
   }) => {

@@ -17,9 +17,12 @@ export const getSubcategoriesForCategory = async (
     const db = await getDatabase();
     const rows = await db.getAllAsync<{ question_subcategory_name: string }>(
       `
-      SELECT DISTINCT question_subcategory_name FROM questions WHERE question_category_name = ?;
+     SELECT DISTINCT question_subcategory_name
+      FROM questions
+      WHERE question_category_name = ?
+      AND language_code = ?;
     `,
-      [question_category_name]
+      [question_category_name, language]
     );
     return rows.map((row) => row.question_subcategory_name);
   } catch (error) {
@@ -30,15 +33,17 @@ export const getSubcategoriesForCategory = async (
 
 export const getQuestionsForSubcategory = async (
   categoryName: string,
-  subcategoryName: string
+  subcategoryName: string,
+  language: string
+
 ): Promise<QuestionType[]> => {
   try {
     const db = await getDatabase();
     return await db.getAllAsync<QuestionType>(
       `
-      SELECT * FROM questions WHERE question_category_name = ? AND question_subcategory_name = ? ORDER BY created_at DESC;
+      SELECT * FROM questions WHERE question_category_name = ? AND question_subcategory_name = ?  AND language_code = ? ORDER BY created_at DESC;
     `,
-      [categoryName, subcategoryName]
+      [categoryName, subcategoryName, language]
     );
   } catch (error) {
     console.error("Error fetching questions for subcategory:", error);
@@ -69,16 +74,19 @@ export const getQuestion = async (
 };
 
 export const getQuestionInternalURL = async (
-  questionTitle: string
+  questionTitle: string,
+  language: string
 ): Promise<QuestionType> => {
   try {
     const db = await getDatabase();
     const rows = await db.getAllAsync<QuestionType>(
       `
       SELECT * FROM questions
-      WHERE title = ?;
+      WHERE title = ?
+      AND language_code = ?;
+      ;
     `,
-      [questionTitle]
+      [questionTitle, language]
     );
     return rows[0];
   } catch (error) {
@@ -107,16 +115,17 @@ export const searchQuestions = async (
 };
 
 export const getLatestQuestions = async (
-  limit: number = 10
+  language: string,
 ): Promise<QuestionType[]> => {
   const db = await getDatabase();
   return await db.getAllAsync<QuestionType>(
     `
     SELECT * FROM questions
+    WHERE language_code = ?
     ORDER BY created_at DESC
-    LIMIT ?;
+    LIMIT 10;
   `,
-    [limit]
+    [language]
   );
 };
 
@@ -156,7 +165,6 @@ export const getFavoriteQuestions = async (): Promise<QuestionType[]> => {
     throw error;
   }
 };
-
 
 export const toggleQuestionFavorite = async (
   questionId: number

@@ -347,6 +347,7 @@ export type PrayerCategoryType = {
   id: number;
   title: string;
   parent_id?: number[];
+  language_code: string;
 };
 
 export type PrayerWithCategory = {
@@ -560,7 +561,7 @@ export type JuzStartType = {
 export type JuzBoundsType = {
   startSura: number;
   startAya: number;
-  endSura: number | null;   // null = goes to end of Quran
+  endSura: number | null; // null = goes to end of Quran
   endAya: number | null;
 };
 
@@ -584,7 +585,7 @@ export type ChapterSectionType = {
   data: LevelType[];
 };
 
-export type historyDataType = {
+export type HistoryDataType = {
   id: string;
   nameKey: string;
   route: string;
@@ -594,5 +595,5 @@ export type SectionType = {
   id: string;
   titleKey: string;
   backgroundImage: any;
-  levels: historyDataType[];
+  levels: HistoryDataType[];
 };
