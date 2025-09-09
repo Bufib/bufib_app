@@ -580,8 +580,7 @@ const QuranNavigation: React.FC = () => {
         style={[
           styles.card,
           {
-            backgroundColor: colorScheme === "dark" ? "#1a1f2e" : "#ffffff",
-            borderColor: colorScheme === "dark" ? "#2a3142" : "#e5e7eb",
+            backgroundColor: Colors[colorScheme].contrast
           },
         ]}
         activeOpacity={0.8}
@@ -681,8 +680,7 @@ const QuranNavigation: React.FC = () => {
         style={[
           styles.juzCard,
           {
-            backgroundColor: colorScheme === "dark" ? "#1a1f2e" : "#ffffff",
-            borderColor: colorScheme === "dark" ? "#2a3142" : "#e5e7eb",
+            backgroundColor: Colors[colorScheme].contrast
           },
         ]}
         activeOpacity={0.8}
