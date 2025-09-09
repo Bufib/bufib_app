@@ -1,5 +1,5 @@
 import { PropsWithChildren, useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -7,6 +7,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Image } from "expo-image";
 import { CoustomTheme } from "../utils/coustomTheme";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
+import { Colors } from "@/constants/Colors";
 
 export function Collapsible({
   children,
@@ -16,7 +17,7 @@ export function Collapsible({
   const [isOpen, setIsOpen] = useState(false);
   const themeStyles = CoustomTheme();
   const { fontSize } = useFontSizeStore();
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() || "light";
 
   return (
     <ThemedView>
@@ -49,18 +50,24 @@ export function Collapsible({
         </ThemedText>
       </TouchableOpacity>
       {isOpen && (
-        <ThemedView
+        <View
           style={[
             styles.content,
-            themeStyles.contrast,
             {
-          
-              borderWidth: 0.5
+              backgroundColor: Colors[colorScheme].contrast,
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 1,
+              },
+              shadowOpacity: 0.2,
+              shadowRadius: 1.41,
+              elevation: 2,
             },
           ]}
         >
           {children}
-        </ThemedView>
+        </View>
       )}
     </ThemedView>
   );
@@ -76,11 +83,12 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginHorizontal: 5,
     padding: 12,
-    borderRadius: 7
+    borderRadius: 7,
+    borderWidth: 1,
   },
   image: {
     width: 80,
     height: 80,
-    borderRadius: 15
+    borderRadius: 12,
   },
 });

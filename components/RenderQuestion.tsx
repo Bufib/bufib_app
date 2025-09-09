@@ -13,12 +13,10 @@ import * as Clipboard from "expo-clipboard";
 import Feather from "@expo/vector-icons/Feather";
 import Markdown from "react-native-markdown-display";
 import { NoInternet } from "./NoInternet";
-import { QuestionType } from "@/constants/Types";
+import { LanguageCode, QuestionType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
-import { SafeAreaView } from "react-native-safe-area-context";
-import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { Colors } from "@/constants/Colors";
-import { color } from "@cloudinary/url-gen/qualifiers/background";
+import { useLanguage } from "@/contexts/LanguageContext";
 type RenderQuestionProps = {
   category: string;
   subcategory: string;
@@ -39,6 +37,9 @@ const RenderQuestion = ({
   const [hasCopiedKhamenei, setHasCopiedKhamenei] = useState(false);
   const [hasCopiedSistani, setHasCopiedSistani] = useState(false);
   const { t } = useTranslation();
+  const { language } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
+
   useEffect(() => {
     const loadQuestion = async () => {
       try {
@@ -47,7 +48,12 @@ const RenderQuestion = ({
           console.log("Missing category or subcategory");
           return;
         }
-        const question = await getQuestion(category, subcategory, questionId);
+        const question = await getQuestion(
+          category,
+          subcategory,
+          questionId,
+          lang
+        );
 
         if (question) {
           setQuestion(question);
@@ -126,21 +132,7 @@ const RenderQuestion = ({
         showsVerticalScrollIndicator={false}
       >
         <NoInternet showUI={true} showToast={false} />
-        <View
-          style={[
-            styles.questionContainer,
-            themeStyles.contrast,
-            {
-              // iOS Shadow
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 }, // X: 0, Y: 2
-              shadowOpacity: 0.2,
-              shadowRadius: 4,
-              // Android Shadow
-              elevation: 5, // Adjust for stronger or softer shadow
-            },
-          ]}
-        >
+        <View style={[styles.questionContainer, themeStyles.contrast]}>
           <ThemedText style={[styles.questionText, { fontSize, lineHeight }]}>
             {question?.question}
           </ThemedText>
@@ -290,7 +282,16 @@ const styles = StyleSheet.create({
   questionContainer: {
     padding: 15,
     margin: 10,
+    borderWidth: 1,
     borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   answerContainer: {
     flexDirection: "column",
@@ -302,7 +303,7 @@ const styles = StyleSheet.create({
   singleAnswer: {
     marginHorizontal: 5,
     padding: 12,
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderRadius: 7,
   },
   questionText: {

@@ -54,17 +54,18 @@ export const getQuestionsForSubcategory = async (
 export const getQuestion = async (
   categoryName: string,
   subcategoryName: string,
-  questionId: number
+  questionId: number,
+  language: string
 ): Promise<QuestionType> => {
   try {
     const db = await getDatabase();
     const rows = await db.getAllAsync<QuestionType>(
       `
       SELECT * FROM questions
-      WHERE question_category_name = ? AND question_subcategory_name = ? AND id = ?
+      WHERE question_category_name = ? AND question_subcategory_name = ? AND id = ? AND language_code = ?
       LIMIT 1;
     `,
-      [categoryName, subcategoryName, questionId]
+      [categoryName, subcategoryName, questionId, language]
     );
     return rows[0];
   } catch (error) {

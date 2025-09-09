@@ -351,7 +351,7 @@ export function useDatabaseSync(language: string = i18n.language): boolean {
           "quran_data_version",
           "synced_quran",
           quranVer,
-          () => syncQuran(language),
+          () => syncQuran(),
           true
         );
         await syncDataset(

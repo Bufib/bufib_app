@@ -474,6 +474,11 @@ export type CalendarType = {
   created_at: Date;
   language_code: string;
 };
+export type calendarLegendType = {
+  id: number;
+  type: string;
+  created_at: string; // stored as TEXT in your schema
+};
 
 // Quran
 export type SuraType = {

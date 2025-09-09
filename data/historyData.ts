@@ -1,8 +1,8 @@
 // constants/prophetsData.ts
 
-import { historyDataType, SectionType } from "@/constants/Types";
+import { HistoryDataType, SectionType } from "@/constants/Types";
 
-export const PROPHETS_DATA: historyDataType[] = [
+export const PROPHETS_DATA: HistoryDataType[] = [
   {
     id: "adam",
     nameKey: "prophets.adam",
@@ -90,7 +90,7 @@ export const PROPHETS_DATA: historyDataType[] = [
   },
 ];
 
-export const AHLULBAYT_DATA: historyDataType[] = [
+export const AHLULBAYT_DATA: HistoryDataType[] = [
   { id: "ali", nameKey: "ahlulbayt.ali", route: "/ahlulbayt/ali" },
   { id: "fatima", nameKey: "ahlulbayt.fatima", route: "/ahlulbayt/fatima" },
   { id: "hassan", nameKey: "ahlulbayt.hassan", route: "/ahlulbayt/hassan" },

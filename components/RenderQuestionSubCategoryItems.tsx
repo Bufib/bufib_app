@@ -16,6 +16,7 @@ import { getQuestionsForSubcategory } from "@/db/queries/questions";
 import { LanguageCode, QuestionType } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 function RenderQuestionSubCategoryItems() {
   const { category, subcategory } = useLocalSearchParams<{
@@ -78,7 +79,7 @@ function RenderQuestionSubCategoryItems() {
   if (isLoading) {
     return (
       <View style={styles.centeredContainer}>
-        <ThemedText>Fragen werden geladen...</ThemedText>
+       <LoadingIndicator size={"large"}/>
       </View>
     );
   }

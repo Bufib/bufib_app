@@ -223,6 +223,7 @@
 //      `;
 
 
+
 export const migrationSQL = `
   PRAGMA journal_mode = WAL;
   PRAGMA foreign_keys = ON;         -- harmless even if you have no FKs
@@ -234,11 +235,12 @@ export const migrationSQL = `
     language_code TEXT NOT NULL UNIQUE
   );
 
-  -- CALENDAR TYPE (lookup table; no FK)
-  CREATE TABLE IF NOT EXISTS calendarType (
+  -- CALENDAR Legend (lookup table; no FK)
+  CREATE TABLE IF NOT EXISTS calendarLegend (
     id INTEGER PRIMARY KEY,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    type TEXT NOT NULL UNIQUE
+    legend_type TEXT NOT NULL UNIQUE,
+    language_code TEXT NOT NULL 
   );
 
   -- CALENDAR
@@ -248,12 +250,12 @@ export const migrationSQL = `
     islamic_date TEXT NOT NULL,
     gregorian_date TEXT NOT NULL,
     description TEXT,
-    type TEXT NOT NULL,
+    legend_type TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     language_code TEXT NOT NULL
   );
   -- Helpful indexes for common filters/sorts
-  CREATE INDEX IF NOT EXISTS idx_calendar_type ON calendar(type);
+  CREATE INDEX IF NOT EXISTS idx_calendar_legend_type ON calendar(legend_type);
   CREATE INDEX IF NOT EXISTS idx_calendar_lang_created ON calendar(language_code, created_at);
   CREATE INDEX IF NOT EXISTS idx_calendar_gregorian ON calendar(gregorian_date);
 

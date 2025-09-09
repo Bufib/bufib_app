@@ -102,9 +102,7 @@ export default function Index() {
     return (
       <ThemedView style={[styles.container, styles.centered]}>
         <LoadingIndicator size="large" />
-        <ThemedText style={styles.loadingText}>
-          Fragen werden geladen
-        </ThemedText>
+        <ThemedText style={styles.loadingText}>{t("loading")}</ThemedText>
       </ThemedView>
     );
   }
