@@ -521,7 +521,8 @@ const RenderCalendar: React.FC = () => {
   return (
     <SectionList
       sections={sections}
-      keyExtractor={(item) => String(item.id)}
+      extraData={lang}
+      keyExtractor={(item) => `${lang}-${item.id}`}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={

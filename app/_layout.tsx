@@ -247,7 +247,7 @@ function AppContent() {
             textAlign: "center",
           }}
         >
-          {t("questionsAreBeingLoadedTitle")}
+          {t("loading")}
         </Text>
         <ActivityIndicator
           size={"large"}

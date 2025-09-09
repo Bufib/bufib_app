@@ -60,7 +60,7 @@ export default function RenderQuestionVideosCategories() {
         data={categories}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        style={ { backgroundColor: Colors[colorScheme].background }} 
+        style={{ backgroundColor: Colors[colorScheme].background }}
         contentContainerStyle={styles.flatListStyle}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -110,11 +110,18 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    padding: 15,
-    marginBottom: 15,
-    borderTopWidth: 0.5,
-    borderBottomWidth: 0.5,
+    padding: 20,
+    marginHorizontal: 10,
+    borderWidth: 0.3,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   questionContainer: {
     flex: 1,

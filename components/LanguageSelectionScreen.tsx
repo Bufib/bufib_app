@@ -18,13 +18,13 @@ export default function LanguageSelection() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t("chooseLanguage")}</Text>
+      <Text style={styles.title}>Choose your language</Text>
       {LANGUAGES.map(({ code, label }) => (
         <View key={code} style={styles.button}>
           <Pressable onPress={() => setAppLanguage(code)}>
-            <ThemedText style={{ fontSize: 18, color: Colors.universal.link }}>
+            <Text style={{ fontSize: 20, color: Colors.universal.link }}>
               {label}
-            </ThemedText>
+            </Text>
           </Pressable>
         </View>
       ))}

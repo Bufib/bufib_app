@@ -50,12 +50,13 @@ export const en = {
   font: "font",
   source: "Sources: ",
   copied: "Copied!",
-  loading: "Daten is being loaded!",
+  loading: "Data is being loaded!",
   noData: "No data available",
   confirmBookmarkChange: "Change Bookmark?",
   bookmarkReplaceQuestion: "Do you want to change the Bookmark?",
   replace: "Replace",
   startsAt: "Starts from:",
+  done: "Done",
 
   // Navigation
   knowledge: "Knowledge",
@@ -72,7 +73,7 @@ export const en = {
   updateAvailable: "New update available",
   newAppVersionAvailable:
     "A new version of the app is available in the App Store!",
-  dataBaseUpdated: "The questions and answers has been updated",
+  dataBaseUpdated: "The app data has been updated!",
 
   // Questions
   categories: "Categories",

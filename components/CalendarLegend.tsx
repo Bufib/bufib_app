@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -43,13 +43,7 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
     };
   }, [lang]);
 
-  const keyExtractor = useMemo(
-    () => (name: string, idx: number) => `${name}_${idx}`,
-    []
-  );
-
   const getItemColor = (index: number) => {
-  
     return CALENDARPALLETTE[index % CALENDARPALLETTE.length];
   };
 
@@ -80,7 +74,8 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
       <ThemedText style={[styles.title, {}]}>{t("legend")}</ThemedText>
       <FlatList
         data={legendNames}
-        keyExtractor={keyExtractor}
+        extraData={lang}
+        keyExtractor={(name) => `${lang}:${name.trim().toLowerCase()}`}
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}

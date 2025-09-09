@@ -57,6 +57,7 @@ export const de = {
   bookmarkReplaceQuestion: "Willst du das Lesezeichen Ändern?",
   replace: "Ersetzen",
   startsAt: "Startet von:",
+  done: "Fertig",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -71,7 +72,7 @@ export const de = {
   // Database
   updateAvailable: "Update Verfügbar",
   newAppVersionAvailable: "Eine neue version ist im App-Store verfügbar!",
-  dataBaseUpdated: "Die Frage und Antworten wurden aktualsiert!",
+  dataBaseUpdated: "Die daten wurden aktualsiert!",
 
   // Questions
   categories: "Kategorien",

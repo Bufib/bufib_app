@@ -18,9 +18,12 @@ import { useLevelProgressStore } from "@/stores/levelProgressStore";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageCode } from "@/constants/Types";
+import { router } from "expo-router";
 
 const ProphetText = ({
-  title,
+  titleDE,
+  titleEN,
+  titleAR,
   textContentDE,
   textContentEN,
   textContentAR,
@@ -29,14 +32,16 @@ const ProphetText = ({
   textContentDE: string;
   textContentEN: string;
   textContentAR: string;
-  title: string;
+  titleDE: string;
+  titleEN: string;
+  titleAR: string;
   prophetID: string;
 }) => {
   const colorScheme = useColorScheme() || "light";
   const levelProgress = useLevelProgressStore();
   const { language } = useLanguage();
   const lang = (language ?? "de") as LanguageCode;
-
+  const { t } = useTranslation();
   return (
     <SafeAreaView
       edges={["top"]}
@@ -52,7 +57,7 @@ const ProphetText = ({
       >
         <HeaderLeftBackButton />
         <ThemedText type="title" style={{ marginBottom: 10 }}>
-          {title}
+          {lang === "de" ? titleDE : lang === "en" ? titleEN : titleAR}
         </ThemedText>
       </View>
       <ScrollView
@@ -113,10 +118,13 @@ const ProphetText = ({
             { backgroundColor: Colors.universal.primary },
           ]}
           onPress={() =>
+          {
             levelProgress.markLevelComplete(lang, "prophets", prophetID)
+            router.push("..");
+          }
           }
         >
-          <Text style={styles.doneButtonText}>Fertig</Text>
+          <Text style={styles.doneButtonText}>{t("done")}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

@@ -19,7 +19,6 @@ export const ar = {
   preparing: "تحضير",
   stream: "تدفق",
 
-
   // General
   retry: "إعادة المحاولة",
   errorLoadingData: "حدث خطأ أثناء تحميل البيانات",
@@ -56,6 +55,7 @@ export const ar = {
   confirmBookmarkChange: "تغيير العلامة المرجعية؟",
   bookmarkReplaceQuestion: "هل تريد تغيير العلامة المرجعية؟",
   startsAt: "يبدأ من",
+  done: "مستعد",
 
   // Navigation
   knowledge: "معرفة",
@@ -72,7 +72,7 @@ export const ar = {
   // Database
   updateAvailable: "تحديث جديد متوفر",
   newAppVersionAvailable: "إصدار جديد من التطبيق متوفّر في متجر التطبيقات!",
-  dataBaseUpdated: "تم تحديث الأسئلة والأجوبة",
+  dataBaseUpdated: "تم تحديث التاريخ",
 
   // Questions
   categories: "فئات",
@@ -215,7 +215,6 @@ export const ar = {
   legendHeader: "الدليل:",
   legendToday: "اليوم",
   legendNext: "التالي",
-
 
   legendUpcoming: "قريبًا",
   legendMajorEvent: "حدث رئيسي",

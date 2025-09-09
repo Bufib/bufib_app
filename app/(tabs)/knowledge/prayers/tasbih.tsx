@@ -62,7 +62,7 @@ const getInitialCountersState = () =>
 const prayerPresets = Object.freeze([
   {
     id: "free",
-    name: i18n.t("freeMode"),
+    name: "freeMode",
     description: "freeModeDescription",
     icon: "🔄",
     sequence: [],
