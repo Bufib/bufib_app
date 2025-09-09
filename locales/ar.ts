@@ -204,6 +204,7 @@ export const ar = {
 
   calendarTitle: "التقويم الإسلامي",
   calendarYearRange: "{{range}} هـ",
+  legend: "أسطورة",
 
   filterAll: "جميع الأحداث",
   filterMajor: "رئيسي",
@@ -211,6 +212,9 @@ export const ar = {
 
   legendHeader: "الدليل:",
   legendToday: "اليوم",
+  legendNext: "التالي",
+
+
   legendUpcoming: "قريبًا",
   legendMajorEvent: "حدث رئيسي",
   legendMinorEvent: "حدث ثانوي",

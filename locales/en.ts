@@ -203,13 +203,13 @@ export const en = {
   // calendar:
   calendarTitle: "Islamic Calendar",
   calendarYearRange: "{{range}} AH" /* example: “1445–1446 AH” */,
-
+  legend: "LEGEND",
   filterAll: "All Events",
   filterMajor: "Major",
   filterMinor: "Minor",
-
   legendHeader: "Legend:",
   legendToday: "Today",
+  legendNext: "Next",
   legendUpcoming: "Upcoming",
   legendMajorEvent: "Major Event",
   legendMinorEvent: "Minor Event",
@@ -232,8 +232,6 @@ export const en = {
   lastRead: "Last read",
   juz: "Juz",
   sura: "Sura",
-
-
 
   // History
   sections: {

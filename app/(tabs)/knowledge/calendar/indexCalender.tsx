@@ -1,8 +1,8 @@
 import React from "react";
-import RenderCalender from "@/components/RenderCalender";
+import RenderCalendar from "@/components/RenderCalendar";
 
 const indexCalender = () => {
-  return <RenderCalender />;
+  return <RenderCalendar />;
 };
 
 export default indexCalender;

@@ -302,7 +302,7 @@ export type PrayerType = {
   name: string;
   arabic_title?: string;
   category_id?: number;
-  created_at: Date;
+  created_at: string;
   updated_at: Date;
   translated_languages?: string[];
   arabic_text?: string;
@@ -319,7 +319,7 @@ export type PrayerWithTranslationType = {
   translated_introduction?: string;
   translated_text?: string;
   source?: string;
-  created_at: Date;
+  created_at: string;
   updated_at: Date;
   translated_notes?: string;
 };
@@ -467,17 +467,18 @@ export type QuestionsFromUserType = {
 export type CalendarType = {
   id: number;
   title: string;
-  islamic_date: string;
-  gregorian_date: Date;
+  islamic_date: any;
+  gregorian_date: any;
   description: string;
   type: string;
-  created_at: Date;
+  created_at: string;
   language_code: string;
+  legend_type: string
 };
 export type calendarLegendType = {
   id: number;
   type: string;
-  created_at: string; // stored as TEXT in your schema
+  created_at: string; 
 };
 
 // Quran

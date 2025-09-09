@@ -23,7 +23,7 @@ export const Colors = {
     loadingIndicator: "#000",
     error: "#d32f2f",
     defaultIcon: "#000",
-
+    devider: "rgba(0,0,0,0.1)",
     // Switch
     trackColor: "#767577",
     thumbColor: "#f4f3f4",
@@ -65,6 +65,7 @@ export const Colors = {
     loadingIndicator: "#fff",
     error: "#f44336",
     defaultIcon: "#fff",
+    devider: "rgba(255,255,255,0.2)",
 
     // Switch
     trackColor: "#057958",
@@ -101,3 +102,11 @@ export const Colors = {
     chatBubbleAnswer: "#b3e1c1",
   },
 };
+
+
+export const CALENDARPALLETTE = [
+  "#9ACD32", 
+  "#A9DFBF", 
+  "#E74C3C", 
+  "#F7DC6F", 
+];

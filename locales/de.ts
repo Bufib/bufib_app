@@ -195,21 +195,21 @@ export const de = {
   english: "English",
   arabic: "العربية",
   languages: {
-      en: "English",
-      de: "Deutsch",
-      ar: "العربية",
-    },
+    en: "English",
+    de: "Deutsch",
+    ar: "العربية",
+  },
 
   // Calendar
   calendarTitle: "Islamischer Kalender",
   calendarYearRange: "{{range}} n. H.",
-
+  legend: "LEGENDE",
   filterAll: "Alle Ereignisse",
   filterMajor: "Hauptfest",
   filterMinor: "Nebentag",
-
   legendHeader: "Legende:",
   legendToday: "Heute",
+  legendNext: "Demnächst",
   legendUpcoming: "Bevorstehend",
   legendMajorEvent: "Großes Ereignis",
   legendMinorEvent: "Kleines Ereignis",
@@ -234,7 +234,7 @@ export const de = {
   sura: "Sura",
 
   // History
-    sections: {
+  sections: {
     prophets: "Propheten",
     ahlulbayt: "Ahlul-Bayt",
     ashura: "Ashura",
@@ -278,7 +278,7 @@ export const de = {
     day8: "Tag 8",
     day9: "Tag 9",
     day10: "Tag 10",
-  }
+  },
 } as const;
 
 export default de;
