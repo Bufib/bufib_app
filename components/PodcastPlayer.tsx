@@ -918,27 +918,27 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
     ]).start();
   }, []);
 
-  // Pulse animation for play button
-  const startPulseAnimation = () => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  };
+  // // Pulse animation for play button
+  // const startPulseAnimation = () => {
+  //   Animated.loop(
+  //     Animated.sequence([
+  //       Animated.timing(pulseAnim, {
+  //         toValue: 1.1,
+  //         duration: 1000,
+  //         useNativeDriver: true,
+  //       }),
+  //       Animated.timing(pulseAnim, {
+  //         toValue: 1,
+  //         duration: 1000,
+  //         useNativeDriver: true,
+  //       }),
+  //     ])
+  //   ).start();
+  // };
 
-  const stopPulseAnimation = () => {
-    pulseAnim.setValue(1);
-  };
+  // const stopPulseAnimation = () => {
+  //   pulseAnim.setValue(1);
+  // };
 
   // On podcast change: reset UI state and check for a cached file
   useEffect(() => {
@@ -971,14 +971,14 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
     }
   }, [status?.isLoaded, didInitiatePlayback, player]);
 
-  // Pulse animation control
-  useEffect(() => {
-    if (status?.playing) {
-      startPulseAnimation();
-    } else {
-      stopPulseAnimation();
-    }
-  }, [status?.playing]);
+  // // Pulse animation control
+  // useEffect(() => {
+  //   if (status?.playing) {
+  //     startPulseAnimation();
+  //   } else {
+  //     stopPulseAnimation();
+  //   }
+  // }, [status?.playing]);
 
   // When playback finishes, reset play intent
   useEffect(() => {
@@ -1347,7 +1347,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
                   </TouchableOpacity>
 
                   {/* Play/Pause Button */}
-                  <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                  <View style={{}}>
                     <TouchableOpacity
                       style={[
                         styles.playButton,
@@ -1367,7 +1367,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
                         />
                       </LinearGradient>
                     </TouchableOpacity>
-                  </Animated.View>
+                  </View>
 
                   {/* Skip Forward */}
                   <TouchableOpacity

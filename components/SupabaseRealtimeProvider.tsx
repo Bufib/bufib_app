@@ -349,6 +349,7 @@ export const SupabaseRealtimeProvider = ({
           }
         }
       )
+
       .subscribe((status, err) => {
         if (err) {
           console.error(

@@ -6,7 +6,6 @@ export const de = {
   newsArticlesTitle: "Artikel",
   isExternalLink: "Externer Link",
   errorLoadingArticle: "Es ist ein Fehler beim Laden des Artikels aufgetreten!",
-
   // News
   newsTitle: "Neuigkeiten",
   newsEmpty: "Es gibt derzeit noch keine Neuigkeiten!",
