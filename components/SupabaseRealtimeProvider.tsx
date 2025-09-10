@@ -135,42 +135,6 @@ export const SupabaseRealtimeProvider = ({
    * - On INSERT/UPDATE: patch the existing cache pages directly
   //  */
 
-  // //! Invalidates the whoel query
-  // useEffect(() => {
-  //   const newsChannel = supabase
-  //     .channel("all_news_changes")
-  //     .on(
-  //       "postgres_changes",
-  //       {
-  //         event: "*",
-  //         schema: "public",
-  //         table: "news",
-  //       },
-  //       async (payload) => {
-  //         // For INSERT, UPDATE or DELETE, just invalidate the whole news query:
-  //         await queryClient.invalidateQueries({
-  //           queryKey: ["news"],
-  //           refetchType: "all",
-  //         });
-
-  //         // If you still want to show the “new data” banner for non-admins:
-  //         if (
-  //           payload.eventType === "INSERT" ||
-  //           payload.eventType === "UPDATE"
-  //         ) {
-  //           if (!isAdmin) setHasNewNewsData(true);
-  //         }
-  //       }
-  //     )
-  //     .subscribe();
-
-  //   return () => {
-  //     supabase
-  //       .removeChannel(newsChannel)
-  //       .catch((err) => console.error("Error removing news channel", err));
-  //   };
-  // }, [queryClient, isAdmin]);
-
   /**
    * News subscription - INSERT shows button, UPDATE/DELETE refresh immediately
    */

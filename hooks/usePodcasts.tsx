@@ -188,8 +188,8 @@
 //     }).catch(() => {});
 //   }, []);
 
-//   // --- 1) Infinite paginated list from `episodes` table ---
-//   const queryKey: QueryKey = ["episodes", language];
+//   // --- 1) Infinite paginated list from `podcasts` table ---
+//   const queryKey: QueryKey = ["podcasts", language];
 
 //   const infiniteQuery = useInfiniteQuery<
 //     PodcastType[], // data page type
@@ -224,18 +224,18 @@
 //     staleTime: 5 * 60 * 1000, // 5 minutes
 //   });
 
-//   // --- 3) Real-time subscription to INSERT, UPDATE, DELETE on `episodes` ---
+//   // --- 3) Real-time subscription to INSERT, UPDATE, DELETE on `podcasts` ---
 //   useEffect(() => {
-//     // Create a Realtime channel for the "episodes" table
+//     // Create a Realtime channel for the "podcasts" table
 //     const channel = supabase
-//       .channel("public:episodes") // Arbitrary channel name
+//       .channel("public:podcasts") // Arbitrary channel name
 //       .on(
 //         "postgres_changes",
-//         { event: "INSERT", schema: "public", table: "episodes" },
+//         { event: "INSERT", schema: "public", table: "podcasts" },
 //         (payload) => {
 //           const newEpisode = payload.new as PodcastType;
 //           qc.setQueryData<InfiniteData<PodcastType[]> | undefined>(
-//             ["episodes"],
+//             ["podcasts"],
 //             (old) => {
 //               if (!old) return old;
 //               // Prepend the new episode to page 0
@@ -251,11 +251,11 @@
 //       )
 //       .on(
 //         "postgres_changes",
-//         { event: "UPDATE", schema: "public", table: "episodes" },
+//         { event: "UPDATE", schema: "public", table: "podcasts" },
 //         (payload) => {
 //           const updatedEpisode = payload.new as PodcastType;
 //           qc.setQueryData<InfiniteData<PodcastType[]> | undefined>(
-//             ["episodes"],
+//             ["podcasts"],
 //             (old) => {
 //               if (!old) return old;
 //               // For each page, replace the episode with the matching `id`
@@ -274,11 +274,11 @@
 //       )
 //       .on(
 //         "postgres_changes",
-//         { event: "DELETE", schema: "public", table: "episodes" },
+//         { event: "DELETE", schema: "public", table: "podcasts" },
 //         (payload) => {
 //           const deletedEpisode = payload.old as PodcastType;
 //           qc.setQueryData<InfiniteData<PodcastType[]> | undefined>(
-//             ["episodes"],
+//             ["podcasts"],
 //             (old) => {
 //               if (!old) return old;
 //               // Filter out any episode whose id matches the deleted one
@@ -346,7 +346,7 @@
 
 //   // --- RETURN EVERYTHING THE CONSUMER NEEDS (no streaming) ---
 //   return {
-//     ...infiniteQuery, // pages of episodes
+//     ...infiniteQuery, // pages of podcasts
 //     download: downloadMutation, // mutation to download into cache
 //     getCachedUri, // helper to check a local cache file
 //   };
@@ -356,7 +356,7 @@
 // export const remoteUrlFor = (filename: string) =>
 //   `https://podcast-files.pages.dev/${encodeURIComponent(filename)}`;
 
-//! Supabase for stream and cloud 
+//! Supabase for stream and cloud
 import { PodcastType } from "@/constants/Types";
 import { supabase } from "@/utils/supabase";
 import {
@@ -567,7 +567,7 @@ export function usePodcasts(language: string) {
   }, []);
 
   // --- 1) Infinite paginated list from `podcasts` table ---
-  const queryKey: QueryKey = ["episodes", language];
+  const queryKey: QueryKey = ["podcasts", language];
 
   const infiniteQuery = useInfiniteQuery<
     PodcastType[], // data page type
@@ -599,79 +599,7 @@ export function usePodcasts(language: string) {
     staleTime: 5 * 60 * 1000,
   });
 
-  // --- 3) Real-time subscription to INSERT, UPDATE, DELETE on `episodes` ---
-  useEffect(() => {
-    const channel = supabase
-      .channel("public:episodes")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "episodes" },
-        (payload) => {
-          const newEpisode = payload.new as PodcastType;
-          qc.setQueryData<InfiniteData<PodcastType[]> | undefined>(
-            ["episodes"],
-            (old) => {
-              if (!old) return old;
-              const firstPage = old.pages[0] || [];
-              const updatedFirstPage = [newEpisode, ...firstPage];
-              return {
-                ...old,
-                pages: [updatedFirstPage, ...old.pages.slice(1)],
-              };
-            }
-          );
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "episodes" },
-        (payload) => {
-          const updatedEpisode = payload.new as PodcastType;
-          qc.setQueryData<InfiniteData<PodcastType[]> | undefined>(
-            ["episodes"],
-            (old) => {
-              if (!old) return old;
-              const updatedPages = old.pages.map((page) =>
-                page.map((ep) =>
-                  ep.id === updatedEpisode.id ? updatedEpisode : ep
-                )
-              );
-              return {
-                ...old,
-                pages: updatedPages,
-              };
-            }
-          );
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "episodes" },
-        (payload) => {
-          const deletedEpisode = payload.old as PodcastType;
-          qc.setQueryData<InfiniteData<PodcastType[]> | undefined>(
-            ["episodes"],
-            (old) => {
-              if (!old) return old;
-              const filteredPages = old.pages.map((page) =>
-                page.filter((ep) => ep.id !== deletedEpisode.id)
-              );
-              return {
-                ...old,
-                pages: filteredPages,
-              };
-            }
-          );
-        }
-      )
-      .subscribe();
-
-    return () => {
-      channel.unsubscribe();
-    };
-  }, [qc]);
-
-  // --- 4) Download-to-cache mutation (no streaming) ---
+  // --- 3) Download-to-cache mutation (no streaming) ---
   const downloadMutation = useMutation<
     string, // on success, returns localUri
     Error,
@@ -702,7 +630,7 @@ export function usePodcasts(language: string) {
     },
   });
 
-  // --- 5) Check if a file is already cached locally ---
+  // --- 4) Check if a file is already cached locally ---
   const getCachedUri = useCallback(
     async (filename: string): Promise<string | null> => {
       if (!filename) return null;
