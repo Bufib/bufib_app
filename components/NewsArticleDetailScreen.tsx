@@ -473,7 +473,7 @@ export default function NewsArticleDetailScreen({
       />
       {scrollY > 200 && (
         <TouchableOpacity style={styles.arrowUp} onPress={scrollToTop}>
-          <AntDesign name="arrowup" size={30} color={Colors.universal.third} />
+            <AntDesign name="up" size={28} color="white" />
         </TouchableOpacity>
       )}
     </SafeAreaView>
@@ -636,6 +636,7 @@ const styles = StyleSheet.create({
     borderWidth: 2.5,
     borderRadius: 99,
     padding: 5,
-    borderColor: Colors.universal.third,
+    backgroundColor: Colors.universal.primary,
+    borderColor: Colors.universal.primary,
   },
 });

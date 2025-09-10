@@ -33,32 +33,43 @@ export const TodoList = ({
 
   if (!todos || todos.length === 0) {
     return (
-      <View style={styles.emptyPrayerForDay}>
+      <View
+        style={[
+          styles.emptyPrayerForDay,
+
+          isArabic()
+            ? {
+                flexDirection: "row-reverse",
+              }
+            : {
+                flexDirection: "row",
+              },
+        ]}
+      >
         <Ionicons
           name="calendar-outline"
           size={emptyIconSize}
           color={colorScheme === "dark" ? "#666" : "#999"}
-          style={[styles.emptyDayIcon, { marginBottom: emptyGap }]}
+          style={styles.emptyDayIcon}
         />
+
         <ThemedText
           style={[
             styles.emptyDayText,
             { fontSize: emptyTextSize, marginBottom: emptyGap },
           ]}
         >
-          {t("noPrayersForDay")}
-        </ThemedText>
-        <TouchableOpacity
-          style={[
-            styles.emptyDayAddButton,
-            { backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0" },
-          ]}
-          onPress={onShowAddModal}
-        >
-          <ThemedText style={styles.emptyDayAddText}>
+          {t("noPlansForToday")}{" "}
+          <ThemedText
+            onPress={onShowAddModal}
+            style={[
+              styles.addButton,
+              { color: Colors[colorScheme].text, fontWeight: 600 },
+            ]}
+          >
             {t("addWeekly")}
           </ThemedText>
-        </TouchableOpacity>
+        </ThemedText>
       </View>
     );
   }
@@ -127,7 +138,7 @@ export const TodoList = ({
 
 const styles = StyleSheet.create({
   scrollStyle: {
-    flex: 1
+    flex: 1,
   },
   scrollContent: {
     gap: 5,
@@ -166,17 +177,29 @@ const styles = StyleSheet.create({
   },
   emptyPrayerForDay: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
+    gap: 10,
+  },
+  emptyDayText: {
+    opacity: 0.8,
+    flexWrap: "wrap",
+    lineHeight: 25,
+  },
+  addButton: {
+    fontSize: 18,
+  },
+  inlineAddChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
+    fontSize: 14,
+    fontWeight: "600",
+    overflow: "hidden", // helps the rounded bg render nicely
   },
   emptyDayIcon: {},
-  emptyDayText: {
-    opacity: 0.7,
-    textAlign: "center",
-  },
+
   emptyDayAddButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
     borderRadius: 20,
   },
   emptyDayAddText: {

@@ -122,7 +122,7 @@ export const ar = {
   enterPrayer: "أدخل الصلاة...",
   add: "إضافة",
   cancel: "إلغاء",
-  noPrayersForDay: "لا توجد صلوات لهذا اليوم",
+  noPlansForToday: "لا توجد خطط لهذا اليوم",
   undo: "الغاء الكل",
   replace: "استبدال",
   // Days of week

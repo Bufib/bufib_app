@@ -34,7 +34,7 @@ export async function getAllCalendarLegend(
       SELECT id, legend_type, created_at, language_code
       FROM calendarLegend
       WHERE language_code = ?
-      ORDER BY LOWER(legend_type);
+      ORDER BY legend_type;
       `,
       [language]
     );
@@ -55,7 +55,7 @@ export async function getCalendarLegendTypeNames(
       SELECT legend_type
       FROM calendarLegend
       WHERE language_code = ?
-      ORDER BY LOWER(legend_type);
+      ORDER BY legend_type;
       `,
       [language]
     );
@@ -81,7 +81,7 @@ export async function getCalendarEventsCount(
        AND c.language_code = cl.language_code
       WHERE cl.language_code = ?
       GROUP BY cl.legend_type
-      ORDER BY LOWER(cl.legend_type);
+      ORDER BY cl.legend_type;
       `,
       [language]
     );

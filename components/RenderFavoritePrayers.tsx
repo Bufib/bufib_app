@@ -22,10 +22,12 @@ import { Colors } from "@/constants/Colors";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 
 const FavoritePrayersScreen: React.FC = () => {
   const { t } = useTranslation();
-
+  const { refreshTriggerFavorites } =
+    useRefreshFavorites();
   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [prayers, setPrayers] = useState<PrayerType[]>([]);
@@ -147,6 +149,7 @@ const FavoritePrayersScreen: React.FC = () => {
         ) : (
           <FlatList
             data={prayers}
+            extraData={refreshTriggerFavorites}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderPrayerCard}
             contentContainerStyle={styles.prayerList}

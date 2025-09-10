@@ -465,7 +465,7 @@ export default function HomeScreen() {
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];
   const podcasts: PodcastType[] = podcastPages?.pages.flat() ?? [];
 
-  //! Clear database function (commented out for production)
+  // //! Clear database function (commented out for production)
   // async function clearDatabase(dbName = "bufib.db") {
   //   const dbPath = `${FileSystem.documentDirectory}SQLite/${dbName}`;
   //   try {
@@ -650,9 +650,14 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* Database Visualization Button (commented out for production) */}
+        {/* Database Visualization Button  */}
         {/* <Button
           onPress={() => router.push("./home/visualizeDatabase")}
+          title="db"
+        /> */}
+        {/* Delete Database  */}
+        {/* <Button
+          onPress={() => clearDatabase()}
           title="db"
         /> */}
 
@@ -665,7 +670,7 @@ export default function HomeScreen() {
                 {
                   color: Colors.universal.third,
                   paddingBottom: 3,
-                  shadowColor: Colors.universal.third
+                  shadowColor: Colors.universal.third,
                 },
                 styles.titleShadow,
               ]}
@@ -822,6 +827,7 @@ const styles = StyleSheet.create({
   newsContainer: {
     flex: 1,
     gap: 15,
+    marginBottom: 40
   },
   newsTitleContainer: {
     flexDirection: "row",

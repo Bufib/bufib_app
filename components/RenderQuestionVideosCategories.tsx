@@ -106,6 +106,8 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     paddingTop: 10,
+    gap: 15
+
   },
   item: {
     flexDirection: "row",

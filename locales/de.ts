@@ -121,7 +121,7 @@ export const de = {
   enterPrayer: "Gib dein Todo ein...",
   add: "Hinzufügen",
   cancel: "Abbrechen",
-  noPrayersForDay: "Keine Gebete für diesen Tag",
+  noPlansForToday: "Es sind noch keine Pläne für diesen Tag vorhanden!",
   undo: "Alle zurücksetzen",
 
   // Days of week
