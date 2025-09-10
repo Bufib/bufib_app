@@ -167,7 +167,8 @@ export const en = {
 
   // No internet
   noInternetTitle: "No Internet Connection",
-  noInternetMessage: "Some features may not be available!",
+  internetBackTitle: "Connection restored",
+  noInternetMessage: "You will not receive any updates during this time!",
 
   // Account
   successDeletion: "Account deleted successfully!",

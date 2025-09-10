@@ -100,13 +100,8 @@ export const Colors = {
     favorite: "gold",
     chatBubbleQuestion: "#b7d6ef",
     chatBubbleAnswer: "#b3e1c1",
+    error: "#f44336",
   },
 };
 
-
-export const CALENDARPALLETTE = [
-  "#9ACD32", 
-  "#A9DFBF", 
-  "#E74C3C", 
-  "#F7DC6F", 
-];
+export const CALENDARPALLETTE = ["#9ACD32", "#A9DFBF", "#E74C3C", "#F7DC6F"];

@@ -154,7 +154,6 @@ const Settings = () => {
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
-          <NoInternet showToast={false} showUI={true} />
           <View style={styles.section}>
             <View style={[styles.settingRow, isArabic() && styles.rtl]}>
               <View>

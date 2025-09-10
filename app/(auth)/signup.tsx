@@ -436,7 +436,6 @@ export default function SignUpScreen() {
         style={styles.scrollViewContainer}
         contentContainerStyle={styles.scrollViewContent}
       >
-        <NoInternet showUI={true} showToast={false} />
         <View style={[styles.contentContainer, themeStyles.contrast]}>
           <ThemedText style={styles.title} type="subtitle">
             Erstelle jetzt einen kostenlosen Account, um deine Fragen versenden

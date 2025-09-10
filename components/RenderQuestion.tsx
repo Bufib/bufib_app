@@ -131,7 +131,6 @@ const RenderQuestion = ({
         contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
       >
-        <NoInternet showUI={true} showToast={false} />
         <View style={[styles.questionContainer, themeStyles.contrast]}>
           <ThemedText style={[styles.questionText, { fontSize, lineHeight }]}>
             {question?.question}

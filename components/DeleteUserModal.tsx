@@ -186,7 +186,6 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
         <View style={[styles.modalContent, themeStyles.defaultBackgorundColor]}>
           {showConfirmation && (
             <>
-              <NoInternet showUI={true} showToast={false} />
               <ThemedText style={styles.title} type="title">
                 Account Löschen
               </ThemedText>

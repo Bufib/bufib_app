@@ -165,7 +165,8 @@ export const de = {
 
   // No internet
   noInternetTitle: "Keine Internetverbindung",
-  noInternetMessage: "Einige Funktionen sind möglicherweise nicht verfügbar!",
+  internetBackTitle: "Verbindung wiederhergestellt",
+  noInternetMessage: "Du erhälst keine updates in dieser Zeit!",
 
   // Account
   successDeletion: "Account erfolgreich gelöscht!",

@@ -298,7 +298,6 @@ export default function AskQuestionScreen() {
             <ThemedText style={styles.errorText}>{error}</ThemedText>
           </ThemedView>
         )}
-        <NoInternet showUI={true} showToast={false} />
         <View style={[styles.formContainer, themeStyles.contrast]}>
           {/* TITLE */}
           <Controller

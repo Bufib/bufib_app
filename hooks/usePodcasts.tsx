@@ -445,7 +445,7 @@ export async function cleanupCache(): Promise<void> {
     }
 
     const allNames = await FileSystem.readDirectoryAsync(dirUri);
-    const audioExtensions = [".mp3"]; // keep mp3; change if you move to .m4a/.opus later
+    const audioExtensions = [".mp3", ".m4a"]; 
     const audioFileNames = allNames.filter((name) =>
       audioExtensions.some((ext) => name.toLowerCase().endsWith(ext))
     );
@@ -580,7 +580,7 @@ export function usePodcasts(language: string) {
     queryFn: async ({ pageParam = 0 }) => {
       const { data, error } = await supabase
         .from("podcasts")
-        .select("*", { count: "exact" })
+        .select("*")
         .eq("language_code", language)
         .order("created_at", { ascending: false })
         .range(pageParam, pageParam + PAGE_SIZE - 1);

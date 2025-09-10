@@ -167,7 +167,8 @@ export const ar = {
 
   // No internet
   noInternetTitle: "لا يوجد اتصال بالإنترنت",
-  noInternetMessage: "قد تكون بعض الميزات غير متاحة!",
+  internetBackTitle: "تمت استعادة الاتصال",
+  noInternetMessage: "لن تتلقى أي تحديثات خلال هذا الوقت",
 
   successDeletion: "تم حذف الحساب بنجاح!",
 

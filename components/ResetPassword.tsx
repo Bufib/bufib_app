@@ -575,7 +575,6 @@ export function ResetPassword() {
         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         enabled
       >
-        <NoInternet showUI={true} showToast={false} />
         {/* CODE FIELD */}
         <Controller
           control={control}

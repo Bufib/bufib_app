@@ -178,7 +178,6 @@ export default function LoginScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.formWrapper}>
-          <NoInternet showUI={true} showToast={false} />
           <View style={[styles.contentContainer, themeStyles.contrast]}>
             <ThemedText style={styles.title} type="title">
               Benutzeranmeldung

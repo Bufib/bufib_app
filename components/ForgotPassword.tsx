@@ -90,7 +90,6 @@ export function ForgotPassword() {
             keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
             enabled
           >
-        <NoInternet showUI={true} showToast={false} />
         <Controller
           control={control}
           name="email"

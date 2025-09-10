@@ -53,7 +53,6 @@ export default function AddNews() {
 
   const renderForm = () => (
     <ThemedView>
-      <NoInternet showToast={false} showUI={true} />
       <View style={[styles.card, themeStyles.contrast]}>
         {/* Title Input */}
         <ThemedText style={styles.label}>Title</ThemedText>
