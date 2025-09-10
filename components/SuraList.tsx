@@ -580,10 +580,10 @@ const QuranNavigation: React.FC = () => {
         style={[
           styles.card,
           {
-            backgroundColor: Colors[colorScheme].contrast,
+            backgroundColor: Colors[colorScheme].background,
           },
         ]}
-        activeOpacity={0.8}
+        activeOpacity={0.6}
         onPress={() =>
           router.push({
             pathname: "/knowledge/quran/sura",
@@ -593,9 +593,30 @@ const QuranNavigation: React.FC = () => {
           })
         }
       >
-        <View style={styles.cardContent}>
+        <View
+          style={[
+            styles.cardContent,
+
+            isArabic()
+              ? {
+                  flexDirection: "row-reverse",
+                }
+              : { flexDirection: "row" },
+          ]}
+        >
           {/* Number Badge */}
-          <View style={styles.numberSection}>
+          <View
+            style={[
+              styles.numberSection,
+              isArabic()
+                ? {
+                    marginLeft: 25,
+                  }
+                : {
+                    marginRight: 20,
+                  },
+            ]}
+          >
             <LinearGradient
               colors={isMakki ? ["#4A90E2", "#6BA3E5"] : ["#2ECC71", "#52D681"]}
               style={styles.numberBadge}
@@ -607,7 +628,7 @@ const QuranNavigation: React.FC = () => {
           {/* Content Section */}
           <View style={styles.contentSection}>
             <ThemedText
-              style={[styles.suraName, lang === "ar" && styles.suraNameAr]}
+              style={[styles.suraName, isArabic() && styles.suraNameAr]}
             >
               {name}
             </ThemedText>
@@ -617,13 +638,12 @@ const QuranNavigation: React.FC = () => {
                 style={[
                   styles.metaBadge,
                   {
-                    backgroundColor:
-                      colorScheme === "dark" ? "#2a3142" : "#f3f4f6",
+                    backgroundColor: Colors[colorScheme].contrast,
                   },
                 ]}
               >
                 <ThemedText style={[styles.metaText]}>
-                  {item.nbAyat} {t("ayatCount")}
+                  {item.nbAyat} {t("ayatCount").toUpperCase()}
                 </ThemedText>
               </View>
 
@@ -639,26 +659,38 @@ const QuranNavigation: React.FC = () => {
                     { color: isMakki ? "#4A90E2" : "#2ECC71" },
                   ]}
                 >
-                  {isMakki ? t("makki") : t("madani")}
+                  {isMakki
+                    ? t("makki").toUpperCase()
+                    : t("madani").toUpperCase()}
                 </Text>
               </View>
             </View>
           </View>
 
           {/* Arrow */}
-          <View style={styles.arrowSection}>
+          <View
+            style={[
+              styles.arrowSection,
+              isArabic()
+                ? {
+                    marginRight: 15,
+                  }
+                : {
+                    marginLeft: 12,
+                  },
+            ]}
+          >
             <View
               style={[
                 styles.arrowCircle,
                 {
-                  backgroundColor:
-                    colorScheme === "dark" ? "#2a3142" : "#f7f9fc",
+                  backgroundColor: Colors[colorScheme].contrast,
                 },
               ]}
             >
               <Entypo
                 name={isArabic() ? "chevron-small-left" : "chevron-small-right"}
-                size={24}
+                size={30}
                 color={Colors[colorScheme].defaultIcon}
               />
             </View>
@@ -680,7 +712,7 @@ const QuranNavigation: React.FC = () => {
         style={[
           styles.juzCard,
           {
-            backgroundColor: Colors[colorScheme].contrast,
+            backgroundColor: Colors[colorScheme].background,
           },
         ]}
         activeOpacity={0.8}
@@ -691,19 +723,20 @@ const QuranNavigation: React.FC = () => {
           })
         }
       >
-        <LinearGradient
-          colors={["#ACE1AF", "#50C878"]}
-          style={styles.juzGradientBg}
+        <View
+          style={[
+            styles.juzContent,
+            isArabic()
+              ? {
+                  flexDirection: "row-reverse",
+                }
+              : { flexDirection: "row" },
+          ]}
         >
-          <View style={styles.juzPattern}></View>
-        </LinearGradient>
-
-        <View style={styles.juzContent}>
-          <View style={styles.juzHeader}>
+          <View style={[styles.juzNameAndNumber, {}]}>
             <ThemedText style={styles.juzNumber}>
               {t("juz")} {juzNumber}
             </ThemedText>
-            <View style={styles.juzDivider} />
           </View>
 
           <View style={styles.juzInfo}>
@@ -712,12 +745,32 @@ const QuranNavigation: React.FC = () => {
             </ThemedText>
           </View>
 
-          <View style={styles.juzArrow}>
-            <Entypo
-              name={isArabic() ? "chevron-small-left" : "chevron-small-right"}
-              size={20}
-              color="#000"
-            />
+          <View
+            style={[
+              styles.arrowSection,
+              isArabic()
+                ? {
+                    marginRight: 15,
+                  }
+                : {
+                    marginLeft: 12,
+                  },
+            ]}
+          >
+            <View
+              style={[
+                styles.arrowCircle,
+                {
+                  backgroundColor: Colors[colorScheme].contrast,
+                },
+              ]}
+            >
+              <Entypo
+                name={isArabic() ? "chevron-small-left" : "chevron-small-right"}
+                size={30}
+                color={Colors[colorScheme].defaultIcon}
+              />
+            </View>
           </View>
         </View>
       </TouchableOpacity>
@@ -734,7 +787,6 @@ const QuranNavigation: React.FC = () => {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Modern Header */}
       <TouchableOpacity
         style={styles.headerCard}
         activeOpacity={lastSuraRow ? 0.85 : 1}
@@ -750,7 +802,7 @@ const QuranNavigation: React.FC = () => {
         <LinearGradient
           colors={
             colorScheme === "dark"
-              ? ["#2a3142", "#1a1f2e"]
+              ? ["#2a3142", "#34495e"]
               : ["#4A90E2", "#6BA3E5"]
           }
           start={{ x: 0, y: 0 }}
@@ -790,7 +842,7 @@ const QuranNavigation: React.FC = () => {
           style={[
             styles.tabBackground,
             {
-              backgroundColor: colorScheme === "dark" ? "#1a1f2e" : "#f3f4f6",
+              backgroundColor: colorScheme === "dark" ? "#34495e" : "#F0F8FF",
             },
           ]}
         >
@@ -825,7 +877,6 @@ const QuranNavigation: React.FC = () => {
               {t("sura")} (114)
             </ThemedText>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={styles.tab}
             onPress={() => setViewMode("juz")}
@@ -847,15 +898,18 @@ const QuranNavigation: React.FC = () => {
       {viewMode === "sura" ? (
         <FlashList
           data={suras}
+          extraData={[colorScheme, lang]}
           renderItem={renderSuraItem}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
+          style={{}}
           contentContainerStyle={styles.listContent}
           estimatedItemSize={111}
         />
       ) : (
         <FlashList
           data={juzList}
+          extraData={[colorScheme, lang]}
           renderItem={renderJuzItem}
           keyExtractor={(item) => item.juz.toString()}
           showsVerticalScrollIndicator={false}
@@ -879,11 +933,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 24,
     overflow: "hidden",
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
   },
 
   headerGradient: {
@@ -950,9 +999,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
 
-  // Tab Styles
   tabContainer: {
-    paddingHorizontal: 16,
+    marginHorizontal: 16,
     marginBottom: 16,
   },
 
@@ -961,6 +1009,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 4,
     position: "relative",
+    borderWidth: 0.5,
+
   },
 
   tabIndicator: {
@@ -974,6 +1024,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    
   },
 
   tab: {
@@ -995,17 +1046,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  // List Styles
   listContent: {
-    paddingHorizontal: 16,
     paddingBottom: 24,
+    paddingHorizontal: 10,
   },
 
-  // Sura Card Styles
   card: {
-    borderRadius: 16,
-    marginBottom: 12,
-    borderWidth: 1,
+    borderBottomWidth: 0.5,
     overflow: "hidden",
     elevation: 2,
     shadowColor: "#000",
@@ -1015,14 +1062,11 @@ const styles = StyleSheet.create({
   },
 
   cardContent: {
-    flexDirection: "row",
     alignItems: "center",
     padding: 16,
   },
 
-  numberSection: {
-    marginRight: 16,
-  },
+  numberSection: {},
 
   numberBadge: {
     width: 48,
@@ -1040,19 +1084,21 @@ const styles = StyleSheet.create({
 
   contentSection: {
     flex: 1,
+    justifyContent: "center",
   },
 
   suraName: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: "700",
     marginBottom: 8,
     letterSpacing: 0.2,
   },
 
   suraNameAr: {
-    fontSize: 19,
+    fontSize: 20,
     textAlign: "right",
     fontWeight: "600",
+    letterSpacing: 0,
   },
 
   metaContainer: {
@@ -1083,9 +1129,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  arrowSection: {
-    marginLeft: 12,
-  },
+  arrowSection: {},
 
   arrowCircle: {
     width: 32,
@@ -1095,33 +1139,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  // Juz Card Styles
   juzCard: {
-    borderRadius: 16,
-    marginBottom: 12,
-    borderWidth: 1,
+    borderBottomWidth: 0.5,
     overflow: "hidden",
-    elevation: 3,
+    elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.05,
     shadowRadius: 8,
-    height: 100,
-  },
-
-  juzGradientBg: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-
-  juzPattern: {
-    position: "absolute",
-    right: 20,
-    top: "50%",
-    marginTop: -16,
   },
 
   juzContent: {
@@ -1131,22 +1156,18 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
-  juzHeader: {
-    flex: 1,
+  juzNameAndNumber: {
+    width: 90,
+    alignItems: "center",
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 10,
   },
 
   juzNumber: {
-    fontSize: 22,
-    fontWeight: "800",
+    fontSize: 20,
+    fontWeight: "700",
     marginBottom: 4,
-  },
-
-  juzDivider: {
-    width: 40,
-    height: 3,
-    backgroundColor: "#000",
-    borderRadius: 2,
-    marginTop: 8,
   },
 
   juzInfo: {
@@ -1155,21 +1176,11 @@ const styles = StyleSheet.create({
   },
 
   juzSuraName: {
-    fontSize: 15,
-    fontWeight: "600",
+    fontSize: 19,
+    fontWeight: "500",
     textAlign: "center",
   },
 
-  juzArrow: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  // Utility Styles
   centerContainer: {
     flex: 1,
     justifyContent: "center",

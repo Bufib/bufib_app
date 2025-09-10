@@ -2746,7 +2746,7 @@ const SuraScreen: React.FC = () => {
             >
               {showJuz ? (
                 <>
-                  <ThemedText  style={styles.suraName}>
+                  <ThemedText style={styles.suraName}>
                     {juzHeader?.title}
                   </ThemedText>
                   {!!juzHeader?.subtitle && (

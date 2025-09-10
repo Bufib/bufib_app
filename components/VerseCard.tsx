@@ -12,8 +12,10 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { QuranVerseType } from "@/constants/Types";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-// --- keep these as plain objects (NOT from StyleSheet.create) for RenderHTML ---
+// For RenderHTML
 const TAGS_STYLES = Object.freeze({
   u: { textDecorationLine: "underline" as const },
   b: { fontWeight: "700" as const },
@@ -56,7 +58,7 @@ function VerseCard({
   );
   const colorScheme = useColorScheme() || "light";
   const { fontSize, lineHeight } = useFontSizeStore();
-
+  const { isArabic } = useLanguage();
   return (
     <View
       style={[
@@ -126,7 +128,9 @@ function VerseCard({
           <ThemedText
             style={[
               styles.arabic,
-              { fontSize: fontSize * 1.7, lineHeight: lineHeight * 2.1 },
+              isArabic()
+                ? { fontSize: fontSize * 1.8, lineHeight: lineHeight * 2.3 }
+                : { fontSize: fontSize * 1.5, lineHeight: lineHeight * 2 },
             ]}
           >
             {arabicVerse.text}
