@@ -26,8 +26,7 @@ import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 
 const FavoritePrayersScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { refreshTriggerFavorites } =
-    useRefreshFavorites();
+  const { refreshTriggerFavorites } = useRefreshFavorites();
   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [prayers, setPrayers] = useState<PrayerType[]>([]);

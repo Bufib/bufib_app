@@ -188,6 +188,7 @@ import {
 } from "../../db/queries/questions";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemedView } from "@/components/ThemedView";
 
 export default function Question() {
   const { category, subcategory, questionId, questionTitle } =
@@ -248,10 +249,23 @@ export default function Question() {
   }, [parsedId, triggerRefreshFavorites]);
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <View style={styles.headerContainer}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
+      edges={["top"]}
+    >
+      <ThemedView style={styles.headerContainer}>
         <HeaderLeftBackButton style={{ marginLeft: 5 }} />
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginRight: 15 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            marginRight: 15,
+          }}
+        >
           <Ionicons
             name="text"
             size={28}
@@ -274,7 +288,7 @@ export default function Question() {
             />
           )}
         </View>
-      </View>
+      </ThemedView>
       <RenderQuestion
         category={category}
         subcategory={subcategory}
