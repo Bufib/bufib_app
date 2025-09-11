@@ -22,7 +22,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, usePathname, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { SQLiteProvider } from "expo-sqlite";
 import { Storage } from "expo-sqlite/kv-store";
@@ -42,7 +42,8 @@ import { MenuProvider } from "react-native-popup-menu";
 import Toast from "react-native-toast-message";
 import { migrationSQL } from "../db/migrations";
 import { setDatabase } from "../db";
-
+import { GlobalVideoHost } from "@/components/GlobalVideoHost";
+import MiniPlayerBar from "@/components/MiniPlayerBar";
 //! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
 if (typeof (BackHandler as any).removeEventListener !== "function") {
@@ -73,6 +74,7 @@ function AppContent() {
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const { t } = useTranslation();
   const isDbReady = useDatabaseSync(language || "de");
+  const router = useRouter();
 
   // Effect to set color theme from Storage
   useEffect(() => {
@@ -220,7 +222,7 @@ function AppContent() {
     return <LanguageSelection />;
   }
 
-  //! Screen sometimes appears 
+  //! Screen sometimes appears
   // 3. Show specific DB loading screen
   // This screen shows if DB is not ready, after a delay, and internet is available.
   if (!isDbReady && showLoadingScreen && hasInternet) {
@@ -328,6 +330,18 @@ function AppContent() {
                   />
                   <Stack.Screen name="+not-found" />
                 </Stack>
+                <MiniPlayerBar
+                  onOpenFull={(podcastId) => {
+                    // Navigate to your full player screen.
+                    // If you store the id on the player (see patch below), use it here.
+                    if (podcastId != null)
+                      router.push({
+                        pathname: "/indexPodcast",
+                        params: { id: String(podcastId) },
+                      });
+                    else router.push("/(podcast)");
+                  }}
+                />
                 <AppReviewPrompt />
               </SupabaseRealtimeProvider>
             </QueryClientProvider>
@@ -341,17 +355,19 @@ function AppContent() {
 
 export default function RootLayout() {
   return (
-    <LanguageProvider>
-      <SQLiteProvider
-        databaseName="bufib.db"
-        useSuspense={false}
-        onInit={async (db) => {
-          await db.execAsync(migrationSQL);
-          setDatabase(db);
-        }}
-      >
-        <AppContent />
-      </SQLiteProvider>
-    </LanguageProvider>
+    <GlobalVideoHost>
+      <LanguageProvider>
+        <SQLiteProvider
+          databaseName="bufib.db"
+          useSuspense={false}
+          onInit={async (db) => {
+            await db.execAsync(migrationSQL);
+            setDatabase(db);
+          }}
+        >
+          <AppContent />
+        </SQLiteProvider>
+      </LanguageProvider>
+    </GlobalVideoHost>
   );
 }

@@ -6,7 +6,7 @@ const _layout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="index"
+        name="indexPodcast"
         options={{
           headerShown: false,
           headerLeft: () => <HeaderLeftBackButton />,

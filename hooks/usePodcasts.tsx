@@ -375,7 +375,7 @@ const CACHE_MAX_AGE_DAYS = 7;
 const CACHE_MAX_FILES = 20;
 
 // --- STORAGE CONFIG ---
-const STORAGE_BUCKET = "sounds/podcasts"; // ⟵ Supabase Storage bucket name (public)
+const STORAGE_BUCKET = "sounds/podcasts";
 
 // If you later switch to a PRIVATE bucket, set this to true and use signedUrlFor() below.
 const USE_SIGNED_URLS = false;
@@ -445,7 +445,7 @@ export async function cleanupCache(): Promise<void> {
     }
 
     const allNames = await FileSystem.readDirectoryAsync(dirUri);
-    const audioExtensions = [".mp3", ".m4a"]; 
+    const audioExtensions = [".mp3", ".m4a"];
     const audioFileNames = allNames.filter((name) =>
       audioExtensions.some((ext) => name.toLowerCase().endsWith(ext))
     );
@@ -518,7 +518,7 @@ async function downloadToCache(
   );
 
   // Local path in that folder
-  const localUri = cacheDir + filename.replace(/\//g, "_"); // avoid subfolder names in cache filename
+  const localUri = cacheDir + filename.replace(/[\\/]/g, "_"); // avoid subfolder names in cache filename
 
   // If it already exists, return it
   const info = await FileSystem.getInfoAsync(localUri).catch(() => null);
@@ -542,7 +542,14 @@ async function downloadToCache(
         }
       );
       const result = await task.downloadAsync();
-      if (!result?.uri) throw new Error("Download failed, no result URI.");
+      const status = (result as any)?.status ?? 200;
+      if (!result?.uri || status < 200 || status >= 300) {
+        // Clean up partial/404 files
+        await FileSystem.deleteAsync(localUri, { idempotent: true }).catch(
+          () => {}
+        );
+        throw new Error(`Download failed (HTTP ${status})`);
+      }
       cleanupCache().catch(console.warn);
       return result.uri;
     } catch (err) {
@@ -634,7 +641,7 @@ export function usePodcasts(language: string) {
   const getCachedUri = useCallback(
     async (filename: string): Promise<string | null> => {
       if (!filename) return null;
-      const localUri = getCacheDirectory() + filename.replace(/\//g, "_");
+      const localUri = getCacheDirectory() + filename.replace(/[\\/]/g, "_");
       const info = await FileSystem.getInfoAsync(localUri);
       return info.exists ? localUri : null;
     },

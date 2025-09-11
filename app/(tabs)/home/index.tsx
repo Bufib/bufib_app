@@ -623,7 +623,7 @@ export default function HomeScreen() {
                   <TouchableOpacity
                     onPress={() =>
                       router.push({
-                        pathname: "/(podcast)",
+                        pathname: "/indexPodcast",
                         params: {
                           podcast: JSON.stringify(item),
                         },
