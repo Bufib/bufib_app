@@ -118,6 +118,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 import { Image } from "expo-image";
 import { useRef } from "react";
+import i18n from "@/utils/i18n";
 const renderScene = SceneMap({
   questionsScreen: indexQuestion,
   prayerScreen: indexPrayer,
@@ -161,7 +162,7 @@ export default function TopNavigationKnowledge() {
         icon: require("@/assets/images/historyHeaderLogo.png"),
       },
     ],
-    [t]
+    [i18n.language]
   );
 
   // animate opacity on mount

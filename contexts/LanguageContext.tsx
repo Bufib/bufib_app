@@ -18,7 +18,6 @@ const LanguageContext = createContext<LanguageContextType>({
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const { i18n, ready: i18nReady } = useTranslation();
-  const { language: detectedLang } = useLanguage();
   const [appLanguage, setAppLanguage] = useState<string | null>(null);
   const [checkedStorage, setCheckedStorage] = useState(false);
 

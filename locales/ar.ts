@@ -58,6 +58,9 @@ export const ar = {
   done: "مستعد",
   edit: "يحرر",
   errorDeletingFolder: "حدث خطأ أثناء حذف المجلد",
+  lines: "خطوط",
+  selectFolder: "حدد مجلدًا",
+  enterFolderName: "أدخل اسمًا للمجلد الخاص بك",
 
   // Navigation
   knowledge: "معرفة",

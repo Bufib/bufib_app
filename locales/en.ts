@@ -59,6 +59,9 @@ export const en = {
   done: "Done",
   edit: "Edit",
   errorDeletingFolder: "There has been an error deleting this folder",
+  lines: "Lines",
+  selectFolder: "Select a folder",
+  enterFolderName: "Enter a name for your folder",
 
   // Navigation
   knowledge: "Knowledge",

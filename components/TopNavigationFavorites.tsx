@@ -62,7 +62,7 @@ export default function TopNavigationFavorites() {
       },
    
     ],
-    [t]
+    [i18n.language]
   );
 
   // animate opacity on mount

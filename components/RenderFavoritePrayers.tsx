@@ -330,6 +330,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
+import i18n from "@/utils/i18n";
 
 const FavoritePrayersScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -381,7 +382,7 @@ const FavoritePrayersScreen: React.FC = () => {
         setIsLoadingPrayers(false);
       }
     },
-    [t]
+    [i18n.language]
   );
 
   const onDeleteFolder = useCallback(
@@ -405,7 +406,7 @@ const FavoritePrayersScreen: React.FC = () => {
         await reloadPrayers(selectedFolder);
       }
     },
-    [reloadFolders, reloadPrayers, selectedFolder, t, triggerRefreshFavorites]
+    [reloadFolders, reloadPrayers, selectedFolder, i18n.language, triggerRefreshFavorites]
   );
 
   // Initial & external trigger reload

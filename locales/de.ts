@@ -58,7 +58,9 @@ export const de = {
   startsAt: "Startet von:",
   done: "Fertig",
   errorDeletingFolder: "Es gab einen Fehler beim löschen des Ordners",
-  
+  lines: "Zeilen",
+  selectFolder: "Wähle einen Ordner aus",
+  enterFolderName: "Gebe einen Namen für den Ordner ein",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",

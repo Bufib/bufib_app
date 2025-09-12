@@ -4,23 +4,21 @@ import { router, Stack } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { Colors } from "@/constants/Colors";
+import {
+  initialWindowMetrics,
+  SafeAreaProvider,
+} from "react-native-safe-area-context";
 const _layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
-    <Stack>
-      <Stack.Screen
-        name="[prayer]"
-        options={{
-          headerShown: false,
-          headerTitle: "",
-          headerShadowVisible:false,
-          headerStyle: {
-            backgroundColor: Colors[colorScheme].prayerHeaderBackground,
-          
-          },
-        }}
-      />
-    </Stack>
+      <Stack>
+        <Stack.Screen
+          name="[prayer]"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
   );
 };
 
