@@ -634,6 +634,7 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 )}
                 showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
                 onEndReached={() => {
                   if (podcastsHasNextPage && !podcastsIsFetchingNextPage) {
                     podcastsFetchNextPage();
@@ -818,7 +819,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   flatListContentContainer: {
-    gap: 10,
+    gap: 15,
   },
   podcastContainer: {
     flex: 1,

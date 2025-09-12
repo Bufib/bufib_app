@@ -1702,6 +1702,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 import { CircularProgressRing } from "./CircularProgressRing";
 import { globalPlayer as basePlayer } from "@/components/GlobalVideoHost";
+import { Colors } from "@/constants/Colors";
 
 type TaggedPlayer = typeof basePlayer & {
   __currentUri?: string;
@@ -1735,7 +1736,7 @@ export default function MiniPlayerBar({
 }: Props) {
   const player = basePlayer as TaggedPlayer;
   const insets = useSafeAreaInsets();
-  const scheme = useColorScheme() || "light";
+  const colorScheme = useColorScheme() || "light";
   const pathname = usePathname();
   // Collapse/expand
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -1877,7 +1878,7 @@ export default function MiniPlayerBar({
     return `${m}:${ss.toString().padStart(2, "0")}`;
   };
 
-  const isDark = scheme === "dark";
+  const isDark = colorScheme === "dark";
 
   // Collapsed: draggable sphere
   if (isCollapsed) {
@@ -1934,9 +1935,14 @@ export default function MiniPlayerBar({
                 style={styles.expandIcon}
               />
             </View> */}
-            <View style={[styles.collapsedContent, {
-              backgroundColor: "red"
-            }]}>
+            <View
+              style={[
+                styles.collapsedContent,
+                {
+                  backgroundColor: "red",
+                },
+              ]}
+            >
               <View style={[styles.artworkWrap, {}]}>
                 <Image
                   source={{ uri: player.__artwork }}
@@ -1961,7 +1967,7 @@ export default function MiniPlayerBar({
               <Ionicons
                 name="chevron-up"
                 size={16}
-                color={isDark ? "#fff" : "#1a1a2e"}
+                color={Colors[colorScheme].defaultIcon}
                 style={styles.expandIcon}
               />
             </View>
@@ -2004,14 +2010,14 @@ export default function MiniPlayerBar({
 
         {/* Collapse Button */}
         <TouchableOpacity
-          style={styles.collapseButton}
+          style={[styles.collapseButton, {}]}
           onPress={() => setIsCollapsed(true)}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Ionicons
             name="chevron-down"
-            size={20}
-            color={isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.4)"}
+            size={22}
+            color={Colors[colorScheme].defaultIcon}
+            style={{}}
           />
         </TouchableOpacity>
 
@@ -2192,8 +2198,8 @@ const styles = StyleSheet.create({
   },
   collapseButton: {
     position: "absolute",
-    top: 8,
-    right: 12,
+    top: 1,
+    right: 8,
     zIndex: 10,
     padding: 4,
   },
@@ -2206,8 +2212,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 10,
+    paddingVertical: 25,
   },
   mainRow: {
     flexDirection: "row",
@@ -2246,7 +2251,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 15, fontWeight: "600", marginBottom: 2 },
   time: { fontSize: 12, fontWeight: "500" },
   controls: { flexDirection: "row", alignItems: "center", gap: 8 },
-  iconBtn: { padding: 4 },
+  iconBtn: { padding: 2 },
   iconBg: {
     width: 32,
     height: 32,

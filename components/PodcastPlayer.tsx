@@ -980,7 +980,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   const [slideAnim] = useState(new Animated.Value(50));
 
   // lock-screen/notification artwork – your local logo (no external artwork)
-  const logoAsset = Asset.fromModule(require("@/assets/images/logo.png"));
+  const logoAsset = require("@/assets/images/logo.png");
   const artworkUri: string | undefined = logoAsset?.uri || undefined;
 
   // Precompute possible URIs for this episode
@@ -1382,33 +1382,15 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
 
               {/* Podcast Info */}
               <View style={styles.podcastInfo}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 10,
-                    marginBottom: 20,
-                  }}
-                >
-                  <Text style={styles.podcastTitle} numberOfLines={2}>
-                    {podcast.title}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={onPressToggleFavorite}
-                    style={styles.favoriteButton}
-                  >
-                    <AntDesign
-                      name={isFavorite ? "star" : "staro"}
-                      size={25}
-                      color={isFavorite ? Colors.universal.favorite : "#fff"}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                <Text style={styles.podcastDescription} numberOfLines={3}>
-                  {podcast.description}
+                <Text style={styles.podcastTitle} numberOfLines={2}>
+                  {podcast.title}
                 </Text>
+              </View>
 
+              <Text style={styles.podcastDescription} numberOfLines={3}>
+                {podcast.description}
+              </Text>
+              <View style={{ flexDirection: "row", gap: 20 }}>
                 {canPlay && (
                   <View style={styles.durationContainer}>
                     <Ionicons name="time-outline" size={16} color="#fff" />
@@ -1417,6 +1399,16 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
                     </Text>
                   </View>
                 )}
+                <TouchableOpacity
+                  onPress={onPressToggleFavorite}
+                  style={styles.favoriteButton}
+                >
+                  <AntDesign
+                    name={isFavorite ? "star" : "staro"}
+                    size={25}
+                    color={isFavorite ? Colors.universal.favorite : "#fff"}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -1683,7 +1675,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   podcastTitle: {
-    fontSize: 24,
+    fontSize: 27,
     fontWeight: "bold",
     color: "#fff",
     textAlign: "center",

@@ -23,6 +23,13 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
   const [legendNames, setLegendNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const localDate = new Date()
+    .toLocaleDateString(lang, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+    .toLowerCase();
 
   useEffect(() => {
     let cancelled = false;
@@ -71,7 +78,11 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
         { backgroundColor: Colors[colorScheme].contrast },
       ]}
     >
-      <ThemedText style={[styles.title, {}]}>{t("legend")}</ThemedText>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <ThemedText style={[styles.title, {}]}>{t("legend")}</ThemedText>
+        <ThemedText style={[styles.title, {}]}>{localDate}</ThemedText>
+      </View>
+
       <FlatList
         data={legendNames}
         extraData={lang}
@@ -109,9 +120,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1.2,
+    fontSize: 14,
+    fontWeight: "800",
     marginBottom: 12,
   },
   listContent: {
