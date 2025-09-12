@@ -57,6 +57,8 @@ export const en = {
   replace: "Replace",
   startsAt: "Starts from:",
   done: "Done",
+  edit: "Edit",
+  errorDeletingFolder: "There has been an error deleting this folder",
 
   // Navigation
   knowledge: "Knowledge",
@@ -143,7 +145,9 @@ export const en = {
 
   // Delete confirmation
   confirmDelete: "Confirm Deletion",
-  deleteQuestion: "Are you sure you want to delete this prayer?",
+  deleteTodo: "Are you sure you want to delete this to-do?",
+  deleteFolder: "Are you sure you want to delete this folder?",
+
   delete: "Delete",
 
   //search

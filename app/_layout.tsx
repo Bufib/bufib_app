@@ -44,6 +44,11 @@ import { migrationSQL } from "../db/migrations";
 import { setDatabase } from "../db";
 import { GlobalVideoHost } from "@/components/GlobalVideoHost";
 import MiniPlayerBar from "@/components/MiniPlayerBar";
+import {
+  SafeAreaProvider,
+  initialWindowMetrics,
+} from "react-native-safe-area-context";
+
 //! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
 if (typeof (BackHandler as any).removeEventListener !== "function") {
@@ -282,73 +287,80 @@ function AppContent() {
   // Main app content
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <StatusBar style="auto" />
-        <ReMountManager>
-          <MenuProvider>
-            <NoInternet showUI={!hasInternet} showToast={true} />
-            <QueryClientProvider client={queryClient}>
-              <SupabaseRealtimeProvider>
-                <Stack
-                  screenOptions={{
-                    headerTintColor:
-                      colorScheme === "dark" ? "#d0d0c0" : "#000",
-                  }}
-                >
-                  <Stack.Screen name="index" options={{ headerShown: false }} />
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <StatusBar style="auto" />
+          <ReMountManager>
+            <MenuProvider>
+              <NoInternet showUI={!hasInternet} showToast={true} />
+              <QueryClientProvider client={queryClient}>
+                <SupabaseRealtimeProvider>
+                  <Stack
+                    screenOptions={{
+                      headerTintColor:
+                        colorScheme === "dark" ? "#d0d0c0" : "#000",
+                    }}
+                  >
+                    <Stack.Screen
+                      name="index"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(addNews)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(auth)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(displayQuestion)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(newsArticle)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(displayPrayer)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(askQuestion)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(podcast)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                  <MiniPlayerBar
+                    onOpenFull={(podcastId) => {
+                      // Navigate to your full player screen.
+                      // If you store the id on the player (see patch below), use it here.
+                      if (podcastId != null)
+                        router.push({
+                          pathname: "/indexPodcast",
+                          params: { id: String(podcastId) },
+                        });
+                      else router.push("/(podcast)");
+                    }}
                   />
-                  <Stack.Screen
-                    name="(addNews)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(auth)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(displayQuestion)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(newsArticle)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(displayPrayer)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(askQuestion)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(podcast)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-                <MiniPlayerBar
-                  onOpenFull={(podcastId) => {
-                    // Navigate to your full player screen.
-                    // If you store the id on the player (see patch below), use it here.
-                    if (podcastId != null)
-                      router.push({
-                        pathname: "/indexPodcast",
-                        params: { id: String(podcastId) },
-                      });
-                    else router.push("/(podcast)");
-                  }}
-                />
-                <AppReviewPrompt />
-              </SupabaseRealtimeProvider>
-            </QueryClientProvider>
-          </MenuProvider>
-          <Toast />
-        </ReMountManager>
-      </ThemeProvider>
+                  <AppReviewPrompt />
+                </SupabaseRealtimeProvider>
+              </QueryClientProvider>
+            </MenuProvider>
+            <Toast />
+          </ReMountManager>
+        </ThemeProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

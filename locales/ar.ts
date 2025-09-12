@@ -56,6 +56,8 @@ export const ar = {
   bookmarkReplaceQuestion: "هل تريد تغيير العلامة المرجعية؟",
   startsAt: "يبدأ من",
   done: "مستعد",
+  edit: "يحرر",
+  errorDeletingFolder: "حدث خطأ أثناء حذف المجلد",
 
   // Navigation
   knowledge: "معرفة",
@@ -141,7 +143,9 @@ export const ar = {
 
   // Delete confirmation
   confirmDelete: "تأكيد الحذف",
-  deleteQuestion: "هل أنت متأكد أنك تريد حذف هذه الصلاة؟",
+  deleteTodo: "هل أنت متأكد أنك تريد حذف هذه المهمة",
+  deleteFolder: "هل أنت متأكد أنك تريد حذف هذا المجلد؟",
+
   delete: "حذف",
 
   //search

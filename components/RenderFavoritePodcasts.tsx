@@ -111,7 +111,7 @@ const RenderFavoritePodcasts = () => {
               ]}
               onPress={() => {
                 router.push({
-                  pathname: "/(podcast)",
+                  pathname: "/(podcast)/indexPodcast",
                   params: {
                     podcast: JSON.stringify(item),
                   },

@@ -57,6 +57,8 @@ export const de = {
   replace: "Ersetzen",
   startsAt: "Startet von:",
   done: "Fertig",
+  errorDeletingFolder: "Es gab einen Fehler beim löschen des Ordners",
+  
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -67,7 +69,7 @@ export const de = {
   calendarScreenTitle: "Kalender",
   quranScreen: "Quran",
   historyScreen: "Geschichtliches",
-
+  edit: "Bearbeiten",
   // Database
   updateAvailable: "Update Verfügbar",
   newAppVersionAvailable: "Eine neue version ist im App-Store verfügbar!",
@@ -94,7 +96,6 @@ export const de = {
   tasbih: "Tasbih",
   special: "Speziell",
   names: "Asma-ul-Husna",
-
   // Tasbih
   dhikrFree: "Frei",
   dhikrSubhanallah: "Subhanallah",
@@ -140,7 +141,8 @@ export const de = {
 
   // Delete confirmation
   confirmDelete: "Löschen bestätigen",
-  deleteQuestion: "Möchtest du dieses Gebet wirklich löschen?",
+  deleteTodo: "Möchtest du dieses To-do wirklich löschen?",
+  deleteFolder: "Möchtest du diesen Ordner wirklich löschen?",
   delete: "Löschen",
 
   //search

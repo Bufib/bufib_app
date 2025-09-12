@@ -46,7 +46,7 @@ export const DeleteTodoModal: React.FC<DeleteTodoModalProps> = ({
             {t("confirmDelete")}
           </ThemedText>
           <ThemedText style={[styles.confirmText]}>
-            {t("deleteQuestion")}
+            {t("deleteTodo")}
           </ThemedText>
           <View style={[styles.confirmButtonsContainer]}>
             <TouchableOpacity

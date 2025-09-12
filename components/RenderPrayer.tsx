@@ -25,7 +25,7 @@ import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import i18n from "@/utils/i18n";
 import { Colors } from "@/constants/Colors";
-import AntDesign from "@expo/vector-icons/AntDesign"; // Keep for scroll-up icon
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
 import Markdown, { RenderRules } from "react-native-markdown-display";
@@ -37,6 +37,8 @@ import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { Storage } from "expo-sqlite/kv-store";
 import CategoryPickerBottomSheet from "./CategoryPickerModal";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
+import HeaderLeftBackButton from "./HeaderLeftBackButton";
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
@@ -219,23 +221,19 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         { backgroundColor: Colors[colorScheme].background },
       ]}
     >
-      <Stack.Screen
-        options={{ headerTitle: prayer.name, headerBackTitle: t("back") }}
-      />
-
       {/* Header Buttons */}
-      <View
+
+      <SafeAreaView
         style={[
           styles.header,
           { backgroundColor: Colors[colorScheme].prayerHeaderBackground },
         ]}
       >
         <View style={styles.headerContent}>
+          <HeaderLeftBackButton color={"#fff"} style={{ marginRight: 15 }} />
+
           <View style={styles.titleContainer}>
-            <Text
-              style={[styles.title, { fontSize: fontSize }]}
-              numberOfLines={1}
-            >
+            <Text style={[styles.title, { fontSize: fontSize }]}>
               {prayer.name} ({indices.length} {t("lines")})
             </Text>
             <Text
@@ -261,8 +259,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-
+      </SafeAreaView>
       {/* Content */}
       <FlashList
         ref={flashListRef}
@@ -458,7 +455,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                     rules={markdownRules(
                       fontSize,
                       Colors[colorScheme].text,
-                      
+
                       index
                     )}
                     style={{
@@ -466,7 +463,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
                         fontSize,
                         lineHeight,
                         marginTop: 4,
-                        color: Colors[colorScheme].text
+                        color: Colors[colorScheme].text,
                       },
                     }}
                   >
@@ -565,7 +562,6 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
   },
   titleContainer: {

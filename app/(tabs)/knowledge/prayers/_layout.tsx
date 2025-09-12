@@ -8,7 +8,7 @@ const _layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
     <Stack>
-      <Stack.Screen name="indexPrayer" options={{ headerShown: true }} />
+      <Stack.Screen name="indexPrayer" options={{ headerShown: false }} />
       <Stack.Screen
         name="names"
         options={{

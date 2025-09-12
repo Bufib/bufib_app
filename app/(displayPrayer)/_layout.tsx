@@ -3,6 +3,7 @@ import React from "react";
 import { router, Stack } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
+import { Colors } from "@/constants/Colors";
 const _layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
@@ -10,9 +11,12 @@ const _layout = () => {
       <Stack.Screen
         name="[prayer]"
         options={{
-          headerShown: true,
-          headerLeft: () => {
-            return <HeaderLeftBackButton />;
+          headerShown: false,
+          headerTitle: "",
+          headerShadowVisible:false,
+          headerStyle: {
+            backgroundColor: Colors[colorScheme].prayerHeaderBackground,
+          
           },
         }}
       />

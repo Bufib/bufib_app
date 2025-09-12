@@ -57,7 +57,7 @@ export async function getPrayerWithTranslations(
     transliteration_text: row.transliteration_text,
     source: row.source,
     translated_languages: langs,
-    created_at: new Date(row.created_at),
+    created_at: row.created_at,
     updated_at: new Date(row.updated_at),
   };
 
@@ -269,4 +269,41 @@ export async function getChildCategories(
      ORDER BY pc.title;`,
     [parentId]
   );
+}
+
+// Removes a folder and all favorites in it, atomically.
+export async function removeFolder(
+  name: string
+): Promise<{ deletedFolder: boolean; removedFavorites: number }> {
+  const db = await getDatabase();
+
+  let removedFavorites = 0;
+  let deletedFolder = false;
+
+  try {
+    await db.withExclusiveTransactionAsync(async (txn) => {
+      // Delete favorites and get how many were removed
+      const favRes = await txn.runAsync(
+        `DELETE FROM favorite_prayers WHERE folder_name = ?;`,
+        [name]
+      );
+      removedFavorites = favRes?.changes ?? 0;
+
+      // Delete the folder and infer whether it existed
+      const folderRes = await txn.runAsync(
+        `DELETE FROM prayer_folders WHERE name = ?;`,
+        [name]
+      );
+      deletedFolder = (folderRes?.changes ?? 0) > 0;
+    });
+
+    return { deletedFolder, removedFavorites };
+  } catch (err) {
+    console.error("removeFolder failed:", err);
+    throw new Error(
+      `Failed to remove folder "${name}": ${
+        (err as Error)?.message ?? String(err)
+      }`
+    );
+  }
 }
