@@ -109,8 +109,6 @@
 //   video: { width: "100%", height: 250, backgroundColor: "#000" },
 // });
 
-
-
 //! Expo videos
 import React, { useEffect } from "react";
 import { StyleSheet, useColorScheme, FlatList, View } from "react-native";

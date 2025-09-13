@@ -14,11 +14,11 @@ export const de = {
   podcastsTitle: "Podcast",
   podcastScreenTitle: "Podcasts",
   listen: "HÖREN",
-  download: "Herunterlanden",
+  download: "Herunterladen",
   downloading: "Wird heruntergeladen",
   preparing: "Wird vorbereitet",
   stream: "Streamen",
-
+  loading_stream: "Stream lädt",
   // General
   retry: "Wiederholen",
   errorLoadingData: "Es gab einen Fehler beim laden der Daten",

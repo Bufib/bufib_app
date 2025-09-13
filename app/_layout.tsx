@@ -287,7 +287,6 @@ function AppContent() {
   // Main app content
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
@@ -360,7 +359,6 @@ function AppContent() {
             <Toast />
           </ReMountManager>
         </ThemeProvider>
-      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

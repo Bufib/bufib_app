@@ -18,6 +18,7 @@ export const en = {
   downloading: "Downloading",
   preparing: "Preparing",
   stream: "Stream",
+  loading_stream: "Stream is loading",
 
   // General
   retry: "Retry",

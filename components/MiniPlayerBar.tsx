@@ -1728,7 +1728,7 @@ const readVal = (v: any) =>
 const clamp = (n: number, min: number, max: number) =>
   Math.max(min, Math.min(max, n));
 
-const COLLAPSED_SIZE = 55; // ensure artwork is square for a perfect ring
+const COLLAPSED_SIZE = 60; // ensure artwork is square for a perfect ring
 
 export default function MiniPlayerBar({
   onOpenFull,
@@ -1935,14 +1935,7 @@ export default function MiniPlayerBar({
                 style={styles.expandIcon}
               />
             </View> */}
-            <View
-              style={[
-                styles.collapsedContent,
-                {
-                  backgroundColor: "red",
-                },
-              ]}
-            >
+            <View style={[styles.collapsedContent, {}]}>
               <View style={[styles.artworkWrap, {}]}>
                 <Image
                   source={{ uri: player.__artwork }}

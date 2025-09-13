@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   Animated,
   Platform,
 } from "react-native";
@@ -24,6 +23,9 @@ import * as Haptics from "expo-haptics";
 import { Stack } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LoadingIndicator } from "@/components/LoadingIndicator";
+import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 
 // Icons for different categories
 const categoryIcons: { [key: string]: string } = {
@@ -41,7 +43,6 @@ export default function CategoryScreen() {
   const themeStyles = CoustomTheme();
   const { t } = useTranslation();
   const { language, isArabic } = useLanguage();
-
   const [childCategories, setChildCategories] = useState<PrayerCategoryType[]>(
     []
   );
@@ -151,51 +152,35 @@ export default function CategoryScreen() {
       <View
         style={[styles.loaderContainer, themeStyles.defaultBackgorundColor]}
       >
-        <ActivityIndicator
-          size="large"
-          color={colorScheme === "dark" ? "#fff" : "#000"}
-        />
+        <LoadingIndicator size="large" />
       </View>
     );
   }
 
   return (
     <SafeAreaView
-      style={[styles.container, themeStyles.defaultBackgorundColor]}
+      edges={["top"]}
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
     >
-      <Stack.Screen
-        options={{ title: prayerCategory, headerBackTitle: t("back") }}
-      />
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <HeaderLeftBackButton color={Colors.universal.link} style={{}} />
+        <ThemedText
+          type="title"
+          style={[, isArabic() && { textAlign: "right" }]}
+        >
+          {prayerCategory} ({allPrayers.length})
+        </ThemedText>
+      </View>
 
       <Animated.ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         style={{ opacity: fadeAnim }}
       >
-        {/* Header */}
-        <View style={styles.headerContainer}>
-          <View
-            style={[
-              styles.headerIcon,
-              {
-                borderColor: Colors[colorScheme].border,
-                backgroundColor: Colors[colorScheme].contrast,
-              },
-            ]}
-          >
-            <Ionicons
-              name={getCategoryIcon(prayerCategory)}
-              size={24}
-              color={Colors.universal.primary}
-            />
-          </View>
-          <ThemedText
-            style={[styles.header, isArabic() && { textAlign: "right" }]}
-          >
-            {prayerCategory} ({allPrayers.length})
-          </ThemedText>
-        </View>
-
         {/* Subcategories */}
         {childCategories.length > 0 && (
           <View style={styles.sectionContainer}>
@@ -391,36 +376,47 @@ export default function CategoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scrollContent: { padding: 20, paddingBottom: 30 },
-  loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 24,
-    paddingVertical: 6,
+    marginLeft: 15,
+    gap: 5,
   },
-  headerIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 14,
-    borderWidth: 1,
-  },
-  header: { fontSize: 24, fontWeight: "700" },
 
-  sectionContainer: { marginBottom: 24 },
+  header: {
+    fontSize: 24,
+    fontWeight: "700",
+  },
+
+  sectionContainer: {
+    marginBottom: 24,
+  },
   sectionHeaderRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
   },
-  sectionTitle: { fontSize: 18, fontWeight: "600" },
-  showAllButton: { paddingVertical: 4, paddingHorizontal: 10 },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  showAllButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
 
   chipContainer: { flexDirection: "row", paddingBottom: 8, paddingTop: 4 },
   chip: {
@@ -432,15 +428,14 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 8,
     borderWidth: 1,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-      },
-      android: { elevation: 1 },
-    }),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   chipText: { fontSize: 14, fontWeight: "500" },
 

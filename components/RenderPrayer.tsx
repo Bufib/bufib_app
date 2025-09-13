@@ -705,7 +705,10 @@ import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { Storage } from "expo-sqlite/kv-store";
 import CategoryPickerBottomSheet from "./CategoryPickerModal";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { useTranslation } from "react-i18next";
 
@@ -757,7 +760,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   const { fontSize, lineHeight } = useFontSizeStore();
   const [fontSizeModalVisible, setFontSizeModalVisible] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
-
+  const insets = useSafeAreaInsets();
   // Fetch prayer on mount (removed favorite check)
   useLayoutEffect(() => {
     (async () => {
@@ -881,52 +884,58 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   }
 
   return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        { backgroundColor: Colors[colorScheme].background },
-      ]}
-    >
+    <ThemedView style={[styles.container]}>
+      {/* SafareView seems to be buggy that why we go with insets.top only in this component */}
+
+      <View
+        style={{
+          height: insets.top,
+          backgroundColor: Colors[colorScheme].prayerHeaderBackground,
+        }}
+      />
       {/* Header Buttons */}
 
-      <ThemedView style={[styles.header, { borderBottomWidth: 0.8 }]}>
-        <View style={styles.headerContent}>
+      <ThemedView
+        style={[
+          styles.header,
+          {
+            backgroundColor: Colors[colorScheme].prayerHeaderBackground,
+          },
+        ]}
+      >
+        <View style={[styles.headerContent]}>
           <View style={{ flexDirection: "row" }}>
-            <HeaderLeftBackButton
-              color={Colors[colorScheme].defaultIcon}
-              style={{ marginRight: 15 }}
-            />
+            <HeaderLeftBackButton color="#fff" style={{ marginRight: 15 }} />
 
             <View style={[styles.titleContainer, {}]}>
-              <ThemedText style={[styles.title, { fontSize: fontSize }]}>
+              <ThemedText
+                style={[styles.title, { fontSize: fontSize, color: "#fff" }]}
+              >
                 {prayer.name} ({indices.length} {t("lines")})
               </ThemedText>
-              <ThemedText style={[styles.arabicTitle, { fontSize: fontSize }]}>
+              <ThemedText
+                style={[
+                  styles.arabicTitle,
+                  { fontSize: fontSize, color: "#fff" },
+                ]}
+              >
                 {prayer.arabic_title}
               </ThemedText>
             </View>
           </View>
           <View style={styles.headerControls}>
             <TouchableOpacity onPress={() => setFontSizeModalVisible(true)}>
-              <Ionicons
-                name="text"
-                size={28}
-                color={Colors[colorScheme].defaultIcon}
-              />
+              <Ionicons name="text" size={28} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => bottomSheetRef.current?.expand()}>
               <Ionicons
                 name="information-circle-outline"
                 size={32}
-                color={Colors[colorScheme].defaultIcon}
+                color="#fff"
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setPickerVisible(true)}>
-              <AntDesign
-                name="addfolder"
-                size={25}
-                color={Colors[colorScheme].defaultIcon}
-              />
+              <AntDesign name="addfolder" size={25} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
@@ -1216,7 +1225,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         prayerId={prayerID}
         onClose={() => setPickerVisible(false)}
       />
-    </SafeAreaView>
+    </ThemedView>
   );
 };
 

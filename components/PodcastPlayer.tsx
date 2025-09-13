@@ -901,6 +901,7 @@ import HeaderLeftBackButton from "./HeaderLeftBackButton";
 
 // ✅ singleton player (mounted by GlobalVideoHost at app root)
 import { globalPlayer as basePlayer } from "@/components/GlobalVideoHost";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 /** Runtime methods we actually use */
 type CorePlayer = typeof basePlayer & {
@@ -980,7 +981,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
   const [slideAnim] = useState(new Animated.Value(50));
 
   // lock-screen/notification artwork – your local logo (no external artwork)
-  const logoAsset = require("@/assets/images/logo.png");
+  const logoAsset = Asset.fromModule(require("@/assets/images/logo.png"));
   const artworkUri: string | undefined = logoAsset?.uri || undefined;
 
   // Precompute possible URIs for this episode
@@ -1439,7 +1440,7 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
 
             {/* Initial Actions */}
             {showInitialButtons && (
-              <>
+              <View style={{ gap: 10, marginHorizontal: 10 }}>
                 <TouchableOpacity
                   style={styles.downloadButton}
                   onPress={handleStream}
@@ -1469,19 +1470,19 @@ export const PodcastPlayer: React.FC<PodcastPlayerPropsType> = ({
                     </Text>
                   </LinearGradient>
                 </TouchableOpacity>
-              </>
+              </View>
             )}
 
             {/* Loading */}
             {isLoading && !playerError && (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#667eea" />
+                <LoadingIndicator size="large" />
                 <Text style={styles.loadingText}>
                   {download.isPending
                     ? t("preparing")
                     : isStreamLoading
                     ? t("loading_stream")
-                    : t("loading")}
+                    : t("downloading")}
                 </Text>
               </View>
             )}
@@ -1739,8 +1740,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     overflow: "hidden",
   },
-  progressBar: { height: "100%", backgroundColor: "#667eea", borderRadius: 4 },
-  downloadButton: { margin: 20, borderRadius: 16, overflow: "hidden" },
+  progressBar: {
+    height: "100%",
+    backgroundColor: "#667eea",
+    borderRadius: 4,
+  },
+  downloadButton: {
+    borderWidth: 1,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
   downloadButtonGradient: {
     flexDirection: "row",
     alignItems: "center",
@@ -1753,8 +1762,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginLeft: 12,
   },
-  loadingContainer: { alignItems: "center", padding: 40 },
-  loadingText: { fontSize: 16, color: "#666", marginTop: 12 },
+  loadingContainer: { alignItems: "center" },
+  loadingText: { fontSize: 16, color: "#000", marginTop: 12 },
   playerContainer: { margin: 20, borderRadius: 20, padding: 24 },
   progressSection: { marginBottom: 24 },
   timeLabels: {

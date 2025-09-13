@@ -512,7 +512,10 @@ export default function HomeScreen() {
               type="titleBiggerLessBold"
               style={[
                 styles.titleShadow,
-                { shadowColor: Colors[colorScheme].shadow },
+                {
+                  shadowColor: Colors[colorScheme].shadow,
+                  lineHeight: 40,
+                },
               ]}
             >
               {t("newsArticlesTitle")}
@@ -589,7 +592,7 @@ export default function HomeScreen() {
               type="titleBiggerLessBold"
               style={[
                 styles.titleShadow,
-                { shadowColor: Colors[colorScheme].shadow },
+                { shadowColor: Colors[colorScheme].shadow, lineHeight: 40 },
               ]}
             >
               {t("podcastsTitle")}
@@ -672,6 +675,7 @@ export default function HomeScreen() {
                   color: Colors.universal.third,
                   paddingBottom: 3,
                   shadowColor: Colors.universal.third,
+                  lineHeight: 40,
                 },
                 styles.titleShadow,
               ]}
@@ -828,7 +832,7 @@ const styles = StyleSheet.create({
   newsContainer: {
     flex: 1,
     gap: 15,
-    marginBottom: 40
+    marginBottom: 40,
   },
   newsTitleContainer: {
     flexDirection: "row",
