@@ -55,14 +55,6 @@ export function Collapsible({
             styles.content,
             {
               backgroundColor: Colors[colorScheme].contrast,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 1,
-              },
-              shadowOpacity: 0.2,
-              shadowRadius: 1.41,
-              elevation: 2,
             },
           ]}
         >
@@ -85,6 +77,14 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 7,
     borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   image: {
     width: 80,

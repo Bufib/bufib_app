@@ -35,7 +35,6 @@ export const getQuestionsForSubcategory = async (
   categoryName: string,
   subcategoryName: string,
   language: string
-
 ): Promise<QuestionType[]> => {
   try {
     const db = await getDatabase();
@@ -116,7 +115,7 @@ export const searchQuestions = async (
 };
 
 export const getLatestQuestions = async (
-  language: string,
+  language: string
 ): Promise<QuestionType[]> => {
   const db = await getDatabase();
   return await db.getAllAsync<QuestionType>(
@@ -189,4 +188,34 @@ export const toggleQuestionFavorite = async (
     );
     return true;
   }
+};
+
+export const getRelatedQuestions = async (
+  questionId: number,
+  language: string
+): Promise<QuestionType[]> => {
+  const db = await getDatabase();
+
+  // 1) Read the JSON array from the source question
+  const row = await db.getFirstAsync<{ related_question: string | null }>(
+    `SELECT related_question
+       FROM questions
+      WHERE id = ? AND language_code = ?
+      LIMIT 1;`,
+    [questionId, language]
+  );
+  if (!row?.related_question) return [];
+
+  // 2) Expand JSON and join back to questions
+  return await db.getAllAsync<QuestionType>(
+    `
+    SELECT q.*
+      FROM json_each(?) AS j
+      JOIN questions AS q
+        ON q.id = CAST(j.value AS INTEGER)
+       AND q.language_code = ?
+     ORDER BY CAST(j.key AS INTEGER);  -- preserves input array order
+    `,
+    [row.related_question, language]
+  );
 };

@@ -50,7 +50,7 @@ export const de = {
   font: "Schriftgröße",
   source: "Quellen: ",
   copied: "Kopiert!",
-  loading: "Daten werden geladen!",
+  loading: "Daten werden geladen",
   noData: "Keine Daten vorhanden",
   confirmBookmarkChange: "Lesezeichen Ändern?",
   bookmarkReplaceQuestion: "Willst du das Lesezeichen Ändern?",
@@ -80,7 +80,7 @@ export const de = {
   // Questions
   categories: "Kategorien",
   latestQuestions: "Neueste Fragen",
-
+  relatedQuestions:"Verwandte Fragen",
   // Questionslinks
   rechtsfragen: "Rechtsfragen",
   quran: "Quran",

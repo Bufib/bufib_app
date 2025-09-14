@@ -84,6 +84,8 @@ export const en = {
   // Questions
   categories: "Categories",
   latestQuestions: "Latest questions",
+  relatedQuestions:"Related questions",
+
 
   // Questionslinks
   rechtsfragen: "Legal questions",

@@ -222,8 +222,6 @@
 
 //      `;
 
-
-
 export const migrationSQL = `
   PRAGMA journal_mode = WAL;
   PRAGMA foreign_keys = ON;         -- harmless even if you have no FKs
@@ -386,13 +384,16 @@ export const migrationSQL = `
     answer_khamenei TEXT,
     answer_sistani TEXT,
     created_at TEXT NOT NULL,
+    related_question TEXT,          -- JSON string of text[] (PG array)
     language_code TEXT NOT NULL DEFAULT 'de'
   );
   CREATE INDEX IF NOT EXISTS idx_questions_lang ON questions(language_code);
   CREATE INDEX IF NOT EXISTS idx_questions_cat_sub ON questions(question_category_name, question_subcategory_name);
   CREATE INDEX IF NOT EXISTS idx_questions_created ON questions(created_at);
   CREATE INDEX IF NOT EXISTS idx_questions_title ON questions(title);
-  
+  CREATE INDEX IF NOT EXISTS idx_questions_related ON questions(related_question);
+  CREATE INDEX IF NOT EXISTS idx_questions_lang_related ON questions(language_code, related_question);
+
   CREATE TABLE IF NOT EXISTS favorite_questions (
   question_id INTEGER NOT NULL,
   created_at  TEXT    NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -406,7 +407,7 @@ export const migrationSQL = `
   CREATE TABLE IF NOT EXISTS prayer_categories (
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
-    parent_id TEXT,               -- JSON string of number[] (PG array)
+    parent_id TEXT,               -- JSON string of text[] (PG array)
     language_code TEXT NOT NULL
   );
   CREATE INDEX IF NOT EXISTS idx_prayer_categories_lang ON prayer_categories(language_code);

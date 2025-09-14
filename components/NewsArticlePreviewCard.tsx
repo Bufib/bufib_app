@@ -1,85 +1,3 @@
-// // src/components/NewsArticle.tsx
-// import { Colors } from "@/constants/Colors";
-// import { NewsArticlesPreviewType } from "@/constants/Types";
-// import { useLanguage } from "@/contexts/LanguageContext";
-// import { formatDate } from "@/utils/formatDate";
-// import Feather from "@expo/vector-icons/Feather";
-// import { LinearGradient } from "expo-linear-gradient";
-// import React from "react";
-// import { useTranslation } from "react-i18next";
-// import { StyleSheet, Text, View } from "react-native";
-// import { useGradient } from "../hooks/useGradient";
-// const NewsArticlePreviewCard = ({
-//   title,
-//   is_external_link,
-//   created_at,
-// }: NewsArticlesPreviewType) => {
-//   // Use the custom hook to handle all gradient logic
-//   const { gradientColors } = useGradient();
-//   const { t } = useTranslation();
-//   const { language, isArabic } = useLanguage();
-//   const formatedDate = formatDate(created_at)
-//   return (
-//     <LinearGradient style={styles.container} colors={gradientColors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-//       {is_external_link && (
-//         <View
-//           style={[
-//             styles.externalLinkBadge,
-//             {
-//               alignSelf: isArabic() ? "flex-start" : "flex-end",
-//             },
-//           ]}
-//         >
-//           <Feather
-//             name="external-link"
-//             size={27}
-//             color={Colors.universal.externalLinkIcon}
-//           />
-//         </View>
-//       )}
-//       <Text
-//         style={[styles.newsTitle, { textAlign: isArabic() ? "right" : "left" }]}
-//         numberOfLines={2}
-//         ellipsizeMode="tail"
-//       >
-//         {title}
-//       </Text>
-//       <Text
-//         style={[styles.createdAt, { textAlign: isArabic() ? "left" : "right" }]}
-//         numberOfLines={2}
-//         ellipsizeMode="tail"
-//       >
-//         {formatedDate}
-//       </Text>
-//     </LinearGradient>
-//   );
-// };
-
-// export default NewsArticlePreviewCard;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     justifyContent: "space-between",
-//     gap: 20,
-//     height: 150,
-//     width: 300,
-//     padding: 15,
-//     borderWidth: 1,
-//     borderRadius: 15,
-//   },
-//   externalLinkBadge: {},
-//   externalLinkBadgeText: {
-//     fontSize: 12,
-//     fontWeight: 600,
-//   },
-//   newsTitle: {
-//     fontSize: 20,
-//   },
-//   createdAt: {
-//   }
-// });
-
-"use client";
 import type { NewsArticlesPreviewType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatDate } from "@/utils/formatDate";
@@ -167,7 +85,17 @@ const NewsArticlePreviewCard = ({
 export default NewsArticlePreviewCard;
 
 const styles = StyleSheet.create({
-  cardWrapper: {},
+  cardWrapper: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+    overflow: "visible",
+  },
   container: {
     height: 180,
     width: 320,

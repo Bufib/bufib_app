@@ -1,11 +1,11 @@
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
 import React from "react";
 import { Collapsible } from "@/components/Collapsible";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { useColorScheme } from "react-native";
-import { getQuestion } from "@/db/queries/questions";
+import { getQuestion, getRelatedQuestions } from "@/db/queries/questions";
 import { useState, useEffect } from "react";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -17,6 +17,8 @@ import { LanguageCode, QuestionType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
+import i18n from "@/utils/i18n";
+import { router } from "expo-router";
 type RenderQuestionProps = {
   category: string;
   subcategory: string;
@@ -29,8 +31,12 @@ const RenderQuestion = ({
   questionId,
 }: RenderQuestionProps) => {
   const themeStyles = CoustomTheme();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(true);
   const [question, setQuestion] = useState<QuestionType | null>(null);
+  const [relatedQuestions, setRelatedQuestions] = useState<
+    QuestionType[] | null
+  >(null);
   const { fontSize, lineHeight } = useFontSizeStore();
   const colorScheme = useColorScheme() || "light";
   const [hasCopiedSingleAnswer, setHasCopiedSingleAnswer] = useState(false);
@@ -41,36 +47,53 @@ const RenderQuestion = ({
   const lang = (language ?? "de") as LanguageCode;
 
   useEffect(() => {
-    const loadQuestion = async () => {
-      try {
-        setIsLoading(true);
-        if (!category || !subcategory) {
-          console.log("Missing category or subcategory");
-          return;
-        }
-        const question = await getQuestion(
-          category,
-          subcategory,
-          questionId,
-          lang
-        );
+    let cancelled = false;
 
-        if (question) {
-          setQuestion(question);
-        } else {
-          console.log("Invalid data format received");
-          setQuestion(null);
-        }
-      } catch (error) {
-        console.error("Error loading question:", error);
+    (async () => {
+      if (!category || !subcategory) {
         setQuestion(null);
-      } finally {
-        setIsLoading(false);
+        return;
       }
-    };
+      try {
+        setIsLoadingQuestions(true);
+        console.log(category, subcategory, questionId);
 
-    loadQuestion();
-  }, [category, subcategory]);
+        const q = await getQuestion(category, subcategory, questionId, lang);
+        if (!cancelled) setQuestion(q ?? null);
+      } catch (err) {
+        console.error("Error loading question:", err);
+        if (!cancelled) setQuestion(null);
+      } finally {
+        if (!cancelled) setIsLoadingQuestions(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [category, subcategory, questionId, i18n.language]);
+
+  // 2) Load related questions
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        setIsLoadingRelated(true);
+        const rel = await getRelatedQuestions(questionId, lang);
+        if (!cancelled) setRelatedQuestions(rel ?? null);
+      } catch (err) {
+        console.error("Error loading related questions:", err);
+        if (!cancelled) setRelatedQuestions(null);
+      } finally {
+        if (!cancelled) setIsLoadingRelated(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [questionId, i18n.language]);
 
   const copyToClipboardMarja = async (
     answer: string | undefined,
@@ -171,7 +194,7 @@ const RenderQuestion = ({
                     },
                   }}
                 >
-                  {question?.answer || "Antwort wird geladen"}
+                  {question?.answer || t("loading")}
                 </Markdown>
               </View>
             </ThemedView>
@@ -212,7 +235,7 @@ const RenderQuestion = ({
                       },
                     }}
                   >
-                    {question?.answer_khamenei || "Antwort wird geladen"}
+                    {question?.answer_khamenei || t("loading")}
                   </Markdown>
                 </View>
               </Collapsible>
@@ -252,13 +275,72 @@ const RenderQuestion = ({
                       },
                     }}
                   >
-                    {question?.answer_sistani || "Antwort wird geladen"}
+                    {question?.answer_sistani || t("loading")}
                   </Markdown>
                 </View>
               </Collapsible>
             </>
           )}
         </View>
+        {relatedQuestions && relatedQuestions?.length > 0 && (
+          <View style={{ gap: 10, marginTop: 20 }}>
+            <ThemedText type="subtitle" style={{ marginLeft: 15 }}>
+              {t("relatedQuestions")}
+            </ThemedText>
+            <ScrollView
+              style={{ flex: 1, flexDirection: "row" }}
+              contentContainerStyle={{
+                paddingHorizontal: 16,
+                gap: 10,
+                flexGrow: 1,
+              }}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            >
+              {relatedQuestions.map((related, index) => (
+                <TouchableOpacity
+                  style={styles.relatedQuestion}
+                  key={index.toString()}
+                  onPress={() => {
+                    console.log(
+                      category,
+                      subcategory,
+                      related.id.toString(),
+                      related.title
+                    );
+                    router.push({
+                      pathname: "/(displayQuestion)",
+                      params: {
+                        category: related.question_category_name,
+                        subcategory: related.question_subcategory_name,
+                        questionId: related.id.toString(),
+                        questionTitle: related.title,
+                      },
+                    });
+                  }}
+                >
+                  <ThemedText
+                    style={{ fontSize: 18, fontWeight: "500" }}
+                    numberOfLines={6}
+                    ellipsizeMode="tail"
+                  >
+                    {related.question}
+                  </ThemedText>
+
+                  <ThemedText
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "400",
+                      alignSelf: "flex-end",
+                    }}
+                  >
+                    {index + 1}
+                  </ThemedText>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -280,7 +362,7 @@ const styles = StyleSheet.create({
 
   questionContainer: {
     padding: 15,
-    margin: 10,
+    margin: 15,
     borderWidth: 1,
     borderRadius: 8,
     shadowColor: "#000",
@@ -304,6 +386,14 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1,
     borderRadius: 7,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   questionText: {
     textAlign: "center",
@@ -320,5 +410,23 @@ const styles = StyleSheet.create({
   },
   copyIcon: {
     alignSelf: "flex-end",
+  },
+
+  relatedQuestion: {
+    width: 150,
+    height: 200,
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
 });

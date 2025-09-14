@@ -775,6 +775,7 @@ import { addPrayerToFolder } from "@/db/queries/prayers";
 import { FavoritePrayerFolderType } from "@/constants/Types";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { Colors } from "@/constants/Colors";
+import { AntDesign } from "@expo/vector-icons";
 
 type Props = {
   visible: boolean;
@@ -959,8 +960,21 @@ export default function CategoryPickerBottomSheet({
       <View
         style={[styles.bottomSheetContainer, { paddingBottom: insets.bottom }]}
       >
-        <Text style={styles.sectionTitle}>{t("selectFolder")}</Text>
-
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={styles.sectionTitle}>{t("selectFolder")}</Text>
+          <AntDesign
+            name="closecircleo"
+            size={24}
+            color={Colors[colorScheme].defaultIcon}
+            onPress={() => closeSheet()}
+          />
+        </View>
         <BottomSheetFlatList
           data={folders}
           keyExtractor={(item) => item.name}

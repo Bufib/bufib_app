@@ -26,6 +26,8 @@ import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
+import { ThemedView } from "@/components/ThemedView";
+import { HeaderTitle } from "@react-navigation/elements";
 
 // Icons for different categories
 const categoryIcons: { [key: string]: string } = {
@@ -158,23 +160,12 @@ export default function CategoryScreen() {
   }
 
   return (
-    <SafeAreaView
-      edges={["top"]}
-      style={[
-        styles.container,
-        { backgroundColor: Colors[colorScheme].background },
-      ]}
-    >
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <HeaderLeftBackButton color={Colors.universal.link} style={{}} />
-        <ThemedText
-          type="title"
-          style={[, isArabic() && { textAlign: "right" }]}
-        >
-          {prayerCategory} ({allPrayers.length})
-        </ThemedText>
-      </View>
+    <ThemedView style={[styles.container]}>
+      <Stack.Screen
+        options={{
+          headerTitle: prayerCategory,
+        }}
+      />
 
       <Animated.ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -371,7 +362,7 @@ export default function CategoryScreen() {
           )}
         </View>
       </Animated.ScrollView>
-    </SafeAreaView>
+    </ThemedView>
   );
 }
 

@@ -140,12 +140,22 @@ export default PodcastPreviewCard;
 
 const styles = StyleSheet.create({
   container: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+    overflow: "visible",
   },
   cardWrapper: {
     height: 280,
     width: 220,
     borderRadius: 32,
     position: "relative",
+
     overflow: "hidden",
   },
 

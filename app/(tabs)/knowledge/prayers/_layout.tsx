@@ -41,7 +41,7 @@ const _layout = () => {
       <Stack.Screen
         name="[prayerCategory]"
         options={{
-          headerShown: false,
+          headerShown: true,
           headerLeft: () => {
             return (
               <Ionicons
