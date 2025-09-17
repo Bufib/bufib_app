@@ -128,6 +128,7 @@ export const NewsItem = ({
           <FlatList
             ref={flatListRef}
             data={images_url}
+            scrollEnabled={images_url.length > 1 ? true : false}
             horizontal
             pagingEnabled
             snapToInterval={screenWidth} // Ensure snapping aligns with image width

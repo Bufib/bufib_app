@@ -356,7 +356,312 @@
 // export const remoteUrlFor = (filename: string) =>
 //   `https://podcast-files.pages.dev/${encodeURIComponent(filename)}`;
 
-//! Supabase for stream and cloud
+//! Supabase for stream and cloud last worked before language addition
+// import { PodcastType } from "@/constants/Types";
+// import { supabase } from "@/utils/supabase";
+// import {
+//   InfiniteData,
+//   QueryKey,
+//   useInfiniteQuery,
+//   useMutation,
+//   useQueryClient,
+// } from "@tanstack/react-query";
+// import * as FileSystem from "expo-file-system";
+// import { useCallback, useEffect } from "react";
+
+// // --- CONFIGURATION ---
+// const PAGE_SIZE = 3;
+// const CACHE_MAX_AGE_DAYS = 7;
+// const CACHE_MAX_FILES = 20;
+
+// // --- STORAGE CONFIG ---
+// const STORAGE_BUCKET = "sounds/podcasts";
+
+// // If you later switch to a PRIVATE bucket, set this to true and use signedUrlFor() below.
+// const USE_SIGNED_URLS = false;
+
+// // --- URL HELPERS ---
+// function publicUrlFor(filename: string): string {
+//   // Pass raw path; SDK returns a properly encoded public URL.
+//   const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(filename);
+//   return data.publicUrl;
+// }
+
+// async function signedUrlFor(filename: string, expiresInSeconds = 60 * 60 * 4) {
+//   const { data, error } = await supabase.storage
+//     .from(STORAGE_BUCKET)
+//     .createSignedUrl(filename, expiresInSeconds);
+//   if (error || !data?.signedUrl)
+//     throw error ?? new Error("Could not create signed URL");
+//   return data.signedUrl;
+// }
+
+// async function urlFor(filename: string): Promise<string> {
+//   return USE_SIGNED_URLS ? signedUrlFor(filename) : publicUrlFor(filename);
+// }
+
+// // --- HELPER FUNCTIONS ---
+
+// // Prevent concurrent cleanups
+// let isCleaningCache = false;
+
+// /**
+//  * Returns a valid cache directory on both iOS/Android (Expo).
+//  * Falls back to documentDirectory if cacheDirectory is not available.
+//  */
+// function getCacheDirectory(): string {
+//   const cacheDir = FileSystem.cacheDirectory;
+//   if (!cacheDir) {
+//     console.error(
+//       "Cache directory is not available; using documentDirectory instead."
+//     );
+//     return (FileSystem.documentDirectory ?? "") + "audioCache/";
+//   }
+//   return cacheDir.endsWith("/") ? cacheDir : cacheDir + "/";
+// }
+
+// /**
+//  * Deletes old or over-limit files in the cache directory.
+//  * - Any file older than CACHE_MAX_AGE_DAYS is removed.
+//  * - If more than CACHE_MAX_FILES remain, the oldest beyond that limit are removed.
+//  */
+// export async function cleanupCache(): Promise<void> {
+//   if (isCleaningCache) {
+//     console.log("Cache cleanup already in progress; skipping.");
+//     return;
+//   }
+//   isCleaningCache = true;
+//   console.log("Starting cache cleanup...");
+
+//   try {
+//     const dirUri = getCacheDirectory();
+//     const dirInfo = await FileSystem.getInfoAsync(dirUri);
+//     if (!dirInfo.exists || !dirInfo.isDirectory) {
+//       console.log(
+//         "Cache directory does not exist or is not a directory; skipping cleanup."
+//       );
+//       isCleaningCache = false;
+//       return;
+//     }
+
+//     const allNames = await FileSystem.readDirectoryAsync(dirUri);
+//     const audioExtensions = [".mp3", ".m4a"];
+//     const audioFileNames = allNames.filter((name) =>
+//       audioExtensions.some((ext) => name.toLowerCase().endsWith(ext))
+//     );
+
+//     const infos: { uri: string; mtime: number }[] = [];
+//     await Promise.all(
+//       audioFileNames.map(async (name) => {
+//         const fileUri = dirUri + name;
+//         try {
+//           const info = await FileSystem.getInfoAsync(fileUri, { size: true });
+//           if (info.exists && !info.isDirectory && info.modificationTime) {
+//             infos.push({ uri: fileUri, mtime: info.modificationTime * 1000 });
+//           }
+//         } catch {
+//           // ignore
+//         }
+//       })
+//     );
+
+//     const cutoff = Date.now() - CACHE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+
+//     // 1) Delete files older than cutoff
+//     const oldFiles = infos.filter((f) => f.mtime < cutoff);
+//     if (oldFiles.length > 0) {
+//       console.log(`Deleting ${oldFiles.length} old cache files...`);
+//       await Promise.all(
+//         oldFiles.map((f) => FileSystem.deleteAsync(f.uri, { idempotent: true }))
+//       );
+//     }
+
+//     // 2) Enforce maximum file count
+//     const stillValid = infos.filter((f) => f.mtime >= cutoff);
+//     const excessCount = stillValid.length - CACHE_MAX_FILES;
+//     if (excessCount > 0) {
+//       const sortedByNewest = stillValid.sort((a, b) => b.mtime - a.mtime);
+//       const toDelete = sortedByNewest.slice(CACHE_MAX_FILES);
+//       console.log(
+//         `Deleting ${toDelete.length} excess cache files (over limit)...`
+//       );
+//       await Promise.all(
+//         toDelete.map((f) => FileSystem.deleteAsync(f.uri, { idempotent: true }))
+//       );
+//     }
+
+//     console.log("Cache cleanup finished.");
+//   } catch (err) {
+//     console.warn("Error during cache cleanup:", err);
+//   } finally {
+//     isCleaningCache = false;
+//   }
+// }
+
+// /**
+//  * Downloads an MP3 from Supabase Storage (bucket: podcasts) into the local cache folder.
+//  * - `filename` should be like "episode-123.mp3" or "folder/episode-123.mp3"
+//  * - Uses public or signed URL depending on USE_SIGNED_URLS.
+//  */
+// async function downloadToCache(
+//   filename: string,
+//   onProgress?: (fraction: number) => void
+// ): Promise<string> {
+//   if (!filename)
+//     throw new Error("downloadToCache requires a non-empty filename.");
+
+//   const cacheDir = getCacheDirectory();
+
+//   // Ensure the cache folder exists (idempotent)
+//   await FileSystem.makeDirectoryAsync(cacheDir, { intermediates: true }).catch(
+//     () => {}
+//   );
+
+//   // Local path in that folder
+//   const localUri = cacheDir + filename.replace(/[\\/]/g, "_"); // avoid subfolder names in cache filename
+
+//   // If it already exists, return it
+//   const info = await FileSystem.getInfoAsync(localUri).catch(() => null);
+//   if (info?.exists) return localUri;
+
+//   // Remote URL from Supabase Storage
+//   const downloadUrl = await urlFor(filename);
+
+//   // Resumable download…
+//   let lastError: any = null;
+//   for (let attempt = 0; attempt < 2; attempt++) {
+//     try {
+//       const task = FileSystem.createDownloadResumable(
+//         downloadUrl,
+//         localUri,
+//         {},
+//         ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+//           if (onProgress && totalBytesExpectedToWrite > 0) {
+//             onProgress(totalBytesWritten / totalBytesExpectedToWrite);
+//           }
+//         }
+//       );
+//       const result = await task.downloadAsync();
+//       const status = (result as any)?.status ?? 200;
+//       if (!result?.uri || status < 200 || status >= 300) {
+//         // Clean up partial/404 files
+//         await FileSystem.deleteAsync(localUri, { idempotent: true }).catch(
+//           () => {}
+//         );
+//         throw new Error(`Download failed (HTTP ${status})`);
+//       }
+//       cleanupCache().catch(console.warn);
+//       return result.uri;
+//     } catch (err) {
+//       lastError = err;
+//       if (attempt === 0) continue;
+//       break;
+//     }
+//   }
+//   throw new Error(
+//     `Failed to download "${filename}": ${lastError?.message || lastError}`
+//   );
+// }
+
+// export function usePodcasts(language: string) {
+//   const qc = useQueryClient();
+
+//   // ensure cache dir exists on first hook mount
+//   useEffect(() => {
+//     FileSystem.makeDirectoryAsync(getCacheDirectory(), {
+//       intermediates: true,
+//     }).catch(() => {});
+//   }, []);
+
+//   // --- 1) Infinite paginated list from `podcasts` table ---
+//   const queryKey: QueryKey = ["podcasts", language];
+
+//   const infiniteQuery = useInfiniteQuery<
+//     PodcastType[], // data page type
+//     Error,
+//     InfiniteData<PodcastType[]>,
+//     QueryKey,
+//     number
+//   >({
+//     queryKey,
+//     queryFn: async ({ pageParam = 0 }) => {
+//       const { data, error } = await supabase
+//         .from("podcasts")
+//         .select("*")
+//         .eq("language_code", language)
+//         .order("created_at", { ascending: false })
+//         .range(pageParam, pageParam + PAGE_SIZE - 1);
+
+//       if (error) {
+//         console.error("Error fetching podcasts:", error);
+//         throw error;
+//       }
+//       return data || [];
+//     },
+//     getNextPageParam: (lastPage, allPages) => {
+//       const fetchedSoFar = allPages.reduce((acc, page) => acc + page.length, 0);
+//       return lastPage.length === PAGE_SIZE ? fetchedSoFar : undefined;
+//     },
+//     initialPageParam: 0,
+//     staleTime: 5 * 60 * 1000,
+//   });
+
+//   // --- 3) Download-to-cache mutation (no streaming) ---
+//   const downloadMutation = useMutation<
+//     string, // on success, returns localUri
+//     Error,
+//     { filename: string; onProgress?: (frac: number) => void }
+//   >({
+//     mutationFn: ({ filename, onProgress }) => {
+//       if (!filename) throw new Error("download requires a filename");
+//       return downloadToCache(filename, onProgress);
+//     },
+//     onMutate: ({ filename }) => {
+//       qc.setQueryData(["download", filename], {
+//         status: "loading",
+//         progress: 0,
+//       });
+//     },
+//     onError: (error, variables) => {
+//       console.error(`Error downloading ${variables.filename}:`, error);
+//       qc.setQueryData(["download", variables.filename], {
+//         status: "error",
+//         error: error.message,
+//       });
+//     },
+//     onSuccess: (localUri, variables) => {
+//       qc.setQueryData(["download", variables.filename], {
+//         status: "done",
+//         uri: localUri,
+//       });
+//     },
+//   });
+
+//   // --- 4) Check if a file is already cached locally ---
+//   const getCachedUri = useCallback(
+//     async (filename: string): Promise<string | null> => {
+//       if (!filename) return null;
+//       const localUri = getCacheDirectory() + filename.replace(/[\\/]/g, "_");
+//       const info = await FileSystem.getInfoAsync(localUri);
+//       return info.exists ? localUri : null;
+//     },
+//     []
+//   );
+
+//   return {
+//     ...infiniteQuery,
+//     download: downloadMutation,
+//     getCachedUri,
+//   };
+// }
+
+// // For streaming (PUBLIC bucket). Keep sync API like before.
+// export const remoteUrlFor = (filename: string) => publicUrlFor(filename);
+
+// // If you switch to a PRIVATE bucket, make it async in your caller:
+// // export const remoteUrlFor = async (filename: string) => signedUrlFor(filename);
+// usePodcasts.ts — language-scoped cache version
+
 import { PodcastType } from "@/constants/Types";
 import { supabase } from "@/utils/supabase";
 import {
@@ -376,7 +681,6 @@ const CACHE_MAX_FILES = 20;
 
 // --- STORAGE CONFIG ---
 const STORAGE_BUCKET = "sounds/podcasts";
-
 // If you later switch to a PRIVATE bucket, set this to true and use signedUrlFor() below.
 const USE_SIGNED_URLS = false;
 
@@ -400,47 +704,56 @@ async function urlFor(filename: string): Promise<string> {
   return USE_SIGNED_URLS ? signedUrlFor(filename) : publicUrlFor(filename);
 }
 
-// --- HELPER FUNCTIONS ---
+// For streaming (PUBLIC bucket). Keep sync API like before.
+export const remoteUrlFor = (filename: string) => publicUrlFor(filename);
+// If you switch to a PRIVATE bucket, make it async in your caller:
+// export const remoteUrlFor = async (filename: string) => signedUrlFor(filename);
 
-// Prevent concurrent cleanups
-let isCleaningCache = false;
+// --- CACHE (PER-LANGUAGE) ---
 
-/**
- * Returns a valid cache directory on both iOS/Android (Expo).
- * Falls back to documentDirectory if cacheDirectory is not available.
- */
-function getCacheDirectory(): string {
-  const cacheDir = FileSystem.cacheDirectory;
-  if (!cacheDir) {
-    console.error(
-      "Cache directory is not available; using documentDirectory instead."
-    );
-    return (FileSystem.documentDirectory ?? "") + "audioCache/";
-  }
-  return cacheDir.endsWith("/") ? cacheDir : cacheDir + "/";
+// Sanitize any subpaths to a flat filename
+const sanitize = (s: string) => s.replace(/[\\/]/g, "_");
+const LANG_DEFAULT = "default";
+
+// Prevent concurrent cleanups per language
+const cleaningLanguages = new Set<string>();
+
+/** Root cache dir (Expo); falls back to document directory. */
+function getRootCacheDir(): string {
+  const base = FileSystem.cacheDirectory ?? FileSystem.documentDirectory ?? "";
+  return base.endsWith("/") ? base : base + "/";
+}
+
+/** Per-language cache directory: .../audioCache/<lang>/ */
+function getCacheDirectory(language?: string): string {
+  const lang = (language || LANG_DEFAULT).toLowerCase();
+  return `${getRootCacheDir()}audioCache/${lang}/`;
+}
+
+/** Ensure the per-language directory exists (idempotent) */
+async function ensureLangDir(language?: string) {
+  await FileSystem.makeDirectoryAsync(getCacheDirectory(language), {
+    intermediates: true,
+  }).catch(() => {});
 }
 
 /**
- * Deletes old or over-limit files in the cache directory.
+ * Deletes old or over-limit files in the language-specific cache directory.
  * - Any file older than CACHE_MAX_AGE_DAYS is removed.
  * - If more than CACHE_MAX_FILES remain, the oldest beyond that limit are removed.
  */
-export async function cleanupCache(): Promise<void> {
-  if (isCleaningCache) {
-    console.log("Cache cleanup already in progress; skipping.");
+export async function cleanupCache(language?: string): Promise<void> {
+  const lang = (language || LANG_DEFAULT).toLowerCase();
+  if (cleaningLanguages.has(lang)) {
+    // Already running for this language
     return;
   }
-  isCleaningCache = true;
-  console.log("Starting cache cleanup...");
+  cleaningLanguages.add(lang);
 
   try {
-    const dirUri = getCacheDirectory();
+    const dirUri = getCacheDirectory(lang);
     const dirInfo = await FileSystem.getInfoAsync(dirUri);
     if (!dirInfo.exists || !dirInfo.isDirectory) {
-      console.log(
-        "Cache directory does not exist or is not a directory; skipping cleanup."
-      );
-      isCleaningCache = false;
       return;
     }
 
@@ -460,7 +773,7 @@ export async function cleanupCache(): Promise<void> {
             infos.push({ uri: fileUri, mtime: info.modificationTime * 1000 });
           }
         } catch {
-          // ignore
+          // ignore file errors to keep cleanup robust
         }
       })
     );
@@ -470,55 +783,46 @@ export async function cleanupCache(): Promise<void> {
     // 1) Delete files older than cutoff
     const oldFiles = infos.filter((f) => f.mtime < cutoff);
     if (oldFiles.length > 0) {
-      console.log(`Deleting ${oldFiles.length} old cache files...`);
       await Promise.all(
         oldFiles.map((f) => FileSystem.deleteAsync(f.uri, { idempotent: true }))
       );
     }
 
-    // 2) Enforce maximum file count
+    // 2) Enforce maximum file count per language
     const stillValid = infos.filter((f) => f.mtime >= cutoff);
     const excessCount = stillValid.length - CACHE_MAX_FILES;
     if (excessCount > 0) {
       const sortedByNewest = stillValid.sort((a, b) => b.mtime - a.mtime);
       const toDelete = sortedByNewest.slice(CACHE_MAX_FILES);
-      console.log(
-        `Deleting ${toDelete.length} excess cache files (over limit)...`
-      );
       await Promise.all(
         toDelete.map((f) => FileSystem.deleteAsync(f.uri, { idempotent: true }))
       );
     }
-
-    console.log("Cache cleanup finished.");
   } catch (err) {
-    console.warn("Error during cache cleanup:", err);
+    console.warn(`[cache cleanup error]`, err);
   } finally {
-    isCleaningCache = false;
+    cleaningLanguages.delete(lang);
   }
 }
 
 /**
- * Downloads an MP3 from Supabase Storage (bucket: podcasts) into the local cache folder.
- * - `filename` should be like "episode-123.mp3" or "folder/episode-123.mp3"
+ * Downloads an MP3/M4A from Supabase Storage into the **language-scoped** cache folder.
+ * - `filename` like "episode-123.mp3" or "folder/episode-123.mp3"
  * - Uses public or signed URL depending on USE_SIGNED_URLS.
  */
 async function downloadToCache(
   filename: string,
+  language?: string,
   onProgress?: (fraction: number) => void
 ): Promise<string> {
   if (!filename)
     throw new Error("downloadToCache requires a non-empty filename.");
 
-  const cacheDir = getCacheDirectory();
-
-  // Ensure the cache folder exists (idempotent)
-  await FileSystem.makeDirectoryAsync(cacheDir, { intermediates: true }).catch(
-    () => {}
-  );
+  await ensureLangDir(language);
+  const cacheDir = getCacheDirectory(language);
 
   // Local path in that folder
-  const localUri = cacheDir + filename.replace(/[\\/]/g, "_"); // avoid subfolder names in cache filename
+  const localUri = cacheDir + sanitize(filename);
 
   // If it already exists, return it
   const info = await FileSystem.getInfoAsync(localUri).catch(() => null);
@@ -527,7 +831,7 @@ async function downloadToCache(
   // Remote URL from Supabase Storage
   const downloadUrl = await urlFor(filename);
 
-  // Resumable download…
+  // Resumable download with basic retry
   let lastError: any = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
@@ -550,7 +854,7 @@ async function downloadToCache(
         );
         throw new Error(`Download failed (HTTP ${status})`);
       }
-      cleanupCache().catch(console.warn);
+      cleanupCache(language).catch(console.warn);
       return result.uri;
     } catch (err) {
       lastError = err;
@@ -563,15 +867,15 @@ async function downloadToCache(
   );
 }
 
+// --- HOOK ---
+
 export function usePodcasts(language: string) {
   const qc = useQueryClient();
 
-  // ensure cache dir exists on first hook mount
+  // Ensure the per-language cache dir exists on first hook mount per language
   useEffect(() => {
-    FileSystem.makeDirectoryAsync(getCacheDirectory(), {
-      intermediates: true,
-    }).catch(() => {});
-  }, []);
+    ensureLangDir(language).catch(() => {});
+  }, [language]);
 
   // --- 1) Infinite paginated list from `podcasts` table ---
   const queryKey: QueryKey = ["podcasts", language];
@@ -596,7 +900,7 @@ export function usePodcasts(language: string) {
         console.error("Error fetching podcasts:", error);
         throw error;
       }
-      return data || [];
+      return data ?? [];
     },
     getNextPageParam: (lastPage, allPages) => {
       const fetchedSoFar = allPages.reduce((acc, page) => acc + page.length, 0);
@@ -604,59 +908,54 @@ export function usePodcasts(language: string) {
     },
     initialPageParam: 0,
     staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 
-  // --- 3) Download-to-cache mutation (no streaming) ---
-  const downloadMutation = useMutation<
+  // --- 2) Download-to-cache mutation (per language) ---
+  const download = useMutation<
     string, // on success, returns localUri
     Error,
     { filename: string; onProgress?: (frac: number) => void }
   >({
     mutationFn: ({ filename, onProgress }) => {
       if (!filename) throw new Error("download requires a filename");
-      return downloadToCache(filename, onProgress);
+      return downloadToCache(filename, language, onProgress);
     },
     onMutate: ({ filename }) => {
-      qc.setQueryData(["download", filename], {
+      qc.setQueryData(["download", language, filename], {
         status: "loading",
         progress: 0,
       });
     },
     onError: (error, variables) => {
       console.error(`Error downloading ${variables.filename}:`, error);
-      qc.setQueryData(["download", variables.filename], {
+      qc.setQueryData(["download", language, variables.filename], {
         status: "error",
         error: error.message,
       });
     },
     onSuccess: (localUri, variables) => {
-      qc.setQueryData(["download", variables.filename], {
+      qc.setQueryData(["download", language, variables.filename], {
         status: "done",
         uri: localUri,
       });
     },
   });
 
-  // --- 4) Check if a file is already cached locally ---
+  // --- 3) Check if a file is already cached locally (per language) ---
   const getCachedUri = useCallback(
     async (filename: string): Promise<string | null> => {
       if (!filename) return null;
-      const localUri = getCacheDirectory() + filename.replace(/[\\/]/g, "_");
+      const localUri = getCacheDirectory(language) + sanitize(filename);
       const info = await FileSystem.getInfoAsync(localUri);
       return info.exists ? localUri : null;
     },
-    []
+    [language]
   );
 
   return {
     ...infiniteQuery,
-    download: downloadMutation,
+    download,
     getCachedUri,
   };
 }
-
-// For streaming (PUBLIC bucket). Keep sync API like before.
-export const remoteUrlFor = (filename: string) => publicUrlFor(filename);
-
-// If you switch to a PRIVATE bucket, make it async in your caller:
-// export const remoteUrlFor = async (filename: string) => signedUrlFor(filename);
