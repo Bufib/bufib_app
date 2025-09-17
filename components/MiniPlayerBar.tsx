@@ -4838,8 +4838,6 @@ export default function MiniPlayerBar({ bottomOffset = 50 }: Props) {
     stopAndKeepSource,
   } = useGlobalPlayer();
 
-  
-
   // ---- Hooks must be declared before any early return
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [measured, setMeasured] = React.useState({ w: SCREEN_W - 32, h: 100 });
@@ -5022,7 +5020,7 @@ export default function MiniPlayerBar({ bottomOffset = 50 }: Props) {
                       size={COLLAPSED_SIZE}
                       progress={progressPct}
                       strokeWidth={5}
-                      color="black"
+                      color="#6366f1"
                       trackColor={
                         isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.12)"
                       }
@@ -5030,12 +5028,7 @@ export default function MiniPlayerBar({ bottomOffset = 50 }: Props) {
                   </View>
                 )}
               </View>
-              <Ionicons
-                name="chevron-up"
-                size={16}
-                color={Colors[colorScheme].defaultIcon}
-                style={styles.expandIcon}
-              />
+             
             </View>
           </BlurView>
         </TouchableOpacity>
@@ -5331,8 +5324,8 @@ const styles = StyleSheet.create({
   },
   collapseButton: {
     position: "absolute",
-    top: 8,
-    right: 12,
+    top: 2,
+    right: 9,
     zIndex: 10,
     padding: 4,
   },

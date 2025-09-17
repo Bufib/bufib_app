@@ -419,6 +419,12 @@ export type PodcastType = {
   created_at: string;
 };
 
+export type SavedProgress = {
+  position: number;
+  duration: number;
+  savedAt: number;
+};
+
 export type PodcastProps = { podcast: PodcastType };
 export type PodcastPlayerPropsType = {
   podcast: PodcastType;
@@ -473,12 +479,12 @@ export type CalendarType = {
   type: string;
   created_at: string;
   language_code: string;
-  legend_type: string
+  legend_type: string;
 };
 export type calendarLegendType = {
   id: number;
   type: string;
-  created_at: string; 
+  created_at: string;
 };
 
 // Quran
