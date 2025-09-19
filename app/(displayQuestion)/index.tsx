@@ -273,15 +273,15 @@ export default function Question() {
             onPress={() => setModalVisible(true)}
           />
           {isFavorite ? (
-            <AntDesign
+            <Ionicons
               name="star"
               size={28}
               color={Colors.universal.favorite}
               onPress={onPressToggle}
             />
           ) : (
-            <AntDesign
-              name="staro"
+            <Ionicons
+              name="star-outline"
               size={28}
               color={Colors[colorScheme].defaultIcon}
               onPress={onPressToggle}

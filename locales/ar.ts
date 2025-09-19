@@ -55,6 +55,8 @@ export const ar = {
   noData: "لا توجد بيانات متاحة",
   confirmBookmarkChange: "تغيير العلامة المرجعية؟",
   bookmarkReplaceQuestion: "هل تريد تغيير العلامة المرجعية؟",
+  bookmarkRemove: "هل تريد إزالة الإشارة المرجعية؟",
+  bookmark: "إشارة مرجعية",
   startsAt: "يبدأ من",
   done: "مستعد",
   edit: "يحرر",

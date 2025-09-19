@@ -1,647 +1,647 @@
-// // import { Colors } from "@/constants/Colors";
-// // import { NewsArticlesType } from "@/constants/Types";
-// // import { useLanguage } from "@/contexts/LanguageContext";
-// // import { useNewsArticles } from "@/hooks/useNewsArticles";
-// // import { useFontSizeStore } from "@/stores/fontSizeStore";
-// // import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
-// // import {
-// //   isNewsArticleFavorited,
-// //   toggleNewsArticleFavorite,
-// // } from "@/utils/favorites";
-// // import { formattedDate } from "@/utils/formate";
-// // import AntDesign from "@expo/vector-icons/AntDesign";
-// // import Ionicons from "@expo/vector-icons/Ionicons";
-// // import { Image } from "expo-image";
-// // import React, { useCallback, useEffect, useRef, useState } from "react";
-// // import { useTranslation } from "react-i18next";
-// // import {
-// //   Pressable,
-// //   ScrollView,
-// //   StyleSheet,
-// //   Text,
-// //   TouchableOpacity,
-// //   useColorScheme,
-// //   View,
-// // } from "react-native";
-// // import Markdown from "react-native-markdown-display";
-// // import { SafeAreaView } from "react-native-safe-area-context";
-// // import FontSizePickerModal from "./FontSizePickerModal";
-// // import HeaderLeftBackButton from "./HeaderLeftBackButton";
-// // import { LoadingIndicator } from "./LoadingIndicator";
-// // import { ThemedText } from "./ThemedText";
-// // import { ThemedView } from "./ThemedView";
+// import { Colors } from "@/constants/Colors";
+// import { NewsArticlesType } from "@/constants/Types";
+// import { useLanguage } from "@/contexts/LanguageContext";
+// import { useNewsArticles } from "@/hooks/useNewsArticles";
+// import { useFontSizeStore } from "@/stores/fontSizeStore";
+// import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
+// import {
+//   isNewsArticleFavorited,
+//   toggleNewsArticleFavorite,
+// } from "@/utils/favorites";
+// import { formattedDate } from "@/utils/formate";
+// import AntDesign from "@expo/vector-icons/AntDesign";
+// import Ionicons from "@expo/vector-icons/Ionicons";
+// import { Image } from "expo-image";
+// import React, { useCallback, useEffect, useRef, useState } from "react";
+// import { useTranslation } from "react-i18next";
+// import {
+//   Pressable,
+//   ScrollView,
+//   StyleSheet,
+//   Text,
+//   TouchableOpacity,
+//   useColorScheme,
+//   View,
+// } from "react-native";
+// import Markdown from "react-native-markdown-display";
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import FontSizePickerModal from "./FontSizePickerModal";
+// import HeaderLeftBackButton from "./HeaderLeftBackButton";
+// import { LoadingIndicator } from "./LoadingIndicator";
+// import { ThemedText } from "./ThemedText";
+// import { ThemedView } from "./ThemedView";
 
-// // export default function NewsArticleDetailScreen({
-// //   articleId,
-// // }: {
-// //   articleId: number;
-// // }) {
-// //   const { fontSize, lineHeight } = useFontSizeStore();
-// //   const colorScheme = useColorScheme() ?? "light";
-// //   const { t } = useTranslation();
-// //   const [article, setArticle] = useState<NewsArticlesType | null>(null);
-// //   const [isLoading, setIsLoading] = useState(true);
-// //   const [error, setError] = useState<string | null>(null);
-// //   const [showFontSizePickerModal, setShowFontSizePickerModal] = useState(false);
-// //   const [isFavorite, setIsFavorite] = useState(false);
-// //   const [scrollY, setScrollY] = useState(0);
-// //   const { triggerRefreshFavorites } = useRefreshFavorites();
-// //   const { language, isArabic } = useLanguage();
-// //   const { fetchNewsArticleById } = useNewsArticles(language || "de");
+// export default function NewsArticleDetailScreen({
+//   articleId,
+// }: {
+//   articleId: number;
+// }) {
+//   const { fontSize, lineHeight } = useFontSizeStore();
+//   const colorScheme = useColorScheme() ?? "light";
+//   const { t } = useTranslation();
+//   const [article, setArticle] = useState<NewsArticlesType | null>(null);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const [showFontSizePickerModal, setShowFontSizePickerModal] = useState(false);
+//   const [isFavorite, setIsFavorite] = useState(false);
+//   const [scrollY, setScrollY] = useState(0);
+//   const { triggerRefreshFavorites } = useRefreshFavorites();
+//   const { language, isArabic } = useLanguage();
+//   const { fetchNewsArticleById } = useNewsArticles(language || "de");
 
-// //   const scrollViewRef = useRef<ScrollView>(null);
-// //   const handleScroll = (event: any) => {
-// //     setScrollY(event.nativeEvent.contentOffset.y);
-// //   };
-// //   const scrollToTop = () => {
-// //     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
-// //   };
+//   const scrollViewRef = useRef<ScrollView>(null);
+//   const handleScroll = (event: any) => {
+//     setScrollY(event.nativeEvent.contentOffset.y);
+//   };
+//   const scrollToTop = () => {
+//     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+//   };
 
-// //   useEffect(() => {
-// //     if (!articleId) {
-// //       setError(t("errorLoadingArticle"));
-// //       setIsLoading(false);
-// //       return;
-// //     }
+//   useEffect(() => {
+//     if (!articleId) {
+//       setError(t("errorLoadingArticle"));
+//       setIsLoading(false);
+//       return;
+//     }
 
-// //     const loadArticle = async () => {
-// //       setIsLoading(true);
-// //       setError(null);
-// //       try {
-// //         const fetchedArticle = await fetchNewsArticleById(articleId);
-// //         if (fetchedArticle) {
-// //           setArticle(fetchedArticle);
-// //         } else {
-// //           setError(t("errorLoadingArticle"));
-// //         }
-// //       } catch (error: any) {
-// //         console.error("Error loading news article:", error);
-// //         setError(error.message || t("errorLoadingArticle"));
-// //       } finally {
-// //         setIsLoading(false);
-// //       }
-// //     };
+//     const loadArticle = async () => {
+//       setIsLoading(true);
+//       setError(null);
+//       try {
+//         const fetchedArticle = await fetchNewsArticleById(articleId);
+//         if (fetchedArticle) {
+//           setArticle(fetchedArticle);
+//         } else {
+//           setError(t("errorLoadingArticle"));
+//         }
+//       } catch (error: any) {
+//         console.error("Error loading news article:", error);
+//         setError(error.message || t("errorLoadingArticle"));
+//       } finally {
+//         setIsLoading(false);
+//       }
+//     };
 
-// //     loadArticle();
-// //   }, [articleId]);
+//     loadArticle();
+//   }, [articleId]);
 
-// //   useEffect(() => {
-// //     (async () => {
-// //       try {
-// //         setIsFavorite(await isNewsArticleFavorited(articleId));
-// //       } catch {
-// //         console.log("error");
-// //       }
-// //     })();
-// //   }, [articleId]);
+//   useEffect(() => {
+//     (async () => {
+//       try {
+//         setIsFavorite(await isNewsArticleFavorited(articleId));
+//       } catch {
+//         console.log("error");
+//       }
+//     })();
+//   }, [articleId]);
 
-// //   const onPressToggle = useCallback(async () => {
-// //     if (!articleId) return;
+//   const onPressToggle = useCallback(async () => {
+//     if (!articleId) return;
 
-// //     try {
-// //       const newFavStatus = await toggleNewsArticleFavorite(articleId);
-// //       setIsFavorite(newFavStatus);
-// //       triggerRefreshFavorites();
-// //     } catch (error) {
-// //       console.log(error);
-// //     }
-// //   }, [articleId, triggerRefreshFavorites]);
+//     try {
+//       const newFavStatus = await toggleNewsArticleFavorite(articleId);
+//       setIsFavorite(newFavStatus);
+//       triggerRefreshFavorites();
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }, [articleId, triggerRefreshFavorites]);
 
-// //   if (isLoading) {
-// //     return (
-// //       <ThemedView style={[styles.container]}>
-// //         <View style={styles.loadingContainer}>
-// //           <View
-// //             style={[
-// //               styles.loadingCard,
-// //               { backgroundColor: Colors[colorScheme].background },
-// //             ]}
-// //           >
-// //             <LoadingIndicator size="large" />
-// //           </View>
-// //         </View>
-// //       </ThemedView>
-// //     );
-// //   }
+//   if (isLoading) {
+//     return (
+//       <ThemedView style={[styles.container]}>
+//         <View style={styles.loadingContainer}>
+//           <View
+//             style={[
+//               styles.loadingCard,
+//               { backgroundColor: Colors[colorScheme].background },
+//             ]}
+//           >
+//             <LoadingIndicator size="large" />
+//           </View>
+//         </View>
+//       </ThemedView>
+//     );
+//   }
 
-// //   if (error || !article) {
-// //     return (
-// //       <View
-// //         style={[
-// //           styles.container,
-// //           { backgroundColor: Colors[colorScheme].background },
-// //         ]}
-// //       >
-// //         <View style={styles.errorContainer}>
-// //           <Ionicons
-// //             name="newspaper-outline"
-// //             size={80}
-// //             color={Colors[colorScheme].defaultIcon}
-// //           />
-// //           <Text
-// //             style={[styles.errorTitle, { color: Colors[colorScheme].text }]}
-// //           >
-// //             {t("error")}
-// //           </Text>
-// //           <Text
-// //             style={[
-// //               styles.errorSubtitle,
-// //               { color: Colors[colorScheme].defaultIcon },
-// //             ]}
-// //           >
-// //             {t("errorLoadingArticle")}
-// //           </Text>
-// //           <Text
-// //             style={[
-// //               styles.errorSubtitle,
-// //               { color: Colors[colorScheme].defaultIcon },
-// //             ]}
-// //           >
-// //             {error}
-// //           </Text>
-// //         </View>
-// //       </View>
-// //     );
-// //   }
+//   if (error || !article) {
+//     return (
+//       <View
+//         style={[
+//           styles.container,
+//           { backgroundColor: Colors[colorScheme].background },
+//         ]}
+//       >
+//         <View style={styles.errorContainer}>
+//           <Ionicons
+//             name="newspaper-outline"
+//             size={80}
+//             color={Colors[colorScheme].defaultIcon}
+//           />
+//           <Text
+//             style={[styles.errorTitle, { color: Colors[colorScheme].text }]}
+//           >
+//             {t("error")}
+//           </Text>
+//           <Text
+//             style={[
+//               styles.errorSubtitle,
+//               { color: Colors[colorScheme].defaultIcon },
+//             ]}
+//           >
+//             {t("errorLoadingArticle")}
+//           </Text>
+//           <Text
+//             style={[
+//               styles.errorSubtitle,
+//               { color: Colors[colorScheme].defaultIcon },
+//             ]}
+//           >
+//             {error}
+//           </Text>
+//         </View>
+//       </View>
+//     );
+//   }
 
-// //   return (
-// //     <SafeAreaView
-// //       style={[
-// //         styles.container,
-// //         { backgroundColor: Colors[colorScheme].background },
-// //       ]}
-// //       edges={["top"]}
-// //     >
-// //       <ScrollView
-// //         style={styles.scrollView}
-// //         onScroll={handleScroll}
-// //         scrollEventThrottle={16}
-// //         showsVerticalScrollIndicator={true}
-// //         ref={scrollViewRef}
-// //       >
-// //         <View style={styles.heroSection}>
-// //           <View style={[styles.header]}>
-// //             <HeaderLeftBackButton />
-// //             <Text
-// //               style={[
-// //                 styles.headerText,
-// //                 {
-// //                   backgroundColor: Colors.universal.third,
-// //                 },
-// //               ]}
-// //             >
-// //               {t("newsArticleScreenTitle").toUpperCase()}
-// //             </Text>
-// //           </View>
+//   return (
+//     <SafeAreaView
+//       style={[
+//         styles.container,
+//         { backgroundColor: Colors[colorScheme].background },
+//       ]}
+//       edges={["top"]}
+//     >
+//       <ScrollView
+//         style={styles.scrollView}
+//         onScroll={handleScroll}
+//         scrollEventThrottle={16}
+//         showsVerticalScrollIndicator={true}
+//         ref={scrollViewRef}
+//       >
+//         <View style={styles.heroSection}>
+//           <View style={[styles.header]}>
+//             <HeaderLeftBackButton />
+//             <Text
+//               style={[
+//                 styles.headerText,
+//                 {
+//                   backgroundColor: Colors.universal.third,
+//                 },
+//               ]}
+//             >
+//               {t("newsArticleScreenTitle").toUpperCase()}
+//             </Text>
+//           </View>
 
-// //           {/* Main Title */}
-// //           <Text style={[styles.heroTitle, { color: Colors[colorScheme].text }]}>
-// //             {article.title}
-// //           </Text>
+//           {/* Main Title */}
+//           <Text style={[styles.heroTitle, { color: Colors[colorScheme].text }]}>
+//             {article.title}
+//           </Text>
 
-// //           {/* Article Meta */}
-// //           <View style={styles.articleMeta}>
-// //             <View style={styles.metaLeft}>
-// //               <View
-// //                 style={[
-// //                   styles.authorAvatar,
-// //                   {
-// //                     backgroundColor: Colors[colorScheme].contrast,
-// //                     borderColor: Colors[colorScheme].border,
-// //                   },
-// //                 ]}
-// //               >
-// //                 {article.scholar_type === 1 ? (
-// //                   <Image
-// //                     source={require("@/assets/images/1.png")}
-// //                     style={{ width: 50, height: 50, margin: 10 }}
-// //                     contentFit="fill"
-// //                   />
-// //                 ) : article.scholar_type === 2 ? (
-// //                   <Image
-// //                     source={require("@/assets/images/2.png")}
-// //                     style={{ width: 50, height: 50, margin: 10 }}
-// //                   />
-// //                 ) : (
-// //                   <Image
-// //                     source={require("@/assets/images/3.png")}
-// //                     style={{ width: 70, height: 70, margin: 0 }}
-// //                   />
-// //                 )}
-// //               </View>
-// //               <View>
-// //                 <Text
-// //                   style={[
-// //                     styles.authorName,
-// //                     { color: Colors[colorScheme].text },
-// //                   ]}
-// //                 >
-// //                   {article.author}
-// //                 </Text>
-// //                 <Text
-// //                   style={[
-// //                     styles.publishDate,
-// //                     { color: Colors.universal.grayedOut },
-// //                   ]}
-// //                 >
-// //                   {formattedDate(article.created_at)}
-// //                 </Text>
-// //               </View>
-// //             </View>
+//           {/* Article Meta */}
+//           <View style={styles.articleMeta}>
+//             <View style={styles.metaLeft}>
+//               <View
+//                 style={[
+//                   styles.authorAvatar,
+//                   {
+//                     backgroundColor: Colors[colorScheme].contrast,
+//                     borderColor: Colors[colorScheme].border,
+//                   },
+//                 ]}
+//               >
+//                 {article.scholar_type === 1 ? (
+//                   <Image
+//                     source={require("@/assets/images/1.png")}
+//                     style={{ width: 50, height: 50, margin: 10 }}
+//                     contentFit="fill"
+//                   />
+//                 ) : article.scholar_type === 2 ? (
+//                   <Image
+//                     source={require("@/assets/images/2.png")}
+//                     style={{ width: 50, height: 50, margin: 10 }}
+//                   />
+//                 ) : (
+//                   <Image
+//                     source={require("@/assets/images/3.png")}
+//                     style={{ width: 70, height: 70, margin: 0 }}
+//                   />
+//                 )}
+//               </View>
+//               <View>
+//                 <Text
+//                   style={[
+//                     styles.authorName,
+//                     { color: Colors[colorScheme].text },
+//                   ]}
+//                 >
+//                   {article.author}
+//                 </Text>
+//                 <Text
+//                   style={[
+//                     styles.publishDate,
+//                     { color: Colors.universal.grayedOut },
+//                   ]}
+//                 >
+//                   {formattedDate(article.created_at)}
+//                 </Text>
+//               </View>
+//             </View>
 
-// //             <View style={styles.metaRight}>
-// //               <View style={styles.readTime}>
-// //                 <Ionicons
-// //                   name="time-outline"
-// //                   size={16}
-// //                   color={Colors[colorScheme].defaultIcon}
-// //                 />
-// //                 <Text
-// //                   style={[
-// //                     styles.readTimeText,
-// //                     { color: Colors[colorScheme].defaultIcon },
-// //                   ]}
-// //                 >
-// //                   {article.read_time} min
-// //                 </Text>
-// //               </View>
-// //             </View>
-// //           </View>
+//             <View style={styles.metaRight}>
+//               <View style={styles.readTime}>
+//                 <Ionicons
+//                   name="time-outline"
+//                   size={16}
+//                   color={Colors[colorScheme].defaultIcon}
+//                 />
+//                 <Text
+//                   style={[
+//                     styles.readTimeText,
+//                     { color: Colors[colorScheme].defaultIcon },
+//                   ]}
+//                 >
+//                   {article.read_time} min
+//                 </Text>
+//               </View>
+//             </View>
+//           </View>
 
-// //           {/* Action Bar */}
-// //           <View style={styles.actionBar}>
-// //             <Pressable
-// //               style={[
-// //                 styles.actionButton,
-// //                 {
-// //                   backgroundColor: Colors[colorScheme].contrast,
-// //                   borderColor: Colors[colorScheme].border,
-// //                 },
-// //               ]}
-// //               onPress={() => setShowFontSizePickerModal(true)}
-// //             >
-// //               <Ionicons
-// //                 name="text"
-// //                 size={22}
-// //                 color={Colors[colorScheme].defaultIcon}
-// //               />
-// //             </Pressable>
-// //             <Pressable
-// //               style={[
-// //                 styles.actionButton,
-// //                 {
-// //                   backgroundColor: Colors[colorScheme].contrast,
-// //                   borderColor: Colors[colorScheme].border,
-// //                 },
-// //               ]}
-// //               onPress={onPressToggle}
-// //             >
-// //               <AntDesign
-// //                 name={isFavorite ? "star" : "staro"}
-// //                 size={25}
-// //                 color={
-// //                   isFavorite
-// //                     ? Colors.universal.favorite
-// //                     : Colors[colorScheme].defaultIcon
-// //                 }
-// //               />
-// //             </Pressable>
-// //           </View>
-// //         </View>
+//           {/* Action Bar */}
+//           <View style={styles.actionBar}>
+//             <Pressable
+//               style={[
+//                 styles.actionButton,
+//                 {
+//                   backgroundColor: Colors[colorScheme].contrast,
+//                   borderColor: Colors[colorScheme].border,
+//                 },
+//               ]}
+//               onPress={() => setShowFontSizePickerModal(true)}
+//             >
+//               <Ionicons
+//                 name="text"
+//                 size={22}
+//                 color={Colors[colorScheme].defaultIcon}
+//               />
+//             </Pressable>
+//             <Pressable
+//               style={[
+//                 styles.actionButton,
+//                 {
+//                   backgroundColor: Colors[colorScheme].contrast,
+//                   borderColor: Colors[colorScheme].border,
+//                 },
+//               ]}
+//               onPress={onPressToggle}
+//             >
+//               <AntDesign
+//                 name={isFavorite ? "star" : "staro"}
+//                 size={25}
+//                 color={
+//                   isFavorite
+//                     ? Colors.universal.favorite
+//                     : Colors[colorScheme].defaultIcon
+//                 }
+//               />
+//             </Pressable>
+//           </View>
+//         </View>
 
-// //         {/* Content Section */}
-// //         <View style={styles.contentSection}>
-// //           {/* Reading Progress Bar */}
-// //           <View
-// //             style={[
-// //               styles.progressBar,
-// //               { backgroundColor: Colors[colorScheme].border },
-// //             ]}
-// //           >
-// //             <View
-// //               style={[
-// //                 styles.progressFill,
-// //                 {
-// //                   backgroundColor: Colors.universal.third,
-// //                 },
-// //               ]}
-// //             />
-// //           </View>
+//         {/* Content Section */}
+//         <View style={styles.contentSection}>
+//           {/* Reading Progress Bar */}
+//           <View
+//             style={[
+//               styles.progressBar,
+//               { backgroundColor: Colors[colorScheme].border },
+//             ]}
+//           >
+//             <View
+//               style={[
+//                 styles.progressFill,
+//                 {
+//                   backgroundColor: Colors.universal.third,
+//                 },
+//               ]}
+//             />
+//           </View>
 
-// //           {/* Article Content */}
-// //           <View style={styles.articleContent}>
-// //             <Markdown
-// //               style={{
-// //                 body: {
-// //                   color: Colors[colorScheme].text,
-// //                   fontSize: fontSize,
-// //                   lineHeight: lineHeight * 1.6,
-// //                   fontFamily: "System",
-// //                 },
-// //                 heading1: {
-// //                   color: Colors[colorScheme].text,
-// //                   fontSize: fontSize * 1.8,
-// //                   fontWeight: "800",
-// //                   marginBottom: 20,
-// //                   marginTop: 32,
-// //                   letterSpacing: -0.5,
-// //                 },
-// //                 heading2: {
-// //                   color: Colors[colorScheme].text,
-// //                   fontSize: fontSize * 1.5,
-// //                   fontWeight: "700",
-// //                   marginBottom: 16,
-// //                   marginTop: 28,
-// //                   letterSpacing: -0.3,
-// //                 },
-// //                 paragraph: {
-// //                   color: Colors[colorScheme].text,
-// //                   fontSize: fontSize,
-// //                   lineHeight: lineHeight * 1.6,
-// //                   marginBottom: 20,
-// //                 },
-// //                 strong: {
-// //                   color: Colors[colorScheme].text,
-// //                   fontWeight: "700",
-// //                 },
-// //                 em: {
-// //                   color: Colors[colorScheme].defaultIcon,
-// //                   fontStyle: "italic",
-// //                 },
-// //                 link: {
-// //                   color: Colors[colorScheme].tint,
-// //                   textDecorationLine: "underline",
-// //                 },
-// //                 blockquote: {
-// //                   backgroundColor: "transparent",
-// //                   borderLeftColor: Colors[colorScheme].tint,
-// //                   borderLeftWidth: 4,
-// //                   paddingLeft: 20,
-// //                   paddingVertical: 16,
-// //                   marginVertical: 24,
-// //                   fontStyle: "italic",
-// //                 },
-// //                 code_inline: {
-// //                   backgroundColor: Colors[colorScheme].tint + "15",
-// //                   color: Colors[colorScheme].tint,
-// //                   paddingHorizontal: 6,
-// //                   paddingVertical: 2,
-// //                   borderRadius: 4,
-// //                   fontSize: fontSize * 0.9,
-// //                 },
-// //               }}
-// //             >
-// //               {article.content}
-// //             </Markdown>
-// //           </View>
-// //           {article.source && (
-// //             <View
-// //               style={[
-// //                 styles.footerContainer,
-// //                 {
-// //                   borderColor: Colors[colorScheme].border,
-// //                   alignItems: isArabic() ? "flex-end" : "flex-start",
-// //                 },
-// //               ]}
-// //             >
-// //               <ThemedText
-// //                 style={{
-// //                   fontWeight: "600",
-// //                   fontSize: fontSize,
-// //                   marginBottom: 5,
-// //                 }}
-// //               >
-// //                 {t("source")}
-// //               </ThemedText>
-// //               <Markdown
-// //                 style={{
-// //                   body: {
-// //                     color: Colors[colorScheme].text,
-// //                     fontSize: 14,
-// //                     fontFamily: "System",
-// //                   },
-// //                   paragraph: {
-// //                     color: Colors[colorScheme].text,
-// //                     fontSize: 14,
-// //                     textAlign: "justify",
-// //                   },
-// //                   strong: {
-// //                     color: Colors[colorScheme].text,
-// //                     fontWeight: "700",
-// //                     fontSize: 14,
-// //                   },
-// //                   em: {
-// //                     color: Colors[colorScheme].defaultIcon,
-// //                     fontStyle: "italic",
-// //                     fontSize: 14,
-// //                   },
-// //                   link: {
-// //                     color: Colors[colorScheme].tint,
-// //                     textDecorationLine: "underline",
-// //                     fontSize: 14,
-// //                   },
-// //                   blockquote: {
-// //                     backgroundColor: "transparent",
-// //                     borderLeftColor: Colors[colorScheme].tint,
-// //                     borderLeftWidth: 4,
-// //                     paddingLeft: 20,
-// //                     paddingVertical: 16,
-// //                     marginVertical: 24,
-// //                     fontStyle: "italic",
-// //                     fontSize: 14,
-// //                   },
-// //                   code_inline: {
-// //                     backgroundColor: Colors[colorScheme].tint + "15",
-// //                     color: Colors[colorScheme].tint,
-// //                     paddingHorizontal: 6,
-// //                     paddingVertical: 2,
-// //                     borderRadius: 4,
-// //                     fontSize: 14,
-// //                   },
-// //                 }}
-// //               >
-// //                 {article.source}
-// //               </Markdown>
-// //             </View>
-// //           )}
-// //         </View>
-// //       </ScrollView>
+//           {/* Article Content */}
+//           <View style={styles.articleContent}>
+//             <Markdown
+//               style={{
+//                 body: {
+//                   color: Colors[colorScheme].text,
+//                   fontSize: fontSize,
+//                   lineHeight: lineHeight * 1.6,
+//                   fontFamily: "System",
+//                 },
+//                 heading1: {
+//                   color: Colors[colorScheme].text,
+//                   fontSize: fontSize * 1.8,
+//                   fontWeight: "800",
+//                   marginBottom: 20,
+//                   marginTop: 32,
+//                   letterSpacing: -0.5,
+//                 },
+//                 heading2: {
+//                   color: Colors[colorScheme].text,
+//                   fontSize: fontSize * 1.5,
+//                   fontWeight: "700",
+//                   marginBottom: 16,
+//                   marginTop: 28,
+//                   letterSpacing: -0.3,
+//                 },
+//                 paragraph: {
+//                   color: Colors[colorScheme].text,
+//                   fontSize: fontSize,
+//                   lineHeight: lineHeight * 1.6,
+//                   marginBottom: 20,
+//                 },
+//                 strong: {
+//                   color: Colors[colorScheme].text,
+//                   fontWeight: "700",
+//                 },
+//                 em: {
+//                   color: Colors[colorScheme].defaultIcon,
+//                   fontStyle: "italic",
+//                 },
+//                 link: {
+//                   color: Colors[colorScheme].tint,
+//                   textDecorationLine: "underline",
+//                 },
+//                 blockquote: {
+//                   backgroundColor: "transparent",
+//                   borderLeftColor: Colors[colorScheme].tint,
+//                   borderLeftWidth: 4,
+//                   paddingLeft: 20,
+//                   paddingVertical: 16,
+//                   marginVertical: 24,
+//                   fontStyle: "italic",
+//                 },
+//                 code_inline: {
+//                   backgroundColor: Colors[colorScheme].tint + "15",
+//                   color: Colors[colorScheme].tint,
+//                   paddingHorizontal: 6,
+//                   paddingVertical: 2,
+//                   borderRadius: 4,
+//                   fontSize: fontSize * 0.9,
+//                 },
+//               }}
+//             >
+//               {article.content}
+//             </Markdown>
+//           </View>
+//           {article.source && (
+//             <View
+//               style={[
+//                 styles.footerContainer,
+//                 {
+//                   borderColor: Colors[colorScheme].border,
+//                   alignItems: isArabic() ? "flex-end" : "flex-start",
+//                 },
+//               ]}
+//             >
+//               <ThemedText
+//                 style={{
+//                   fontWeight: "600",
+//                   fontSize: fontSize,
+//                   marginBottom: 5,
+//                 }}
+//               >
+//                 {t("source")}
+//               </ThemedText>
+//               <Markdown
+//                 style={{
+//                   body: {
+//                     color: Colors[colorScheme].text,
+//                     fontSize: 14,
+//                     fontFamily: "System",
+//                   },
+//                   paragraph: {
+//                     color: Colors[colorScheme].text,
+//                     fontSize: 14,
+//                     textAlign: "justify",
+//                   },
+//                   strong: {
+//                     color: Colors[colorScheme].text,
+//                     fontWeight: "700",
+//                     fontSize: 14,
+//                   },
+//                   em: {
+//                     color: Colors[colorScheme].defaultIcon,
+//                     fontStyle: "italic",
+//                     fontSize: 14,
+//                   },
+//                   link: {
+//                     color: Colors[colorScheme].tint,
+//                     textDecorationLine: "underline",
+//                     fontSize: 14,
+//                   },
+//                   blockquote: {
+//                     backgroundColor: "transparent",
+//                     borderLeftColor: Colors[colorScheme].tint,
+//                     borderLeftWidth: 4,
+//                     paddingLeft: 20,
+//                     paddingVertical: 16,
+//                     marginVertical: 24,
+//                     fontStyle: "italic",
+//                     fontSize: 14,
+//                   },
+//                   code_inline: {
+//                     backgroundColor: Colors[colorScheme].tint + "15",
+//                     color: Colors[colorScheme].tint,
+//                     paddingHorizontal: 6,
+//                     paddingVertical: 2,
+//                     borderRadius: 4,
+//                     fontSize: 14,
+//                   },
+//                 }}
+//               >
+//                 {article.source}
+//               </Markdown>
+//             </View>
+//           )}
+//         </View>
+//       </ScrollView>
 
-// //       <FontSizePickerModal
-// //         visible={showFontSizePickerModal}
-// //         onClose={() => setShowFontSizePickerModal(false)}
-// //       />
-// //       {scrollY > 200 && (
-// //         <TouchableOpacity style={styles.arrowUp} onPress={scrollToTop}>
-// //             <AntDesign name="up" size={28} color="white" />
-// //         </TouchableOpacity>
-// //       )}
-// //     </SafeAreaView>
-// //   );
-// // }
+//       <FontSizePickerModal
+//         visible={showFontSizePickerModal}
+//         onClose={() => setShowFontSizePickerModal(false)}
+//       />
+//       {scrollY > 200 && (
+//         <TouchableOpacity style={styles.arrowUp} onPress={scrollToTop}>
+//             <AntDesign name="up" size={28} color="white" />
+//         </TouchableOpacity>
+//       )}
+//     </SafeAreaView>
+//   );
+// }
 
-// // const styles = StyleSheet.create({
-// //   container: {
-// //     flex: 1,
-// //   },
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//   },
 
-// //   scrollView: {
-// //     flex: 1,
-// //   },
-// //   heroSection: {
-// //     paddingHorizontal: 24,
-// //     paddingBottom: 32,
-// //     paddingTop: 10,
-// //   },
-// //   header: {
-// //     flexDirection: "row",
-// //     alignItems: "center",
-// //     justifyContent: "space-between",
-// //     marginBottom: 20,
-// //   },
-// //   headerText: {
-// //     color: "white",
-// //     fontSize: 12,
-// //     fontWeight: "700",
-// //     letterSpacing: 1,
-// //     paddingHorizontal: 12,
-// //     paddingVertical: 6,
-// //     borderRadius: 16,
-// //   },
-// //   heroTitle: {
-// //     fontSize: 32,
-// //     fontWeight: "900",
-// //     lineHeight: 40,
-// //     marginBottom: 24,
-// //     letterSpacing: -0.8,
-// //   },
-// //   articleMeta: {
-// //     flexDirection: "row",
-// //     justifyContent: "space-between",
-// //     alignItems: "center",
-// //     marginBottom: 32,
-// //   },
-// //   metaLeft: {
-// //     flexDirection: "row",
-// //     alignItems: "center",
-// //     gap: 12,
-// //   },
-// //   authorAvatar: {
-// //     borderWidth: 1,
-// //     borderRadius: 99,
-// //     justifyContent: "center",
-// //     alignItems: "center",
-// //   },
-// //   authorName: {
-// //     fontSize: 16,
-// //     fontWeight: "600",
-// //   },
-// //   publishDate: {
-// //     fontSize: 14,
-// //     marginTop: 2,
-// //   },
-// //   metaRight: {},
-// //   readTime: {
-// //     flexDirection: "row",
-// //     alignItems: "center",
-// //     gap: 4,
-// //   },
-// //   readTimeText: {
-// //     fontSize: 14,
-// //     fontWeight: "500",
-// //   },
-// //   actionBar: {
-// //     flexDirection: "row",
-// //     gap: 12,
-// //   },
-// //   actionButton: {
-// //     flex: 1,
-// //     flexDirection: "row",
-// //     alignItems: "center",
-// //     justifyContent: "center",
-// //     gap: 8,
-// //     paddingVertical: 12,
-// //     borderRadius: 24,
-// //     borderWidth: 0.5,
-// //   },
-// //   actionText: {
-// //     fontSize: 14,
-// //     fontWeight: "600",
-// //   },
-// //   contentSection: {
-// //     flex: 1,
-// //   },
-// //   progressBar: {
-// //     height: 3,
-// //     marginHorizontal: 24,
-// //     borderRadius: 2,
-// //     marginBottom: 32,
-// //   },
-// //   progressFill: {
-// //     height: "100%",
-// //     borderRadius: 2,
-// //   },
-// //   articleContent: {
-// //     paddingHorizontal: 30,
-// //   },
+//   scrollView: {
+//     flex: 1,
+//   },
+//   heroSection: {
+//     paddingHorizontal: 24,
+//     paddingBottom: 32,
+//     paddingTop: 10,
+//   },
+//   header: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "space-between",
+//     marginBottom: 20,
+//   },
+//   headerText: {
+//     color: "white",
+//     fontSize: 12,
+//     fontWeight: "700",
+//     letterSpacing: 1,
+//     paddingHorizontal: 12,
+//     paddingVertical: 6,
+//     borderRadius: 16,
+//   },
+//   heroTitle: {
+//     fontSize: 32,
+//     fontWeight: "900",
+//     lineHeight: 40,
+//     marginBottom: 24,
+//     letterSpacing: -0.8,
+//   },
+//   articleMeta: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     marginBottom: 32,
+//   },
+//   metaLeft: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     gap: 12,
+//   },
+//   authorAvatar: {
+//     borderWidth: 1,
+//     borderRadius: 99,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   authorName: {
+//     fontSize: 16,
+//     fontWeight: "600",
+//   },
+//   publishDate: {
+//     fontSize: 14,
+//     marginTop: 2,
+//   },
+//   metaRight: {},
+//   readTime: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     gap: 4,
+//   },
+//   readTimeText: {
+//     fontSize: 14,
+//     fontWeight: "500",
+//   },
+//   actionBar: {
+//     flexDirection: "row",
+//     gap: 12,
+//   },
+//   actionButton: {
+//     flex: 1,
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     gap: 8,
+//     paddingVertical: 12,
+//     borderRadius: 24,
+//     borderWidth: 0.5,
+//   },
+//   actionText: {
+//     fontSize: 14,
+//     fontWeight: "600",
+//   },
+//   contentSection: {
+//     flex: 1,
+//   },
+//   progressBar: {
+//     height: 3,
+//     marginHorizontal: 24,
+//     borderRadius: 2,
+//     marginBottom: 32,
+//   },
+//   progressFill: {
+//     height: "100%",
+//     borderRadius: 2,
+//   },
+//   articleContent: {
+//     paddingHorizontal: 30,
+//   },
 
-// //   loadingContainer: {
-// //     flex: 1,
-// //     justifyContent: "center",
-// //     alignItems: "center",
-// //     padding: 40,
-// //   },
-// //   loadingCard: {
-// //     alignItems: "center",
-// //     gap: 20,
-// //     padding: 40,
-// //     borderRadius: 20,
-// //     shadowOffset: { width: 0, height: 4 },
-// //     shadowOpacity: 0.1,
-// //     shadowRadius: 12,
-// //     elevation: 4,
-// //   },
-// //   loadingText: {
-// //     fontSize: 16,
-// //     fontWeight: "500",
-// //   },
-// //   errorContainer: {
-// //     flex: 1,
-// //     justifyContent: "center",
-// //     alignItems: "center",
-// //     padding: 40,
-// //   },
-// //   errorTitle: {
-// //     fontSize: 24,
-// //     fontWeight: "700",
-// //     marginTop: 20,
-// //     marginBottom: 8,
-// //   },
-// //   errorSubtitle: {
-// //     fontSize: 16,
-// //     textAlign: "center",
-// //     lineHeight: 24,
-// //   },
-// //   footerContainer: {
-// //     flexDirection: "column",
-// //     borderTopWidth: 0.5,
-// //     paddingTop: 20,
-// //     paddingBottom: 40,
-// //     paddingHorizontal: 24,
-// //   },
-// //   arrowUp: {
-// //     position: "absolute",
-// //     bottom: "60%",
-// //     right: "3%",
-// //     borderWidth: 2.5,
-// //     borderRadius: 99,
-// //     padding: 5,
-// //     backgroundColor: Colors.universal.primary,
-// //     borderColor: Colors.universal.primary,
-// //   },
-// // });
+//   loadingContainer: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     padding: 40,
+//   },
+//   loadingCard: {
+//     alignItems: "center",
+//     gap: 20,
+//     padding: 40,
+//     borderRadius: 20,
+//     shadowOffset: { width: 0, height: 4 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 12,
+//     elevation: 4,
+//   },
+//   loadingText: {
+//     fontSize: 16,
+//     fontWeight: "500",
+//   },
+//   errorContainer: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     padding: 40,
+//   },
+//   errorTitle: {
+//     fontSize: 24,
+//     fontWeight: "700",
+//     marginTop: 20,
+//     marginBottom: 8,
+//   },
+//   errorSubtitle: {
+//     fontSize: 16,
+//     textAlign: "center",
+//     lineHeight: 24,
+//   },
+//   footerContainer: {
+//     flexDirection: "column",
+//     borderTopWidth: 0.5,
+//     paddingTop: 20,
+//     paddingBottom: 40,
+//     paddingHorizontal: 24,
+//   },
+//   arrowUp: {
+//     position: "absolute",
+//     bottom: "60%",
+//     right: "3%",
+//     borderWidth: 2.5,
+//     borderRadius: 99,
+//     padding: 5,
+//     backgroundColor: Colors.universal.primary,
+//     borderColor: Colors.universal.primary,
+//   },
+// });
 
-//! Ohne lesezeichen
+// ! Ohne lesezeichen
 // import { Colors } from "@/constants/Colors";
 // import { NewsArticlesType } from "@/constants/Types";
 // import { useLanguage } from "@/contexts/LanguageContext";
@@ -928,8 +928,8 @@
 //           ]}
 //           onPress={onPressToggle}
 //         >
-//           <AntDesign
-//             name={isFavorite ? "star" : "staro"}
+//           <Ionicons
+//             name={isFavorite ? "star" : "star-outline"}
 //             size={25}
 //             color={
 //               isFavorite
@@ -1262,7 +1262,7 @@
 //   },
 // });
 
-//! Lesezeichen
+// ! Mit lesezeichen
 import { Colors } from "@/constants/Colors";
 import { NewsArticlesType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -1276,8 +1276,15 @@ import {
 import { formattedDate } from "@/utils/formate";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   Pressable,
@@ -1291,8 +1298,8 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
   Alert,
+  type GestureResponderEvent,
 } from "react-native";
-import type { GestureResponderEvent } from "react-native";
 import Markdown from "react-native-markdown-display";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontSizePickerModal from "./FontSizePickerModal";
@@ -1300,8 +1307,10 @@ import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
+import i18n from "@/utils/i18n";
 
 type Row = { key: "content" };
+type SavedBookmark = { ratio: number; addedAt: number };
 
 export default function NewsArticleDetailScreen({
   articleId,
@@ -1314,49 +1323,54 @@ export default function NewsArticleDetailScreen({
   const [article, setArticle] = useState<NewsArticlesType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [showFontSizePickerModal, setShowFontSizePickerModal] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Reading progress (0..1) with throttled updates for smooth scroll
+  // scroll/progress
+  const [scrollY, setScrollY] = useState(0);
   const [progress, setProgress] = useState(0);
-  const lastProgressRef = useRef(0);
-  const lastSetRef = useRef(0);
-  const [showUp, setShowUp] = useState(false);
 
-  // Bookmark state: Y offset inside the content container (in px)
-  const [bookmarkY, setBookmarkY] = useState<number | null>(null);
+  // layout + coords conversion
+  const containerRef = useRef<View>(null);
+  const [containerTop, setContainerTop] = useState(0);
+  const [containerLeft, setContainerLeft] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  // overlay position (in content coords)
+  const [overlayContentY, setOverlayContentY] = useState<number | null>(null);
+
+  // persisted bookmark ratio (excludes header)
+  const [bookmarkRatio, setBookmarkRatio] = useState<number | null>(null);
 
   const { triggerRefreshFavorites } = useRefreshFavorites();
   const { language, isArabic } = useLanguage();
   const { fetchNewsArticleById } = useNewsArticles(language || "de");
+  const bookmarkKey = (articleId: number) =>
+    `bookmark:newsArticle:${articleId}:${language}`;
 
   const flatListRef = useRef<FlatList<Row>>(null);
 
-  // Ref to the content container we measure against
-  const contentContainerRef = useRef<View>(null);
+  const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+  const effectiveScrollableHeight = useMemo(
+    () => Math.max(1, contentHeight - headerHeight),
+    [contentHeight, headerHeight]
+  );
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-    const y = contentOffset.y;
+    setScrollY(contentOffset.y);
+
     const total = Math.max(1, contentSize.height - layoutMeasurement.height);
-    const p = Math.min(1, Math.max(0, y / total));
-
-    const now = Date.now();
-    // Throttle progress updates (~10x/sec) or when change > 2%
-    if (now - lastSetRef.current > 100 || Math.abs(p - lastProgressRef.current) > 0.02) {
-      lastSetRef.current = now;
-      lastProgressRef.current = p;
-      setProgress(p);
-    }
-
-    // Flip the "scroll-to-top" button with hysteresis to avoid chatter
-    setShowUp((prev) => (prev ? y > 160 : y > 240));
+    setProgress(clamp01(contentOffset.y / total));
   };
 
   const scrollToTop = () => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
+  // Load article
   useEffect(() => {
     if (!articleId) {
       setError(t("errorLoadingArticle"));
@@ -1377,8 +1391,9 @@ export default function NewsArticleDetailScreen({
         setIsLoading(false);
       }
     })();
-  }, [articleId, fetchNewsArticleById, t]);
+  }, [articleId]);
 
+  // Favorite state
   useEffect(() => {
     (async () => {
       try {
@@ -1389,42 +1404,116 @@ export default function NewsArticleDetailScreen({
     })();
   }, [articleId]);
 
-  const onPressToggle = useCallback(async () => {
-    if (!articleId) return;
-    try {
-      const newFavStatus = await toggleNewsArticleFavorite(articleId);
-      setIsFavorite(newFavStatus);
-      triggerRefreshFavorites();
-    } catch (err) {
-      console.log(err);
-    }
-  }, [articleId, triggerRefreshFavorites]);
+  // Measure container for page->local conversion
+  const handleContainerLayout = () => {
+    containerRef.current?.measureInWindow?.((x, y) => {
+      setContainerLeft(x ?? 0);
+      setContainerTop(y ?? 0);
+    });
+  };
 
-  // Long-press anywhere in the content to place/move the bookmark
-  const handleContentLongPress = useCallback(
-    (e: GestureResponderEvent) => {
-      const pageY = e.nativeEvent.pageY; // absolute screen Y at press point
-
-      // Measure the content container's screen Y to compute relative offset
-      contentContainerRef.current?.measureInWindow((_x, containerScreenY) => {
-        const yRelative = Math.max(0, pageY - containerScreenY);
-
-        if (bookmarkY !== null) {
-          Alert.alert(
-            t("bookmark_change_title") || "Change bookmark?",
-            t("bookmark_change_message") || "Move your bookmark to this new line?",
-            [
-              { text: t("cancel") || "Cancel", style: "cancel" },
-              { text: t("ok") || "OK", onPress: () => setBookmarkY(yRelative) },
-            ]
-          );
-        } else {
-          setBookmarkY(yRelative);
+  // Load bookmark
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
+        if (!raw) return;
+        const saved: SavedBookmark = JSON.parse(raw);
+        if (typeof saved?.ratio === "number") {
+          setBookmarkRatio(clamp01(saved.ratio));
         }
-      });
+      } catch (e) {
+        console.log("Failed to load bookmark", e);
+      }
+    })();
+  }, [articleId]);
+
+  // Recompute overlay Y from ratio when sizes/ratio change
+  useEffect(() => {
+    if (bookmarkRatio == null) return;
+    const y = headerHeight + bookmarkRatio * effectiveScrollableHeight;
+    setOverlayContentY(y);
+  }, [bookmarkRatio, headerHeight, effectiveScrollableHeight]);
+
+  const saveBookmark = useCallback(
+    async (contentY: number) => {
+      const ratio = clamp01(
+        (contentY - headerHeight) / effectiveScrollableHeight
+      );
+      setBookmarkRatio(ratio);
+      setOverlayContentY(contentY);
+      try {
+        const payload: SavedBookmark = { ratio, addedAt: Date.now() };
+        await AsyncStorage.setItem(
+          bookmarkKey(articleId),
+          JSON.stringify(payload)
+        );
+      } catch (e) {
+        console.log("Failed to save bookmark", e);
+      }
     },
-    [bookmarkY, t]
+    [articleId, headerHeight, effectiveScrollableHeight]
   );
+
+  const clearBookmark = useCallback(() => {
+    Alert.alert(
+      t("remove", "Remove"),
+      t("bookmarkRemove", "Remove this bookmark?"),
+      [
+        { text: t("cancel", "Cancel"), style: "cancel" },
+        {
+          text: t("remove", "Remove"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setBookmarkRatio(null);
+              setOverlayContentY(null);
+              await AsyncStorage.removeItem(bookmarkKey(articleId));
+            } catch (e) {
+              console.log("Failed to clear bookmark", e);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  }, [articleId, i18n.language]);
+
+  const jumpToBookmark = useCallback(() => {
+    if (overlayContentY == null) return;
+    const target = Math.max(overlayContentY - 200, 0);
+    flatListRef.current?.scrollToOffset({ offset: target, animated: true });
+  }, [overlayContentY]);
+
+  // CONFIRM before replacing
+  const handleLongPress = useCallback(
+    (e: GestureResponderEvent) => {
+      const { pageY } = e.nativeEvent as any;
+      const contentY = pageY - containerTop + scrollY;
+
+      if (bookmarkRatio != null) {
+        Alert.alert(
+          t("replace"),
+          t("bookmarkReplaceQuestion"),
+          [
+            { text: t("cancel"), style: "cancel" },
+            {
+              text: t("replace", "Replace"),
+              style: "destructive",
+              onPress: () => saveBookmark(contentY),
+            },
+          ],
+          { cancelable: true }
+        );
+        return;
+      }
+      // No previous bookmark
+      saveBookmark(contentY);
+    },
+    [bookmarkRatio, containerTop, scrollY, saveBookmark, i18n.language]
+  );
+
+  const { isArabic: isArabicFn } = useLanguage();
 
   if (isLoading) {
     return (
@@ -1462,23 +1551,30 @@ export default function NewsArticleDetailScreen({
           {t("error")}
         </Text>
         <Text
-          style={[styles.errorSubtitle, { color: Colors[colorScheme].defaultIcon }]}
+          style={[
+            styles.errorSubtitle,
+            { color: Colors[colorScheme].defaultIcon },
+          ]}
         >
           {t("errorLoadingArticle")}
         </Text>
-        {!!error && (
-          <Text
-            style={[styles.errorSubtitle, { color: Colors[colorScheme].defaultIcon }]}
-          >
-            {error}
-          </Text>
-        )}
+        <Text
+          style={[
+            styles.errorSubtitle,
+            { color: Colors[colorScheme].defaultIcon },
+          ]}
+        >
+          {error}
+        </Text>
       </View>
     );
   }
 
   const header = (
-    <View style={styles.heroSection}>
+    <View
+      style={styles.heroSection}
+      onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
+    >
       <View style={[styles.header]}>
         <HeaderLeftBackButton />
         <Text
@@ -1493,12 +1589,10 @@ export default function NewsArticleDetailScreen({
         </Text>
       </View>
 
-      {/* Main Title */}
       <Text style={[styles.heroTitle, { color: Colors[colorScheme].text }]}>
         {article.title}
       </Text>
 
-      {/* Article Meta */}
       <View style={styles.articleMeta}>
         <View style={styles.metaLeft}>
           <View
@@ -1535,7 +1629,10 @@ export default function NewsArticleDetailScreen({
               {article.author}
             </Text>
             <Text
-              style={[styles.publishDate, { color: Colors.universal.grayedOut }]}
+              style={[
+                styles.publishDate,
+                { color: Colors.universal.grayedOut },
+              ]}
             >
               {formattedDate(article.created_at)}
             </Text>
@@ -1550,7 +1647,10 @@ export default function NewsArticleDetailScreen({
               color={Colors[colorScheme].defaultIcon}
             />
             <Text
-              style={[styles.readTimeText, { color: Colors[colorScheme].defaultIcon }]}
+              style={[
+                styles.readTimeText,
+                { color: Colors[colorScheme].defaultIcon },
+              ]}
             >
               {article.read_time} min
             </Text>
@@ -1558,16 +1658,18 @@ export default function NewsArticleDetailScreen({
         </View>
       </View>
 
-      {/* Reading Progress Bar */}
       <View
-        style={[styles.progressBar, { backgroundColor: Colors[colorScheme].border }]}
+        style={[
+          styles.progressBar,
+          { backgroundColor: Colors[colorScheme].border },
+        ]}
       >
         <View
           style={[
             styles.progressFill,
             {
               backgroundColor: Colors.universal.third,
-              width: `${Math.round(progress * 100)}%`,
+              width: `${progress * 100}%`,
             },
           ]}
         />
@@ -1579,84 +1681,72 @@ export default function NewsArticleDetailScreen({
 
   const renderItem = ({ item }: ListRenderItemInfo<Row>) => {
     return (
-      <View style={styles.contentSection}>
-        {/* Article Content */}
-        <View ref={contentContainerRef} style={styles.articleContent}>
-          {/* Pressable wraps Markdown to catch long-presses across nested children */}
-          <Pressable
-            onLongPress={handleContentLongPress}
-            delayLongPress={300}
-            style={styles.contentPressable}
+      <Pressable
+        style={styles.contentSection}
+        delayLongPress={350}
+        onLongPress={handleLongPress}
+      >
+        <View style={styles.articleContent}>
+          <Markdown
+            style={{
+              body: {
+                color: Colors[colorScheme].text,
+                fontSize: fontSize,
+                lineHeight: lineHeight * 1.6,
+                fontFamily: "System",
+              },
+              heading1: {
+                color: Colors[colorScheme].text,
+                fontSize: fontSize * 1.8,
+                fontWeight: "800",
+                marginBottom: 20,
+                marginTop: 32,
+                letterSpacing: -0.5,
+              },
+              heading2: {
+                color: Colors[colorScheme].text,
+                fontSize: fontSize * 1.5,
+                fontWeight: "700",
+                marginBottom: 16,
+                marginTop: 28,
+                letterSpacing: -0.3,
+              },
+              paragraph: {
+                color: Colors[colorScheme].text,
+                fontSize: fontSize,
+                lineHeight: lineHeight * 1.6,
+                marginBottom: 20,
+              },
+              strong: { color: Colors[colorScheme].text, fontWeight: "700" },
+              em: {
+                color: Colors[colorScheme].defaultIcon,
+                fontStyle: "italic",
+              },
+              link: {
+                color: Colors[colorScheme].tint,
+                textDecorationLine: "underline",
+              },
+              blockquote: {
+                backgroundColor: "transparent",
+                borderLeftColor: Colors[colorScheme].tint,
+                borderLeftWidth: 4,
+                paddingLeft: 20,
+                paddingVertical: 16,
+                marginVertical: 24,
+                fontStyle: "italic",
+              },
+              code_inline: {
+                backgroundColor: Colors[colorScheme].tint + "15",
+                color: Colors[colorScheme].tint,
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                borderRadius: 4,
+                fontSize: fontSize * 0.9,
+              },
+            }}
           >
-            <Markdown
-              style={{
-                body: {
-                  color: Colors[colorScheme].text,
-                  fontSize: fontSize,
-                  lineHeight: lineHeight * 1.6,
-                  fontFamily: "System",
-                },
-                heading1: {
-                  color: Colors[colorScheme].text,
-                  fontSize: fontSize * 1.8,
-                  fontWeight: "800",
-                  marginBottom: 20,
-                  marginTop: 32,
-                  letterSpacing: -0.5,
-                },
-                heading2: {
-                  color: Colors[colorScheme].text,
-                  fontSize: fontSize * 1.5,
-                  fontWeight: "700",
-                  marginBottom: 16,
-                  marginTop: 28,
-                  letterSpacing: -0.3,
-                },
-                paragraph: {
-                  color: Colors[colorScheme].text,
-                  fontSize: fontSize,
-                  lineHeight: lineHeight * 1.6,
-                  marginBottom: 20,
-                },
-                strong: {
-                  color: Colors[colorScheme].text,
-                  fontWeight: "700",
-                },
-                em: {
-                  color: Colors[colorScheme].defaultIcon,
-                  fontStyle: "italic",
-                },
-                link: {
-                  color: Colors[colorScheme].tint,
-                  textDecorationLine: "underline",
-                },
-                blockquote: {
-                  backgroundColor: "transparent",
-                  borderLeftColor: Colors[colorScheme].tint,
-                  borderLeftWidth: 4,
-                  paddingLeft: 20,
-                  paddingVertical: 16,
-                  marginVertical: 24,
-                  fontStyle: "italic",
-                },
-                code_inline: {
-                  backgroundColor: Colors[colorScheme].tint + "15",
-                  color: Colors[colorScheme].tint,
-                  paddingHorizontal: 6,
-                  paddingVertical: 2,
-                  borderRadius: 4,
-                  fontSize: fontSize * 0.9,
-                },
-              }}
-            >
-              {article.content}
-            </Markdown>
-
-            {/* Red bookmark line (absolute, inside content container) */}
-            {bookmarkY !== null && (
-              <View pointerEvents="none" style={[styles.bookmarkLine, { top: bookmarkY }]} />
-            )}
-          </Pressable>
+            {article.content}
+          </Markdown>
         </View>
 
         {article.source && (
@@ -1665,16 +1755,12 @@ export default function NewsArticleDetailScreen({
               styles.footerContainer,
               {
                 borderColor: Colors[colorScheme].border,
-                alignItems: isArabic() ? "flex-end" : "flex-start",
+                alignItems: isArabicFn() ? "flex-end" : "flex-start",
               },
             ]}
           >
             <ThemedText
-              style={{
-                fontWeight: "600",
-                fontSize: fontSize,
-                marginBottom: 5,
-              }}
+              style={{ fontWeight: "600", fontSize: fontSize, marginBottom: 5 }}
             >
               {t("source")}
             </ThemedText>
@@ -1729,13 +1815,18 @@ export default function NewsArticleDetailScreen({
             </Markdown>
           </View>
         )}
-      </View>
+      </Pressable>
     );
   };
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}
+      ref={containerRef}
+      onLayout={handleContainerLayout}
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
       edges={["top"]}
     >
       <FlatList
@@ -1747,18 +1838,77 @@ export default function NewsArticleDetailScreen({
         onScroll={handleScroll}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator
-        // perf knobs (tweak to taste)
+        onContentSizeChange={(_, h) => setContentHeight(h)}
         initialNumToRender={1}
         windowSize={5}
         removeClippedSubviews
       />
+
+      {/* Overlay */}
+      <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+        {overlayContentY !== null && (
+          <>
+            <View
+              pointerEvents="none"
+              style={[
+                styles.bookmarkLine,
+                {
+                  top: overlayContentY - scrollY,
+                  backgroundColor: Colors.universal.third,
+                },
+              ]}
+            />
+            <View
+              style={[
+                styles.bookmarkChipWrap,
+                { top: overlayContentY - scrollY - 14 },
+              ]}
+            >
+              <View
+                style={[
+                  styles.bookmarkChip,
+                  {
+                    backgroundColor: Colors.universal.third,
+                    borderColor: Colors[colorScheme].background,
+                  },
+                ]}
+              >
+                <Ionicons name="bookmark" size={12} color="#fff" />
+                <Text style={styles.bookmarkChipText}>
+                  {t("bookmark")}
+                </Text>
+
+                <TouchableOpacity
+                  onPress={jumpToBookmark}
+                  style={styles.bookmarkChipBtn}
+                >
+                  <Ionicons name="navigate" size={14} color="#fff" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={clearBookmark}
+                  style={styles.bookmarkChipBtn}
+                >
+                  <Ionicons name="close" size={14} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+        )}
+      </View>
 
       <FontSizePickerModal
         visible={showFontSizePickerModal}
         onClose={() => setShowFontSizePickerModal(false)}
       />
 
-      {showUp && (
+      {bookmarkRatio != null && (
+        <TouchableOpacity style={styles.jumpBtn} onPress={jumpToBookmark}>
+          <Ionicons name="flag" size={22} color="#fff" />
+        </TouchableOpacity>
+      )}
+
+      {scrollY > 200 && (
         <TouchableOpacity style={styles.arrowUp} onPress={scrollToTop}>
           <AntDesign name="up" size={28} color="white" />
         </TouchableOpacity>
@@ -1843,24 +1993,7 @@ const styles = StyleSheet.create({
   },
   progressFill: { height: "100%", borderRadius: 2 },
 
-  // Content container defines padding; used for measureInWindow
   articleContent: { paddingHorizontal: 30 },
-
-  // Positioned container for absolute bookmark overlay
-  contentPressable: {
-    position: "relative",
-  },
-
-  // The red bookmark line
-  bookmarkLine: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: "red",
-    borderRadius: 2,
-    opacity: 0.95,
-  },
 
   loadingContainer: {
     flex: 1,
@@ -1881,7 +2014,7 @@ const styles = StyleSheet.create({
   errorContainer: {
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
+    padding: 40,
   },
   errorTitle: {
     fontSize: 24,
@@ -1898,6 +2031,60 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 40,
     paddingHorizontal: 24,
+  },
+
+  // Bookmark overlay
+  bookmarkLine: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    height: 2,
+    opacity: 0.9,
+  },
+  bookmarkChipWrap: {
+    position: "absolute",
+    right: 10,
+  },
+  bookmarkChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  bookmarkChipText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  bookmarkChipBtn: {
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+  },
+
+  // Quick jump floating button
+  jumpBtn: {
+    position: "absolute",
+    bottom: 28,
+    right: 24,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.universal.third,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 4,
   },
 
   arrowUp: {

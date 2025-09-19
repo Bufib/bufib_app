@@ -1168,7 +1168,13 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
                 {podcast.description}
               </Text>
 
-              <View style={{ flexDirection: "row", gap: 20 }}>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 {showPlaybackControls && (
                   <View style={styles.durationContainer}>
                     <Ionicons name="time-outline" size={16} color="#fff" />
@@ -1181,8 +1187,8 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
                   onPress={onPressToggleFavorite}
                   style={styles.favoriteButton}
                 >
-                  <AntDesign
-                    name={isFavorite ? "star" : "staro"}
+                  <Ionicons
+                    name={isFavorite ? "star" : "star-outline"}
                     size={25}
                     color={isFavorite ? Colors.universal.favorite : "#fff"}
                   />
@@ -1501,6 +1507,7 @@ const styles = StyleSheet.create({
   durationContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: "rgba(255,255,255,0.2)",
     paddingHorizontal: 12,
     paddingVertical: 6,

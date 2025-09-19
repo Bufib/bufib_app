@@ -468,7 +468,6 @@ const SuraScreen: React.FC = () => {
           }}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
-          estimatedItemSize={188}
           onScroll={Animated.event(
             [{ nativeEvent: { contentOffset: { y: scrollY } } }],
             { useNativeDriver: false }

@@ -55,6 +55,8 @@ export const en = {
   noData: "No data available",
   confirmBookmarkChange: "Change Bookmark?",
   bookmarkReplaceQuestion: "Do you want to change the Bookmark?",
+  bookmarkRemove: "Do you want to remove the bookmark?",
+  bookmark: "Bookmark",
   replace: "Replace",
   startsAt: "Starts from:",
   done: "Done",

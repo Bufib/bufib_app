@@ -54,6 +54,8 @@ export const de = {
   noData: "Keine Daten vorhanden",
   confirmBookmarkChange: "Lesezeichen Ändern?",
   bookmarkReplaceQuestion: "Willst du das Lesezeichen Ändern?",
+  bookmarkRemove: "Willst du das Lesezeichen entfernen?",
+  bookmark: "Lesezeichen",
   replace: "Ersetzen",
   startsAt: "Startet von:",
   done: "Fertig",

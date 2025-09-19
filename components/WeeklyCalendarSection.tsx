@@ -87,7 +87,7 @@ export const WeeklyCalendarSection: React.FC<
           disabled={selectedDay === null}
         >
           <AntDesign
-            name="pluscircleo"
+            name="plus-circle"
             size={isLarge ? 35 : isMedium ? 30 : 25}
             color={Colors[colorScheme].defaultIcon}
           />

@@ -85,7 +85,7 @@ function VerseCard({
             ]}
           >
             <AntDesign
-              name="playcircleo"
+              name="play-circle"
               size={21}
               color={Colors[colorScheme].defaultIcon}
             />

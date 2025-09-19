@@ -814,7 +814,7 @@ const QuranNavigation: React.FC = () => {
               <Text style={styles.lastReadLabel}>
                 {t("lastRead").toUpperCase()}
               </Text>
-              <Text style={styles.lastReadSura}>{lastSuraTitle}</Text>
+              <Text style={styles.lastReadSura} numberOfLines={1} ellipsizeMode="tail">{lastSuraTitle}</Text>
               {lastSuraRow && (
                 <View style={styles.lastReadMeta}>
                   <Text style={styles.lastReadMetaText}>
@@ -904,7 +904,6 @@ const QuranNavigation: React.FC = () => {
           showsVerticalScrollIndicator={false}
           style={{}}
           contentContainerStyle={styles.listContent}
-          estimatedItemSize={111}
         />
       ) : (
         <FlashList
@@ -914,7 +913,6 @@ const QuranNavigation: React.FC = () => {
           keyExtractor={(item) => item.juz.toString()}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
-          estimatedItemSize={100}
         />
       )}
     </ThemedView>

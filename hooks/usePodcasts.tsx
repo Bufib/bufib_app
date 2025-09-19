@@ -671,7 +671,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { useCallback, useEffect } from "react";
 
 // --- CONFIGURATION ---
@@ -768,7 +768,7 @@ export async function cleanupCache(language?: string): Promise<void> {
       audioFileNames.map(async (name) => {
         const fileUri = dirUri + name;
         try {
-          const info = await FileSystem.getInfoAsync(fileUri, { size: true });
+          const info = await FileSystem.getInfoAsync(fileUri);
           if (info.exists && !info.isDirectory && info.modificationTime) {
             infos.push({ uri: fileUri, mtime: info.modificationTime * 1000 });
           }

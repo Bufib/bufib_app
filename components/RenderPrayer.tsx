@@ -752,7 +752,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { language } = useLanguage();
-  const flashListRef = useRef<FlashList<any>>(null);
+  const flashListRef = useRef<any>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const showScrollUp = scrollOffset > 50;
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -861,7 +861,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         setBookmark(index);
       }
     },
-    [bookmark, prayerID, t]
+    [bookmark, prayerID, i18n.language]
   );
 
   const handleSheetChanges = useCallback((index: number) => {
@@ -935,7 +935,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setPickerVisible(true)}>
-              <AntDesign name="addfolder" size={25} color="#fff" />
+              <AntDesign name="folder-add" size={25} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
@@ -949,7 +949,6 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
           setScrollOffset(nativeEvent.contentOffset.y)
         }
         data={indices}
-        estimatedItemSize={200}
         extraData={[bookmark, selectTranslations]}
         ListHeaderComponent={
           <>

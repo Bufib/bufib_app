@@ -11,6 +11,8 @@ import {
   Animated,
   Easing,
   Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import debounce from "lodash.debounce";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -30,6 +32,7 @@ import { ThemedText } from "./ThemedText";
 import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 const SearchScreen = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -213,7 +216,7 @@ const SearchScreen = () => {
             });
           } else if (item.type === "podcast") {
             router.push({
-              pathname: "/(podcast)",
+              pathname: "/(podcast)/indexPodcast",
               params: { podcast: JSON.stringify(item.podcast) },
             });
           } else if (item.type === "newsArticle") {
@@ -242,7 +245,7 @@ const SearchScreen = () => {
           </ThemedText>
           {itemValue === "question" ? (
             <AntDesign
-              name="search1"
+              name="question-circle"
               size={24}
               color={Colors[colorScheme].defaultIcon}
               style={styles.iconStyle}
@@ -288,58 +291,60 @@ const SearchScreen = () => {
   };
 
   return (
-    <Animated.View
-      style={{
-        flex: 1,
-        opacity: fadeAnim,
-      }}
+    <TouchableWithoutFeedback
+      style={{ flex: 1 }}
+      onPress={() => Keyboard.dismiss()}
     >
-      <SafeAreaView
-        style={[
-          styles.container,
-          { backgroundColor: Colors[colorScheme].background },
-        ]}
-        edges={["top"]}
+      <Animated.View
+        style={{
+          flex: 1,
+          opacity: fadeAnim,
+        }}
       >
-        <TextInput
+        <SafeAreaView
           style={[
-            styles.input,
-            {
-              backgroundColor: Colors[colorScheme].contrast,
-              color: Colors[colorScheme].text,
-            },
+            styles.container,
+            { backgroundColor: Colors[colorScheme].background },
           ]}
-          placeholder={t("searchPlaceholder")}
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-          autoCorrect={false}
-          autoCapitalize="none"
-        />
-
-        {isLoading && (
-          <ActivityIndicator
-            style={{ marginVertical: 12 }}
-            size="small"
-            color="#555"
+          edges={["top"]}
+        >
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: Colors[colorScheme].contrast,
+                color: Colors[colorScheme].text,
+              },
+            ]}
+            placeholder={t("searchPlaceholder")}
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            autoCorrect={false}
+            autoCapitalize="none"
           />
-        )}
 
-        <FlatList
-          data={combinedDisplayResults}
-          keyExtractor={(item, index) => item.renderId}
-          renderItem={renderItem}
-          ListEmptyComponent={
-            !isLoading && searchTerm.trim().length > 0 ? (
-              <ThemedText style={styles.emptyText}>
-                {t("noSearchResults")}
-              </ThemedText>
-            ) : null
-          }
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        />
-      </SafeAreaView>
-    </Animated.View>
+          {isLoading && (
+            <LoadingIndicator style={{ marginVertical: 12 }} size="large" />
+          )}
+
+          <FlatList
+            data={combinedDisplayResults}
+            keyExtractor={(item, index) => item.renderId}
+            keyboardDismissMode="on-drag"
+            renderItem={renderItem}
+            ListEmptyComponent={
+              !isLoading && searchTerm.trim().length > 0 ? (
+                <ThemedText style={styles.emptyText}>
+                  {t("noSearchResults")}
+                </ThemedText>
+              ) : null
+            }
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          />
+        </SafeAreaView>
+      </Animated.View>
+    </TouchableWithoutFeedback>
   );
 };
 
