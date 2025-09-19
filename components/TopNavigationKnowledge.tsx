@@ -119,6 +119,7 @@ import { useTranslation } from "react-i18next";
 import { Image } from "expo-image";
 import { useRef } from "react";
 import i18n from "@/utils/i18n";
+import { LanguageCode } from "@/constants/Types";
 const renderScene = SceneMap({
   questionsScreen: indexQuestion,
   prayerScreen: indexPrayer,
@@ -133,6 +134,8 @@ export default function TopNavigationKnowledge() {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const { language } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
 
   const routes = React.useMemo(
     () => [
@@ -162,7 +165,7 @@ export default function TopNavigationKnowledge() {
         icon: require("@/assets/images/historyHeaderLogo.png"),
       },
     ],
-    [i18n.language]
+    [lang]
   );
 
   // animate opacity on mount

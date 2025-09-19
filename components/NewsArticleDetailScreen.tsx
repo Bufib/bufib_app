@@ -1264,7 +1264,7 @@
 
 // ! Mit lesezeichen
 import { Colors } from "@/constants/Colors";
-import { NewsArticlesType } from "@/constants/Types";
+import { LanguageCode, NewsArticlesType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNewsArticles } from "@/hooks/useNewsArticles";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
@@ -1346,6 +1346,7 @@ export default function NewsArticleDetailScreen({
 
   const { triggerRefreshFavorites } = useRefreshFavorites();
   const { language, isArabic } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
   const { fetchNewsArticleById } = useNewsArticles(language || "de");
   const bookmarkKey = (articleId: number) =>
     `bookmark:newsArticle:${articleId}:${language}`;
@@ -1477,7 +1478,7 @@ export default function NewsArticleDetailScreen({
       ],
       { cancelable: true }
     );
-  }, [articleId, i18n.language]);
+  }, [articleId, lang]);
 
   const jumpToBookmark = useCallback(() => {
     if (overlayContentY == null) return;
@@ -1510,7 +1511,7 @@ export default function NewsArticleDetailScreen({
       // No previous bookmark
       saveBookmark(contentY);
     },
-    [bookmarkRatio, containerTop, scrollY, saveBookmark, i18n.language]
+    [bookmarkRatio, containerTop, scrollY, saveBookmark, lang]
   );
 
   const { isArabic: isArabicFn } = useLanguage();
@@ -1874,16 +1875,7 @@ export default function NewsArticleDetailScreen({
                 ]}
               >
                 <Ionicons name="bookmark" size={12} color="#fff" />
-                <Text style={styles.bookmarkChipText}>
-                  {t("bookmark")}
-                </Text>
-
-                <TouchableOpacity
-                  onPress={jumpToBookmark}
-                  style={styles.bookmarkChipBtn}
-                >
-                  <Ionicons name="navigate" size={14} color="#fff" />
-                </TouchableOpacity>
+                <Text style={styles.bookmarkChipText}>{t("bookmark")}</Text>
 
                 <TouchableOpacity
                   onPress={clearBookmark}

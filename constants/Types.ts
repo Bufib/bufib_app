@@ -61,6 +61,7 @@ export type Language = "ar" | "en" | "de";
 export type Sizes = {
   elementSize: number;
   fontSize: number;
+  badgeSize: number;
   iconSize: number;
   imageSize: number;
   gap: number;
@@ -69,6 +70,7 @@ export type Sizes = {
   emptyGap: number;
   isLarge: boolean;
   isMedium: boolean;
+  
 };
 
 export type triggerRefreshFavoritesType = {

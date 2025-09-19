@@ -20,6 +20,7 @@ import { Image } from "expo-image";
 import favoritePodcasts from "@/app/(tabs)/favorites/favoritePodcasts";
 import favoritePrayers from "@/app/(tabs)/favorites/favoritePrayers";
 import favoriteQuestions from "@/app/(tabs)/favorites/favoriteQuestions";
+import { LanguageCode } from "@/constants/Types";
 const renderScene = SceneMap({
   favoriteNewsArticles: FavoriteNewsArticles,
   favoritePrayers: FavoritePrayers,
@@ -33,7 +34,8 @@ export default function TopNavigationFavorites() {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
+  const { language } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
   const routes = React.useMemo(
     () => [
       {
@@ -42,7 +44,7 @@ export default function TopNavigationFavorites() {
         title: "",
         icon: require("@/assets/images/newsArticleHeaderLogo.png"),
       },
-         {
+      {
         key: "favoritePodcasts",
         // title: t("podcastScreenTitle"),
         title: "",
@@ -60,9 +62,8 @@ export default function TopNavigationFavorites() {
         title: "",
         icon: require("@/assets/images/qAndAHeaderLogo.png"),
       },
-   
     ],
-    [i18n.language]
+    [lang]
   );
 
   // animate opacity on mount

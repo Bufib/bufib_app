@@ -63,6 +63,7 @@ export const de = {
   lines: "Zeilen",
   selectFolder: "Wähle einen Ordner aus",
   enterFolderName: "Gebe einen Namen für den Ordner ein",
+  confirm: "Bestätigen",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -82,7 +83,7 @@ export const de = {
   // Questions
   categories: "Kategorien",
   latestQuestions: "Neueste Fragen",
-  relatedQuestions:"Verwandte Fragen",
+  relatedQuestions: "Verwandte Fragen",
   // Questionslinks
   rechtsfragen: "Rechtsfragen",
   quran: "Quran",
@@ -91,6 +92,8 @@ export const de = {
   ethik: "Ethik",
   ratschlaege: "Ratschläge",
   videos: "Videos",
+  removeProgress: "Fortschritt entfernen",
+  markAsRead: "Als gelesen markieren",
 
   // Prayer categories
   dua: "Dua",

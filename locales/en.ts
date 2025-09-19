@@ -65,6 +65,7 @@ export const en = {
   lines: "Lines",
   selectFolder: "Select a folder",
   enterFolderName: "Enter a name for your folder",
+  confirm: "Confirm",
 
   // Navigation
   knowledge: "Knowledge",
@@ -248,7 +249,8 @@ export const en = {
   lastRead: "Last read",
   juz: "Juz",
   sura: "Sura",
-
+   removeProgress:" Remove Progress",
+  markAsRead: "Mark as Read",
   // History
   sections: {
     prophets: "Prophets",

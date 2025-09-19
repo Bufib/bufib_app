@@ -64,6 +64,7 @@ export const ar = {
   lines: "خطوط",
   selectFolder: "حدد مجلدًا",
   enterFolderName: "أدخل اسمًا للمجلد الخاص بك",
+  confirm: "تأكيد",
 
   // Navigation
   knowledge: "معرفة",
@@ -85,7 +86,7 @@ export const ar = {
   // Questions
   categories: "فئات",
   latestQuestions: "أسئلة جديدة",
-  relatedQuestions:"الأسئلة ذات الصلة",
+  relatedQuestions: "الأسئلة ذات الصلة",
 
   // Questionslinks
   rechtsfragen: "مسائل قانونية",
@@ -250,7 +251,8 @@ export const ar = {
   lastRead: "آخر قراءة",
   juz: "جزء",
   sura: "سورة",
-
+  removeProgress: " إزالة التقدم",
+  markAsRead: "وضع علامة كمقروء",
   // History
   sections: {
     prophets: "الأنبياء",

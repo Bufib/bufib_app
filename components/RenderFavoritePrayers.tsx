@@ -321,7 +321,7 @@ import {
   getFavoritePrayerFolders,
   removeFolder,
 } from "@/db/queries/prayers";
-import { FavoritePrayerFolderType, PrayerType } from "@/constants/Types";
+import { FavoritePrayerFolderType, LanguageCode, PrayerType } from "@/constants/Types";
 import { router, useFocusEffect } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { ThemedView } from "./ThemedView";
@@ -331,6 +331,7 @@ import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import i18n from "@/utils/i18n";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const FavoritePrayersScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -339,7 +340,8 @@ const FavoritePrayersScreen: React.FC = () => {
   // Zustand trigger (useful if other screens must refresh too)
   const { refreshTriggerFavorites, triggerRefreshFavorites } =
     useRefreshFavorites();
-
+  const { language } = useLanguage();
+   const lang = (language ?? "de") as LanguageCode;
   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [prayers, setPrayers] = useState<PrayerType[]>([]);
@@ -382,7 +384,7 @@ const FavoritePrayersScreen: React.FC = () => {
         setIsLoadingPrayers(false);
       }
     },
-    [i18n.language]
+    [lang]
   );
 
   const onDeleteFolder = useCallback(
@@ -406,7 +408,13 @@ const FavoritePrayersScreen: React.FC = () => {
         await reloadPrayers(selectedFolder);
       }
     },
-    [reloadFolders, reloadPrayers, selectedFolder, i18n.language, triggerRefreshFavorites]
+    [
+      reloadFolders,
+      reloadPrayers,
+      selectedFolder,
+      lang,
+      triggerRefreshFavorites,
+    ]
   );
 
   // Initial & external trigger reload
@@ -460,7 +468,7 @@ const FavoritePrayersScreen: React.FC = () => {
         </ThemedText>
         {isEditing && (
           <AntDesign
-            name="minuscircleo"
+            name="minus-circle"
             size={22}
             color={Colors[colorScheme].error}
             style={{ alignSelf: "flex-end" }}

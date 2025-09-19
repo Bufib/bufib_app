@@ -687,7 +687,7 @@ import {
   TextStyle,
 } from "react-native";
 import { getPrayerWithTranslations } from "@/db/queries/prayers";
-import { PrayerType, PrayerWithTranslationType } from "@/constants/Types";
+import { LanguageCode, PrayerType, PrayerWithTranslationType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
@@ -752,6 +752,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { language } = useLanguage();
+   const lang = (language ?? "de") as LanguageCode;
   const flashListRef = useRef<any>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const showScrollUp = scrollOffset > 50;
@@ -861,7 +862,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         setBookmark(index);
       }
     },
-    [bookmark, prayerID, i18n.language]
+    [bookmark, prayerID, lang]
   );
 
   const handleSheetChanges = useCallback((index: number) => {

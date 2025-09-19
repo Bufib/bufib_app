@@ -46,6 +46,8 @@ import {
 import { whenDatabaseReady } from "@/db";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
+import { useReadingProgressQuran } from "@/stores/useReadingProgressQuran";
+import i18n from "@/utils/i18n";
 
 // constants / helpers
 const HEADER_MAX_HEIGHT = 120;
@@ -111,7 +113,10 @@ const SuraScreen: React.FC = () => {
   // Bottom Sheet ref
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ["75%"], []);
-
+  const setTotalVerses = useReadingProgressQuran((s) => s.setTotalVerses);
+  const updateBookmarkProgress = useReadingProgressQuran(
+    (s) => s.updateBookmark
+  );
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -164,7 +169,8 @@ const SuraScreen: React.FC = () => {
             getSurahInfoByNumber(suraNumber),
             getSurahDisplayName(suraNumber, lang),
           ]);
-
+          const totalVerses = info?.nbAyat ?? vers?.length ?? 0;
+          setTotalVerses(suraNumber, totalVerses);
           const map = new Map<number, Set<number>>();
           map.set(suraNumber, await loadBookmarkedVerses(suraNumber));
 
@@ -194,7 +200,7 @@ const SuraScreen: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [lang, suraNumber, isJuzMode, juzNumber]);
+  }, [i18n.language, suraNumber, isJuzMode, juzNumber]);
 
   // verse lookup for Arabic lines → needs (sura, aya) in juz mode
   const arabicByKey = useMemo(
@@ -224,88 +230,182 @@ const SuraScreen: React.FC = () => {
     []
   );
 
-  const handleBookmarkVerse = async (verse: QuranVerseType) => {
-    try {
-      const s = verse.sura;
-      const verseNumber = verse.aya;
-      const bookmarksKey = `bookmarks_sura_${s}`;
+  //! Alt
+  // const handleBookmarkVerse = async (verse: QuranVerseType, index:number) => {
+  //   try {
+  //     const s = verse.sura;
+  //     const verseNumber = verse.aya;
+  //     const bookmarksKey = `bookmarks_sura_${s}`;
 
-      const currentSet = new Set(bookmarksBySura.get(s) ?? new Set<number>());
+  //     const currentSet = new Set(bookmarksBySura.get(s) ?? new Set<number>());
 
-      // Tapping the same verse toggles it off
-      if (currentSet.has(verseNumber)) {
-        currentSet.delete(verseNumber);
-        const newMap = new Map(bookmarksBySura);
-        newMap.set(s, currentSet);
-        setBookmarksBySura(newMap);
+  //     // Tapping the same verse toggles it off
+  //     if (currentSet.has(verseNumber)) {
+  //       currentSet.delete(verseNumber);
+  //       const newMap = new Map(bookmarksBySura);
+  //       newMap.set(s, currentSet);
+  //       setBookmarksBySura(newMap);
 
-        const arr = Array.from(currentSet);
-        if (arr.length) {
-          await Storage.setItemAsync(bookmarksKey, JSON.stringify(arr));
-        } else {
-          await Storage.removeItemAsync(bookmarksKey);
+  //       const arr = Array.from(currentSet);
+  //       if (arr.length) {
+  //         await Storage.setItemAsync(bookmarksKey, JSON.stringify(arr));
+  //       } else {
+  //         await Storage.removeItemAsync(bookmarksKey);
+  //       }
+  //       await Storage.removeItemAsync(`bookmark_s${s}_v${verseNumber}_${lang}`);
+  //       return;
+  //     }
+
+  //     // Only allow one bookmark per sura (keeps your old behavior)
+  //     if (currentSet.size > 0) {
+  //       const prev = Array.from(currentSet)[0];
+  //       Alert.alert(t("confirmBookmarkChange"), t("bookmarkReplaceQuestion"), [
+  //         { text: t("cancel"), style: "cancel" },
+  //         {
+  //           text: t("change"),
+  //           style: "destructive",
+  //           onPress: async () => {
+  //             await Storage.removeItemAsync(`bookmark_s${s}_v${prev}_${lang}`);
+
+  //             const nextSet = new Set<number>([verseNumber]);
+  //             const newMap = new Map(bookmarksBySura);
+  //             newMap.set(s, nextSet);
+  //             setBookmarksBySura(newMap);
+
+  //             await Storage.setItemAsync(
+  //               bookmarksKey,
+  //               JSON.stringify([verseNumber])
+  //             );
+  //             await Storage.setItemAsync(
+  //               `bookmark_s${s}_v${verseNumber}_${lang}`,
+  //               JSON.stringify({
+  //                 suraNumber: s,
+  //                 verseNumber,
+  //                 language: lang,
+  //                 suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
+  //                 timestamp: Date.now(),
+  //               })
+  //             );
+  //           },
+  //         },
+  //       ]);
+  //       return;
+  //     }
+
+  //     // No existing bookmark in this sura -> add this one
+  //     const nextSet = new Set<number>([verseNumber]);
+  //     const newMap = new Map(bookmarksBySura);
+  //     newMap.set(s, nextSet);
+  //     setBookmarksBySura(newMap);
+
+  //     await Storage.setItemAsync(bookmarksKey, JSON.stringify([verseNumber]));
+  //     await Storage.setItemAsync(
+  //       `bookmark_s${s}_v${verseNumber}_${lang}`,
+  //       JSON.stringify({
+  //         suraNumber: s,
+  //         verseNumber,
+  //         language: lang,
+  //         suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
+  //         timestamp: Date.now(),
+  //       })
+  //     );
+  //   } catch (error) {
+  //     console.error("Error handling bookmark:", error);
+  //   }
+  // };
+
+  //! New
+  // inside SuraScreen component
+  const handleBookmarkVerse = useCallback(
+    async (verse: QuranVerseType, index: number) => {
+      try {
+        const s = verse.sura;
+        const verseNumber = verse.aya; // 1-based
+        const bookmarksKey = `bookmarks_sura_${s}`; // stores [verseNumber]
+        const detailKey = (n: number) => `bookmark_s${s}_v${n}_${lang}`; // detail (with index, etc.)
+
+        const currentSet = new Set(bookmarksBySura.get(s) ?? new Set<number>());
+
+        // Helper to persist the new bookmark (and update Zustand)
+        const writeBookmark = async (n: number) => {
+          // 1) local state (for highlight)
+          const nextSet = new Set<number>([n]);
+          const nextMap = new Map(bookmarksBySura);
+          nextMap.set(s, nextSet);
+          setBookmarksBySura(nextMap);
+
+          // 2) KV: compact list for quick load + a detail record (with index for jump/percent)
+          await Storage.setItemAsync(bookmarksKey, JSON.stringify([n]));
+          await Storage.setItemAsync(
+            detailKey(n),
+            JSON.stringify({
+              suraNumber: s,
+              verseNumber: n,
+              index, // 0-based FlashList index
+              language: lang,
+              suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
+              timestamp: Date.now(),
+            })
+          );
+
+          // 3) Zustand: update outside UI progress immediately
+          updateBookmarkProgress(s, n, index, lang);
+        };
+
+        // --- Toggle OFF if tapping the same verse ---
+        if (currentSet.has(verseNumber)) {
+          currentSet.delete(verseNumber);
+
+          const nextMap = new Map(bookmarksBySura);
+          nextMap.set(s, currentSet);
+          setBookmarksBySura(nextMap);
+
+          const arr = Array.from(currentSet);
+          if (arr.length) {
+            await Storage.setItemAsync(bookmarksKey, JSON.stringify(arr));
+          } else {
+            await Storage.removeItemAsync(bookmarksKey);
+          }
+          await Storage.removeItemAsync(detailKey(verseNumber));
+
+          // Reset reading progress for this sūrah (keeps totalVerses, sets 0%)
+          updateBookmarkProgress(s, 0, -1, lang);
+          return;
         }
-        await Storage.removeItemAsync(`bookmark_s${s}_v${verseNumber}_${lang}`);
-        return;
+
+        // --- Replace existing (enforce single bookmark per sūrah) ---
+        if (currentSet.size > 0) {
+          const prev = Array.from(currentSet)[0];
+          Alert.alert(
+            t("confirmBookmarkChange"),
+            t("bookmarkReplaceQuestion"),
+            [
+              { text: t("cancel"), style: "cancel" },
+              {
+                text: t("change"),
+                style: "destructive",
+                onPress: async () => {
+                  try {
+                    await Storage.removeItemAsync(detailKey(prev));
+                    await writeBookmark(verseNumber);
+                  } catch (e) {
+                    console.error("Bookmark replace failed", e);
+                  }
+                },
+              },
+            ]
+          );
+          return;
+        }
+
+        // --- First bookmark for this sūrah ---
+        await writeBookmark(verseNumber);
+      } catch (error) {
+        console.error("Error handling bookmark:", error);
       }
-
-      // Only allow one bookmark per sura (keeps your old behavior)
-      if (currentSet.size > 0) {
-        const prev = Array.from(currentSet)[0];
-        Alert.alert(t("confirmBookmarkChange"), t("bookmarkReplaceQuestion"), [
-          { text: t("cancel"), style: "cancel" },
-          {
-            text: t("change"),
-            style: "destructive",
-            onPress: async () => {
-              await Storage.removeItemAsync(`bookmark_s${s}_v${prev}_${lang}`);
-
-              const nextSet = new Set<number>([verseNumber]);
-              const newMap = new Map(bookmarksBySura);
-              newMap.set(s, nextSet);
-              setBookmarksBySura(newMap);
-
-              await Storage.setItemAsync(
-                bookmarksKey,
-                JSON.stringify([verseNumber])
-              );
-              await Storage.setItemAsync(
-                `bookmark_s${s}_v${verseNumber}_${lang}`,
-                JSON.stringify({
-                  suraNumber: s,
-                  verseNumber,
-                  language: lang,
-                  suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
-                  timestamp: Date.now(),
-                })
-              );
-            },
-          },
-        ]);
-        return;
-      }
-
-      // No existing bookmark in this sura -> add this one
-      const nextSet = new Set<number>([verseNumber]);
-      const newMap = new Map(bookmarksBySura);
-      newMap.set(s, nextSet);
-      setBookmarksBySura(newMap);
-
-      await Storage.setItemAsync(bookmarksKey, JSON.stringify([verseNumber]));
-      await Storage.setItemAsync(
-        `bookmark_s${s}_v${verseNumber}_${lang}`,
-        JSON.stringify({
-          suraNumber: s,
-          verseNumber,
-          language: lang,
-          suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
-          timestamp: Date.now(),
-        })
-      );
-    } catch (error) {
-      console.error("Error handling bookmark:", error);
-    }
-  };
+    },
+    [bookmarksBySura, lang, setBookmarksBySura, updateBookmarkProgress]
+  );
 
   const headerHeight = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
@@ -413,8 +513,43 @@ const SuraScreen: React.FC = () => {
     []
   );
 
+  // const renderVerse = useCallback(
+  //   ({ item }: { item: QuranVerseType; index: number }) => {
+  //     const arabicVerse = arabicByKey.get(vkey(item.sura, item.aya));
+  //     const isVerseBookmarked =
+  //       bookmarksBySura.get(item.sura)?.has(item.aya) ?? false;
+
+  //     return (
+  //       <VerseCard
+  //         item={item}
+  //         arabicVerse={arabicVerse}
+  //         isBookmarked={isVerseBookmarked}
+  //         isJuzMode={isJuzMode}
+  //         translitContentWidth={translitContentWidth}
+  //         translitBaseStyle={translitBaseStyle}
+  //         hasTafsir={hasTafsir}
+  //         onBookmark={handleBookmarkVerse}
+  //         onOpenInfo={handleOpenInfo}
+  //         language={lang}
+  //       />
+  //     );
+  //   },
+  //   [
+  //     arabicByKey,
+  //     bookmarksBySura,
+  //     isJuzMode,
+  //     translitContentWidth,
+  //     translitBaseStyle,
+  //     cs,
+  //     hasTafsir,
+  //     handleBookmarkVerse,
+  //     handleOpenInfo,
+  //     lang,
+  //   ]
+  // );
+
   const renderVerse = useCallback(
-    ({ item }: { item: QuranVerseType; index: number }) => {
+    ({ item, index }: { item: QuranVerseType; index: number }) => {
       const arabicVerse = arabicByKey.get(vkey(item.sura, item.aya));
       const isVerseBookmarked =
         bookmarksBySura.get(item.sura)?.has(item.aya) ?? false;
@@ -428,7 +563,7 @@ const SuraScreen: React.FC = () => {
           translitContentWidth={translitContentWidth}
           translitBaseStyle={translitBaseStyle}
           hasTafsir={hasTafsir}
-          onBookmark={handleBookmarkVerse}
+          onBookmark={(v) => handleBookmarkVerse(v, index)} // <-- pass list index
           onOpenInfo={handleOpenInfo}
           language={lang}
         />
@@ -440,7 +575,6 @@ const SuraScreen: React.FC = () => {
       isJuzMode,
       translitContentWidth,
       translitBaseStyle,
-      cs,
       hasTafsir,
       handleBookmarkVerse,
       handleOpenInfo,
@@ -688,7 +822,7 @@ const styles = StyleSheet.create({
     lineHeight: 35,
     color: Colors.universal.grayedOut,
     marginBottom: 10,
-    marginTop: -5
+    marginTop: -5,
   },
 
   arabicTransliterationText: {
