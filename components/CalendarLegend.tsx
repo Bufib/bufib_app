@@ -90,6 +90,7 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
+        style={{gap: 20}}
         renderItem={({ item, index }) => (
           <View style={styles.legendItem}>
             <View
@@ -130,6 +131,7 @@ const styles = StyleSheet.create({
   legendItem: {
     flexDirection: "row",
     alignItems: "center",
+
     gap: 12,
   },
   colorIndicator: {
@@ -147,9 +149,9 @@ const styles = StyleSheet.create({
   },
   legendText: {
     flex: 1,
-
     fontSize: 14,
     fontWeight: "500",
+    lineHeight: 21
   },
   emptyText: {
     fontSize: 13,

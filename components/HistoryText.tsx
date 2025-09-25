@@ -19,8 +19,9 @@ import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageCode } from "@/constants/Types";
 import { router } from "expo-router";
+import { right } from "@cloudinary/url-gen/qualifiers/textAlignment";
 
-const ProphetText = ({
+const HistoryText = ({
   titleDE,
   titleEN,
   titleAR,
@@ -39,9 +40,10 @@ const ProphetText = ({
 }) => {
   const colorScheme = useColorScheme() || "light";
   const levelProgress = useLevelProgressStore();
-  const { language } = useLanguage();
+  const { language, isArabic } = useLanguage();
   const lang = (language ?? "de") as LanguageCode;
   const { t } = useTranslation();
+  const rtl = isArabic();
   return (
     <SafeAreaView
       edges={["top"]}
@@ -53,10 +55,16 @@ const ProphetText = ({
       ]}
     >
       <View
-        style={{ flexDirection: "row", gap: 10, marginLeft: 20, marginTop: 15 }}
+        style={[
+          { flexDirection: "row", gap: 10, marginLeft: 20, marginTop: 15 },
+          rtl && { marginRight: 20 },
+        ]}
       >
         <HeaderLeftBackButton />
-        <ThemedText type="title" style={{ marginBottom: 10 }}>
+        <ThemedText
+          type="title"
+          style={[{ marginBottom: 10, flex: 1 }, rtl && { textAlign: "right" }]}
+        >
           {lang === "de" ? titleDE : lang === "en" ? titleEN : titleAR}
         </ThemedText>
       </View>
@@ -65,6 +73,8 @@ const ProphetText = ({
         style={[
           styles.scrollStyle,
           { backgroundColor: Colors[colorScheme].background },
+
+          {},
         ]}
       >
         <Markdown
@@ -78,32 +88,45 @@ const ProphetText = ({
               fontSize: 16,
               lineHeight: 30,
               color: Colors[colorScheme].text,
+              textAlign: rtl ? "right" : "left",
             },
             heading2: {
               marginBottom: 10,
               color: Colors[colorScheme].text,
+              textAlign: rtl ? "right" : "left",
             },
             // unordered bullets
             bullet_list_icon: {
               fontSize: 40,
               lineHeight: 38,
-            }, // bigger bullet
+              textAlign: rtl ? "right" : "left",
+            },
             bullet_list_content: {
               fontSize: 20,
               lineHeight: 30,
-            }, // bigger text
-            // ordered list numbers
+              textAlign: rtl ? "right" : "left",
+            },
             ordered_list_icon: {
               fontSize: 22,
               lineHeight: 28,
+              textAlign: rtl ? "right" : "left",
             },
             ordered_list_content: {
               fontSize: 18,
               lineHeight: 24,
+              textAlign: rtl ? "right" : "left",
             },
-            // optional: tweak spacing/indent
-            list_item: { marginVertical: 4 }, // space between items
-            bullet_list: { paddingLeft: 8 }, // indent whole list
+
+            list_item: {
+              marginVertical: 4,
+
+              textAlign: rtl ? "right" : "left",
+            },
+            bullet_list: {
+              paddingLeft: 8,
+
+              textAlign: rtl ? "right" : "left",
+            },
           }}
         >
           {lang === "de"
@@ -117,12 +140,10 @@ const ProphetText = ({
             styles.doneButton,
             { backgroundColor: Colors.universal.primary },
           ]}
-          onPress={() =>
-          {
-            levelProgress.markLevelComplete(lang, "prophets", prophetID)
+          onPress={() => {
+            levelProgress.markLevelComplete(lang, "prophets", prophetID);
             router.push("..");
-          }
-          }
+          }}
         >
           <Text style={styles.doneButtonText}>{t("done")}</Text>
         </TouchableOpacity>
@@ -131,7 +152,7 @@ const ProphetText = ({
   );
 };
 
-export default ProphetText;
+export default HistoryText;
 
 const styles = StyleSheet.create({
   container: {

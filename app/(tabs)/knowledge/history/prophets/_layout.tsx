@@ -9,7 +9,8 @@ const _layout = () => {
   return (
     <Stack>
       <Stack.Screen name="adam" options={{ headerShown: false }} />
-          </Stack>
+      <Stack.Screen name="nuh" options={{ headerShown: false }} />
+    </Stack>
   );
 };
 

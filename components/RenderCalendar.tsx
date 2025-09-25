@@ -592,24 +592,27 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     marginBottom: 10,
   },
-  datesWrap: {
-    flex: 1,
-  },
-
   badges: {
     flexDirection: "column",
     alignItems: "center",
     gap: 8,
   },
+  datesWrap: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+    marginTop: 15
+  },
 
   gregorianDate: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "600",
     marginBottom: 2,
   },
   islamicDate: {
-    fontSize: 13,
-    fontWeight: "400",
+    fontSize: 14,
+    fontWeight: "500",
     fontStyle: "italic",
   },
 

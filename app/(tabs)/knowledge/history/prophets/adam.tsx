@@ -1,10 +1,10 @@
 import React from "react";
-import ProphetText from "@/components/ProphetText";
+import HistoryText from "@/components/HistoryText";
 
 const index = () => {
   const titleDE = "Prophet Adam (a.)";
   const titleEN = "Prophet Adam (pbuh)";
-  const titleAR = "النبي آدم ( ع)";
+  const titleAR = "النبي آدم (ع)";
 
   const textContentDE = `
   ## **Allgemeine Angaben**
@@ -123,7 +123,7 @@ const index = () => {
 `;
 
   return (
-    <ProphetText
+    <HistoryText
       titleDE={titleDE}
       titleEN={titleEN}
       titleAR={titleAR}

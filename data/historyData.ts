@@ -91,13 +91,10 @@ export const PROPHETS_DATA: HistoryDataType[] = [
 ];
 
 export const AHLULBAYT_DATA: HistoryDataType[] = [
-  { id: "ali", nameKey: "ahlulbayt.ali", route: "/ahlulbayt/ali" },
   { id: "fatima", nameKey: "ahlulbayt.fatima", route: "/ahlulbayt/fatima" },
-  { id: "hassan", nameKey: "ahlulbayt.hassan", route: "/ahlulbayt/hassan" },
-  { id: "hussein", nameKey: "ahlulbayt.hussein", route: "/ahlulbayt/hussein" },
-  { id: "zainab", nameKey: "ahlulbayt.zainab", route: "/ahlulbayt/zainab" },
-  { id: "abbas", nameKey: "ahlulbayt.abbas", route: "/ahlulbayt/abbas" },
-  { id: "sajjad", nameKey: "ahlulbayt.sajjad", route: "/ahlulbayt/sajjad" },
+  { id: "Imam Ali (a.)", nameKey: "ahlulbayt.ali", route: "/ahlulbayt/ali" },
+  { id: "Imam Hassan (a.)", nameKey: "ahlulbayt.hassan", route: "/ahlulbayt/hassan" },
+  { id: "Imam Hussein (a.)", nameKey: "ahlulbayt.hussein", route: "/ahlulbayt/hussein" },
 ];
 
 export const SECTIONS_DATA: SectionType[] = [

@@ -48,6 +48,7 @@ import {
   initialWindowMetrics,
 } from "react-native-safe-area-context";
 import GlobalVideoHost from "@/player/GlobalVideoHost";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
@@ -80,6 +81,7 @@ function AppContent() {
   const { t } = useTranslation();
   const isDbReady = useDatabaseSync(language || "de");
   const router = useRouter();
+ 
 
   // Effect to set color theme from Storage
   useEffect(() => {
@@ -215,6 +217,9 @@ function AppContent() {
     }
   }, [expoPushToken]);
 
+
+
+
   // Conditional rendering based on loading states
   // 1. Wait for language context, store hydration, and session restoration
   if (!languageContextReady || !storesHydrated || !isSessionRestored) {
@@ -300,6 +305,10 @@ function AppContent() {
                       colorScheme === "dark" ? "#d0d0c0" : "#000",
                   }}
                 >
+                  <Stack.Screen
+                    name="onboarding"
+                    options={{ headerShown: false }}
+                  />
                   <Stack.Screen name="index" options={{ headerShown: false }} />
                   <Stack.Screen
                     name="(tabs)"
@@ -335,9 +344,7 @@ function AppContent() {
                   />
                   <Stack.Screen name="+not-found" />
                 </Stack>
-                <MiniPlayerBar
-                 
-                />
+                <MiniPlayerBar />
                 <AppReviewPrompt />
               </SupabaseRealtimeProvider>
             </QueryClientProvider>
