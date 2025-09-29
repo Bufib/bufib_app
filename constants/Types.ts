@@ -603,6 +603,7 @@ export type HistoryDataType = {
   id: string;
   nameKey: string;
   route: string;
+  image?: any
 };
 
 export type SectionType = {

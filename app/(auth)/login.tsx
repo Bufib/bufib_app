@@ -180,7 +180,7 @@ export default function LoginScreen() {
         <View style={styles.formWrapper}>
           <View style={[styles.contentContainer, themeStyles.contrast]}>
             <ThemedText style={styles.title} type="title">
-              Benutzeranmeldung
+              {/* Benutzeranmeldung */} Admin Login
             </ThemedText>
             <View style={styles.inputWrapper}>
               {/* EMAIL FIELD */}
@@ -281,7 +281,7 @@ export default function LoginScreen() {
               </Pressable>
 
               {/* SIGNUP */}
-              <Pressable
+              {/* <Pressable
                 style={[
                   styles.buttonContainer,
                   { backgroundColor: "transparent", borderColor: "#057958" },
@@ -296,7 +296,7 @@ export default function LoginScreen() {
                 >
                   Jetzt kostenlos registrieren!
                 </ThemedText>
-              </Pressable>
+              </Pressable> */}
             </View>
           </View>
         </View>

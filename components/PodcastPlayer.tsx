@@ -1127,11 +1127,8 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   };
 
   return (
-    <LinearGradient
-      colors={isDark ? ["#242c40", "#27272a"] : ["#6366f1", "#818cf8"]}
-      style={styles.heroSection}
-    >
-      <SafeAreaView style={{ flex: 1 }} edges={["top", "left"]}>
+   
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#414A4C" }} edges={["top", "left"]}>
         <View style={{ marginLeft: 20 }}>
           <HeaderLeftBackButton color={isDark ? "#fff" : "#000"} size={35} />
         </View>
@@ -1455,7 +1452,6 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
           </Animated.View>
         </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
   );
 }
 

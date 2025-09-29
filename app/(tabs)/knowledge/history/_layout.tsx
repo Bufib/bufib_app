@@ -10,7 +10,7 @@ const _layout = () => {
     <Stack>
       <Stack.Screen name="indexHistory" options={{ headerShown: false }} />
       <Stack.Screen name="prophets" options={{ headerShown: false }} />
-      <Stack.Screen name="ahlulBayt" options={{ headerShown: false }} />
+      <Stack.Screen name="ahlulbayt" options={{ headerShown: false }} />
           </Stack>
   );
 };

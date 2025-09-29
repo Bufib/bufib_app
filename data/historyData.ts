@@ -91,19 +91,87 @@ export const PROPHETS_DATA: HistoryDataType[] = [
 ];
 
 export const AHLULBAYT_DATA: HistoryDataType[] = [
-  { id: "fatima", nameKey: "ahlulbayt.fatima", route: "/ahlulbayt/fatima" },
-  { id: "Imam Ali (a.)", nameKey: "ahlulbayt.ali", route: "/ahlulbayt/ali" },
-  { id: "Imam Hassan (a.)", nameKey: "ahlulbayt.hassan", route: "/ahlulbayt/hassan" },
-  { id: "Imam Hussein (a.)", nameKey: "ahlulbayt.hussein", route: "/ahlulbayt/hussein" },
+  {
+    id: "muhammad",
+    nameKey: "ahlulbayt.muhammad",
+    route: "../knowledge/history/ahlulbayt/muhammad",
+  },
+  {
+    id: "fatima",
+    nameKey: "ahlulbayt.fatima",
+    route: "../knowledge/history/ahlulbayt/fatima",
+  },
+  {
+    id: "ali",
+    nameKey: "ahlulbayt.ali",
+    route: "../knowledge/history/ahlulbayt/ali",
+  },
+  {
+    id: "hasan",
+    nameKey: "ahlulbayt.hasan",
+    route: "../knowledge/history/ahlulbayt/hasan",
+  },
+  {
+    id: "husain",
+    nameKey: "ahlulbayt.husain",
+    route: "../knowledge/history/ahlulbayt/husain",
+  },
+
+  {
+    id: "zainUlAbidin",
+    nameKey: "ahlulbayt.zainUlAbidin",
+    route: "../knowledge/history/ahlulbayt/zainUlAbidin",
+  },
+  {
+    id: "baqir",
+    nameKey: "ahlulbayt.baqir",
+    route: "../knowledge/history/ahlulbayt/baqir",
+  },
+  {
+    id: "sadiq",
+    nameKey: "ahlulbayt.sadiq",
+    route: "../knowledge/history/ahlulbayt/sadiq",
+  },
+  {
+    id: "kathim",
+    nameKey: "ahlulbayt.kathim",
+    route: "../knowledge/history/ahlulbayt/kathim",
+  },
+
+  {
+    id: "ridha",
+    nameKey: "ahlulbayt.ridha",
+    route: "../knowledge/history/ahlulbayt/ridha",
+  },
+  {
+    id: "dschawad",
+    nameKey: "ahlulbayt.dschawad",
+    route: "../knowledge/history/ahlulbayt/dschawad",
+  },
+  {
+    id: "hadi",
+    nameKey: "ahlulbayt.hadi",
+    route: "../knowledge/history/ahlulbayt/hadi",
+  },
+  {
+    id: "askari",
+    nameKey: "ahlulbayt.askari",
+    route: "../knowledge/history/ahlulbayt/askari",
+  },
+  {
+    id: "mahdi",
+    nameKey: "ahlulbayt.mahdi",
+    route: "../knowledge/history/ahlulbayt/mahdi",
+  },
 ];
 
 export const SECTIONS_DATA: SectionType[] = [
-  {
-    id: "prophets",
-    titleKey: "sections.prophets",
-    backgroundImage: require("@/assets/images/prophets.png"),
-    levels: PROPHETS_DATA,
-  },
+  // {
+  //   id: "prophets",
+  //   titleKey: "sections.prophets",
+  //   backgroundImage: require("@/assets/images/prophets.png"),
+  //   levels: PROPHETS_DATA,
+  // },
   {
     id: "ahlulbayt",
     titleKey: "sections.ahlulbayt",
