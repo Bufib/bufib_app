@@ -243,6 +243,7 @@ export const de = {
   lastRead: "Zuletzt gelesen",
   juz: "Juz",
   sura: "Sura",
+  page: "Seite",
 
   // History
   sections: {

@@ -1544,3 +1544,190 @@ export async function getJuzVerses(
     return [];
   }
 }
+/** Internal: page-row lookup used by getPageForAyah/getPageVerses. */
+async function getPageRowAtOrBefore(
+  sura: number,
+  aya: number
+): Promise<{ id: number; sura: number; aya: number } | null> {
+  try {
+    const db = await getDatabase();
+    return await db.getFirstAsync(
+      `
+      SELECT id, sura, aya
+      FROM page
+      WHERE (sura < ? OR (sura = ? AND aya <= ?))
+      ORDER BY sura DESC, aya DESC
+      LIMIT 1;
+      `,
+      [sura, sura, aya]
+    );
+  } catch (err) {
+    console.error("getPageRowAtOrBefore error", { sura, aya, err });
+    return null;
+  }
+}
+export async function getPageStart(
+  page: number
+): Promise<{ page: number; sura: number; aya: number } | null> {
+  try {
+    const db = await getDatabase();
+    const row = await db.getFirstAsync<{
+      id: number;
+      sura: number;
+      aya: number;
+    }>(`SELECT id, sura, aya FROM page WHERE id = ? LIMIT 1;`, [page]);
+    return row ? { page: row.id, sura: row.sura, aya: row.aya } : null;
+  } catch (err) {
+    console.error("getPageStart error", { page, err });
+    return null;
+  }
+}
+export async function getPageBounds(page: number): Promise<{
+  startSura: number;
+  startAya: number;
+  endSura: number | null;
+  endAya: number | null;
+} | null> {
+  try {
+    const db = await getDatabase();
+
+    const start = await db.getFirstAsync<{ sura: number; aya: number }>(
+      `SELECT sura, aya FROM page WHERE id = ? LIMIT 1;`,
+      [page]
+    );
+    if (!start) return null;
+
+    const next = await db.getFirstAsync<{ sura: number; aya: number }>(
+      `SELECT sura, aya FROM page WHERE id = ? LIMIT 1;`,
+      [page + 1]
+    );
+
+    if (next) {
+      return {
+        startSura: start.sura,
+        startAya: start.aya,
+        endSura: next.sura,
+        endAya: next.aya,
+      };
+    }
+
+    // last page → open-ended (to the end of the Qur'an)
+    return {
+      startSura: start.sura,
+      startAya: start.aya,
+      endSura: null,
+      endAya: null,
+    };
+  } catch (err) {
+    console.error("getPageBounds error", { page, err });
+    return null;
+  }
+}
+export async function getPageVerses(
+  lang: Language,
+  page: number
+): Promise<(QuranVerseType & { transliteration: string | null })[]> {
+  try {
+    const db = await getDatabase();
+    const bounds = await getPageBounds(page);
+    if (!bounds) return [];
+
+    const { table } = verseSelectFor(lang);
+    const alias = table === "aya_ar" ? "a" : table === "aya_de" ? "d" : "e";
+    const selectCols =
+      table === "aya_ar"
+        ? `${alias}.sura AS sura, ${alias}.aya AS aya, ${alias}.quran_arabic_text AS text`
+        : table === "aya_de"
+        ? `${alias}.sura AS sura, ${alias}.aya AS aya, ${alias}.quran_german_text AS text`
+        : `${alias}.sura AS sura, ${alias}.aya AS aya, ${alias}.quran_english_text AS text`;
+
+    const fromJoin = `
+      FROM ${table} ${alias}
+      LEFT JOIN aya_en_transliteration t
+        ON t.sura = ${alias}.sura AND t.aya = ${alias}.aya
+    `;
+
+    const { startSura, startAya, endSura, endAya } = bounds;
+
+    if (endSura != null && endAya != null) {
+      // [start, end) — end exclusive
+      return await db.getAllAsync<
+        QuranVerseType & { transliteration: string | null }
+      >(
+        `
+        SELECT ${selectCols}, t.quran_transliteration_text AS transliteration
+        ${fromJoin}
+        WHERE
+          (${alias}.sura > ? OR (${alias}.sura = ? AND ${alias}.aya >= ?)) AND
+          (${alias}.sura < ? OR (${alias}.sura = ? AND ${alias}.aya < ?))
+        ORDER BY ${alias}.sura, ${alias}.aya;
+        `,
+        [startSura, startSura, startAya, endSura, endSura, endAya]
+      );
+    }
+
+    // last page → from start to the end of the Qur'an
+    return await db.getAllAsync<
+      QuranVerseType & { transliteration: string | null }
+    >(
+      `
+      SELECT ${selectCols}, t.quran_transliteration_text AS transliteration
+      ${fromJoin}
+      WHERE (${alias}.sura > ? OR (${alias}.sura = ? AND ${alias}.aya >= ?))
+      ORDER BY ${alias}.sura, ${alias}.aya;
+      `,
+      [startSura, startSura, startAya]
+    );
+  } catch (err) {
+    console.error("getPageVerses error", { lang, page, err });
+    return [];
+  }
+}
+/** Exact page for an ayah, using the page table (better than via juz). */
+export async function getPageOfAyah(
+  sura: number,
+  aya: number
+): Promise<number | null> {
+  try {
+    const row = await getPageRowAtOrBefore(sura, aya);
+    return row?.id ?? null;
+  } catch (err) {
+    console.error("getPageOfAyah error", { sura, aya, err });
+    return null;
+  }
+}
+
+/** Page buttons like: "Page 1 — Al-Fātiḥa 1" */
+export async function getPageButtonLabels(
+  lang: Language
+): Promise<Array<{ page: number; label: string; sura: number; aya: number }>> {
+  try {
+    const db = await getDatabase();
+    const rows = await db.getAllAsync<{
+      id: number;
+      sura: number;
+      aya: number;
+    }>(`SELECT id, sura, aya FROM page ORDER BY id;`);
+
+    const out: Array<{
+      page: number;
+      label: string;
+      sura: number;
+      aya: number;
+    }> = [];
+    for (const r of rows) {
+      const surahName =
+        (await getSurahDisplayName(r.sura, lang)) ?? `Sura ${r.sura}`;
+      out.push({
+        page: r.id,
+        label: `Page ${r.id} — ${surahName} ${r.aya}`,
+        sura: r.sura,
+        aya: r.aya,
+      });
+    }
+    return out;
+  } catch (err) {
+    console.error("getPageButtonLabels error", { lang, err });
+    return [];
+  }
+}

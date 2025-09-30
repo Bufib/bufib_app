@@ -251,6 +251,8 @@ export const ar = {
   lastRead: "آخر قراءة",
   juz: "جزء",
   sura: "سورة",
+  page: "صفحة",
+
   removeProgress: " إزالة التقدم",
   markAsRead: "وضع علامة كمقروء",
   // History

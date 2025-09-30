@@ -249,6 +249,8 @@ export const en = {
   lastRead: "Last read",
   juz: "Juz",
   sura: "Sura",
+  page: "Page",
+
    removeProgress:" Remove Progress",
   markAsRead: "Mark as Read",
   // History
