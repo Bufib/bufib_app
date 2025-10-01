@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Pressable, StyleSheet, Alert } from "react-native";
-import Modal from "react-native-modal";
+import { Pressable, StyleSheet, Alert, View } from "react-native";
+import { Modal } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useColorScheme } from "react-native";
@@ -20,9 +20,8 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
   isVisible,
   onClose,
 }) => {
-
   const colorScheme = useColorScheme();
-  const {language} = useLanguage();
+  const { language } = useLanguage();
   const dbInitialized = useDatabaseSync(language || "de");
   const [payPalLink, setPayPalLink] = useState<string | null>(null);
 
@@ -41,52 +40,53 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
 
   return (
     <Modal
-      isVisible={isVisible}
-      onBackdropPress={onClose} // Close when tapping outside
-      onSwipeComplete={onClose} // Swipe down to close
-      swipeDirection="down"
-      animationIn="slideInUp"
-      animationOut="slideOutDown"
-      backdropOpacity={0.5}
-      style={styles.modal}
+      visible={isVisible}
+      transparent
+      animationType="slide" // replaces animationIn/Out
+      onRequestClose={onClose} // Android back button
+      statusBarTranslucent={true} // nicer overlay on Android
     >
-      <ThemedView
-        style={[
-          styles.container,
-          colorScheme === "dark" ? styles.darkMode : styles.lightMode,
-        ]}
-      >
-        {/* Close Button */}
-        <Pressable style={styles.closeButton} onPress={onClose}>
-          <AntDesign
-            name="closecircle"
-            size={22}
-            color={colorScheme === "dark" ? "#fff" : "#333"}
-          />
-        </Pressable>
-
-        {/* Header */}
-        <ThemedText style={styles.headerText}>
-          Unterstütze uns {"\u2764\uFE0F"}
-        </ThemedText>
-
-        {/* Message */}
-        <ThemedText style={styles.messageText}>
-          Mit deiner Unterstützung können wir fortfahren und weiterhin für dich
-          da sein. {"\n"}
-          Vielen Dank!
-        </ThemedText>
-
-        {/* PayPal Donate Button */}
-        <Pressable
-          style={styles.donateButton}
-          onPress={() => payPalLink && handleOpenExternalUrl(payPalLink)}
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        {/* Backdrop (replaces onBackdropPress/backdropOpacity) */}
+        <Pressable style={styles.backdrop} onPress={onClose} />
+        <ThemedView
+          style={[
+            styles.container,
+            colorScheme === "dark" ? styles.darkMode : styles.lightMode,
+          ]}
         >
-          <ThemedText style={styles.donateButtonText}>
-            Jetzt mit PayPal spenden
+          {/* Close Button */}
+          <Pressable style={styles.closeButton} onPress={onClose}>
+            <AntDesign
+              name="close-circle"
+              size={22}
+              color={colorScheme === "dark" ? "#fff" : "#333"}
+            />
+          </Pressable>
+
+          {/* Header */}
+          <ThemedText style={styles.headerText}>
+            Unterstütze uns {"\u2764\uFE0F"}
           </ThemedText>
-        </Pressable>
-      </ThemedView>
+
+          {/* Message */}
+          <ThemedText style={styles.messageText}>
+            Mit deiner Unterstützung können wir fortfahren und weiterhin für
+            dich da sein. {"\n"}
+            Vielen Dank!
+          </ThemedText>
+
+          {/* PayPal Donate Button */}
+          <Pressable
+            style={styles.donateButton}
+            onPress={() => payPalLink && handleOpenExternalUrl(payPalLink)}
+          >
+            <ThemedText style={styles.donateButtonText}>
+              Jetzt mit PayPal spenden
+            </ThemedText>
+          </Pressable>
+        </ThemedView>
+      </View>
       <Toast />
     </Modal>
   );
@@ -95,10 +95,9 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
 export default DonationAlert;
 
 const styles = StyleSheet.create({
-  modal: {
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 0, // Fullscreen overlay
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   container: {
     width: "85%",

@@ -23,7 +23,7 @@ export const Colors = {
     loadingIndicator: "#000",
     error: "#d32f2f",
     defaultIcon: "#000",
-    devider: "rgba(0,0,0,0.1)",
+    devider: "rgba(0,0,0,1)",
     // Switch
     trackColor: "#767577",
     thumbColor: "#f4f3f4",
@@ -65,7 +65,7 @@ export const Colors = {
     loadingIndicator: "#fff",
     error: "#f44336",
     defaultIcon: "#fff",
-    devider: "rgba(255,255,255,0.2)",
+    devider: "rgba(255,255,255,1)",
 
     // Switch
     trackColor: "#057958",

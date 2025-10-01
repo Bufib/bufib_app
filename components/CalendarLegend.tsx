@@ -90,7 +90,7 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
-        style={{gap: 20}}
+        style={{ gap: 20 }}
         renderItem={({ item, index }) => (
           <View style={styles.legendItem}>
             <View
@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     padding: 15,
     borderRadius: 8,
-    borderWidth: 1,
   },
   loadingContainer: {
     paddingVertical: 20,
@@ -131,7 +130,6 @@ const styles = StyleSheet.create({
   legendItem: {
     flexDirection: "row",
     alignItems: "center",
-
     gap: 12,
   },
   colorIndicator: {
@@ -141,17 +139,17 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 4,
     },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowRadius: 12,
+    elevation: 4,
   },
   legendText: {
     flex: 1,
     fontSize: 14,
     fontWeight: "500",
-    lineHeight: 21
+    lineHeight: 21,
   },
   emptyText: {
     fontSize: 13,

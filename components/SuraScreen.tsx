@@ -1,3 +1,4 @@
+//! Ohne JUZ und Page progress
 // import React, {
 //   useEffect,
 //   useMemo,
@@ -41,6 +42,8 @@
 //   getSurahInfoByNumber,
 //   getJuzVerses,
 //   getJuzBounds,
+//   getPageVerses,
+//   getPageBounds,
 // } from "@/db/queries/quran";
 // import { whenDatabaseReady } from "@/db";
 // import FontSizePickerModal from "./FontSizePickerModal";
@@ -67,12 +70,16 @@
 //   const translitContentWidth = Math.max(0, width - 64);
 
 //   // Accept either suraId (surah mode) or juzId (juz mode)
-//   const { suraId, juzId } = useLocalSearchParams<{
+//   const { suraId, juzId, pageId } = useLocalSearchParams<{
 //     suraId?: string;
 //     juzId?: string;
+//     pageId?: string;
 //   }>();
-//   const isJuzMode = !!juzId;
+//   // prefer explicit modes; don't overlap
+//   const isPageMode = !!pageId;
+//   const isJuzMode = !!juzId && !isPageMode;
 //   const juzNumber = isJuzMode ? Number(juzId) : null;
+//   const pageNumber = isPageMode ? Number(pageId) : null;
 //   const suraNumber = useMemo(() => Number(suraId ?? 1), [suraId]);
 
 //   const [loading, setLoading] = useState(true);
@@ -129,7 +136,6 @@
 //             getJuzVerses(lang, juzNumber),
 //             getJuzVerses("ar", juzNumber),
 //           ]);
-
 //           const bounds = await getJuzBounds(juzNumber);
 //           if (bounds) {
 //             const startName =
@@ -145,7 +151,6 @@
 //             setJuzHeader({ title: `${t("juz") ?? "Juz"} ${juzNumber}` });
 //           }
 
-//           // Load bookmarks for all suras that appear in this juz
 //           const distinctSuras = Array.from(new Set(vers.map((v) => v.sura)));
 //           const map = new Map<number, Set<number>>();
 //           for (const s of distinctSuras) {
@@ -157,14 +162,51 @@
 //             setArabicVerses(arabicVers ?? []);
 //             setSuraInfo(null);
 //             setDisplayName("");
-//             setJuzHeader((prev) => prev); // keep type happy
+//             setJuzHeader((prev) => prev);
+//             setBookmarksBySura(map);
+//           }
+//         } else if (isPageMode && pageNumber) {
+//           // --- PAGE MODE ---
+//           const [vers, arabicVers] = await Promise.all([
+//             getPageVerses(lang, pageNumber),
+//             getPageVerses("ar", pageNumber),
+//           ]);
+//           const bounds = await getPageBounds(pageNumber);
+//           if (bounds) {
+//             const startName =
+//               (await getSurahDisplayName(bounds.startSura, lang)) ??
+//               `Sura ${bounds.startSura}`;
+//             setJuzHeader({
+//               title: `${t("page") ?? "Page"} ${pageNumber}`,
+//               subtitle: `${t("startsAt") ?? "Starts at"} ${startName} ${
+//                 bounds.startAya
+//               }`,
+//             });
+//           } else {
+//             setJuzHeader({ title: `${t("page") ?? "Page"} ${pageNumber}` });
+//           }
+
+//           const distinctSuras = Array.from(
+//             new Set((vers ?? []).map((v) => v.sura))
+//           );
+//           const map = new Map<number, Set<number>>();
+//           for (const s of distinctSuras) {
+//             map.set(s, await loadBookmarkedVerses(s));
+//           }
+
+//           if (!cancelled) {
+//             setVerses((vers ?? []) as QuranVerseType[]);
+//             setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
+//             setSuraInfo(null);
+//             setDisplayName("");
+//             setJuzHeader((prev) => prev); // reuse same header slot
 //             setBookmarksBySura(map);
 //           }
 //         } else {
 //           // --- SURAH MODE ---
 //           const [vers, arabicVers, info, name] = await Promise.all([
-//             getSurahVerses(lang, suraNumber), // includes transliteration (via JOIN)
-//             getSurahVerses("ar", suraNumber), // Arabic lines
+//             getSurahVerses(lang, suraNumber),
+//             getSurahVerses("ar", suraNumber),
 //             getSurahInfoByNumber(suraNumber),
 //             getSurahDisplayName(suraNumber, lang),
 //           ]);
@@ -199,7 +241,7 @@
 //     return () => {
 //       cancelled = true;
 //     };
-//   }, [i18n.language, suraNumber, isJuzMode, juzNumber]);
+//   }, [lang, suraNumber, isJuzMode, juzNumber]);
 
 //   // verse lookup for Arabic lines → needs (sura, aya) in juz mode
 //   const arabicByKey = useMemo(
@@ -880,7 +922,6 @@
 //   },
 //   metaText: {},
 // });
-
 import React, {
   useEffect,
   useMemo,
@@ -895,6 +936,7 @@ import {
   useColorScheme,
   Animated,
   Alert,
+  InteractionManager, // ✅ added
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -929,17 +971,56 @@ import {
 } from "@/db/queries/quran";
 import { whenDatabaseReady } from "@/db";
 import FontSizePickerModal from "./FontSizePickerModal";
-import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { useReadingProgressQuran } from "@/stores/useReadingProgressQuran";
-import i18n from "@/utils/i18n";
+import { useFontSizeStore } from "@/stores/fontSizeStore";
+
+// 🔹 index helpers
+import {
+  seedJuzIndex,
+  seedPageIndex,
+  getJuzPosForVerse,
+  getPagePosForVerse,
+  getJuzCoverageForSura, // ✅ added (bonus pre-seed for juz coverage)
+} from "@/utils/quranIndex";
 
 // constants / helpers
 const HEADER_MAX_HEIGHT = 120;
 const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-// key for arabic lookup across juz (spans multiple surahs)
+// key for arabic lookup across juz/page (spans multiple surahs)
 const vkey = (s: number, a: number) => `${s}:${a}`;
+
+/* ------------------------------------------------------------------ */
+/* ✅ NEW: Pre-seed only the relevant pages for the current sūrah      */
+/* ------------------------------------------------------------------ */
+async function preseedPagesForSurah(info: SuraRowType, firstBatchSize = 3) {
+  if (!info?.startPage || !info?.endPage) return;
+
+  const start = Math.max(1, info.startPage);
+  const end = Math.max(start, info.endPage);
+
+  const total = end - start + 1;
+  const batch = Math.min(firstBatchSize, total);
+
+  // Seed a small batch immediately to make first bookmark instant
+  await Promise.all(
+    Array.from({ length: batch }, (_, i) => seedPageIndex(start + i))
+  );
+
+  // Defer the rest so we don't block UI interactions/scroll
+  if (batch < total) {
+    InteractionManager.runAfterInteractions(() => {
+      (async () => {
+        for (let p = start + batch; p <= end; p++) {
+          try {
+            await seedPageIndex(p);
+          } catch {}
+        }
+      })();
+    });
+  }
+}
 
 const SuraScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -951,13 +1032,12 @@ const SuraScreen: React.FC = () => {
   // account for list + card paddings (16 + 16 on both sides)
   const translitContentWidth = Math.max(0, width - 64);
 
-  // Accept either suraId (surah mode) or juzId (juz mode)
+  // Accept suraId (surah mode) or juzId (juz mode) or pageId (page mode)
   const { suraId, juzId, pageId } = useLocalSearchParams<{
     suraId?: string;
     juzId?: string;
     pageId?: string;
   }>();
-  // prefer explicit modes; don't overlap
   const isPageMode = !!pageId;
   const isJuzMode = !!juzId && !isPageMode;
   const juzNumber = isJuzMode ? Number(juzId) : null;
@@ -976,9 +1056,9 @@ const SuraScreen: React.FC = () => {
   const [juzHeader, setJuzHeader] = useState<{
     title: string;
     subtitle?: string;
-  } | null>(null); // Juz title (juz mode)
+  } | null>(null); // Reused for Juz and Page titles
 
-  // Bookmarks by sura for highlighting in both modes
+  // Bookmarks by sura for highlighting in all modes
   const [bookmarksBySura, setBookmarksBySura] = useState<
     Map<number, Set<number>>
   >(new Map());
@@ -991,9 +1071,9 @@ const SuraScreen: React.FC = () => {
 
   const setLastSura = useLastSuraStore((s) => s.setLastSura);
   useEffect(() => {
-    // Only set this in surah mode; in juz mode, leave the last sura as-is
-    if (!isJuzMode) setLastSura(suraNumber);
-  }, [suraNumber, isJuzMode]);
+    // Only set this in surah mode; in juz/page mode, leave the last sura as-is
+    if (!isJuzMode && !isPageMode) setLastSura(suraNumber);
+  }, [suraNumber, isJuzMode, isPageMode, setLastSura]);
 
   // Animation refs
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -1001,10 +1081,23 @@ const SuraScreen: React.FC = () => {
   // Bottom Sheet ref
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ["75%"], []);
+
+  // progress actions
   const setTotalVerses = useReadingProgressQuran((s) => s.setTotalVerses);
   const updateBookmarkProgress = useReadingProgressQuran(
     (s) => s.updateBookmark
   );
+  const setTotalVersesForJuz = useReadingProgressQuran(
+    (s) => s.setTotalVersesForJuz
+  );
+  const updateJuzBookmark = useReadingProgressQuran((s) => s.updateJuzBookmark);
+  const setTotalVersesForPage = useReadingProgressQuran(
+    (s) => s.setTotalVersesForPage
+  );
+  const updatePageBookmark = useReadingProgressQuran(
+    (s) => s.updatePageBookmark
+  );
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -1018,6 +1111,11 @@ const SuraScreen: React.FC = () => {
             getJuzVerses(lang, juzNumber),
             getJuzVerses("ar", juzNumber),
           ]);
+          setTotalVersesForJuz(juzNumber, vers.length);
+
+          // Seed quranIndex for this juz so we can map any verse → (idx,total)
+          seedJuzIndex(juzNumber, vers);
+
           const bounds = await getJuzBounds(juzNumber);
           if (bounds) {
             const startName =
@@ -1053,6 +1151,11 @@ const SuraScreen: React.FC = () => {
             getPageVerses(lang, pageNumber),
             getPageVerses("ar", pageNumber),
           ]);
+          setTotalVersesForPage(pageNumber, vers.length);
+
+          // Seed quranIndex for this page so we can map any verse → (idx,total)
+          seedPageIndex(pageNumber, vers);
+
           const bounds = await getPageBounds(pageNumber);
           if (bounds) {
             const startName =
@@ -1081,7 +1184,7 @@ const SuraScreen: React.FC = () => {
             setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
             setSuraInfo(null);
             setDisplayName("");
-            setJuzHeader((prev) => prev); // reuse same header slot
+            setJuzHeader((prev) => prev);
             setBookmarksBySura(map);
           }
         } else {
@@ -1093,7 +1196,19 @@ const SuraScreen: React.FC = () => {
             getSurahDisplayName(suraNumber, lang),
           ]);
           const totalVerses = info?.nbAyat ?? vers?.length ?? 0;
+
           setTotalVerses(suraNumber, totalVerses);
+
+          // ✅ Pre-seed only the pages that can contain this sūrah (fast path)
+          try {
+            await preseedPagesForSurah(info!);
+          } catch {}
+
+          // ✅ Bonus: pre-seed juz coverage for this sūrah after interactions
+          InteractionManager.runAfterInteractions(() => {
+            getJuzCoverageForSura(suraNumber).catch(() => {});
+          });
+
           const map = new Map<number, Set<number>>();
           map.set(suraNumber, await loadBookmarkedVerses(suraNumber));
 
@@ -1123,9 +1238,20 @@ const SuraScreen: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [lang, suraNumber, isJuzMode, juzNumber]);
+  }, [
+    lang,
+    suraNumber,
+    isJuzMode,
+    juzNumber,
+    isPageMode,
+    pageNumber,
+    setTotalVerses,
+    setTotalVersesForJuz,
+    setTotalVersesForPage,
+    t,
+  ]);
 
-  // verse lookup for Arabic lines → needs (sura, aya) in juz mode
+  // verse lookup for Arabic lines → needs (sura, aya) in juz/page mode
   const arabicByKey = useMemo(
     () => new Map(arabicVerses.map((v) => [vkey(v.sura, v.aya), v])),
     [arabicVerses]
@@ -1153,92 +1279,53 @@ const SuraScreen: React.FC = () => {
     []
   );
 
-  //! Alt
-  // const handleBookmarkVerse = async (verse: QuranVerseType, index:number) => {
-  //   try {
-  //     const s = verse.sura;
-  //     const verseNumber = verse.aya;
-  //     const bookmarksKey = `bookmarks_sura_${s}`;
+  /* ------------------------------------------------------------------ */
+  /* ✅ UPDATED: Aggregates (juz/page) are bump-only (no regress/reset)  */
+  /* ------------------------------------------------------------------ */
+  const propagateToAggregates = useCallback(
+    async (
+      sura: number,
+      aya: number,
+      _listIndex: number,
+      language: LanguageCode
+    ) => {
+      try {
+        const st = useReadingProgressQuran.getState();
 
-  //     const currentSet = new Set(bookmarksBySura.get(s) ?? new Set<number>());
+        // JUZ
+        const jpos = await getJuzPosForVerse(sura, aya);
+        if (jpos) {
+          const prev = st.progressByJuz[jpos.unit]?.lastVerseNumber ?? 0;
+          const next = jpos.idx + 1;
+          if (next > prev) {
+            setTotalVersesForJuz(jpos.unit, jpos.total);
+            updateJuzBookmark(jpos.unit, next, jpos.idx, language);
+          }
+        }
 
-  //     // Tapping the same verse toggles it off
-  //     if (currentSet.has(verseNumber)) {
-  //       currentSet.delete(verseNumber);
-  //       const newMap = new Map(bookmarksBySura);
-  //       newMap.set(s, currentSet);
-  //       setBookmarksBySura(newMap);
+        // PAGE
+        const ppos = await getPagePosForVerse(sura, aya);
+        if (ppos) {
+          const prev = st.progressByPage[ppos.unit]?.lastVerseNumber ?? 0;
+          const next = ppos.idx + 1;
+          if (next > prev) {
+            setTotalVersesForPage(ppos.unit, ppos.total);
+            updatePageBookmark(ppos.unit, next, ppos.idx, language);
+          }
+        }
+      } catch (e) {
+        console.warn("propagateToAggregates error", e);
+      }
+    },
+    [
+      setTotalVersesForJuz,
+      updateJuzBookmark,
+      setTotalVersesForPage,
+      updatePageBookmark,
+    ]
+  );
 
-  //       const arr = Array.from(currentSet);
-  //       if (arr.length) {
-  //         await Storage.setItemAsync(bookmarksKey, JSON.stringify(arr));
-  //       } else {
-  //         await Storage.removeItemAsync(bookmarksKey);
-  //       }
-  //       await Storage.removeItemAsync(`bookmark_s${s}_v${verseNumber}_${lang}`);
-  //       return;
-  //     }
-
-  //     // Only allow one bookmark per sura (keeps your old behavior)
-  //     if (currentSet.size > 0) {
-  //       const prev = Array.from(currentSet)[0];
-  //       Alert.alert(t("confirmBookmarkChange"), t("bookmarkReplaceQuestion"), [
-  //         { text: t("cancel"), style: "cancel" },
-  //         {
-  //           text: t("change"),
-  //           style: "destructive",
-  //           onPress: async () => {
-  //             await Storage.removeItemAsync(`bookmark_s${s}_v${prev}_${lang}`);
-
-  //             const nextSet = new Set<number>([verseNumber]);
-  //             const newMap = new Map(bookmarksBySura);
-  //             newMap.set(s, nextSet);
-  //             setBookmarksBySura(newMap);
-
-  //             await Storage.setItemAsync(
-  //               bookmarksKey,
-  //               JSON.stringify([verseNumber])
-  //             );
-  //             await Storage.setItemAsync(
-  //               `bookmark_s${s}_v${verseNumber}_${lang}`,
-  //               JSON.stringify({
-  //                 suraNumber: s,
-  //                 verseNumber,
-  //                 language: lang,
-  //                 suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
-  //                 timestamp: Date.now(),
-  //               })
-  //             );
-  //           },
-  //         },
-  //       ]);
-  //       return;
-  //     }
-
-  //     // No existing bookmark in this sura -> add this one
-  //     const nextSet = new Set<number>([verseNumber]);
-  //     const newMap = new Map(bookmarksBySura);
-  //     newMap.set(s, nextSet);
-  //     setBookmarksBySura(newMap);
-
-  //     await Storage.setItemAsync(bookmarksKey, JSON.stringify([verseNumber]));
-  //     await Storage.setItemAsync(
-  //       `bookmark_s${s}_v${verseNumber}_${lang}`,
-  //       JSON.stringify({
-  //         suraNumber: s,
-  //         verseNumber,
-  //         language: lang,
-  //         suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
-  //         timestamp: Date.now(),
-  //       })
-  //     );
-  //   } catch (error) {
-  //     console.error("Error handling bookmark:", error);
-  //   }
-  // };
-
-  //! New
-  // inside SuraScreen component
+  // Bookmark handler
   const handleBookmarkVerse = useCallback(
     async (verse: QuranVerseType, index: number) => {
       try {
@@ -1249,30 +1336,32 @@ const SuraScreen: React.FC = () => {
 
         const currentSet = new Set(bookmarksBySura.get(s) ?? new Set<number>());
 
-        // Helper to persist the new bookmark (and update Zustand)
         const writeBookmark = async (n: number) => {
-          // 1) local state (for highlight)
+          // 1) local highlight state (single bookmark per surah)
           const nextSet = new Set<number>([n]);
           const nextMap = new Map(bookmarksBySura);
           nextMap.set(s, nextSet);
           setBookmarksBySura(nextMap);
 
-          // 2) KV: compact list for quick load + a detail record (with index for jump/percent)
+          // 2) storage
           await Storage.setItemAsync(bookmarksKey, JSON.stringify([n]));
           await Storage.setItemAsync(
             detailKey(n),
             JSON.stringify({
               suraNumber: s,
               verseNumber: n,
-              index, // 0-based FlashList index
+              index, // 0-based list index
               language: lang,
               suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
               timestamp: Date.now(),
             })
           );
 
-          // 3) Zustand: update outside UI progress immediately
+          // 3) SURAH progress (exact set)
           updateBookmarkProgress(s, n, index, lang);
+
+          // 4) Aggregates bump-only (no regress)
+          await propagateToAggregates(s, n, index, lang);
         };
 
         // --- Toggle OFF if tapping the same verse ---
@@ -1291,12 +1380,13 @@ const SuraScreen: React.FC = () => {
           }
           await Storage.removeItemAsync(detailKey(verseNumber));
 
-          // Reset reading progress for this sūrah (keeps totalVerses, sets 0%)
+          // ✅ Reset SURAH progress only. Do NOT reset Juz/Page here.
           updateBookmarkProgress(s, 0, -1, lang);
+
           return;
         }
 
-        // --- Replace existing (enforce single bookmark per sūrah) ---
+        // --- Replace existing (single bookmark per sūrah) ---
         if (currentSet.size > 0) {
           const prev = Array.from(currentSet)[0];
           Alert.alert(
@@ -1305,11 +1395,12 @@ const SuraScreen: React.FC = () => {
             [
               { text: t("cancel"), style: "cancel" },
               {
-                text: t("change"),
+                text: t("replace"),
                 style: "destructive",
                 onPress: async () => {
                   try {
                     await Storage.removeItemAsync(detailKey(prev));
+                    // No aggregate reset; we only bump forward on the new bookmark
                     await writeBookmark(verseNumber);
                   } catch (e) {
                     console.error("Bookmark replace failed", e);
@@ -1327,7 +1418,14 @@ const SuraScreen: React.FC = () => {
         console.error("Error handling bookmark:", error);
       }
     },
-    [bookmarksBySura, lang, setBookmarksBySura, updateBookmarkProgress]
+    [
+      bookmarksBySura,
+      lang,
+      setBookmarksBySura,
+      updateBookmarkProgress,
+      propagateToAggregates,
+      t,
+    ]
   );
 
   const headerHeight = scrollY.interpolate({
@@ -1356,7 +1454,7 @@ const SuraScreen: React.FC = () => {
 
   const AnimatedHeader = () => {
     const isMakki = !!suraInfo?.makki;
-    const showJuz = !!juzHeader;
+    const showJuzOrPage = !!juzHeader;
 
     const [modalVisible, setModalVisible] = useState(false);
     const colorScheme = useColorScheme() || "light";
@@ -1383,7 +1481,7 @@ const SuraScreen: React.FC = () => {
                 },
               ]}
             >
-              {showJuz ? (
+              {showJuzOrPage ? (
                 <>
                   <ThemedText style={styles.suraName}>
                     {juzHeader?.title}
@@ -1436,41 +1534,6 @@ const SuraScreen: React.FC = () => {
     []
   );
 
-  // const renderVerse = useCallback(
-  //   ({ item }: { item: QuranVerseType; index: number }) => {
-  //     const arabicVerse = arabicByKey.get(vkey(item.sura, item.aya));
-  //     const isVerseBookmarked =
-  //       bookmarksBySura.get(item.sura)?.has(item.aya) ?? false;
-
-  //     return (
-  //       <VerseCard
-  //         item={item}
-  //         arabicVerse={arabicVerse}
-  //         isBookmarked={isVerseBookmarked}
-  //         isJuzMode={isJuzMode}
-  //         translitContentWidth={translitContentWidth}
-  //         translitBaseStyle={translitBaseStyle}
-  //         hasTafsir={hasTafsir}
-  //         onBookmark={handleBookmarkVerse}
-  //         onOpenInfo={handleOpenInfo}
-  //         language={lang}
-  //       />
-  //     );
-  //   },
-  //   [
-  //     arabicByKey,
-  //     bookmarksBySura,
-  //     isJuzMode,
-  //     translitContentWidth,
-  //     translitBaseStyle,
-  //     cs,
-  //     hasTafsir,
-  //     handleBookmarkVerse,
-  //     handleOpenInfo,
-  //     lang,
-  //   ]
-  // );
-
   const renderVerse = useCallback(
     ({ item, index }: { item: QuranVerseType; index: number }) => {
       const arabicVerse = arabicByKey.get(vkey(item.sura, item.aya));
@@ -1482,11 +1545,11 @@ const SuraScreen: React.FC = () => {
           item={item}
           arabicVerse={arabicVerse}
           isBookmarked={isVerseBookmarked}
-          isJuzMode={isJuzMode}
+          isJuzMode={isJuzMode || isPageMode}
           translitContentWidth={translitContentWidth}
           translitBaseStyle={translitBaseStyle}
           hasTafsir={hasTafsir}
-          onBookmark={(v) => handleBookmarkVerse(v, index)} // <-- pass list index
+          onBookmark={(v) => handleBookmarkVerse(v, index)} // pass list index
           onOpenInfo={handleOpenInfo}
           language={lang}
         />
@@ -1496,6 +1559,7 @@ const SuraScreen: React.FC = () => {
       arabicByKey,
       bookmarksBySura,
       isJuzMode,
+      isPageMode,
       translitContentWidth,
       translitBaseStyle,
       hasTafsir,

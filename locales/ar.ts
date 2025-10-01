@@ -252,6 +252,7 @@ export const ar = {
   juz: "جزء",
   sura: "سورة",
   page: "صفحة",
+  clearAllBookmarksQuran: "إزالة كافة الإشارات المرجعية",
 
   removeProgress: " إزالة التقدم",
   markAsRead: "وضع علامة كمقروء",

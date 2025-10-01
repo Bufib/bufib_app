@@ -969,7 +969,7 @@ export default function CategoryPickerBottomSheet({
         >
           <Text style={styles.sectionTitle}>{t("selectFolder")}</Text>
           <AntDesign
-            name="closecircleo"
+            name="close-circle"
             size={24}
             color={Colors[colorScheme].defaultIcon}
             onPress={() => closeSheet()}

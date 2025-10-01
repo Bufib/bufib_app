@@ -250,6 +250,7 @@ export const en = {
   juz: "Juz",
   sura: "Sura",
   page: "Page",
+  clearAllBookmarksQuran: "Clear all bookmarks",
 
    removeProgress:" Remove Progress",
   markAsRead: "Mark as Read",

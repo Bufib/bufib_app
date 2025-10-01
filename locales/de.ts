@@ -244,7 +244,7 @@ export const de = {
   juz: "Juz",
   sura: "Sura",
   page: "Seite",
-
+  clearAllBookmarksQuran: "Alle Lesezeichen entfernen",
   // History
   sections: {
     prophets: "Propheten",
