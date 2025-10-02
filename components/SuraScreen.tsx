@@ -922,6 +922,7 @@
 //   },
 //   metaText: {},
 // });
+
 import React, {
   useEffect,
   useMemo,
@@ -938,7 +939,7 @@ import {
   Alert,
   InteractionManager, // ✅ added
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -968,6 +969,7 @@ import {
   getJuzBounds,
   getPageVerses,
   getPageBounds,
+  getPageStart,
 } from "@/db/queries/quran";
 import { whenDatabaseReady } from "@/db";
 import FontSizePickerModal from "./FontSizePickerModal";
@@ -1050,6 +1052,8 @@ const SuraScreen: React.FC = () => {
   const [arabicVerses, setArabicVerses] = useState<QuranVerseType[]>([]);
   const [suraInfo, setSuraInfo] = useState<SuraRowType | null>(null);
   const { fontSize, lineHeight } = useFontSizeStore();
+  const [nextPage, setNextPage] = useState<number | null>(null);
+  const [jumping, setJumping] = useState(false);
 
   // Header bits
   const [displayName, setDisplayName] = useState<string>(""); // Surah title (surah mode)
@@ -1251,6 +1255,30 @@ const SuraScreen: React.FC = () => {
     t,
   ]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      // Only relevant in Page mode
+      if (!isPageMode || !pageNumber) {
+        if (!cancelled) setNextPage(null);
+        return;
+      }
+
+      // We detect existence of the next page by asking for its start row.
+      try {
+        const next = await getPageStart(pageNumber + 1);
+        if (!cancelled) setNextPage(next ? pageNumber + 1 : null);
+      } catch {
+        if (!cancelled) setNextPage(null);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isPageMode, pageNumber]);
+
   // verse lookup for Arabic lines → needs (sura, aya) in juz/page mode
   const arabicByKey = useMemo(
     () => new Map(arabicVerses.map((v) => [vkey(v.sura, v.aya), v])),
@@ -1278,6 +1306,26 @@ const SuraScreen: React.FC = () => {
     ),
     []
   );
+
+  const handleGoToNextPage = useCallback(async () => {
+    if (!nextPage || jumping) return;
+    try {
+      setJumping(true);
+
+      // Optional: pre-seed index for instant bookmark/progress mapping
+      try {
+        await seedPageIndex(nextPage);
+      } catch {}
+
+      // Fast param update keeps you on the same screen and re-triggers your effect
+      router.setParams({ pageId: String(nextPage) });
+
+      // If your route requires a different path, use:
+      // router.replace({ pathname: "/quran/[pageId]", params: { pageId: String(nextPage) } });
+    } finally {
+      setJumping(false);
+    }
+  }, [nextPage, jumping]);
 
   /* ------------------------------------------------------------------ */
   /* ✅ UPDATED: Aggregates (juz/page) are bump-only (no regress/reset)  */
@@ -1598,6 +1646,25 @@ const SuraScreen: React.FC = () => {
               {t("noData")}
             </ThemedText>
           }
+          ListFooterComponent={
+            isPageMode &&
+            nextPage &&
+            !loading && (
+              <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel="Next page"
+                onPress={handleGoToNextPage}
+                disabled={jumping}
+                style={[styles.fabNext, jumping && { opacity: 0.6 }]}
+              >
+                <Ionicons
+                  name="arrow-forward-circle"
+                  size={36}
+                  color={Colors[cs].defaultIcon}
+                />
+              </TouchableOpacity>
+            )
+          }
         />
       )}
 
@@ -1867,4 +1934,20 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   metaText: {},
+  fabNext: {
+    height: 56,
+    width: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.08)", 
+    // nice shadow
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
+    zIndex: 2000,
+  },
 });
