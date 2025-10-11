@@ -70,7 +70,6 @@ export type Sizes = {
   emptyGap: number;
   isLarge: boolean;
   isMedium: boolean;
-  
 };
 
 export type triggerRefreshFavoritesType = {
@@ -505,7 +504,25 @@ export type SuraType = {
   endPage: number;
   ruku?: number;
 };
+export type UseSuraDataParams = {
+  lang: LanguageCode;
+  suraNumber: number;
+  isJuzMode: boolean;
+  juzNumber: number | null;
+  isPageMode: boolean;
+  pageNumber: number | null;
+  setTotalVerses: (sura: number, total: number) => void;
+  setTotalVersesForJuz: (juz: number, total: number) => void;
+  setTotalVersesForPage: (page: number, total: number) => void;
+};
 
+export type StickyHeaderProps = {
+  suraNumber: number;
+  suraInfo: SuraRowType | null;
+  displayName: string;
+  juzHeader: { title: string; subtitle?: string } | null;
+  isArabic: () => boolean;
+}
 export interface AyahType {
   id: number;
   sura: number;
@@ -603,7 +620,7 @@ export type HistoryDataType = {
   id: string;
   nameKey: string;
   route: string;
-  image?: any
+  image?: any;
 };
 
 export type SectionType = {
