@@ -821,7 +821,6 @@
 //   },
 // });
 
-
 import React, { useEffect, useState } from "react";
 import { StyleSheet, useColorScheme, View, SectionList } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
@@ -956,6 +955,7 @@ const RenderCalendar: React.FC = () => {
     const diff = dayDiffFromToday(item.gregorian_date);
 
     const isToday = diff === 0;
+    const isOld = diff < 0;
     const isNext = nextUpcomingDiff !== null && diff === nextUpcomingDiff;
 
     const statusLabel = isToday
@@ -982,6 +982,13 @@ const RenderCalendar: React.FC = () => {
               : "rgba(34, 211, 238, 0.15)",
           borderLeftWidth: 4,
           borderLeftColor: "#06B6D4",
+        }
+      : isOld
+      ? {
+          backgroundColor: "#ccc",
+          borderLeftWidth: 4,
+          borderLeftColor: "#888",
+          opacity: 0.8,
         }
       : {};
 

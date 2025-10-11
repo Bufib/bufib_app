@@ -20,6 +20,8 @@ export const de = {
   stream: "Streamen",
   loading_stream: "Stream lädt",
   // General
+  yes: "Ja",
+  reset: "Zurücksetzen",
   retry: "Wiederholen",
   errorLoadingData: "Es gab einen Fehler beim laden der Daten",
   openingLink: "Link wird geöffnet",

@@ -21,6 +21,8 @@ export const en = {
   loading_stream: "Stream is loading",
 
   // General
+  yes: "Yes",
+  reset: "reset",
   retry: "Retry",
   errorLoadingData: "There was an error loading the data",
   openingLink: "Opening Link",
@@ -87,8 +89,7 @@ export const en = {
   // Questions
   categories: "Categories",
   latestQuestions: "Latest questions",
-  relatedQuestions:"Related questions",
-
+  relatedQuestions: "Related questions",
 
   // Questionslinks
   rechtsfragen: "Legal questions",
@@ -252,7 +253,7 @@ export const en = {
   page: "Page",
   clearAllBookmarksQuran: "Clear all bookmarks",
 
-   removeProgress:" Remove Progress",
+  removeProgress: " Remove Progress",
   markAsRead: "Mark as Read",
   // History
   sections: {
@@ -287,13 +288,13 @@ export const en = {
     husain: "Imam Husain Sayyid-ul-Schuhada (a.)",
     zainUlAbidin: "Imam Ali Zain-ul-Abidin (a.)",
     baqir: "Imam Muhammad al-Baqir (a.)",
-    sadiq:  "Imam Dschafar al-Sadiq (a.)",
-    kathim:  "Imam Musa al-Kathim (a.)",
-    ridha:  "Imam Ali al-Ridha (a.)",
-    dschawad:  "Imam Muhammad al-Dschawad at-Taqi (a.)",
-    hadi:  "Imam Ali al-Hadi al-Naqi (a.)",
-    askari:  "Imam Hasan al-Askari (a.)",
-    mahdi:  "Imam Mahdi al-Muntathar (a.) ",
+    sadiq: "Imam Dschafar al-Sadiq (a.)",
+    kathim: "Imam Musa al-Kathim (a.)",
+    ridha: "Imam Ali al-Ridha (a.)",
+    dschawad: "Imam Muhammad al-Dschawad at-Taqi (a.)",
+    hadi: "Imam Ali al-Hadi al-Naqi (a.)",
+    askari: "Imam Hasan al-Askari (a.)",
+    mahdi: "Imam Mahdi al-Muntathar (a.) ",
   },
   ashura: {
     day1: "Day 1",

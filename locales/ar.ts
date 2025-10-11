@@ -21,6 +21,8 @@ export const ar = {
   loading_stream: "جارٍ تحميل الدفق",
 
   // General
+  yes: "نعم",
+  reset: "إعادة ضبط",
   retry: "إعادة المحاولة",
   errorLoadingData: "حدث خطأ أثناء تحميل البيانات",
   openingLink: "جاري فتح الرابط",
