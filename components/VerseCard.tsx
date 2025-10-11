@@ -67,6 +67,8 @@ function VerseCard({
           backgroundColor: isBookmarked
             ? Colors.universal.primary
             : Colors[colorScheme].contrast,
+            marginHorizontal: 10,
+            marginTop: 10
         },
       ]}
     >
@@ -182,6 +184,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
+    
   },
   header: {
     flexDirection: "row",
@@ -215,6 +218,7 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: 20,
+    
   },
   arabic: {
     textAlign: "right",

@@ -1,4 +1,4 @@
-//! Ohne JUZ und Page progress
+// ! Mit vorne und zurück aber header nicht sicher bei hochscrollen
 // import React, {
 //   useEffect,
 //   useMemo,
@@ -13,8 +13,9 @@
 //   useColorScheme,
 //   Animated,
 //   Alert,
+//   InteractionManager, // ✅ added
 // } from "react-native";
-// import { useLocalSearchParams } from "expo-router";
+// import { router, useLocalSearchParams } from "expo-router";
 // import { useTranslation } from "react-i18next";
 // import { SafeAreaView } from "react-native-safe-area-context";
 // import { Ionicons } from "@expo/vector-icons";
@@ -44,20 +45,60 @@
 //   getJuzBounds,
 //   getPageVerses,
 //   getPageBounds,
+//   getPageStart,
 // } from "@/db/queries/quran";
 // import { whenDatabaseReady } from "@/db";
 // import FontSizePickerModal from "./FontSizePickerModal";
-// import { useFontSizeStore } from "@/stores/fontSizeStore";
 // import { useReadingProgressQuran } from "@/stores/useReadingProgressQuran";
-// import i18n from "@/utils/i18n";
+// import { useFontSizeStore } from "@/stores/fontSizeStore";
+
+// // 🔹 index helpers
+// import {
+//   seedJuzIndex,
+//   seedPageIndex,
+//   getJuzPosForVerse,
+//   getPagePosForVerse,
+//   getJuzCoverageForSura, // ✅ added (bonus pre-seed for juz coverage)
+// } from "@/utils/quranIndex";
 
 // // constants / helpers
 // const HEADER_MAX_HEIGHT = 120;
 // const HEADER_MIN_HEIGHT = 60;
 // const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-// // key for arabic lookup across juz (spans multiple surahs)
+// // key for arabic lookup across juz/page (spans multiple surahs)
 // const vkey = (s: number, a: number) => `${s}:${a}`;
+
+// /* ------------------------------------------------------------------ */
+// /* ✅ NEW: Pre-seed only the relevant pages for the current sūrah      */
+// /* ------------------------------------------------------------------ */
+// async function preseedPagesForSurah(info: SuraRowType, firstBatchSize = 3) {
+//   if (!info?.startPage || !info?.endPage) return;
+
+//   const start = Math.max(1, info.startPage);
+//   const end = Math.max(start, info.endPage);
+
+//   const total = end - start + 1;
+//   const batch = Math.min(firstBatchSize, total);
+
+//   // Seed a small batch immediately to make first bookmark instant
+//   await Promise.all(
+//     Array.from({ length: batch }, (_, i) => seedPageIndex(start + i))
+//   );
+
+//   // Defer the rest so we don't block UI interactions/scroll
+//   if (batch < total) {
+//     InteractionManager.runAfterInteractions(() => {
+//       (async () => {
+//         for (let p = start + batch; p <= end; p++) {
+//           try {
+//             await seedPageIndex(p);
+//           } catch {}
+//         }
+//       })();
+//     });
+//   }
+// }
 
 // const SuraScreen: React.FC = () => {
 //   const { t } = useTranslation();
@@ -69,13 +110,12 @@
 //   // account for list + card paddings (16 + 16 on both sides)
 //   const translitContentWidth = Math.max(0, width - 64);
 
-//   // Accept either suraId (surah mode) or juzId (juz mode)
+//   // Accept suraId (surah mode) or juzId (juz mode) or pageId (page mode)
 //   const { suraId, juzId, pageId } = useLocalSearchParams<{
 //     suraId?: string;
 //     juzId?: string;
 //     pageId?: string;
 //   }>();
-//   // prefer explicit modes; don't overlap
 //   const isPageMode = !!pageId;
 //   const isJuzMode = !!juzId && !isPageMode;
 //   const juzNumber = isJuzMode ? Number(juzId) : null;
@@ -88,15 +128,18 @@
 //   const [arabicVerses, setArabicVerses] = useState<QuranVerseType[]>([]);
 //   const [suraInfo, setSuraInfo] = useState<SuraRowType | null>(null);
 //   const { fontSize, lineHeight } = useFontSizeStore();
+//   const [nextPage, setNextPage] = useState<number | null>(null);
+//   const [prevPage, setPrevPage] = useState<number | null>(null);
+//   const [jumping, setJumping] = useState(false);
 
 //   // Header bits
 //   const [displayName, setDisplayName] = useState<string>(""); // Surah title (surah mode)
 //   const [juzHeader, setJuzHeader] = useState<{
 //     title: string;
 //     subtitle?: string;
-//   } | null>(null); // Juz title (juz mode)
+//   } | null>(null); // Reused for Juz and Page titles
 
-//   // Bookmarks by sura for highlighting in both modes
+//   // Bookmarks by sura for highlighting in all modes
 //   const [bookmarksBySura, setBookmarksBySura] = useState<
 //     Map<number, Set<number>>
 //   >(new Map());
@@ -109,9 +152,9 @@
 
 //   const setLastSura = useLastSuraStore((s) => s.setLastSura);
 //   useEffect(() => {
-//     // Only set this in surah mode; in juz mode, leave the last sura as-is
-//     if (!isJuzMode) setLastSura(suraNumber);
-//   }, [suraNumber, isJuzMode]);
+//     // Only set this in surah mode; in juz/page mode, leave the last sura as-is
+//     if (!isJuzMode && !isPageMode) setLastSura(suraNumber);
+//   }, [suraNumber, isJuzMode, isPageMode, setLastSura]);
 
 //   // Animation refs
 //   const scrollY = useRef(new Animated.Value(0)).current;
@@ -119,10 +162,23 @@
 //   // Bottom Sheet ref
 //   const bottomSheetRef = useRef<BottomSheet>(null);
 //   const snapPoints = useMemo(() => ["75%"], []);
+
+//   // progress actions
 //   const setTotalVerses = useReadingProgressQuran((s) => s.setTotalVerses);
 //   const updateBookmarkProgress = useReadingProgressQuran(
 //     (s) => s.updateBookmark
 //   );
+//   const setTotalVersesForJuz = useReadingProgressQuran(
+//     (s) => s.setTotalVersesForJuz
+//   );
+//   const updateJuzBookmark = useReadingProgressQuran((s) => s.updateJuzBookmark);
+//   const setTotalVersesForPage = useReadingProgressQuran(
+//     (s) => s.setTotalVersesForPage
+//   );
+//   const updatePageBookmark = useReadingProgressQuran(
+//     (s) => s.updatePageBookmark
+//   );
+
 //   useEffect(() => {
 //     let cancelled = false;
 //     (async () => {
@@ -136,6 +192,11 @@
 //             getJuzVerses(lang, juzNumber),
 //             getJuzVerses("ar", juzNumber),
 //           ]);
+//           setTotalVersesForJuz(juzNumber, vers.length);
+
+//           // Seed quranIndex for this juz so we can map any verse → (idx,total)
+//           seedJuzIndex(juzNumber, vers);
+
 //           const bounds = await getJuzBounds(juzNumber);
 //           if (bounds) {
 //             const startName =
@@ -171,6 +232,11 @@
 //             getPageVerses(lang, pageNumber),
 //             getPageVerses("ar", pageNumber),
 //           ]);
+//           setTotalVersesForPage(pageNumber, vers.length);
+
+//           // Seed quranIndex for this page so we can map any verse → (idx,total)
+//           seedPageIndex(pageNumber, vers);
+
 //           const bounds = await getPageBounds(pageNumber);
 //           if (bounds) {
 //             const startName =
@@ -199,7 +265,7 @@
 //             setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
 //             setSuraInfo(null);
 //             setDisplayName("");
-//             setJuzHeader((prev) => prev); // reuse same header slot
+//             setJuzHeader((prev) => prev);
 //             setBookmarksBySura(map);
 //           }
 //         } else {
@@ -211,7 +277,19 @@
 //             getSurahDisplayName(suraNumber, lang),
 //           ]);
 //           const totalVerses = info?.nbAyat ?? vers?.length ?? 0;
+
 //           setTotalVerses(suraNumber, totalVerses);
+
+//           // ✅ Pre-seed only the pages that can contain this sūrah (fast path)
+//           try {
+//             await preseedPagesForSurah(info!);
+//           } catch {}
+
+//           // ✅ Bonus: pre-seed juz coverage for this sūrah after interactions
+//           InteractionManager.runAfterInteractions(() => {
+//             getJuzCoverageForSura(suraNumber).catch(() => {});
+//           });
+
 //           const map = new Map<number, Set<number>>();
 //           map.set(suraNumber, await loadBookmarkedVerses(suraNumber));
 
@@ -241,9 +319,58 @@
 //     return () => {
 //       cancelled = true;
 //     };
-//   }, [lang, suraNumber, isJuzMode, juzNumber]);
+//   }, [
+//     lang,
+//     suraNumber,
+//     isJuzMode,
+//     juzNumber,
+//     isPageMode,
+//     pageNumber,
+//     setTotalVerses,
+//     setTotalVersesForJuz,
+//     setTotalVersesForPage,
+//     t,
+//   ]);
 
-//   // verse lookup for Arabic lines → needs (sura, aya) in juz mode
+//   useEffect(() => {
+//     let cancelled = false;
+
+//     (async () => {
+//       // Only relevant in Page mode
+//       if (!isPageMode || !pageNumber) {
+//         if (!cancelled) {
+//           setNextPage(null);
+//           setPrevPage(null); // ← NEW
+//         }
+//         return;
+//       }
+
+//       try {
+//         // NEXT
+//         const next = await getPageStart(pageNumber + 1);
+//         if (!cancelled) setNextPage(next ? pageNumber + 1 : null);
+
+//         // PREV (only if > 1)
+//         let prev: number | null = null;
+//         if (pageNumber > 1) {
+//           const prevStart = await getPageStart(pageNumber - 1);
+//           prev = prevStart ? pageNumber - 1 : null;
+//         }
+//         if (!cancelled) setPrevPage(prev); // ← NEW
+//       } catch {
+//         if (!cancelled) {
+//           setNextPage(null);
+//           setPrevPage(null); // ← NEW
+//         }
+//       }
+//     })();
+
+//     return () => {
+//       cancelled = true;
+//     };
+//   }, [isPageMode, pageNumber]);
+
+//   // verse lookup for Arabic lines → needs (sura, aya) in juz/page mode
 //   const arabicByKey = useMemo(
 //     () => new Map(arabicVerses.map((v) => [vkey(v.sura, v.aya), v])),
 //     [arabicVerses]
@@ -271,92 +398,87 @@
 //     []
 //   );
 
-//   //! Alt
-//   // const handleBookmarkVerse = async (verse: QuranVerseType, index:number) => {
-//   //   try {
-//   //     const s = verse.sura;
-//   //     const verseNumber = verse.aya;
-//   //     const bookmarksKey = `bookmarks_sura_${s}`;
+//   const handleGoToNextPage = useCallback(async () => {
+//     if (!nextPage || jumping) return;
+//     try {
+//       setJumping(true);
 
-//   //     const currentSet = new Set(bookmarksBySura.get(s) ?? new Set<number>());
+//       // Optional: pre-seed index for instant bookmark/progress mapping
+//       try {
+//         await seedPageIndex(nextPage);
+//       } catch {}
 
-//   //     // Tapping the same verse toggles it off
-//   //     if (currentSet.has(verseNumber)) {
-//   //       currentSet.delete(verseNumber);
-//   //       const newMap = new Map(bookmarksBySura);
-//   //       newMap.set(s, currentSet);
-//   //       setBookmarksBySura(newMap);
+//       // Fast param update keeps you on the same screen and re-triggers your effect
+//       router.setParams({ pageId: String(nextPage) });
 
-//   //       const arr = Array.from(currentSet);
-//   //       if (arr.length) {
-//   //         await Storage.setItemAsync(bookmarksKey, JSON.stringify(arr));
-//   //       } else {
-//   //         await Storage.removeItemAsync(bookmarksKey);
-//   //       }
-//   //       await Storage.removeItemAsync(`bookmark_s${s}_v${verseNumber}_${lang}`);
-//   //       return;
-//   //     }
+//       // If your route requires a different path, use:
+//       // router.replace({ pathname: "/quran/[pageId]", params: { pageId: String(nextPage) } });
+//     } finally {
+//       setJumping(false);
+//     }
+//   }, [nextPage, jumping]);
 
-//   //     // Only allow one bookmark per sura (keeps your old behavior)
-//   //     if (currentSet.size > 0) {
-//   //       const prev = Array.from(currentSet)[0];
-//   //       Alert.alert(t("confirmBookmarkChange"), t("bookmarkReplaceQuestion"), [
-//   //         { text: t("cancel"), style: "cancel" },
-//   //         {
-//   //           text: t("change"),
-//   //           style: "destructive",
-//   //           onPress: async () => {
-//   //             await Storage.removeItemAsync(`bookmark_s${s}_v${prev}_${lang}`);
+//   const handleGoToPrevPage = useCallback(async () => {
+//     if (!prevPage || jumping) return;
+//     try {
+//       setJumping(true);
+//       try {
+//         await seedPageIndex(prevPage);
+//       } catch {}
+//       router.setParams({ pageId: String(prevPage) });
+//       // or router.replace({ pathname: "/quran/[pageId]", params: { pageId: String(prevPage) } });
+//     } finally {
+//       setJumping(false);
+//     }
+//   }, [prevPage, jumping]);
 
-//   //             const nextSet = new Set<number>([verseNumber]);
-//   //             const newMap = new Map(bookmarksBySura);
-//   //             newMap.set(s, nextSet);
-//   //             setBookmarksBySura(newMap);
+//   /* ------------------------------------------------------------------ */
+//   /* ✅ UPDATED: Aggregates (juz/page) are bump-only (no regress/reset)  */
+//   /* ------------------------------------------------------------------ */
+//   const propagateToAggregates = useCallback(
+//     async (
+//       sura: number,
+//       aya: number,
+//       _listIndex: number,
+//       language: LanguageCode
+//     ) => {
+//       try {
+//         const st = useReadingProgressQuran.getState();
 
-//   //             await Storage.setItemAsync(
-//   //               bookmarksKey,
-//   //               JSON.stringify([verseNumber])
-//   //             );
-//   //             await Storage.setItemAsync(
-//   //               `bookmark_s${s}_v${verseNumber}_${lang}`,
-//   //               JSON.stringify({
-//   //                 suraNumber: s,
-//   //                 verseNumber,
-//   //                 language: lang,
-//   //                 suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
-//   //                 timestamp: Date.now(),
-//   //               })
-//   //             );
-//   //           },
-//   //         },
-//   //       ]);
-//   //       return;
-//   //     }
+//         // JUZ
+//         const jpos = await getJuzPosForVerse(sura, aya);
+//         if (jpos) {
+//           const prev = st.progressByJuz[jpos.unit]?.lastVerseNumber ?? 0;
+//           const next = jpos.idx + 1;
+//           if (next > prev) {
+//             setTotalVersesForJuz(jpos.unit, jpos.total);
+//             updateJuzBookmark(jpos.unit, next, jpos.idx, language);
+//           }
+//         }
 
-//   //     // No existing bookmark in this sura -> add this one
-//   //     const nextSet = new Set<number>([verseNumber]);
-//   //     const newMap = new Map(bookmarksBySura);
-//   //     newMap.set(s, nextSet);
-//   //     setBookmarksBySura(newMap);
+//         // PAGE
+//         const ppos = await getPagePosForVerse(sura, aya);
+//         if (ppos) {
+//           const prev = st.progressByPage[ppos.unit]?.lastVerseNumber ?? 0;
+//           const next = ppos.idx + 1;
+//           if (next > prev) {
+//             setTotalVersesForPage(ppos.unit, ppos.total);
+//             updatePageBookmark(ppos.unit, next, ppos.idx, language);
+//           }
+//         }
+//       } catch (e) {
+//         console.warn("propagateToAggregates error", e);
+//       }
+//     },
+//     [
+//       setTotalVersesForJuz,
+//       updateJuzBookmark,
+//       setTotalVersesForPage,
+//       updatePageBookmark,
+//     ]
+//   );
 
-//   //     await Storage.setItemAsync(bookmarksKey, JSON.stringify([verseNumber]));
-//   //     await Storage.setItemAsync(
-//   //       `bookmark_s${s}_v${verseNumber}_${lang}`,
-//   //       JSON.stringify({
-//   //         suraNumber: s,
-//   //         verseNumber,
-//   //         language: lang,
-//   //         suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
-//   //         timestamp: Date.now(),
-//   //       })
-//   //     );
-//   //   } catch (error) {
-//   //     console.error("Error handling bookmark:", error);
-//   //   }
-//   // };
-
-//   //! New
-//   // inside SuraScreen component
+//   // Bookmark handler
 //   const handleBookmarkVerse = useCallback(
 //     async (verse: QuranVerseType, index: number) => {
 //       try {
@@ -367,30 +489,32 @@
 
 //         const currentSet = new Set(bookmarksBySura.get(s) ?? new Set<number>());
 
-//         // Helper to persist the new bookmark (and update Zustand)
 //         const writeBookmark = async (n: number) => {
-//           // 1) local state (for highlight)
+//           // 1) local highlight state (single bookmark per surah)
 //           const nextSet = new Set<number>([n]);
 //           const nextMap = new Map(bookmarksBySura);
 //           nextMap.set(s, nextSet);
 //           setBookmarksBySura(nextMap);
 
-//           // 2) KV: compact list for quick load + a detail record (with index for jump/percent)
+//           // 2) storage
 //           await Storage.setItemAsync(bookmarksKey, JSON.stringify([n]));
 //           await Storage.setItemAsync(
 //             detailKey(n),
 //             JSON.stringify({
 //               suraNumber: s,
 //               verseNumber: n,
-//               index, // 0-based FlashList index
+//               index, // 0-based list index
 //               language: lang,
 //               suraName: (await getSurahDisplayName(s, lang)) ?? `Sura ${s}`,
 //               timestamp: Date.now(),
 //             })
 //           );
 
-//           // 3) Zustand: update outside UI progress immediately
+//           // 3) SURAH progress (exact set)
 //           updateBookmarkProgress(s, n, index, lang);
+
+//           // 4) Aggregates bump-only (no regress)
+//           await propagateToAggregates(s, n, index, lang);
 //         };
 
 //         // --- Toggle OFF if tapping the same verse ---
@@ -409,12 +533,13 @@
 //           }
 //           await Storage.removeItemAsync(detailKey(verseNumber));
 
-//           // Reset reading progress for this sūrah (keeps totalVerses, sets 0%)
+//           // ✅ Reset SURAH progress only. Do NOT reset Juz/Page here.
 //           updateBookmarkProgress(s, 0, -1, lang);
+
 //           return;
 //         }
 
-//         // --- Replace existing (enforce single bookmark per sūrah) ---
+//         // --- Replace existing (single bookmark per sūrah) ---
 //         if (currentSet.size > 0) {
 //           const prev = Array.from(currentSet)[0];
 //           Alert.alert(
@@ -423,11 +548,12 @@
 //             [
 //               { text: t("cancel"), style: "cancel" },
 //               {
-//                 text: t("change"),
+//                 text: t("replace"),
 //                 style: "destructive",
 //                 onPress: async () => {
 //                   try {
 //                     await Storage.removeItemAsync(detailKey(prev));
+//                     // No aggregate reset; we only bump forward on the new bookmark
 //                     await writeBookmark(verseNumber);
 //                   } catch (e) {
 //                     console.error("Bookmark replace failed", e);
@@ -445,7 +571,14 @@
 //         console.error("Error handling bookmark:", error);
 //       }
 //     },
-//     [bookmarksBySura, lang, setBookmarksBySura, updateBookmarkProgress]
+//     [
+//       bookmarksBySura,
+//       lang,
+//       setBookmarksBySura,
+//       updateBookmarkProgress,
+//       propagateToAggregates,
+//       t,
+//     ]
 //   );
 
 //   const headerHeight = scrollY.interpolate({
@@ -474,7 +607,7 @@
 
 //   const AnimatedHeader = () => {
 //     const isMakki = !!suraInfo?.makki;
-//     const showJuz = !!juzHeader;
+//     const showJuzOrPage = !!juzHeader;
 
 //     const [modalVisible, setModalVisible] = useState(false);
 //     const colorScheme = useColorScheme() || "light";
@@ -501,7 +634,7 @@
 //                 },
 //               ]}
 //             >
-//               {showJuz ? (
+//               {showJuzOrPage ? (
 //                 <>
 //                   <ThemedText style={styles.suraName}>
 //                     {juzHeader?.title}
@@ -554,41 +687,6 @@
 //     []
 //   );
 
-//   // const renderVerse = useCallback(
-//   //   ({ item }: { item: QuranVerseType; index: number }) => {
-//   //     const arabicVerse = arabicByKey.get(vkey(item.sura, item.aya));
-//   //     const isVerseBookmarked =
-//   //       bookmarksBySura.get(item.sura)?.has(item.aya) ?? false;
-
-//   //     return (
-//   //       <VerseCard
-//   //         item={item}
-//   //         arabicVerse={arabicVerse}
-//   //         isBookmarked={isVerseBookmarked}
-//   //         isJuzMode={isJuzMode}
-//   //         translitContentWidth={translitContentWidth}
-//   //         translitBaseStyle={translitBaseStyle}
-//   //         hasTafsir={hasTafsir}
-//   //         onBookmark={handleBookmarkVerse}
-//   //         onOpenInfo={handleOpenInfo}
-//   //         language={lang}
-//   //       />
-//   //     );
-//   //   },
-//   //   [
-//   //     arabicByKey,
-//   //     bookmarksBySura,
-//   //     isJuzMode,
-//   //     translitContentWidth,
-//   //     translitBaseStyle,
-//   //     cs,
-//   //     hasTafsir,
-//   //     handleBookmarkVerse,
-//   //     handleOpenInfo,
-//   //     lang,
-//   //   ]
-//   // );
-
 //   const renderVerse = useCallback(
 //     ({ item, index }: { item: QuranVerseType; index: number }) => {
 //       const arabicVerse = arabicByKey.get(vkey(item.sura, item.aya));
@@ -600,11 +698,11 @@
 //           item={item}
 //           arabicVerse={arabicVerse}
 //           isBookmarked={isVerseBookmarked}
-//           isJuzMode={isJuzMode}
+//           isJuzMode={isJuzMode || isPageMode}
 //           translitContentWidth={translitContentWidth}
 //           translitBaseStyle={translitBaseStyle}
 //           hasTafsir={hasTafsir}
-//           onBookmark={(v) => handleBookmarkVerse(v, index)} // <-- pass list index
+//           onBookmark={(v) => handleBookmarkVerse(v, index)} // pass list index
 //           onOpenInfo={handleOpenInfo}
 //           language={lang}
 //         />
@@ -614,6 +712,7 @@
 //       arabicByKey,
 //       bookmarksBySura,
 //       isJuzMode,
+//       isPageMode,
 //       translitContentWidth,
 //       translitBaseStyle,
 //       hasTafsir,
@@ -651,6 +750,46 @@
 //             <ThemedText style={[styles.emptyText, { fontSize: fontSize }]}>
 //               {t("noData")}
 //             </ThemedText>
+//           }
+//           ListFooterComponent={
+//             isPageMode && !loading ? (
+//               <View
+//                 style={[
+//                   styles.footerContainer,
+//                   prevPage
+//                     ? { justifyContent: "space-between" }
+//                     : { justifyContent: "flex-end" },
+//                 ]}
+//               >
+//                 {prevPage ? (
+//                   <TouchableOpacity
+//                     onPress={handleGoToPrevPage}
+//                     disabled={jumping}
+//                     style={[styles.fabPrev, jumping && { opacity: 0.6 }]}
+//                   >
+//                     <Ionicons
+//                       name="arrow-back-circle"
+//                       size={36}
+//                       color={Colors[cs].defaultIcon}
+//                     />
+//                   </TouchableOpacity>
+//                 ) : null}
+
+//                 {nextPage ? (
+//                   <TouchableOpacity
+//                     onPress={handleGoToNextPage}
+//                     disabled={jumping}
+//                     style={[styles.fabNext, jumping && { opacity: 0.6 }]}
+//                   >
+//                     <Ionicons
+//                       name="arrow-forward-circle"
+//                       size={36}
+//                       color={Colors[cs].defaultIcon}
+//                     />
+//                   </TouchableOpacity>
+//                 ) : null}
+//               </View>
+//             ) : null
 //           }
 //         />
 //       )}
@@ -921,6 +1060,46 @@
 //     gap: 4,
 //   },
 //   metaText: {},
+//   footerContainer: {
+//     flexDirection: "row",
+//     paddingHorizontal: 16,
+//     paddingVertical: 12,
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//   },
+//   endOfContentText: {
+//     fontSize: 14,
+//     color: Colors.universal.grayedOut,
+//     fontStyle: "italic",
+//   },
+//   fabNext: {
+//     height: 56,
+//     width: 56,
+//     borderRadius: 28,
+//     alignItems: "center",
+//     justifyContent: "center",
+//     backgroundColor: "rgba(0,0,0,0.08)",
+//     shadowColor: "#000",
+//     shadowOpacity: 0.2,
+//     shadowRadius: 6,
+//     shadowOffset: { width: 0, height: 3 },
+//     elevation: 4,
+//     zIndex: 2000,
+//   },
+//   fabPrev: {
+//     height: 56,
+//     width: 56,
+//     borderRadius: 28,
+//     alignItems: "center",
+//     justifyContent: "center",
+//     backgroundColor: "rgba(0,0,0,0.08)",
+//     shadowColor: "#000",
+//     shadowOpacity: 0.2,
+//     shadowRadius: 6,
+//     shadowOffset: { width: 0, height: 3 },
+//     elevation: 4,
+//     zIndex: 2000,
+//   },
 // });
 
 import React, {
@@ -935,9 +1114,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
-  Animated,
   Alert,
-  InteractionManager, // ✅ added
+  InteractionManager,
+  Text,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -982,13 +1161,13 @@ import {
   seedPageIndex,
   getJuzPosForVerse,
   getPagePosForVerse,
-  getJuzCoverageForSura, // ✅ added (bonus pre-seed for juz coverage)
+  getJuzCoverageForSura,
 } from "@/utils/quranIndex";
+import { FlatList } from "react-native-gesture-handler";
+import { LinearGradient } from "expo-linear-gradient";
 
 // constants / helpers
-const HEADER_MAX_HEIGHT = 120;
-const HEADER_MIN_HEIGHT = 60;
-const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+const HEADER_HEIGHT = 90; // Fixed header height
 
 // key for arabic lookup across juz/page (spans multiple surahs)
 const vkey = (s: number, a: number) => `${s}:${a}`;
@@ -1053,6 +1232,7 @@ const SuraScreen: React.FC = () => {
   const [suraInfo, setSuraInfo] = useState<SuraRowType | null>(null);
   const { fontSize, lineHeight } = useFontSizeStore();
   const [nextPage, setNextPage] = useState<number | null>(null);
+  const [prevPage, setPrevPage] = useState<number | null>(null);
   const [jumping, setJumping] = useState(false);
 
   // Header bits
@@ -1078,9 +1258,6 @@ const SuraScreen: React.FC = () => {
     // Only set this in surah mode; in juz/page mode, leave the last sura as-is
     if (!isJuzMode && !isPageMode) setLastSura(suraNumber);
   }, [suraNumber, isJuzMode, isPageMode, setLastSura]);
-
-  // Animation refs
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   // Bottom Sheet ref
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -1261,16 +1438,30 @@ const SuraScreen: React.FC = () => {
     (async () => {
       // Only relevant in Page mode
       if (!isPageMode || !pageNumber) {
-        if (!cancelled) setNextPage(null);
+        if (!cancelled) {
+          setNextPage(null);
+          setPrevPage(null);
+        }
         return;
       }
 
-      // We detect existence of the next page by asking for its start row.
       try {
+        // NEXT
         const next = await getPageStart(pageNumber + 1);
         if (!cancelled) setNextPage(next ? pageNumber + 1 : null);
+
+        // PREV (only if > 1)
+        let prev: number | null = null;
+        if (pageNumber > 1) {
+          const prevStart = await getPageStart(pageNumber - 1);
+          prev = prevStart ? pageNumber - 1 : null;
+        }
+        if (!cancelled) setPrevPage(prev);
       } catch {
-        if (!cancelled) setNextPage(null);
+        if (!cancelled) {
+          setNextPage(null);
+          setPrevPage(null);
+        }
       }
     })();
 
@@ -1319,13 +1510,23 @@ const SuraScreen: React.FC = () => {
 
       // Fast param update keeps you on the same screen and re-triggers your effect
       router.setParams({ pageId: String(nextPage) });
-
-      // If your route requires a different path, use:
-      // router.replace({ pathname: "/quran/[pageId]", params: { pageId: String(nextPage) } });
     } finally {
       setJumping(false);
     }
   }, [nextPage, jumping]);
+
+  const handleGoToPrevPage = useCallback(async () => {
+    if (!prevPage || jumping) return;
+    try {
+      setJumping(true);
+      try {
+        await seedPageIndex(prevPage);
+      } catch {}
+      router.setParams({ pageId: String(prevPage) });
+    } finally {
+      setJumping(false);
+    }
+  }, [prevPage, jumping]);
 
   /* ------------------------------------------------------------------ */
   /* ✅ UPDATED: Aggregates (juz/page) are bump-only (no regress/reset)  */
@@ -1476,89 +1677,67 @@ const SuraScreen: React.FC = () => {
     ]
   );
 
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
-    extrapolate: "clamp",
-  });
-
-  const headerTitleOpacity = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
-    outputRange: [1, 0.5, 0],
-    extrapolate: "clamp",
-  });
-
-  const headerSubtitleOpacity = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE / 3],
-    outputRange: [1, 0],
-    extrapolate: "clamp",
-  });
-
-  const headerTitleScale = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [1, 0.8],
-    extrapolate: "clamp",
-  });
-
-  const AnimatedHeader = () => {
+  const StickyHeader = () => {
     const isMakki = !!suraInfo?.makki;
     const showJuzOrPage = !!juzHeader;
-
     const [modalVisible, setModalVisible] = useState(false);
     const colorScheme = useColorScheme() || "light";
 
     return (
-      <Animated.View
+      <SafeAreaView
+        edges={["top"]}
         style={[
-          styles.headerWrapper,
           {
-            height: headerHeight,
-            backgroundColor: Colors[cs].background,
+            flex: 1,
+
+            backgroundColor: "transparent",
           },
         ]}
       >
-        <SafeAreaView edges={["top"]} style={styles.headerContainer}>
+        <View
+          style={[
+            styles.headerWrapper,
+            {
+              backgroundColor: "transparent",
+            },
+          ]}
+        >
           <View style={styles.headerContent}>
-            <HeaderLeftBackButton />
-            <Animated.View
-              style={[
-                styles.headerTextContainer,
-                {
-                  opacity: headerTitleOpacity,
-                  transform: [{ scale: headerTitleScale }],
-                },
-              ]}
+            <View
+              style={{ flexDirection: "row", flex: 1, alignItems: "center" }}
             >
-              {showJuzOrPage ? (
-                <>
-                  <ThemedText style={styles.suraName}>
-                    {juzHeader?.title}
-                  </ThemedText>
-                  {!!juzHeader?.subtitle && (
-                    <Animated.View style={{ opacity: headerSubtitleOpacity }}>
-                      <ThemedText type="default" style={[styles.subMeta]}>
-                        {juzHeader.subtitle}
-                      </ThemedText>
-                    </Animated.View>
-                  )}
-                </>
-              ) : (
-                <>
-                  <ThemedText
-                    style={[styles.suraName, isArabic() && styles.suraNameAr]}
-                  >
-                    {displayName || suraInfo?.label_en || suraInfo?.label || ""}{" "}
-                    ({suraNumber})
-                  </ThemedText>
-                  <Animated.View style={{ opacity: headerSubtitleOpacity }}>
+              <HeaderLeftBackButton
+                style={{
+                  color: "#000",
+                }}
+              />
+              <View style={styles.headerTextContainer}>
+                {showJuzOrPage ? (
+                  <>
+                    <Text style={styles.suraName}>{juzHeader?.title}</Text>
+                    {!!juzHeader?.subtitle && (
+                      <Text style={[styles.subMeta]}>{juzHeader.subtitle}</Text>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Text
+                      style={[styles.suraName, isArabic() && styles.suraNameAr]}
+                    >
+                      {displayName ||
+                        suraInfo?.label_en ||
+                        suraInfo?.label ||
+                        ""}{" "}
+                      ({suraNumber})
+                    </Text>
                     <ThemedText style={styles.subMeta}>
                       {t("ayatCount")}: {suraInfo?.nbAyat ?? "—"} ·{" "}
                       {isMakki ? t("makki") : t("madani")}
                     </ThemedText>
-                  </Animated.View>
-                </>
-              )}
-            </Animated.View>
+                  </>
+                )}
+              </View>
+            </View>
             <Ionicons
               name="text"
               size={28}
@@ -1571,8 +1750,8 @@ const SuraScreen: React.FC = () => {
             visible={modalVisible}
             onClose={() => setModalVisible(false)}
           />
-        </SafeAreaView>
-      </Animated.View>
+        </View>
+      </SafeAreaView>
     );
   };
 
@@ -1619,51 +1798,68 @@ const SuraScreen: React.FC = () => {
 
   return (
     <ThemedView style={styles.container}>
-      <AnimatedHeader />
       {loading ? (
         <View style={styles.loadingWrap}>
           <LoadingIndicator size="large" />
         </View>
       ) : (
-        <FlashList
+        <FlatList
           data={verses}
+          bounces={false}
           extraData={Array.from(bookmarksBySura.entries())}
           keyExtractor={(v) => `${v.sura}-${v.aya}`}
           renderItem={renderVerse}
-          contentContainerStyle={{
-            paddingTop: HEADER_MAX_HEIGHT + 10,
-            paddingHorizontal: 16,
-            paddingBottom: 24,
-          }}
+          ListHeaderComponent={<StickyHeader />}
+          stickyHeaderIndices={[0]}
+          stickyHeaderHiddenOnScroll
+          contentContainerStyle={{}}
+          ListHeaderComponentStyle={{}}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
           ListEmptyComponent={
             <ThemedText style={[styles.emptyText, { fontSize: fontSize }]}>
               {t("noData")}
             </ThemedText>
           }
           ListFooterComponent={
-            isPageMode &&
-            nextPage &&
-            !loading && (
-              <TouchableOpacity
-                accessibilityRole="button"
-                accessibilityLabel="Next page"
-                onPress={handleGoToNextPage}
-                disabled={jumping}
-                style={[styles.fabNext, jumping && { opacity: 0.6 }]}
+            isPageMode && !loading ? (
+              <View
+                style={[
+                  styles.footerContainer,
+                  prevPage
+                    ? { justifyContent: "space-between" }
+                    : { justifyContent: "flex-end" },
+                ]}
               >
-                <Ionicons
-                  name="arrow-forward-circle"
-                  size={36}
-                  color={Colors[cs].defaultIcon}
-                />
-              </TouchableOpacity>
-            )
+                {prevPage ? (
+                  <TouchableOpacity
+                    onPress={handleGoToPrevPage}
+                    disabled={jumping}
+                    style={[styles.fabPrev, jumping && { opacity: 0.6 }]}
+                  >
+                    <Ionicons
+                      name="arrow-back-circle"
+                      size={36}
+                      color={Colors[cs].defaultIcon}
+                    />
+                  </TouchableOpacity>
+                ) : null}
+
+                {nextPage ? (
+                  <TouchableOpacity
+                    onPress={handleGoToNextPage}
+                    disabled={jumping}
+                    style={[styles.fabNext, jumping && { opacity: 0.6 }]}
+                  >
+                    <Ionicons
+                      name="arrow-forward-circle"
+                      size={36}
+                      color={Colors[cs].defaultIcon}
+                    />
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            ) : null
           }
         />
       )}
@@ -1838,45 +2034,38 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   headerWrapper: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-  },
-  headerContainer: {
     flex: 1,
-    justifyContent: "center",
+    paddingLeft: 10,
   },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 15,
-    marginTop: 15,
+    marginBottom: 10,
   },
   headerTextContainer: {
-    flex: 1,
-    marginHorizontal: 16,
+    marginLeft: 10,
   },
   suraName: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: "700",
-    lineHeight: 35,
+    lineHeight: 24,
+    color: "#000",
   },
   suraNameAr: {
-    fontSize: 25,
+    fontSize: 20,
     textAlign: "right",
-    lineHeight: 35,
+    lineHeight: 24,
+    color: "#000",
   },
   subMeta: {
     fontWeight: "600",
-    fontSize: 16,
-    lineHeight: 35,
-    color: Colors.universal.grayedOut,
-    marginBottom: 10,
-    marginTop: -5,
+    fontSize: 14,
+    lineHeight: 18,
+    color: "#000",
+    marginTop: 2,
   },
 
   arabicTransliterationText: {
@@ -1934,15 +2123,39 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   metaText: {},
+  footerContainer: {
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  endOfContentText: {
+    fontSize: 14,
+    color: Colors.universal.grayedOut,
+    fontStyle: "italic",
+  },
   fabNext: {
     height: 56,
     width: 56,
     borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.08)", 
-    // nice shadow
+    backgroundColor: "rgba(0,0,0,0.08)",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
+    zIndex: 2000,
+  },
+  fabPrev: {
+    height: 56,
+    width: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.08)",
     shadowColor: "#000",
     shadowOpacity: 0.2,
     shadowRadius: 6,

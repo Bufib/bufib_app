@@ -3701,6 +3701,7 @@
 // });
 
 // export default SuraList;
+
 import type React from "react";
 import {
   View,
@@ -3711,7 +3712,8 @@ import {
   Dimensions,
   Animated,
   Alert,
-  InteractionManager, // ✅ for deferring non-UI work
+  InteractionManager,
+  FlatList,
 } from "react-native";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -4661,7 +4663,7 @@ const SuraList: React.FC = () => {
 
       {/* Content */}
       {viewMode === "sura" ? (
-        <FlashList
+        <FlatList
           data={suras}
           extraData={[colorScheme, lang]}
           renderItem={renderSuraItem}
@@ -4670,7 +4672,7 @@ const SuraList: React.FC = () => {
           contentContainerStyle={styles.listContent}
         />
       ) : viewMode === "juz" ? (
-        <FlashList
+        <FlatList
           data={juzList}
           extraData={[colorScheme, lang]}
           renderItem={renderJuzItem}
@@ -4679,7 +4681,7 @@ const SuraList: React.FC = () => {
           contentContainerStyle={styles.listContent}
         />
       ) : (
-        <FlashList
+        <FlatList
           data={pageList}
           extraData={[colorScheme, lang]}
           renderItem={renderPageItem}
@@ -4994,7 +4996,6 @@ const styles = StyleSheet.create({
     padding: 15,
     flexDirection: "row",
     alignItems: "center",
-    height: "100%",
   },
   juzNameAndNumber: {},
   juzNumber: { fontSize: 25, lineHeight: 28, fontWeight: "500" },

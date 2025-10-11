@@ -796,6 +796,7 @@ import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { isPodcastFavorited, togglePodcastFavorite } from "@/utils/favorites";
 import { ThemedText } from "./ThemedText";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StatusBar } from "expo-status-bar";
 export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const { t } = useTranslation();
   const scheme = useColorScheme() || "light";
@@ -1131,6 +1132,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
       <SafeAreaView style={{ flex: 1, backgroundColor: "#414A4C" }} edges={["top", "left"]}>
         <View style={{ marginLeft: 20 }}>
           <HeaderLeftBackButton color={isDark ? "#fff" : "#000"} size={35} />
+          <StatusBar style="light" />
         </View>
 
         <ScrollView
