@@ -646,9 +646,10 @@ export const NewsItem = ({
             horizontal
             scrollEnabled={images_url.length > 1}
             pagingEnabled
-            snapToInterval={availableWidth}
-            snapToAlignment="center"
-            decelerationRate="fast"
+            // snapToInterval={availableWidth}
+            // snapToAlignment="center"
+            // disableIntervalMomentum
+            decelerationRate="normal"
             showsHorizontalScrollIndicator={false}
             onMomentumScrollEnd={handleScrollEnd}
             keyExtractor={(item, index) => `${item}-${index}`}
@@ -724,13 +725,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 15,
-    lineHeight: 30
+    lineHeight: 30,
   },
   newsContent: {
     fontSize: 18,
     marginBottom: 20,
-    lineHeight: 28
-
+    lineHeight: 28,
   },
   linksContainer: {
     backgroundColor: "transparent",
@@ -739,7 +739,7 @@ const styles = StyleSheet.create({
     width: availableWidth,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 15
+    marginBottom: 15,
   },
   image: {
     width: availableWidth,

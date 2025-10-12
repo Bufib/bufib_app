@@ -19,6 +19,7 @@ import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import i18n from "@/utils/i18n";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 type RenderQuestionProps = {
   category: string;
   subcategory: string;
@@ -174,8 +175,8 @@ const RenderQuestion = ({
                     <ThemedText>{t("copied")}</ThemedText>
                   </View>
                 ) : (
-                  <AntDesign
-                    name="copy1"
+                  <Ionicons
+                    name="copy-outline"
                     size={24}
                     color={colorScheme === "dark" ? "#fff" : "#000"}
                     style={styles.copyIcon}
@@ -212,8 +213,8 @@ const RenderQuestion = ({
                       <ThemedText>{t("copied")}</ThemedText>
                     </View>
                   ) : (
-                    <AntDesign
-                      name="copy1"
+                    <Ionicons
+                      name="copy-outline"
                       size={24}
                       color={colorScheme === "dark" ? "#fff" : "#000"}
                       style={styles.copyIcon}
@@ -252,8 +253,8 @@ const RenderQuestion = ({
                       <ThemedText>{t("copied")}</ThemedText>
                     </View>
                   ) : (
-                    <AntDesign
-                      name="copy1"
+                    <Ionicons
+                      name="copy-outline"
                       size={24}
                       color={colorScheme === "dark" ? "#fff" : "#000"}
                       style={styles.copyIcon}

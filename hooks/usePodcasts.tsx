@@ -908,6 +908,7 @@ export function usePodcasts(language: string) {
     },
     initialPageParam: 0,
     staleTime: 5 * 60 * 1000,
+    refetchOnReconnect: true,
     retry: 1,
   });
 

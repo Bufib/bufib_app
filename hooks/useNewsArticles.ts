@@ -17,6 +17,7 @@ export function useNewsArticles(language: string) {
     queryKey,
     enabled: Boolean(language),
     staleTime: 5 * 60 * 1000,
+    refetchOnReconnect: true,
     retry: 1,
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }: { pageParam: any }) => {

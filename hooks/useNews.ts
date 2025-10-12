@@ -141,8 +141,8 @@ export function useNews(language: string) {
     staleTime: 5 * 60 * 1000,
     retry: 1,
     // IMPORTANT: Prevent automatic refetching on window focus or reconnect
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     // start at page 0
     initialPageParam: 0,
 
