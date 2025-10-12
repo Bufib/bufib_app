@@ -5,7 +5,6 @@ import {
   TextInput,
   FlatList,
   StyleSheet,
-  ActivityIndicator,
   useColorScheme,
   TouchableOpacity,
   Animated,

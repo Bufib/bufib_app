@@ -672,9 +672,7 @@ export default function HomeScreen() {
               type="titleBiggerLessBold"
               style={[
                 {
-                  color: Colors.universal.third,
                   paddingBottom: 3,
-                  shadowColor: Colors.universal.third,
                   lineHeight: 40,
                 },
                 styles.titleShadow,

@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
+    
   },
   emptyText: {
     textAlign: "center",
@@ -171,6 +172,8 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 24,
+    gap: 15
+
   },
   itemContainer: {
     flexDirection: "row",

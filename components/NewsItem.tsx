@@ -723,9 +723,14 @@ const styles = StyleSheet.create({
   newsTitle: {
     fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 15,
+    lineHeight: 30
   },
   newsContent: {
     fontSize: 18,
+    marginBottom: 20,
+    lineHeight: 28
+
   },
   linksContainer: {
     backgroundColor: "transparent",
@@ -734,6 +739,7 @@ const styles = StyleSheet.create({
     width: availableWidth,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 15
   },
   image: {
     width: availableWidth,

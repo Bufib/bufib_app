@@ -14,6 +14,7 @@ import { QuranVerseType } from "@/constants/Types";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
+import type { MixedStyleDeclaration } from "react-native-render-html";
 
 // For RenderHTML
 const TAGS_STYLES = Object.freeze({
@@ -59,6 +60,18 @@ function VerseCard({
   const colorScheme = useColorScheme() || "light";
   const { fontSize, lineHeight } = useFontSizeStore();
   const { isArabic } = useLanguage();
+
+  const renderHtmlBaseStyle = useMemo<MixedStyleDeclaration>(
+    () => ({
+      fontStyle: "italic",
+      fontWeight: "400",
+      textAlign: "left",
+      color: Colors.universal.grayedOut,
+      fontSize: fontSize * 1,
+    }),
+    [fontSize, colorScheme]
+  );
+
   return (
     <View
       style={[
@@ -67,8 +80,8 @@ function VerseCard({
           backgroundColor: isBookmarked
             ? Colors.universal.primary
             : Colors[colorScheme].contrast,
-            marginHorizontal: 10,
-            marginTop: 10
+          marginHorizontal: 10,
+          marginTop: 10,
         },
       ]}
     >
@@ -140,17 +153,25 @@ function VerseCard({
         )}
 
         {!!transliterationText && (
+          // <RenderHTML
+          //   contentWidth={translitContentWidth}
+          //   source={source}
+          //   // baseStyle={translitBaseStyle}
+          //   baseStyle={{
+          //     fontStyle: "italic",
+          //     fontWeight: "400",
+          //     textAlign: "left",
+          //     color: Colors.universal.grayedOut,
+          //     fontSize: fontSize * 1,
+          //   }}
+          //   defaultTextProps={DEFAULT_TEXT_PROPS}
+          //   ignoredDomTags={IGNORED_TAGS as any}
+          //   tagsStyles={TAGS_STYLES as any}
+          // />
           <RenderHTML
             contentWidth={translitContentWidth}
             source={source}
-            // baseStyle={translitBaseStyle}
-            baseStyle={{
-              fontStyle: "italic",
-              fontWeight: "400",
-              textAlign: "left",
-              color: Colors.universal.grayedOut,
-              fontSize: fontSize * 1,
-            }}
+            baseStyle={renderHtmlBaseStyle}
             defaultTextProps={DEFAULT_TEXT_PROPS}
             ignoredDomTags={IGNORED_TAGS as any}
             tagsStyles={TAGS_STYLES as any}
@@ -184,7 +205,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-    
   },
   header: {
     flexDirection: "row",
@@ -218,7 +238,6 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: 20,
-    
   },
   arabic: {
     textAlign: "right",

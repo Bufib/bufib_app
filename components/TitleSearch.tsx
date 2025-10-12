@@ -299,7 +299,7 @@ import {
   useColorScheme,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { searchQuestions } from "@/utils/bufibDatabase";
+import { searchQuestions } from "@/db/queries/questions";
 import Feather from "@expo/vector-icons/Feather";
 import { Colors } from "@/constants/Colors";
 
@@ -413,7 +413,11 @@ export const TitleSearchInput = ({
         onPress={() => handleDeleteItem(item)}
         style={styles.deleteButton}
       >
-        <Feather name="trash-2" size={24} color={colorScheme === "dark" ? "#fff" : "#000"} />
+        <Feather
+          name="trash-2"
+          size={24}
+          color={colorScheme === "dark" ? "#fff" : "#000"}
+        />
       </Pressable>
     </View>
   );
@@ -444,9 +448,14 @@ export const TitleSearchInput = ({
               value={searchText}
               onChangeText={setSearchText}
               placeholder="Suche nach einem Title"
-              placeholderTextColor={Colors.universal.fadeColor}
+              placeholderTextColor={Colors.universal.grayedOut}
             />
-            {loading && <ActivityIndicator size="small" color={Colors.universal.fadeColor} />}
+            {loading && (
+              <ActivityIndicator
+                size="small"
+                color={Colors.universal.grayedOut}
+              />
+            )}
             {!loading && searchResults.length > 0 && (
               <FlatList
                 data={searchResults}
@@ -478,7 +487,9 @@ export const TitleSearchInput = ({
               onPress={() => setModalVisible(false)}
               style={styles.closeButton}
             >
-              <ThemedText style={{color: Colors.universal.link}}>Schließen</ThemedText>
+              <ThemedText style={{ color: Colors.universal.link }}>
+                Schließen
+              </ThemedText>
             </TouchableOpacity>
           </View>
         </View>
@@ -535,7 +546,7 @@ const styles = StyleSheet.create({
   noResults: {
     padding: 12,
     textAlign: "center",
-    color: Colors.universal.fadeColor,
+    color: Colors.universal.grayedOut,
   },
   closeButton: {
     marginTop: 16,
