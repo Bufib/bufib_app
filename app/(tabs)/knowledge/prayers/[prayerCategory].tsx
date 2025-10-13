@@ -27,17 +27,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { ThemedView } from "@/components/ThemedView";
-import { HeaderTitle } from "@react-navigation/elements";
-
-// Icons for different categories
-const categoryIcons: { [key: string]: string } = {
-  dua: "heart-outline",
-  ziyarat: "compass-outline",
-  salat: "people-outline",
-  munajat: "book-outline",
-  tasibeh: "star-outline",
-  default: "leaf-outline",
-};
 
 export default function CategoryScreen() {
   const { prayerCategory } = useLocalSearchParams<{ prayerCategory: string }>();
@@ -58,17 +47,6 @@ export default function CategoryScreen() {
     useState<PrayerCategoryType | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] =
     useState<PrayerCategoryType | null>(null);
-
-  // Helper function to get icon for category
-  const getCategoryIcon = (name: string): string => {
-    const lowercaseName = name.toLowerCase();
-    for (const key in categoryIcons) {
-      if (lowercaseName.includes(key)) {
-        return categoryIcons[key];
-      }
-    }
-    return categoryIcons.default;
-  };
 
   useEffect(() => {
     const fetchData = async () => {

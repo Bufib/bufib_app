@@ -357,8 +357,8 @@ export type PrayerWithCategory = {
   prayer_text: string;
   category_id: number;
 };
-// ToDoList
 
+// ToDoList
 export type TodoItemType = {
   id: number;
   text: string;

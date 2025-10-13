@@ -4061,9 +4061,9 @@ const SuraList: React.FC = () => {
   }, [viewMode]);
 
   const getSuraName = (s: SuraRowType) => {
-    if (lang === "ar") return s.label ?? s.label_en ?? s.label_de ?? "";
-    if (lang === "de") return s.label_de ?? s.label_en ?? s.label ?? "";
-    return s.label_en ?? s.label_de ?? s.label ?? "";
+    if (lang === "ar") return s.label ?? s.label_en ?? "";
+    if (lang === "de") return s.label_en ?? s.label ?? "";
+    return s.label_en ?? s.label ?? "";
   };
 
   const lastSuraRow = useMemo(

@@ -2440,12 +2440,12 @@ export default function NewsArticleDetailScreen({
                 source={require("@/assets/images/2.png")}
                 style={{ width: 50, height: 50, margin: 10 }}
               />
-            ) : (
+            ) : article.scholar_type === 3 ? (
               <Image
                 source={require("@/assets/images/3.png")}
                 style={{ width: 70, height: 70, margin: 0 }}
               />
-            )}
+            ) : (null)}
           </View>
           <View style={styles.nameDateTime}>
             <Text
