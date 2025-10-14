@@ -15,6 +15,7 @@ const NewsArticlePreviewCard = ({
   const { gradientColors } = useGradient();
   const { t } = useTranslation();
   const { language, isArabic } = useLanguage();
+  const rtl = isArabic();
   const formatedDate = formatDate(created_at);
 
   return (
@@ -35,7 +36,7 @@ const NewsArticlePreviewCard = ({
               style={[
                 styles.externalLinkBadge,
                 {
-                  alignSelf: isArabic() ? "flex-start" : "flex-end",
+                  alignSelf: rtl ? "flex-start" : "flex-end",
                 },
               ]}
             >
@@ -53,7 +54,7 @@ const NewsArticlePreviewCard = ({
           <Text
             style={[
               styles.newsTitle,
-              { textAlign: isArabic() ? "right" : "left" },
+              { textAlign: rtl ? "right" : "left" },
             ]}
             numberOfLines={3}
             ellipsizeMode="tail"
@@ -67,7 +68,7 @@ const NewsArticlePreviewCard = ({
           <Text
             style={[
               styles.createdAt,
-              { textAlign: isArabic() ? "left" : "right" },
+              { textAlign: rtl ? "left" : "right" },
             ]}
           >
             {formatedDate}

@@ -30,6 +30,7 @@ export const TodoList = ({
   const { language, isArabic } = useLanguage();
   const { width, height } = useWindowDimensions();
   const { emptyIconSize, emptyTextSize, emptyGap } = returnSize(width, height);
+  const rtl = isArabic();
 
   if (!todos || todos.length === 0) {
     return (
@@ -37,7 +38,7 @@ export const TodoList = ({
         style={[
           styles.emptyPrayerForDay,
 
-          isArabic()
+          rtl
             ? {
                 flexDirection: "row-reverse",
               }
@@ -92,7 +93,7 @@ export const TodoList = ({
           <TouchableOpacity
             style={[
               styles.checkboxContainer,
-              isArabic() ? { marginLeft: 12 } : { marginRight: 12 },
+              rtl ? { marginLeft: 12 } : { marginRight: 12 },
             ]}
             onPress={() => onToggleTodo(dayIndex, todo.id)}
           >

@@ -28,6 +28,7 @@ const RenderFavoriteNewsArticles = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { language, isArabic } = useLanguage();
+  const rtl =isArabic()
   const { t } = useTranslation();
   const { fetchNewsArticleById } = useNewsArticles(language || "de");
   const colorScheme = useColorScheme() || "light";
@@ -95,7 +96,7 @@ const RenderFavoriteNewsArticles = () => {
               styles.itemContainer,
               {
                 backgroundColor: Colors[colorScheme].contrast,
-                flexDirection: isArabic() ? "row-reverse" : "row",
+                flexDirection: rtl ? "row-reverse" : "row",
               },
             ]}
             onPress={() => {

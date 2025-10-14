@@ -99,7 +99,7 @@ export const ar = {
   ratschlaege: "نصائح",
   videos: "أشرطة الفيديو",
 
-  // Prayer categories
+  // Prayer
   dua: "دعاء",
   ziyarat: "زيارة",
   salat: "صلاة",
@@ -109,6 +109,8 @@ export const ar = {
   names: "أسْماءُ الحُسْنَى",
   showAll: "إظهار الكل",
   noSearchResult: "لم يتم العثور على نتيجة",
+  bottomInformationRenderPrayer: "ينطق كما يلي: ",
+
   // Tasbih
   dhikrFree: "حر",
   dhikrSubhanallah: "سبحان الله",

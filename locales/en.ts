@@ -100,7 +100,7 @@ export const en = {
   ratschlaege: "Advice",
   videos: "Videos",
 
-  // Prayer categories
+  // Prayer
   dua: "Dua",
   ziyarat: "Ziyarat",
   salat: "Salat",
@@ -110,6 +110,7 @@ export const en = {
   names: "Asma-ul-Husna",
   showAll: "Show all",
   noSearchResult: "No result found",
+bottomInformationRenderPrayer: "is pronounced like the following: ",
 
   // Tasbih
   dhikrFree: "Free",

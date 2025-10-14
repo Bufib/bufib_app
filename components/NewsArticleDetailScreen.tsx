@@ -1478,7 +1478,7 @@
 //       ],
 //       { cancelable: true }
 //     );
-//   }, [articleId, lang]);
+//   }, [articleId, t]);
 
 //   const jumpToBookmark = useCallback(() => {
 //     if (overlayContentY == null) return;
@@ -1511,7 +1511,7 @@
 //       // No previous bookmark
 //       saveBookmark(contentY);
 //     },
-//     [bookmarkRatio, containerTop, scrollY, saveBookmark, lang]
+//     [bookmarkRatio, containerTop, scrollY, saveBookmark, t]
 //   );
 
 //   const { isArabic: isArabicFn } = useLanguage();
@@ -2170,6 +2170,7 @@ export default function NewsArticleDetailScreen({
 
   const { triggerRefreshFavorites } = useRefreshFavorites();
   const { language, isArabic } = useLanguage();
+  const rtl = isArabic();
   const lang = (language ?? "de") as LanguageCode;
   const { fetchNewsArticleById } = useNewsArticles(language || "de");
   const bookmarkKey = (articleId: number) =>
@@ -2302,7 +2303,7 @@ export default function NewsArticleDetailScreen({
       ],
       { cancelable: true }
     );
-  }, [articleId, lang]);
+  }, [articleId, t]);
 
   const jumpToBookmark = useCallback(() => {
     if (overlayContentY == null) return;
@@ -2335,11 +2336,11 @@ export default function NewsArticleDetailScreen({
       // No previous bookmark
       saveBookmark(contentY);
     },
-    [bookmarkRatio, containerTop, scrollY, saveBookmark, lang]
+    [bookmarkRatio, containerTop, scrollY, saveBookmark, t]
   );
 
   const { isArabic: isArabicFn } = useLanguage();
-
+  const rtlFN = isArabicFn();
   if (isLoading) {
     return (
       <ThemedView style={[styles.container]}>
@@ -2568,7 +2569,7 @@ export default function NewsArticleDetailScreen({
               styles.footerContainer,
               {
                 borderColor: Colors[colorScheme].border,
-                alignItems: isArabicFn() ? "flex-end" : "flex-start",
+                alignItems: rtlFN ? "flex-end" : "flex-start",
               },
             ]}
           >

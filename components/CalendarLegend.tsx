@@ -48,7 +48,7 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
     return () => {
       cancelled = true;
     };
-  }, [lang]);
+  }, [t]);
 
   const getItemColor = (index: number) => {
     return CALENDARPALLETTE[index % CALENDARPALLETTE.length];

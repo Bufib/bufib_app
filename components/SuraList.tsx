@@ -139,7 +139,7 @@
 // // //     return () => {
 // // //       cancelled = true;
 // // //     };
-// // //   }, [lang]);
+// // //   }, [t]);
 
 // // //   // Animate tab indicator when view mode changes
 // // //   useEffect(() => {
@@ -183,7 +183,7 @@
 // // //         lang
 // // //       );
 // // //     },
-// // //     [lang, setTotalVerses, updateBookmarkProgress]
+// // //     [t, setTotalVerses, updateBookmarkProgress]
 // // //   );
 
 // // //   const DoneToggleButton: React.FC<{
@@ -241,7 +241,7 @@
 // // //         ]);
 // // //       }
 // // //     },
-// // //     [lang, markSuraDone, updateBookmarkProgress]
+// // //     [t, markSuraDone, updateBookmarkProgress]
 // // //   );
 
 // // //   const renderSuraItem = ({ item }: { item: SuraRowType }) => {
@@ -618,7 +618,7 @@
 // // //       {viewMode === "sura" ? (
 // // //         <FlashList
 // // //           data={suras}
-// // //           extraData={[colorScheme, lang]}
+// // //           extraData={[colorScheme, t]}
 // // //           renderItem={renderSuraItem}
 // // //           keyExtractor={(item) => item.id.toString()}
 // // //           showsVerticalScrollIndicator={false}
@@ -628,7 +628,7 @@
 // // //       ) : (
 // // //         <FlashList
 // // //           data={juzList}
-// // //           extraData={[colorScheme, lang]}
+// // //           extraData={[colorScheme, t]}
 // // //           renderItem={renderJuzItem}
 // // //           keyExtractor={(item) => item.juz.toString()}
 // // //           showsVerticalScrollIndicator={false}
@@ -1051,7 +1051,7 @@
 // // //     return () => {
 // // //       cancelled = true;
 // // //     };
-// // //   }, [lang]);
+// // //   }, [t]);
 
 // // //   // Animate tab indicator when view mode changes
 // // //   useEffect(() => {
@@ -1095,7 +1095,7 @@
 // // //         lang
 // // //       );
 // // //     },
-// // //     [lang, setTotalVerses, updateBookmarkProgress]
+// // //     [t, setTotalVerses, updateBookmarkProgress]
 // // //   );
 
 // // //   const DoneToggleButton: React.FC<{
@@ -1139,7 +1139,7 @@
 // // //           {
 // // //             text: t("reset", "Reset"),
 // // //             style: "destructive",
-// // //             onPress: () => updateBookmarkProgress(suraId, 0, -1, lang),
+// // //             onPress: () => updateBookmarkProgress(suraId, 0, -1, t),
 // // //           },
 // // //         ]);
 // // //       } else {
@@ -1153,7 +1153,7 @@
 // // //         ]);
 // // //       }
 // // //     },
-// // //     [lang, markSuraDone, updateBookmarkProgress]
+// // //     [t, markSuraDone, updateBookmarkProgress]
 // // //   );
 
 // // //   const renderSuraItem = ({ item }: { item: SuraRowType }) => {
@@ -1520,7 +1520,7 @@
 // // //       {viewMode === "sura" ? (
 // // //         <FlashList
 // // //           data={suras}
-// // //           extraData={[colorScheme, lang]}
+// // //           extraData={[colorScheme, t]}
 // // //           renderItem={renderSuraItem}
 // // //           keyExtractor={(item) => item.id.toString()}
 // // //           showsVerticalScrollIndicator={false}
@@ -1529,7 +1529,7 @@
 // // //       ) : viewMode === "juz" ? (
 // // //         <FlashList
 // // //           data={juzList}
-// // //           extraData={[colorScheme, lang]}
+// // //           extraData={[colorScheme, t]}
 // // //           renderItem={renderJuzItem}
 // // //           keyExtractor={(item) => item.juz.toString()}
 // // //           showsVerticalScrollIndicator={false}
@@ -1538,7 +1538,7 @@
 // // //       ) : (
 // // //         <FlashList
 // // //           data={pageList}
-// // //           extraData={[colorScheme, lang]}
+// // //           extraData={[colorScheme, t]}
 // // //           renderItem={renderPageItem}
 // // //           keyExtractor={(item) => item.page.toString()}
 // // //           showsVerticalScrollIndicator={false}
@@ -1948,7 +1948,7 @@
 // //     return () => {
 // //       cancelled = true;
 // //     };
-// //   }, [lang]);
+// //   }, [t]);
 
 // //   // Animate tab indicator when view mode changes
 // //   useEffect(() => {
@@ -1992,7 +1992,7 @@
 // //         lang
 // //       );
 // //     },
-// //     [lang, setTotalVerses, updateBookmarkProgress]
+// //     [t, setTotalVerses, updateBookmarkProgress]
 // //   );
 
 // //   const DoneToggleButton: React.FC<{
@@ -2050,7 +2050,7 @@
 // //         ]);
 // //       }
 // //     },
-// //     [lang, markSuraDone, updateBookmarkProgress]
+// //     [t, markSuraDone, updateBookmarkProgress]
 // //   );
 
 // //   const renderSuraItem = ({ item }: { item: SuraRowType }) => {
@@ -2416,7 +2416,7 @@
 // //       {viewMode === "sura" ? (
 // //         <FlashList
 // //           data={suras}
-// //           extraData={[colorScheme, lang]}
+// //           extraData={[colorScheme, t]}
 // //           renderItem={renderSuraItem}
 // //           keyExtractor={(item) => item.id.toString()}
 // //           showsVerticalScrollIndicator={false}
@@ -2425,7 +2425,7 @@
 // //       ) : viewMode === "juz" ? (
 // //         <FlashList
 // //           data={juzList}
-// //           extraData={[colorScheme, lang]}
+// //           extraData={[colorScheme, t]}
 // //           renderItem={renderJuzItem}
 // //           keyExtractor={(item) => item.juz.toString()}
 // //           showsVerticalScrollIndicator={false}
@@ -2434,7 +2434,7 @@
 // //       ) : (
 // //         <FlashList
 // //           data={pageList}
-// //           extraData={[colorScheme, lang]}
+// //           extraData={[colorScheme, t]}
 // //           renderItem={renderPageItem}
 // //           keyExtractor={(item) => item.page.toString()}
 // //           showsVerticalScrollIndicator={false}
@@ -2982,7 +2982,7 @@
 //     return () => {
 //       cancelled = true;
 //     };
-//   }, [lang]);
+//   }, [t]);
 
 //   // Animate tab indicator when view mode changes
 //   useEffect(() => {
@@ -3026,7 +3026,7 @@
 //         lang
 //       );
 //     },
-//     [lang, setTotalVerses, updateBookmarkProgress]
+//     [t, setTotalVerses, updateBookmarkProgress]
 //   );
 
 //   const DoneToggleButton: React.FC<{
@@ -3082,7 +3082,7 @@
 //         ]);
 //       }
 //     },
-//     [lang, markSuraDone, updateBookmarkProgress, t]
+//     [markSuraDone, updateBookmarkProgress, t]
 //   );
 
 //   const renderSuraItem = ({ item }: { item: SuraRowType }) => {
@@ -3446,7 +3446,7 @@
 //       {viewMode === "sura" ? (
 //         <FlashList
 //           data={suras}
-//           extraData={[colorScheme, lang]}
+//           extraData={[colorScheme, t]}
 //           renderItem={renderSuraItem}
 //           keyExtractor={(item) => item.id.toString()}
 //           showsVerticalScrollIndicator={false}
@@ -3455,7 +3455,7 @@
 //       ) : viewMode === "juz" ? (
 //         <FlashList
 //           data={juzList}
-//           extraData={[colorScheme, lang]}
+//           extraData={[colorScheme, t]}
 //           renderItem={renderJuzItem}
 //           keyExtractor={(item) => item.juz.toString()}
 //           showsVerticalScrollIndicator={false}
@@ -3464,7 +3464,7 @@
 //       ) : (
 //         <FlashList
 //           data={pageList}
-//           extraData={[colorScheme, lang]}
+//           extraData={[colorScheme, t]}
 //           renderItem={renderPageItem}
 //           keyExtractor={(item) => item.page.toString()}
 //           showsVerticalScrollIndicator={false}
@@ -3976,6 +3976,7 @@ const SuraList: React.FC = () => {
   const { t } = useTranslation();
   const { language, isArabic } = useLanguage();
   const lang = (language ?? "de") as LanguageCode;
+  const rtl = isArabic();
 
   const [suras, setSuras] = useState<SuraRowType[]>([]);
   const [juzList, setJuzList] = useState<
@@ -4039,7 +4040,7 @@ const SuraList: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [lang]);
+  }, [t]);
 
   // Warm coverage for the last-read surah after interactions
   const lastSuraNumber = useLastSuraStore((s) => s.lastSura);
@@ -4049,7 +4050,7 @@ const SuraList: React.FC = () => {
       getJuzCoverageForSura(lastSuraNumber).catch(() => {});
       getPageCoverageForSura(lastSuraNumber).catch(() => {});
     });
-  }, [lastSuraNumber]);
+  }, [lastSuraNumber, t]);
 
   useEffect(() => {
     Animated.spring(slideAnim, {
@@ -4089,7 +4090,7 @@ const SuraList: React.FC = () => {
         );
       }
     },
-    [lang, updateBookmarkProgress]
+    [t, updateBookmarkProgress]
   );
 
   const bumpJuzIfHigher = useCallback(
@@ -4100,7 +4101,7 @@ const SuraList: React.FC = () => {
         updateJuzBookmark(juz, uptoIndex1Based, uptoIndex1Based - 1, lang);
       }
     },
-    [lang, updateJuzBookmark]
+    [t, updateJuzBookmark]
   );
 
   const bumpPageIfHigher = useCallback(
@@ -4111,7 +4112,7 @@ const SuraList: React.FC = () => {
         updatePageBookmark(page, uptoIndex1Based, uptoIndex1Based - 1, lang);
       }
     },
-    [lang, updatePageBookmark]
+    [t, updatePageBookmark]
   );
 
   /* ----------------- Propagate: Juz/Page -> Surahs ----------------- */
@@ -4183,7 +4184,7 @@ const SuraList: React.FC = () => {
       await propagateSuraDoneToJuzAndPages(suraId, totalVerses);
     },
     [
-      lang,
+      t,
       setTotalVerses,
       updateBookmarkProgress,
       propagateSuraDoneToJuzAndPages,
@@ -4240,7 +4241,7 @@ const SuraList: React.FC = () => {
         ]);
       }
     },
-    [lang, markSuraDone, updateBookmarkProgress, t]
+    [markSuraDone, updateBookmarkProgress, t]
   );
 
   /* ----------------- JUZ: Done/Reset + propagate to Suras ----------------- */
@@ -4252,7 +4253,7 @@ const SuraList: React.FC = () => {
       bumpJuzIfHigher(juz, arr.length);
       await propagateJuzToSuras(juz); // bump affected suras
     },
-    [bumpJuzIfHigher, propagateJuzToSuras, setTotalVersesForJuz]
+    [bumpJuzIfHigher, propagateJuzToSuras, setTotalVersesForJuz, t]
   );
 
   const DoneToggleButtonJuz: React.FC<{ juz: number; onPress: () => void }> = ({
@@ -4300,7 +4301,7 @@ const SuraList: React.FC = () => {
         ]);
       }
     },
-    [lang, markJuzDone, setTotalVersesForJuz, updateJuzBookmark, t]
+    [markJuzDone, setTotalVersesForJuz, updateJuzBookmark, t]
   );
 
   /* ----------------- PAGE: Done/Reset + propagate to Suras ----------------- */
@@ -4312,7 +4313,7 @@ const SuraList: React.FC = () => {
       bumpPageIfHigher(page, arr.length);
       await propagatePageToSuras(page);
     },
-    [bumpPageIfHigher, propagatePageToSuras, setTotalVersesForPage]
+    [bumpPageIfHigher, propagatePageToSuras, setTotalVersesForPage, t]
   );
 
   const DoneToggleButtonPage: React.FC<{
@@ -4360,7 +4361,7 @@ const SuraList: React.FC = () => {
         ]);
       }
     },
-    [lang, markPageDone, setTotalVersesForPage, updatePageBookmark, t]
+    [markPageDone, setTotalVersesForPage, updatePageBookmark, t]
   );
 
   /* ----------------- CLEAR ALL per section (active tab) ----------------- */
@@ -4380,7 +4381,7 @@ const SuraList: React.FC = () => {
         },
       },
     ]);
-  }, [lang, suras, t, updateBookmarkProgress]);
+  }, [suras, t, updateBookmarkProgress]);
 
   const clearAllJuz = useCallback(() => {
     Alert.alert(t("confirm"), t("removeProgress"), [
@@ -4397,7 +4398,7 @@ const SuraList: React.FC = () => {
         },
       },
     ]);
-  }, [lang, t, updateJuzBookmark]);
+  }, [t, updateJuzBookmark]);
 
   const clearAllPages = useCallback(() => {
     Alert.alert(t("confirm"), t("removeProgress"), [
@@ -4415,7 +4416,7 @@ const SuraList: React.FC = () => {
         },
       },
     ]);
-  }, [lang, pageList.length, t, updatePageBookmark]);
+  }, [pageList.length, t, updatePageBookmark]);
 
   const renderClearAllBar = () => {
     let onPress: () => void = () => {};
@@ -4463,7 +4464,7 @@ const SuraList: React.FC = () => {
         <View
           style={[
             styles.cardContent,
-            isArabic()
+            rtl
               ? { flexDirection: "row-reverse" }
               : { flexDirection: "row" },
           ]}
@@ -4471,7 +4472,7 @@ const SuraList: React.FC = () => {
           <View
             style={[
               styles.numberSection,
-              isArabic() ? { marginLeft: 25 } : { marginRight: 20 },
+              rtl ? { marginLeft: 25 } : { marginRight: 20 },
             ]}
           >
             <LinearGradient
@@ -4484,7 +4485,7 @@ const SuraList: React.FC = () => {
 
           <View style={styles.contentSection}>
             <ThemedText
-              style={[styles.suraName, isArabic() && styles.suraNameAr]}
+              style={[styles.suraName, rtl && styles.suraNameAr]}
             >
               {name}
             </ThemedText>
@@ -4556,7 +4557,7 @@ const SuraList: React.FC = () => {
         <View
           style={[
             styles.juzContent,
-            isArabic()
+            rtl
               ? { flexDirection: "row-reverse" }
               : { flexDirection: "row" },
           ]}
@@ -4604,7 +4605,7 @@ const SuraList: React.FC = () => {
         <View
           style={[
             styles.juzContent,
-            isArabic()
+            rtl
               ? { flexDirection: "row-reverse" }
               : { flexDirection: "row" },
           ]}
@@ -4665,7 +4666,7 @@ const SuraList: React.FC = () => {
       {viewMode === "sura" ? (
         <FlatList
           data={suras}
-          extraData={[colorScheme, lang]}
+          extraData={[colorScheme, t]}
           renderItem={renderSuraItem}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
@@ -4674,7 +4675,7 @@ const SuraList: React.FC = () => {
       ) : viewMode === "juz" ? (
         <FlatList
           data={juzList}
-          extraData={[colorScheme, lang]}
+          extraData={[colorScheme, t]}
           renderItem={renderJuzItem}
           keyExtractor={(item) => item.juz.toString()}
           showsVerticalScrollIndicator={false}
@@ -4683,7 +4684,7 @@ const SuraList: React.FC = () => {
       ) : (
         <FlatList
           data={pageList}
-          extraData={[colorScheme, lang]}
+          extraData={[colorScheme, t]}
           renderItem={renderPageItem}
           keyExtractor={(item) => item.page.toString()}
           showsVerticalScrollIndicator={false}

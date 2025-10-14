@@ -46,6 +46,7 @@ const Settings = () => {
   const { getNotifications, toggleGetNotifications, permissionStatus } =
     useNotificationStore();
   const { isArabic, language } = useLanguage();
+  const rtl = isArabic();
   const dbInitialized = useDatabaseSync(language || "de");
   const hasInternet = useConnectionStatus();
   const logout = useLogout();
@@ -123,11 +124,11 @@ const Settings = () => {
         ]}
         edges={["top"]}
       >
-        <View style={[styles.header, isArabic() && styles.rtl]}>
+        <View style={[styles.header, rtl && styles.rtl]}>
           <ThemedText
             style={[
               styles.headerTitle,
-              isArabic() && { textAlign: "right", paddingRight: 15 },
+              rtl && { textAlign: "right", paddingRight: 15 },
             ]}
             type="title"
           >
@@ -155,12 +156,12 @@ const Settings = () => {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.section}>
-            <View style={[styles.settingRow, isArabic() && styles.rtl]}>
+            <View style={[styles.settingRow, rtl && styles.rtl]}>
               <View>
                 <ThemedText
                   style={[
                     styles.settingTitle,
-                    isArabic() && { textAlign: "right" },
+                    rtl && { textAlign: "right" },
                   ]}
                 >
                   {t("darkMode")}
@@ -168,7 +169,7 @@ const Settings = () => {
                 <ThemedText
                   style={[
                     styles.settingSubtitle,
-                    isArabic() && { textAlign: "right" },
+                    rtl && { textAlign: "right" },
                   ]}
                 >
                   {t("enableDarkMode")}
@@ -184,12 +185,12 @@ const Settings = () => {
                 thumbColor={Colors[colorScheme].thumbColor}
               />
             </View>
-            <View style={[styles.settingRow, isArabic() && styles.rtl]}>
+            <View style={[styles.settingRow, rtl && styles.rtl]}>
               <View>
                 <ThemedText
                   style={[
                     styles.settingTitle,
-                    isArabic() && { textAlign: "right" },
+                    rtl && { textAlign: "right" },
                   ]}
                 >
                   {t("notifications")}
@@ -197,7 +198,7 @@ const Settings = () => {
                 <ThemedText
                   style={[
                     styles.settingSubtitle,
-                    isArabic() && { textAlign: "right" },
+                    rtl && { textAlign: "right" },
                   ]}
                 >
                   {t("receivePushNotifications")}
@@ -226,7 +227,7 @@ const Settings = () => {
               <ThemedText
                 style={[
                   styles.sectionTitle,
-                  isArabic() && { textAlign: "right" },
+                  rtl && { textAlign: "right" },
                 ]}
               >
                 {t("account")}
@@ -268,7 +269,7 @@ const Settings = () => {
             <ThemedText
               style={[
                 styles.questionCount,
-                isArabic() && { textAlign: "right" },
+                rtl && { textAlign: "right" },
               ]}
             >
               {t("questionsInDatabase", { count: questionCount })}
@@ -279,7 +280,7 @@ const Settings = () => {
                 <ThemedText
                   style={[
                     styles.versionText,
-                    isArabic() && { textAlign: "right" },
+                    rtl && { textAlign: "right" },
                   ]}
                 >
                   {t("databaseVersion", { version: version })}
@@ -288,7 +289,7 @@ const Settings = () => {
                 <ThemedText
                   style={[
                     styles.versionText,
-                    isArabic() && { textAlign: "right" },
+                    rtl && { textAlign: "right" },
                   ]}
                 >
                   {t("appVersion", { version: Constants.expoConfig?.version })}
@@ -300,7 +301,7 @@ const Settings = () => {
           <View
             style={[
               styles.footer,
-              isArabic() && { flexDirection: "row-reverse" },
+              rtl && { flexDirection: "row-reverse" },
             ]}
           >
             <Pressable
@@ -313,7 +314,7 @@ const Settings = () => {
               <ThemedText
                 style={[
                   styles.footerLink,
-                  isArabic() && { textAlign: "right" },
+                  rtl && { textAlign: "right" },
                 ]}
               >
                 {t("dataPrivacy")}
@@ -324,7 +325,7 @@ const Settings = () => {
               <ThemedText
                 style={[
                   styles.footerLink,
-                  isArabic() && { textAlign: "right" },
+                  rtl && { textAlign: "right" },
                 ]}
               >
                 {t("aboutTheApp")}
@@ -335,7 +336,7 @@ const Settings = () => {
               <ThemedText
                 style={[
                   styles.footerLink,
-                  isArabic() && { textAlign: "right" },
+                  rtl && { textAlign: "right" },
                 ]}
               >
                 {t("imprint")}

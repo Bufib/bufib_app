@@ -97,7 +97,7 @@ export const de = {
   removeProgress: "Fortschritt entfernen",
   markAsRead: "Als gelesen markieren",
 
-  // Prayer categories
+  // Prayer
   dua: "Dua",
   ziyarat: "Ziyarat",
   salat: "Salat",
@@ -107,6 +107,7 @@ export const de = {
   names: "Asma-ul-Husna",
   showAll: "Alles anzeigen",
   noSearchResult: "Kein Ergebnis gefunden",
+  bottomInformationRenderPrayer: "Wird wie folgt ausgesprochen: ",
   // Tasbih
   dhikrFree: "Frei",
   dhikrSubhanallah: "Subhanallah",
@@ -286,13 +287,13 @@ export const de = {
     husain: "Imam Husain Sayyid-ul-Schuhada (a.)",
     zainUlAbidin: "Imam Ali Zain-ul-Abidin (a.)",
     baqir: "Imam Muhammad al-Baqir (a.)",
-    sadiq:  "Imam Dschafar al-Sadiq (a.)",
-    kathim:  "Imam Musa al-Kathim (a.)",
-    ridha:  "Imam Ali al-Ridha (a.)",
-    dschawad:  "Imam Muhammad al-Dschawad at-Taqi (a.)",
-    hadi:  "Imam Ali al-Hadi al-Naqi (a.)",
-    askari:  "Imam Hasan al-Askari (a.)",
-    mahdi:  "Imam Mahdi al-Muntathar (a.) ",
+    sadiq: "Imam Dschafar al-Sadiq (a.)",
+    kathim: "Imam Musa al-Kathim (a.)",
+    ridha: "Imam Ali al-Ridha (a.)",
+    dschawad: "Imam Muhammad al-Dschawad at-Taqi (a.)",
+    hadi: "Imam Ali al-Hadi al-Naqi (a.)",
+    askari: "Imam Hasan al-Askari (a.)",
+    mahdi: "Imam Mahdi al-Muntathar (a.) ",
   },
   ashura: {
     day1: "Tag 1",

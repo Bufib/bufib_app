@@ -16,6 +16,7 @@ import { ThemedView } from "./ThemedView";
 import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from "react-i18next";
 
 const LatestQuestions: React.FC = () => {
   //State & Hooks
@@ -26,7 +27,7 @@ const LatestQuestions: React.FC = () => {
   const dbInitialized = useDatabaseSync(lang);
   const themeStyles = CoustomTheme();
   const colorScheme = useColorScheme();
-
+  const {t} = useTranslation()
   //Data‐Loading Effect
   useEffect(() => {
     if (!dbInitialized) return;
@@ -44,7 +45,7 @@ const LatestQuestions: React.FC = () => {
     };
 
     loadLatestQuestions();
-  }, [dbInitialized, lang]);
+  }, [dbInitialized, t]);
 
   // loading
   if (isLoading) {

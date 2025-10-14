@@ -27,7 +27,7 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { language, isArabic } = useLanguage();
-
+  const rtl = isArabic();
   // Clear out the input:
   useEffect(() => {
     if (visible) {
@@ -92,7 +92,7 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                     color: colorScheme === "dark" ? "#fff" : "#000",
                     backgroundColor:
                       colorScheme === "dark" ? "#333" : "#f5f5f5",
-                    textAlign: isArabic() ? "right" : "left",
+                    textAlign: rtl ? "right" : "left",
                   },
                 ]}
                 value={newTodo}

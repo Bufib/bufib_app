@@ -2187,6 +2187,8 @@ import { vkey } from "@/stores/suraStore";
 const SuraScreen: React.FC = () => {
   const colorScheme = useColorScheme() || "light";
   const { language, isArabic } = useLanguage();
+  const rtl = isArabic();
+
   const lang = (language ?? "de") as LanguageCode;
   const { width } = useWindowDimensions();
   const { t } = useTranslation();

@@ -34,6 +34,7 @@
 //   const themeStyles = CoustomTheme();
 //   const { t } = useTranslation();
 //   const { language, isArabic } = useLanguage();
+// const rtl = isArabic()
 //   const [childCategories, setChildCategories] = useState<PrayerCategoryType[]>(
 //     []
 //   );
@@ -159,13 +160,13 @@
 //             <View
 //               style={[
 //                 styles.sectionHeaderRow,
-//                 isArabic() && { flexDirection: "row-reverse" },
+//                 rtl && { flexDirection: "row-reverse" },
 //               ]}
 //             >
 //               <ThemedText
 //                 style={[
 //                   styles.sectionTitle,
-//                   isArabic() && { textAlign: "right" },
+//                   rtl && { textAlign: "right" },
 //                 ]}
 //               >
 //                 {t("categories")}
@@ -228,13 +229,13 @@
 //           <View
 //             style={[
 //               styles.sectionHeaderRow,
-//               isArabic() && { flexDirection: "row-reverse" },
+//               rtl && { flexDirection: "row-reverse" },
 //             ]}
 //           >
 //             <ThemedText
 //               style={[
 //                 styles.sectionTitle,
-//                 isArabic() && { textAlign: "right" },
+//                 rtl && { textAlign: "right" },
 //               ]}
 //             >
 //               {selectedSubcategory && ` • ${selectedSubcategory.title}`}
@@ -257,7 +258,7 @@
 //                       <ThemedText
 //                         style={[
 //                           styles.prayerTitle,
-//                           isArabic() && { textAlign: "right" },
+//                           rtl && { textAlign: "right" },
 //                         ]}
 //                         numberOfLines={1}
 //                       >
@@ -270,7 +271,7 @@
 //                       style={[
 //                         styles.prayerText,
 //                         { color: Colors.universal.grayedOut },
-//                         isArabic() && { textAlign: "right" },
+//                         rtl && { textAlign: "right" },
 //                       ]}
 //                       numberOfLines={2}
 //                     >
@@ -280,7 +281,7 @@
 //                   <View
 //                     style={[
 //                       styles.prayerFooter,
-//                       isArabic() ? { flexDirection: "row-reverse" } : {},
+//                       rtl ? { flexDirection: "row-reverse" } : {},
 //                     ]}
 //                   >
 //                     <Text
@@ -292,7 +293,7 @@
 //                       {t("readMore")}
 //                     </Text>
 //                     <Ionicons
-//                       name={isArabic() ? "chevron-back" : "chevron-forward"}
+//                       name={rtl ? "chevron-back" : "chevron-forward"}
 //                       size={16}
 //                       color={Colors.universal.primary}
 //                     />
@@ -312,7 +313,7 @@
 //                 style={[
 //                   styles.emptyStateText,
 //                   { color: colorScheme === "dark" ? "#94a3b8" : "#64748b" },
-//                   isArabic() && { textAlign: "right" },
+//                   rtl && { textAlign: "right" },
 //                 ]}
 //               >
 //                 {t("noPrayer")}
@@ -511,6 +512,7 @@ export default function CategoryScreen() {
   const [childCategories, setChildCategories] = useState<PrayerCategoryType[]>(
     []
   );
+  const rtl = isArabic()
   const [allPrayers, setAllPrayers] = useState<PrayerWithCategory[]>([]);
   const [filteredPrayers, setFilteredPrayers] = useState<PrayerWithCategory[]>(
     []
@@ -633,13 +635,13 @@ export default function CategoryScreen() {
             <View
               style={[
                 styles.sectionHeaderRow,
-                isArabic() && { flexDirection: "row-reverse" },
+                rtl && { flexDirection: "row-reverse" },
               ]}
             >
               <ThemedText
                 style={[
                   styles.sectionTitle,
-                  isArabic() && { textAlign: "right" },
+                  rtl && { textAlign: "right" },
                 ]}
               >
                 {t("categories")}
@@ -702,7 +704,7 @@ export default function CategoryScreen() {
           <View
             style={[
               styles.sectionHeaderRow,
-              isArabic() && { flexDirection: "row-reverse" },
+              rtl && { flexDirection: "row-reverse" },
             ]}
           ></View>
 
@@ -722,7 +724,7 @@ export default function CategoryScreen() {
                       <ThemedText
                         style={[
                           styles.prayerTitle,
-                          isArabic() && { textAlign: "right" },
+                          rtl && { textAlign: "right" },
                         ]}
                         numberOfLines={1}
                       >
@@ -735,7 +737,7 @@ export default function CategoryScreen() {
                       style={[
                         styles.prayerText,
                         { color: Colors.universal.grayedOut },
-                        isArabic() && { textAlign: "right" },
+                        rtl && { textAlign: "right" },
                       ]}
                       numberOfLines={2}
                     >
@@ -745,7 +747,7 @@ export default function CategoryScreen() {
                   <View
                     style={[
                       styles.prayerFooter,
-                      isArabic() ? { flexDirection: "row-reverse" } : {},
+                      rtl ? { flexDirection: "row-reverse" } : {},
                     ]}
                   >
                     <Text
@@ -757,7 +759,7 @@ export default function CategoryScreen() {
                       {t("readMore")}
                     </Text>
                     <Ionicons
-                      name={isArabic() ? "chevron-back" : "chevron-forward"}
+                      name={rtl ? "chevron-back" : "chevron-forward"}
                       size={16}
                       color={Colors.universal.primary}
                     />
@@ -777,7 +779,7 @@ export default function CategoryScreen() {
                 style={[
                   styles.emptyStateText,
                   { color: colorScheme === "dark" ? "#94a3b8" : "#64748b" },
-                  isArabic() && { textAlign: "right" },
+                  rtl && { textAlign: "right" },
                 ]}
               >
                 {t("noSearchResult")}

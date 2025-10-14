@@ -60,6 +60,7 @@ function VerseCard({
   const colorScheme = useColorScheme() || "light";
   const { fontSize, lineHeight } = useFontSizeStore();
   const { isArabic } = useLanguage();
+  const rtl = isArabic();
 
   const renderHtmlBaseStyle = useMemo<MixedStyleDeclaration>(
     () => ({
@@ -143,7 +144,7 @@ function VerseCard({
           <ThemedText
             style={[
               styles.arabic,
-              isArabic()
+              rtl
                 ? { fontSize: fontSize * 1.8, lineHeight: lineHeight * 2.3 }
                 : { fontSize: fontSize * 1.5, lineHeight: lineHeight * 2 },
             ]}

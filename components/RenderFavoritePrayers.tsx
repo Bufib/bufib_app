@@ -321,7 +321,11 @@ import {
   getFavoritePrayerFolders,
   removeFolder,
 } from "@/db/queries/prayers";
-import { FavoritePrayerFolderType, LanguageCode, PrayerType } from "@/constants/Types";
+import {
+  FavoritePrayerFolderType,
+  LanguageCode,
+  PrayerType,
+} from "@/constants/Types";
 import { router, useFocusEffect } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { ThemedView } from "./ThemedView";
@@ -341,7 +345,7 @@ const FavoritePrayersScreen: React.FC = () => {
   const { refreshTriggerFavorites, triggerRefreshFavorites } =
     useRefreshFavorites();
   const { language } = useLanguage();
-   const lang = (language ?? "de") as LanguageCode;
+  const lang = (language ?? "de") as LanguageCode;
   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [prayers, setPrayers] = useState<PrayerType[]>([]);
@@ -373,10 +377,17 @@ const FavoritePrayersScreen: React.FC = () => {
         setPrayers([]);
         return;
       }
-      setIsLoadingPrayers(true);
       try {
+        // Set up a delayed loading indicator
+        const loadingTimeout = setTimeout(() => {
+          setIsLoadingPrayers(true);
+        }, 300); // Only show loader after 300ms
+
         const ps = await getFavoritePrayersForFolder(folder);
         setPrayers(ps);
+
+        // Clear the timeout if we finished before 300ms
+        clearTimeout(loadingTimeout);
       } catch (err) {
         console.error("Failed to load prayers for folder:", err);
         Alert.alert(t("toast.error"), t("FavoriteCategories.loadFailed"));
@@ -384,7 +395,7 @@ const FavoritePrayersScreen: React.FC = () => {
         setIsLoadingPrayers(false);
       }
     },
-    [lang]
+    [t] 
   );
 
   const onDeleteFolder = useCallback(
@@ -521,7 +532,7 @@ const FavoritePrayersScreen: React.FC = () => {
           <LoadingIndicator size="large" />
         ) : (
           <ThemedView>
-            {prayers.length > 0 && (
+            {folders.length > 0 && (
               <TouchableOpacity
                 style={{
                   alignSelf: "flex-end",

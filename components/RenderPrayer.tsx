@@ -750,7 +750,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { language } = useLanguage();
+  const { language, isArabic } = useLanguage();
   const lang = (language ?? "de") as LanguageCode;
   const flashListRef = useRef<any>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
@@ -761,6 +761,8 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const [fontSizeModalVisible, setFontSizeModalVisible] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
   const insets = useSafeAreaInsets();
+
+  const rtl = isArabic();
   // Fetch prayer on mount (removed favorite check)
   useLayoutEffect(() => {
     (async () => {
@@ -861,7 +863,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         setBookmark(index);
       }
     },
-    [bookmark, prayerID, lang]
+    [bookmark, prayerID, t]
   );
 
   const handleSheetChanges = useCallback((index: number) => {
@@ -904,7 +906,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         ]}
       >
         <View style={[styles.headerContent]}>
-          <View style={{ flexDirection: "row"}}>
+          <View style={{ flexDirection: "row" }}>
             <HeaderLeftBackButton color="#fff" style={{ marginRight: 10 }} />
 
             <View style={[styles.titleContainer, {}]}>
@@ -1202,11 +1204,29 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         onChange={handleSheetChanges}
         backgroundStyle={{ backgroundColor: Colors.universal.secondary }}
       >
-        <BottomSheetView style={styles.bottomSheet}>
-          <Text style={[styles.bottomSheetText, { fontSize: 35 }]}>`</Text>
-          <Text style={styles.bottomSheetText}>
-            {t("bottomInformationRenderPrayer")}
+        <BottomSheetView
+          style={[
+            styles.bottomSheet,
+            rtl
+              ? {
+                  flexDirection: "row-reverse",
+                }
+              : {
+                  flexDirection: "row",
+                },
+          ]}
+        >
+          <Text
+            style={[
+              styles.bottomSheetText,
+              { fontSize: 35, color: Colors[colorScheme].text },
+            ]}
+          >
+            `
           </Text>
+          <ThemedText style={styles.bottomSheetText}>
+            {t("bottomInformationRenderPrayer")}
+          </ThemedText>
           <Text style={[styles.bottomSheetText, { color: "#FFFFFF" }]}>ع</Text>
           <Text style={[styles.bottomSheetText, { color: "#FFFFFF" }]}>
             (ayn)
@@ -1322,7 +1342,6 @@ const styles = StyleSheet.create({
   notesTitle: {},
   notesText: {},
   bottomSheet: {
-    flexDirection: "row",
     alignItems: "center",
     gap: 10,
     padding: 20,

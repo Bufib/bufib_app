@@ -22,7 +22,8 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({
   const [modalVisible, setModalVisible] = useState(false);
   const isMakki = !!suraInfo?.makki;
   const showJuzOrPage = !!juzHeader;
-
+  const rtl = isArabic();
+  
   return (
     <LinearGradient
       colors={["#3bc963", "#2ea853", "#228a3f"]}
@@ -52,7 +53,7 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({
                 ) : (
                   <>
                     <Text
-                      style={[styles.suraName, isArabic() && styles.suraNameAr]}
+                      style={[styles.suraName, rtl && styles.suraNameAr]}
                     >
                       {displayName ||
                         suraInfo?.label_en ||

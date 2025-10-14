@@ -17,6 +17,7 @@ import { LanguageCode, QuestionType } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { useTranslation } from "react-i18next";
 
 function RenderQuestionSubCategoryItems() {
   const { category, subcategory } = useLocalSearchParams<{
@@ -30,6 +31,7 @@ function RenderQuestionSubCategoryItems() {
   const colorScheme = useColorScheme() || "light";
   const { language } = useLanguage();
   const lang = (language ?? "de") as LanguageCode;
+  const {t} = useTranslation()
 
   useEffect(() => {
     const loadQuestions = async () => {
@@ -59,7 +61,7 @@ function RenderQuestionSubCategoryItems() {
     };
 
     loadQuestions();
-  }, [category, subcategory, lang]);
+  }, [category, subcategory, t]);
 
   //  Display error state
   if (error && !isLoading && questions.length === 0) {

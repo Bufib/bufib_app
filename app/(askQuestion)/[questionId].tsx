@@ -36,6 +36,7 @@ export default function QuestionDetailScreen() {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
+  const rtl = isArabic()
   // 4. If user is not logged in, redirect to login
   useEffect(() => {
     if (!isLoggedIn) {
@@ -214,7 +215,7 @@ export default function QuestionDetailScreen() {
         <ThemedText
           style={{
             color: Colors.universal.grayedOut,
-            alignSelf: isArabic() ? "flex-start" : "flex-end",
+            alignSelf: rtl ? "flex-start" : "flex-end",
           }}
         >
           {formatReadTime(question.has_read_at)}

@@ -53,7 +53,7 @@
 // //     return () => {
 // //       cancelled = true;
 // //     };
-// //   }, [lang]);
+// //   }, [t]);
 
 // //   const legendColorMap = Object.fromEntries(
 // //     legendNames.map((n, i) => [
@@ -103,7 +103,7 @@
 // //       data: data.sort((a, b) => (a.gregorian_date < b.gregorian_date ? -1 : 1)),
 // //     }));
 // //     setSections(grouped);
-// //   }, [events, lang]);
+// //   }, [events, t]);
 
 // //   const renderSectionHeader = ({ section }: { section: Section }) => (
 // //     <View style={styles.sectionHeaderRow}>
@@ -424,7 +424,7 @@
 //     return () => {
 //       cancelled = true;
 //     };
-//   }, [lang]);
+//   }, [t]);
 
 //   // Map legend names to colors
 //   const legendColorMap = Object.fromEntries(
@@ -475,7 +475,7 @@
 //       data: data.sort((a, b) => (a.gregorian_date < b.gregorian_date ? -1 : 1)),
 //     }));
 //     setSections(grouped);
-//   }, [events, lang]);
+//   }, [events, t]);
 
 //   // Render section header with divider lines
 //   const renderSectionHeader = ({ section }: { section: Section }) => (
@@ -877,7 +877,7 @@ const RenderCalendar: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [lang]);
+  }, [t]);
 
   // Map legend names to colors
   const legendColorMap = Object.fromEntries(
@@ -928,7 +928,7 @@ const RenderCalendar: React.FC = () => {
       data: data.sort((a, b) => (a.gregorian_date < b.gregorian_date ? -1 : 1)),
     }));
     setSections(grouped);
-  }, [events, lang]);
+  }, [events, t]);
 
   // Render section header with divider lines
   const renderSectionHeader = ({ section }: { section: Section }) => (

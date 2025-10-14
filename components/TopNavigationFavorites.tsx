@@ -63,7 +63,7 @@ export default function TopNavigationFavorites() {
         icon: require("@/assets/images/qAndAHeaderLogo.png"),
       },
     ],
-    [lang]
+    [t]
   );
 
   // animate opacity on mount

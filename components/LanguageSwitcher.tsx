@@ -21,6 +21,7 @@ export function LanguageSwitcher() {
   const { isLarge, isMedium } = returnSize(width, height);
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
+  const rtl = isArabic();
   const selectDeutsch = () => {
     if (langReady && language !== "de") {
       setAppLanguage("de");
@@ -40,23 +41,23 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <View style={[styles.container, isArabic() && styles.rtlContainer]}>
-      <View style={isArabic() && styles.rtlTextContainer}>
-        <ThemedText style={[styles.title, isArabic() && styles.rtlText]}>
+    <View style={[styles.container, rtl && styles.rtlContainer]}>
+      <View style={rtl && styles.rtlTextContainer}>
+        <ThemedText style={[styles.title, rtl && styles.rtlText]}>
           {t("language")}
         </ThemedText>
-        <ThemedText style={[styles.subtitle, isArabic() && styles.rtlText]}>
+        <ThemedText style={[styles.subtitle, rtl && styles.rtlText]}>
           {t("selectAppLanguage")}
         </ThemedText>
       </View>
-      <View style={[styles.buttons, isArabic() && styles.rtlButtons]}>
+      <View style={[styles.buttons, rtl && styles.rtlButtons]}>
         <Pressable
           onPress={selectDeutsch}
           style={({ pressed }) => [
             styles.button,
             language === "de" && styles.buttonActive,
             { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
-            isArabic() && { marginLeft: 0, marginRight: 8 },
+            rtl && { marginLeft: 0, marginRight: 8 },
           ]}
         >
           <Text
@@ -74,7 +75,7 @@ export function LanguageSwitcher() {
             styles.button,
             language === "en" && styles.buttonActive,
             { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
-            isArabic() && { marginLeft: 0, marginRight: 8 },
+            rtl && { marginLeft: 0, marginRight: 8 },
           ]}
         >
           <Text
@@ -92,7 +93,7 @@ export function LanguageSwitcher() {
             styles.button,
             language === "ar" && styles.buttonActive,
             { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
-            isArabic() && { marginLeft: 0, marginRight: 8 },
+            rtl && { marginLeft: 0, marginRight: 8 },
           ]}
         >
           <Text

@@ -70,6 +70,7 @@ import { StyleSheet, Text, View } from "react-native";
 const PodcastPreviewCard: FC<PodcastProps> = ({ podcast }) => {
   const { gradientColors } = useGradient();
   const { language, isArabic } = useLanguage();
+  const rtl = isArabic();
   const formattedDate = formatDate(podcast.created_at);
   const { t } = useTranslation();
   const soundBars = useMemo(
@@ -124,7 +125,7 @@ const PodcastPreviewCard: FC<PodcastProps> = ({ podcast }) => {
             <Text
               style={[
                 styles.createdAt,
-                { textAlign: isArabic() ? "left" : "right" },
+                { textAlign: rtl ? "left" : "right" },
               ]}
             >
               {formattedDate}

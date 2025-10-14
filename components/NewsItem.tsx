@@ -539,6 +539,7 @@ export const NewsItem = ({
   const [currentPage, setCurrentPage] = useState(0);
   const flatListRef = useRef<FlatList<string>>(null);
   const { isArabic } = useLanguage();
+  const rtl = isArabic();
   const [imageDimensions, setImageDimensions] = useState<{
     [key: string]: number;
   }>({});
@@ -595,7 +596,7 @@ export const NewsItem = ({
         <ThemedText
           style={[
             styles.newsTitle,
-            { textAlign: isArabic() ? "right" : "left" },
+            { textAlign: rtl ? "right" : "left" },
           ]}
           type="defaultSemiBold"
         >
@@ -606,7 +607,7 @@ export const NewsItem = ({
         <ThemedText
           style={[
             styles.newsContent,
-            { textAlign: isArabic() ? "right" : "left" },
+            { textAlign: rtl ? "right" : "left" },
           ]}
         >
           {content}
@@ -689,7 +690,7 @@ export const NewsItem = ({
       )}
 
       <ThemedText
-        style={[styles.newsDate, { textAlign: isArabic() ? "left" : "right" }]}
+        style={[styles.newsDate, { textAlign: rtl ? "left" : "right" }]}
       >
         {formatDate(created_at)}
       </ThemedText>

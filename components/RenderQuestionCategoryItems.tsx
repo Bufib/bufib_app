@@ -27,6 +27,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   const { t } = useTranslation();
   const { language, isArabic } = useLanguage();
   const lang = (language ?? "de") as LanguageCode;
+  const rtl = isArabic();
 
   // fade-in animation value
   useEffect(() => {
@@ -51,7 +52,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
     };
 
     loadSubcategories();
-  }, [category, lang]);
+  }, [category, t]);
 
   //  Display error state
   if (error && !isLoading && subcategories.length === 0) {
@@ -103,11 +104,11 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
               style={[
                 styles.item,
                 { backgroundColor: Colors[colorScheme].contrast },
-                isArabic() && { flexDirection: "row-reverse" },
+                rtl && { flexDirection: "row-reverse" },
               ]}
             >
               <ThemedText style={[styles.tableText]}>{item}</ThemedText>
-              {isArabic() ? (
+              {rtl ? (
                 <Entypo
                   name="chevron-thin-left"
                   size={24}

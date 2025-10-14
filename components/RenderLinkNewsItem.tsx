@@ -20,6 +20,7 @@ const RenderLinkNewsItem = ({
 }: RenderLinkNewsItemProps) => {
   const colorScheme = useColorScheme();
   const { isArabic } = useLanguage();
+  const rtl = isArabic()
   return (
     <Pressable
       key={index}
@@ -38,7 +39,7 @@ const RenderLinkNewsItem = ({
         style={{ paddingRight: 5 }}
       />
       <ThemedText
-        style={[styles.linkText, { textAlign: isArabic() ? "right" : "left" }]}
+        style={[styles.linkText, { textAlign: rtl ? "right" : "left" }]}
         numberOfLines={1}
         ellipsizeMode="tail"
       >

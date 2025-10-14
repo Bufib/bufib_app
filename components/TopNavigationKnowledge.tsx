@@ -165,7 +165,7 @@ export default function TopNavigationKnowledge() {
         icon: require("@/assets/images/historyHeaderLogo.png"),
       },
     ],
-    [lang]
+    [t]
   );
 
   // animate opacity on mount

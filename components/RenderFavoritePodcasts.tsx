@@ -26,6 +26,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 const RenderFavoritePodcasts = () => {
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const { language, isArabic } = useLanguage();
+  const rtl = isArabic()
   const {
     data: infiniteData,
     isLoading,
@@ -106,7 +107,7 @@ const RenderFavoritePodcasts = () => {
                 styles.itemContainer,
                 {
                   backgroundColor: Colors[colorScheme].contrast,
-                  flexDirection: isArabic() ? "row-reverse" : "row",
+                  flexDirection: rtl  ? "row-reverse" : "row",
                 },
               ]}
               onPress={() => {
