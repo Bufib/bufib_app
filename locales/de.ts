@@ -105,6 +105,8 @@ export const de = {
   tasbih: "Tasbih",
   special: "Speziell",
   names: "Asma-ul-Husna",
+  showAll: "Alles anzeigen",
+  noSearchResult: "Kein Ergebnis gefunden",
   // Tasbih
   dhikrFree: "Frei",
   dhikrSubhanallah: "Subhanallah",
@@ -222,7 +224,6 @@ export const de = {
   calendarTitle: "Islamischer Kalender",
   calendarYearRange: "{{range}} n. H.",
   legend: "LEGENDE",
-  filterAll: "Alle Ereignisse",
   filterMajor: "Hauptfest",
   filterMinor: "Nebentag",
   legendHeader: "Legende:",

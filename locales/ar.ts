@@ -107,7 +107,8 @@ export const ar = {
   tasbih: "تسبيح",
   special: "خاصة",
   names: "أسْماءُ الحُسْنَى",
-
+  showAll: "إظهار الكل",
+  noSearchResult: "لم يتم العثور على نتيجة",
   // Tasbih
   dhikrFree: "حر",
   dhikrSubhanallah: "سبحان الله",

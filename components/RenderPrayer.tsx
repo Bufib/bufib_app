@@ -687,11 +687,14 @@ import {
   TextStyle,
 } from "react-native";
 import { getPrayerWithTranslations } from "@/db/queries/prayers";
-import { LanguageCode, PrayerType, PrayerWithTranslationType } from "@/constants/Types";
+import {
+  LanguageCode,
+  PrayerType,
+  PrayerWithTranslationType,
+} from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
-import i18n from "@/utils/i18n";
 import { Colors } from "@/constants/Colors";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -703,7 +706,7 @@ import { Stack } from "expo-router";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { Storage } from "expo-sqlite/kv-store";
-import CategoryPickerBottomSheet from "./CategoryPickerModal";
+import FavoritePrayerPickerModal from "./FavoritePrayerPickerModal";
 import { LoadingIndicator } from "./LoadingIndicator";
 import {
   SafeAreaView,
@@ -715,10 +718,6 @@ import { useTranslation } from "react-i18next";
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
 };
-
-interface RenderPrayerProps {
-  prayerID: number;
-}
 
 const markdownRules = (
   customFontSize: number,
@@ -739,7 +738,7 @@ const markdownRules = (
   ),
 });
 
-const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
+const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [prayer, setPrayer] = useState<PrayerWithTranslations | null>(null);
   const [selectTranslations, setSelectTranslations] = useState<
@@ -752,7 +751,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { language } = useLanguage();
-   const lang = (language ?? "de") as LanguageCode;
+  const lang = (language ?? "de") as LanguageCode;
   const flashListRef = useRef<any>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const showScrollUp = scrollOffset > 50;
@@ -879,7 +878,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
   if (!prayer) {
     return (
       <ThemedView style={styles.container}>
-        <ThemedText>{t("noPrayerFound")}</ThemedText>
+        <ThemedText>{t("noData")}</ThemedText>
       </ThemedView>
     );
   }
@@ -905,8 +904,8 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         ]}
       >
         <View style={[styles.headerContent]}>
-          <View style={{ flexDirection: "row" }}>
-            <HeaderLeftBackButton color="#fff" style={{ marginRight: 15 }} />
+          <View style={{ flexDirection: "row"}}>
+            <HeaderLeftBackButton color="#fff" style={{ marginRight: 10 }} />
 
             <View style={[styles.titleContainer, {}]}>
               <ThemedText
@@ -1220,7 +1219,7 @@ const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
         onClose={() => setFontSizeModalVisible(false)}
       />
 
-      <CategoryPickerBottomSheet
+      <FavoritePrayerPickerModal
         visible={pickerVisible}
         prayerId={prayerID}
         onClose={() => setPickerVisible(false)}
@@ -1241,7 +1240,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    padding: 20,
+    padding: 10,
     marginBottom: 20,
   },
   headerContent: {

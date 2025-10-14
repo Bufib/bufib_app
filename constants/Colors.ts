@@ -16,6 +16,7 @@ export const Colors = {
 
     // General
     text: "#11181C",
+    inversTextColor: "#ECEDEE",
     background: "#f2f2f2",
     contrast: "#fff",
     border: "#000",
@@ -58,6 +59,7 @@ export const Colors = {
 
     // General
     text: "#ECEDEE",
+    inversTextColor: "#11181C",
     background: "#242c40",
     contrast: "#34495e",
     border: "#fff",

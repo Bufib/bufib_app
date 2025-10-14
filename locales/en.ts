@@ -108,6 +108,8 @@ export const en = {
   tasbih: "Tasbih",
   special: "Special",
   names: "Asma-ul-Husna",
+  showAll: "Show all",
+  noSearchResult: "No result found",
 
   // Tasbih
   dhikrFree: "Free",

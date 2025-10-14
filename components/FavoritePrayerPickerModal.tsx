@@ -776,6 +776,7 @@ import { FavoritePrayerFolderType } from "@/constants/Types";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { Colors } from "@/constants/Colors";
 import { AntDesign } from "@expo/vector-icons";
+import { ThemedText } from "./ThemedText";
 
 type Props = {
   visible: boolean;
@@ -797,7 +798,7 @@ const COLORS = [
   "#000",
 ] as const;
 
-export default function CategoryPickerBottomSheet({
+export default function FavoritePrayerPickerModal({
   visible,
   onClose,
   prayerId,
@@ -922,8 +923,8 @@ export default function CategoryPickerBottomSheet({
       <View style={styles.folderRow}>
         <View style={styles.rowInfo}>
           <View style={[styles.colorDot, { backgroundColor: item.color }]} />
-          <Text style={styles.folderName}>{item.name}</Text>
-          <Text style={styles.folderCount}>({item.prayerCount})</Text>
+          <ThemedText style={styles.folderName}>{item.name}</ThemedText>
+          <ThemedText style={styles.folderCount}>({item.prayerCount})</ThemedText>
         </View>
         {isAssigned ? (
           <TouchableOpacity
@@ -956,9 +957,16 @@ export default function CategoryPickerBottomSheet({
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
+      backgroundStyle={{ backgroundColor: Colors[colorScheme].background }}
     >
       <View
-        style={[styles.bottomSheetContainer, { paddingBottom: insets.bottom }]}
+        style={[
+          styles.bottomSheetContainer,
+          {
+            paddingBottom: insets.bottom,
+            backgroundColor: Colors[colorScheme].background,
+          },
+        ]}
       >
         <View
           style={{
@@ -967,7 +975,9 @@ export default function CategoryPickerBottomSheet({
             justifyContent: "space-between",
           }}
         >
-          <Text style={styles.sectionTitle}>{t("selectFolder")}</Text>
+          <ThemedText style={styles.sectionTitle}>
+            {t("selectFolder")}
+          </ThemedText>
           <AntDesign
             name="close-circle"
             size={24}
@@ -981,24 +991,31 @@ export default function CategoryPickerBottomSheet({
           renderItem={renderFolder}
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
-            <Text style={styles.empty}>{t("noFoldersYet")}</Text>
+            <ThemedText style={styles.empty}>{t("noFoldersYet")}</ThemedText>
           }
         />
 
         <View style={styles.divider} />
 
-        <Text style={styles.sectionTitle}>{t("nameFolder")}</Text>
+        <ThemedText style={styles.sectionTitle}>{t("nameFolder")}</ThemedText>
 
         {/* Use BottomSheetTextInput instead of regular TextInput */}
         <BottomSheetTextInput
           value={newName}
           onChangeText={setNewName}
-          style={[styles.input, Platform.OS === "ios" && styles.iosInput]}
+          style={[
+            styles.input,
+            Platform.OS === "ios" && styles.iosInput,
+            {
+              color: Colors[colorScheme].text,
+            },
+          ]}
           editable={!loading}
           placeholder={t("enterFolderName")}
+          placeholderTextColor={Colors[colorScheme].text}
         />
 
-        <Text style={styles.sectionTitle}>{t("pickColor")}</Text>
+        <ThemedText style={styles.sectionTitle}>{t("pickColor")}</ThemedText>
         <View style={styles.colorsWrap}>
           {COLORS.map((c) => (
             <TouchableOpacity
@@ -1022,7 +1039,7 @@ export default function CategoryPickerBottomSheet({
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.primaryText}>{t("create")}</Text>
+            <ThemedText style={styles.primaryText}>{t("create")}</ThemedText>
           )}
         </TouchableOpacity>
       </View>

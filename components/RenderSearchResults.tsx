@@ -210,7 +210,7 @@ const SearchScreen = () => {
             });
           } else if (item.type === "prayer") {
             router.push({
-              pathname: "/[prayer]",
+              pathname: "/prayer",
               params: { prayer: item.prayerId.toString() },
             });
           } else if (item.type === "podcast") {

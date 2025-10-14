@@ -496,7 +496,7 @@ const FavoritePrayersScreen: React.FC = () => {
       ]}
       onPress={() => {
         router.push({
-          pathname: "/(displayPrayer)/[prayer]",
+          pathname: "/(displayPrayer)/prayer",
           params: { prayer: item.id.toString() },
         });
       }}

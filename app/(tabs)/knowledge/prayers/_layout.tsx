@@ -39,7 +39,7 @@ const _layout = () => {
 
       <Stack.Screen name="special" options={{ headerShown: true }} />
       <Stack.Screen
-        name="[prayerCategory]"
+        name="prayerCategory"
         options={{
           headerShown: true,
           headerLeft: () => {

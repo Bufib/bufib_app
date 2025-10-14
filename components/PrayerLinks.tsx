@@ -116,7 +116,7 @@ const PrayerLinks = () => {
               params: { prayerLink: prayerLink.value },
             }
           : {
-              pathname: "/knowledge/prayers/[prayerCategory]",
+              pathname: "/knowledge/prayers/prayerCategory",
               params: { prayerCategory: prayerLink.value },
             }
       );
