@@ -838,6 +838,8 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const [isSeeking, setIsSeeking] = useState(false);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [isStreamLoading, setIsStreamLoading] = useState(false);
+  const [isStream, setIsStream] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [lastTime, setLastTIme] = useState<SavedProgress | null>(null);
   // Animations
@@ -977,6 +979,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
       return;
     }
     setIsStreamLoading(true);
+    setIsStream(true);
     load(toSource(remote), {
       autoplay: true,
       title: podcast.title,
@@ -986,10 +989,11 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
       rate,
     })
       .catch((e) => setPlayerError(e?.message ?? "Player error"))
-      .finally(() => setIsStreamLoading(false)); // ✅ clear spinner
+      .finally(() => setIsStreamLoading(false));
   };
 
   const handleDownload = async () => {
+    pause();
     setPlayerError(null);
     if (!podcast?.filename) {
       setPlayerError("Audio path missing.");
@@ -997,6 +1001,8 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
     }
     setDownloadProgress(0);
     try {
+      setIsStream(false);
+      setIsDownloading(true);
       const localUri = await download.mutateAsync({
         filename: podcast.filename,
         onProgress: (p) => setDownloadProgress(p),
@@ -1014,6 +1020,8 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
     } catch (err: any) {
       setPlayerError(err?.message ?? "Download failed");
       setDownloadProgress(0);
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -1152,14 +1160,19 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
         >
           {/* Header / Artwork / Info */}
           <View style={styles.headerContainer}>
-            <View style={styles.coverArtContainer}>
-              <Image
-                source={require("@/assets/images/logo.png")}
-                style={styles.coverArt}
-                contentFit="cover"
+            <Image
+              source={require("@/assets/images/logo.png")}
+              style={styles.coverArt}
+              contentFit="cover"
+            />
+            {isStream && (
+              <Ionicons
+                name="download"
+                size={35}
+                color={Colors[colorScheme].defaultIcon}
+                onPress={handleDownload}
               />
-              <View style={styles.coverArtShadow} />
-            </View>
+            )}
 
             <View style={styles.podcastInfo}>
               <ThemedText
@@ -1322,7 +1335,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
           )}
 
           {/* Player Controls (visible as soon as source is loaded; paused until user hits play) */}
-          {showPlaybackControls && !playerError && (
+          {showPlaybackControls && !playerError && !isDownloading && (
             <View
               style={[
                 styles.playerContainer,
@@ -1490,9 +1503,17 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { flex: 1, justifyContent: "flex-start" },
-  heroSection: { flex: 1 },
+  container: {
+    flex: 1,
+    marginBottom: 30,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "flex-start",
+  },
+  heroSection: {
+    flex: 1,
+  },
   headerContainer: {
     flex: 1,
     paddingHorizontal: 20,
@@ -1501,7 +1522,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 20,
   },
-  coverArtContainer: { position: "relative", marginBottom: 20 },
+  coverArtContainer: {
+    position: "relative",
+    marginBottom: 20,
+  },
   coverArt: { width: 200, height: 200, borderRadius: 20 },
   coverArtShadow: {
     position: "absolute",

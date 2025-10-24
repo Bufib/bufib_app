@@ -27,8 +27,8 @@ const AddPushMessages: React.FC = () => {
   const hasInternet = useConnectionStatus();
   const colorScheme = useColorScheme() || "light";
   const handleSubmit = async () => {
-    if (!title.trim() || !message.trim()) {
-      Alert.alert("Fehler", "Bitte gebe einen Titel und eine Nachricht ein!");
+    if (!title.trim() && !message.trim()) {
+      Alert.alert("Fehler", "Bitte gebe einen Titel oder eine Nachricht ein!");
       return;
     }
 
