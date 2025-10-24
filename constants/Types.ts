@@ -169,6 +169,7 @@ export type QuestionType = {
   question_subcategory_name: string;
   language_code: string;
   created_at: string;
+  related_question?: string[];
 };
 
 // PrayerLinks

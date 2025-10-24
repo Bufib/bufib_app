@@ -307,3 +307,82 @@ export async function removeFolder(
     );
   }
 }
+
+// All descendant category ids of root (including root)
+export async function getCategoryTreeIds(rootId: number): Promise<number[]> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<{ id: number }>(
+    `
+    WITH RECURSIVE cat_tree(id) AS (
+      SELECT ?
+      UNION                      -- dedupe + cycle-safe
+      SELECT pc.id
+      FROM prayer_categories pc
+      JOIN json_each(pc.parent_id) j
+      JOIN cat_tree ct ON CAST(j.value AS INTEGER) = ct.id
+    )
+    SELECT id FROM cat_tree;
+    `,
+    [rootId]
+  );
+  return rows.map((r) => r.id);
+}
+
+// Localized prayers in root + all descendants
+export async function getPrayersForCategoryTree(
+  rootCategoryId: number,
+  languageCode: string
+): Promise<PrayerWithCategory[]> {
+  const db = await getDatabase();
+  return db.getAllAsync<PrayerWithCategory>(
+    `
+    WITH RECURSIVE cat_tree(id) AS (
+      SELECT ?
+      UNION
+      SELECT pc.id
+      FROM prayer_categories pc
+      JOIN json_each(pc.parent_id) j
+      JOIN cat_tree ct ON CAST(j.value AS INTEGER) = ct.id
+    )
+    SELECT
+      p.id,
+      p.name,
+      COALESCE(t.translated_text, p.arabic_text, '') AS prayer_text,
+      p.category_id
+    FROM prayers p
+    LEFT JOIN prayer_translations t
+      ON t.prayer_id = p.id AND t.language_code = ?
+    WHERE p.category_id IN (SELECT id FROM cat_tree)
+    ORDER BY p.name COLLATE NOCASE;
+    `,
+    [rootCategoryId, languageCode]
+  );
+}
+
+// Arabic-only prayers in root + all descendants
+export async function getAllPrayersForArabicTree(
+  rootCategoryId: number
+): Promise<PrayerWithCategory[]> {
+  const db = await getDatabase();
+  return db.getAllAsync<PrayerWithCategory>(
+    `
+    WITH RECURSIVE cat_tree(id) AS (
+      SELECT ?
+      UNION
+      SELECT pc.id
+      FROM prayer_categories pc
+      JOIN json_each(pc.parent_id) j
+      JOIN cat_tree ct ON CAST(j.value AS INTEGER) = ct.id
+    )
+    SELECT
+      p.id,
+      p.name,
+      p.arabic_text AS prayer_text,
+      p.category_id
+    FROM prayers p
+    WHERE p.category_id IN (SELECT id FROM cat_tree)
+    ORDER BY p.name COLLATE NOCASE;
+    `,
+    [rootCategoryId]
+  );
+}

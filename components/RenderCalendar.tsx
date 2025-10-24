@@ -985,10 +985,12 @@ const RenderCalendar: React.FC = () => {
         }
       : isOld
       ? {
-          backgroundColor: "#ccc",
+          // For OUTDATED/PAST events:
+          backgroundColor: colorScheme === "dark" ? "#0B1220" : "#F1F5F9",
+          borderWidth: 1,
+          borderColor: colorScheme === "dark" ? "#1E293B" : "#bcc3cbff",
           borderLeftWidth: 4,
-          borderLeftColor: "#888",
-          opacity: 0.8,
+          borderLeftColor: colorScheme === "dark" ? "#4B5563" : "#9CA3AF", // Darker gray for light mode
         }
       : {};
 

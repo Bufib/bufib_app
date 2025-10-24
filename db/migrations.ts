@@ -405,11 +405,13 @@ export const migrationSQL = `
 
   -- PRAYERS
   CREATE TABLE IF NOT EXISTS prayer_categories (
-    id INTEGER PRIMARY KEY,
-    title TEXT NOT NULL,
-    parent_id TEXT,               -- JSON string of text[] (PG array)
-    language_code TEXT NOT NULL
-  );
+    id            INTEGER PRIMARY KEY,
+    title         TEXT    NOT NULL,
+    parent_id     TEXT    NOT NULL DEFAULT '[]'
+                  CHECK (json_valid(parent_id) AND json_type(parent_id)='array'),
+    language_code TEXT    NOT NULL
+);
+
   CREATE INDEX IF NOT EXISTS idx_prayer_categories_lang ON prayer_categories(language_code);
   -- You'll often hit WHERE title = ? and ORDER BY title
   CREATE INDEX IF NOT EXISTS idx_prayer_categories_title_nocase ON prayer_categories(title COLLATE NOCASE);

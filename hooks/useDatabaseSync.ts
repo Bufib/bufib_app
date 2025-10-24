@@ -346,7 +346,7 @@ export function useDatabaseSync(language: string = i18n.language): boolean {
           "question_data_version",
           "synced_questions",
           questionsVer,
-          () => syncQuestions(language),
+          () => syncQuestions(),
           true
         );
         await syncDataset(
@@ -360,14 +360,14 @@ export function useDatabaseSync(language: string = i18n.language): boolean {
           "calendar_data_version",
           "synced_calendar",
           calendarVer,
-          () => syncCalendar(language),
+          () => syncCalendar(),
           true
         );
         await syncDataset(
           "prayer_data_version",
           "synced_prayers",
           prayerVer,
-          () => syncPrayers(language),
+          () => syncPrayers(),
           true
         );
 
