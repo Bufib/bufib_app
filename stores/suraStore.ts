@@ -1,6 +1,6 @@
 // utils/storage.ts
 
-import { Storage } from "expo-sqlite/kv-store";
+import  Storage  from "expo-sqlite/kv-store";
 import { InteractionManager } from "react-native";
 import { SuraRowType } from "@/constants/Types";
 import { seedPageIndex, getJuzCoverageForSura } from "@/utils/quranIndex";

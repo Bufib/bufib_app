@@ -119,12 +119,7 @@ export const WeeklyCalendarSection: React.FC<
             </ThemedText>
             <TouchableOpacity onPress={handleUndo}>
               <View style={{ flexDirection: "row", gap: 5 }}>
-                <ThemedText style={{ fontSize: 12 }}>{t("undo")}</ThemedText>
-                <EvilIcons
-                  name="undo"
-                  size={30}
-                  color={colorScheme === "dark" ? "#ffffff" : "#000000"}
-                />
+                <ThemedText style={{ fontSize: 12, color: Colors.universal.primary }}>{t("undo")}</ThemedText>
               </View>
             </TouchableOpacity>
           </ThemedView>

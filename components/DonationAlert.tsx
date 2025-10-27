@@ -6,7 +6,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { useColorScheme } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState } from "react";
-import { Storage } from "expo-sqlite/kv-store";
+import  Storage  from "expo-sqlite/kv-store";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import Toast from "react-native-toast-message";
 import { useDatabaseSync } from "@/hooks/useDatabaseSync";

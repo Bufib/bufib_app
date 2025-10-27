@@ -13,7 +13,7 @@ import getStatusColor from "@/utils/getStatusColor";
 import { supabase } from "@/utils/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import AsyncStorage from "expo-sqlite/kv-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {

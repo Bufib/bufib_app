@@ -666,6 +666,7 @@
 //     shadowRadius: 3,
 //   },
 // });
+
 import React, {
   useState,
   useLayoutEffect,
@@ -705,7 +706,7 @@ import { FlashList } from "@shopify/flash-list";
 import { Stack } from "expo-router";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
-import { Storage } from "expo-sqlite/kv-store";
+import Storage from "expo-sqlite/kv-store";
 import FavoritePrayerPickerModal from "./FavoritePrayerPickerModal";
 import { LoadingIndicator } from "./LoadingIndicator";
 import {
@@ -715,19 +716,39 @@ import {
 import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { useTranslation } from "react-i18next";
 import ArrowUp from "./ArrowUp";
+import { FlatList } from "react-native-gesture-handler";
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
 };
 
+//! With key which seems to be wrong
+// const markdownRules = (
+//   customFontSize: number,
+//   textColor: string,
+//   index: number
+// ): RenderRules => ({
+//   code_inline: (_node, _children, _parent, styles) => (
+//     <Text
+//       key={index}
+//       style={{
+//         fontSize: customFontSize,
+//         ...(styles.text as TextStyle),
+//         color: textColor,
+//       }}
+//     >
+//       {_node.content}
+//     </Text>
+//   ),
+// });
+
+//! Without
 const markdownRules = (
   customFontSize: number,
-  textColor: string,
-  index: number
+  textColor: string
 ): RenderRules => ({
   code_inline: (_node, _children, _parent, styles) => (
     <Text
-      key={index}
       style={{
         fontSize: customFontSize,
         ...(styles.text as TextStyle),
@@ -765,18 +786,22 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
   const rtl = isArabic();
   // Fetch prayer on mount (removed favorite check)
-  useLayoutEffect(() => {
+  useEffect(() => {
+    let alive = true;
     (async () => {
       try {
         setIsLoading(true);
         const data = await getPrayerWithTranslations(prayerID);
-        setPrayer(data as PrayerWithTranslations);
-      } catch (err) {
-        console.error(err);
+        if (alive) setPrayer(data as PrayerWithTranslations);
+      } catch (e) {
+        console.error(e);
       } finally {
-        setIsLoading(false);
+        if (alive) setIsLoading(false);
       }
     })();
+    return () => {
+      alive = false;
+    };
   }, [prayerID]);
 
   // Init translation toggles
@@ -907,13 +932,12 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         ]}
       >
         <View style={[styles.headerContent]}>
-          <View style={{ flexDirection: "row" }}>
-            <HeaderLeftBackButton color="#fff" style={{ marginRight: 10 }} />
+          <View style={{ flexDirection: "row", gap: 10, paddingRight: 30 }}>
+            <HeaderLeftBackButton color="#fff" style={{}} />
 
-            <View style={[styles.titleContainer, {}]}>
+            <View style={[styles.titleContainer]}>
               <ThemedText
                 style={[styles.title, { fontSize: fontSize, color: "#fff" }]}
-                
               >
                 {prayer.name} ({indices.length} {t("lines")})
               </ThemedText>
@@ -946,12 +970,13 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
       </ThemedView>
 
       {/* Content */}
-      <FlashList
+      <FlatList
         ref={flashListRef}
         scrollEventThrottle={16}
         onScroll={({ nativeEvent }) =>
           setScrollOffset(nativeEvent.contentOffset.y)
         }
+        keyExtractor={(i) => i.toString()}
         data={indices}
         extraData={[bookmark, selectTranslations]}
         ListHeaderComponent={
@@ -1057,7 +1082,12 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                 },
               ]}
             >
-              <View style={styles.lineNumberBadge}>
+              <View
+                style={[
+                  styles.lineNumberBadge,
+                  rtl ? { left: 16 } : { right: 16 },
+                ]}
+              >
                 <Text style={styles.lineNumber}>{index + 1}</Text>
               </View>
 
@@ -1068,6 +1098,11 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                   size={20}
                   color={Colors[colorScheme].defaultIcon}
                   onPress={() => handleBookmark(index + 1)}
+                  style={
+                    rtl
+                      ? { alignSelf: "flex-end" }
+                      : { alignSelf: "flex-start" }
+                  }
                 />
               ) : (
                 <Octicons
@@ -1075,17 +1110,18 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                   size={20}
                   color={Colors[colorScheme].defaultIcon}
                   onPress={() => handleBookmark(index + 1)}
+                  style={
+                    rtl
+                      ? { alignSelf: "flex-end" }
+                      : { alignSelf: "flex-start" }
+                  }
                 />
               )}
 
               {/* Arabic */}
               {arabic && (
                 <Markdown
-                  rules={markdownRules(
-                    fontSize,
-                    Colors[colorScheme].text,
-                    index
-                  )}
+                  rules={markdownRules(fontSize, Colors[colorScheme].text)}
                   style={{
                     body: {
                       fontSize: fontSize * 1.3,
@@ -1103,11 +1139,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
               {/* Transliteration */}
               {translit && (
                 <Markdown
-                  rules={markdownRules(
-                    fontSize,
-                    Colors[colorScheme].text,
-                    index
-                  )}
+                  rules={markdownRules(fontSize, Colors[colorScheme].text)}
                   style={{
                     body: {
                       fontSize: fontSize,
@@ -1115,7 +1147,6 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                       color: Colors[colorScheme].prayerTransliterationText,
                       fontStyle: "italic",
                       marginBottom: 16,
-                      borderBottomColor: Colors[colorScheme].border,
                       paddingBottom: 16,
                     },
                   }}
@@ -1136,12 +1167,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                     {tr.code.toUpperCase()}
                   </Text>
                   <Markdown
-                    rules={markdownRules(
-                      fontSize,
-                      Colors[colorScheme].text,
-
-                      index
-                    )}
+                    rules={markdownRules(fontSize, Colors[colorScheme].text)}
                     style={{
                       body: {
                         fontSize,
@@ -1171,7 +1197,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                 {t("notes")}
               </ThemedText>
               <Markdown
-                rules={markdownRules(fontSize, Colors[colorScheme].text, 0)}
+                rules={markdownRules(fontSize, Colors[colorScheme].text)}
                 style={{
                   body: {
                     fontSize: fontSize,
@@ -1188,9 +1214,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         ListFooterComponentStyle={{ paddingBottom: 20 }}
       />
 
-      {showScrollUp && (
-        <ArrowUp scrollToTop={scrollToTop} />
-      )}
+      {showScrollUp && <ArrowUp scrollToTop={scrollToTop} />}
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -1264,11 +1288,11 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     gap: 10,
-    backgroundColor: "red"
   },
   title: {
     fontWeight: "700",
     marginBottom: 4,
+    lineHeight: 35,
   },
   arabicTitle: {
     fontSize: 18,
@@ -1319,7 +1343,6 @@ const styles = StyleSheet.create({
   lineNumberBadge: {
     position: "absolute",
     top: -8,
-    right: 16,
     width: 24,
     height: 24,
     borderRadius: 12,

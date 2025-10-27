@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { Alert } from "react-native";
-import { Storage } from "expo-sqlite/kv-store";
+import  Storage  from "expo-sqlite/kv-store";
 import { useTranslation } from "react-i18next";
 import { LanguageCode, QuranVerseType } from "@/constants/Types";
 import { getSurahDisplayName } from "@/db/queries/quran";
