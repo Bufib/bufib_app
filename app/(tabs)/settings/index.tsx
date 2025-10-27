@@ -33,6 +33,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { useDatabaseSync } from "@/hooks/useDatabaseSync";
+import { LanguageCode } from "@/constants/Types";
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
@@ -46,8 +47,9 @@ const Settings = () => {
   const { getNotifications, toggleGetNotifications, permissionStatus } =
     useNotificationStore();
   const { isArabic, language } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
   const rtl = isArabic();
-  const dbInitialized = useDatabaseSync(language || "de");
+  const dbInitialized = useDatabaseSync(lang);
   const hasInternet = useConnectionStatus();
   const logout = useLogout();
   const effectiveEnabled = getNotifications && permissionStatus === "granted";

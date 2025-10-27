@@ -49,7 +49,7 @@
 //         }
 //       } catch (err) {
 //         console.error("Failed to load favorite folders:", err);
-//         Alert.alert(t("toast.error"), t("FavoriteCategories.loadFailed"));
+//         Alert.alert(t("error"), t("noData"));
 //       } finally {
 //         setIsLoadingFolders(false);
 //       }
@@ -69,7 +69,7 @@
 //         setPrayers(ps);
 //       } catch (err) {
 //         console.error("Failed to load prayers for folder:", err);
-//         Alert.alert(t("toast.error"), t("FavoriteCategories.loadFailed"));
+//         Alert.alert(t("error"), t("noData"));
 //       } finally {
 //         setIsLoadingPrayers(false);
 //       }
@@ -120,7 +120,7 @@
 //                         triggerRefreshFavorites();
 //                       } catch (e) {
 //                         console.error(e);
-//                         Alert.alert(t("toast.error"), t("errorDeletingFolder"));
+//                         Alert.alert(t("error"), t("errorDeletingFolder"));
 //                       }
 //                     },
 //                   },
@@ -334,7 +334,6 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
-import i18n from "@/utils/i18n";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const FavoritePrayersScreen: React.FC = () => {
@@ -365,7 +364,7 @@ const FavoritePrayersScreen: React.FC = () => {
       );
     } catch (err) {
       console.error("Failed to load favorite folders:", err);
-      Alert.alert(t("toast.error"), t("FavoriteCategories.loadFailed"));
+      Alert.alert(t("error"), t("noData"));
     } finally {
       setIsLoadingFolders(false);
     }
@@ -390,7 +389,7 @@ const FavoritePrayersScreen: React.FC = () => {
         clearTimeout(loadingTimeout);
       } catch (err) {
         console.error("Failed to load prayers for folder:", err);
-        Alert.alert(t("toast.error"), t("FavoriteCategories.loadFailed"));
+        Alert.alert(t("error"), t("noData"));
       } finally {
         setIsLoadingPrayers(false);
       }
@@ -413,7 +412,7 @@ const FavoritePrayersScreen: React.FC = () => {
         triggerRefreshFavorites(); // notify other screens (optional)
       } catch (e) {
         console.error(e);
-        Alert.alert(t("toast.error"), t("errorDeletingFolder"));
+        Alert.alert(t("error"), t("errorDeletingFolder"));
         // Roll back to server truth
         await reloadFolders();
         await reloadPrayers(selectedFolder);

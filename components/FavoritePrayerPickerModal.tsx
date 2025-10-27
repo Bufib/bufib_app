@@ -90,7 +90,7 @@
 // //         setAssignedNames(new Set(names));
 // //       } catch (err) {
 // //         console.error("Failed to load folders or assignments:", err);
-// //         Alert.alert(t("toast.error"), t("loadFailed"));
+// //         Alert.alert(t("error"), t("loadFailed"));
 // //       }
 // //     })();
 // //   }, [visible, prayerId, t]);
@@ -107,7 +107,7 @@
 // //       onFavorited?.();
 // //     } catch (err) {
 // //       console.error("Error adding to folder:", err);
-// //       Alert.alert(t("toast.error"), t("FavoriteCategories.addFailed"));
+// //       Alert.alert(t("error"), t("FavoriteCategories.addFailed"));
 // //     } finally {
 // //       setIsProcessing(false);
 // //     }
@@ -122,7 +122,7 @@
 // //       onFavorited?.();
 // //     } catch (err) {
 // //       console.error("Error removing from folder:", err);
-// //       Alert.alert(t("toast.error"), t("FavoriteCategories.removeFailed"));
+// //       Alert.alert(t("error"), t("FavoriteCategories.removeFailed"));
 // //     } finally {
 // //       setIsProcessing(false);
 // //     }
@@ -132,7 +132,7 @@
 // //   const handleCreateNew = async () => {
 // //     const name = newFolderName.trim();
 // //     if (name.length === 0) {
-// //       Alert.alert(t("toast.error"), t("FavoriteCategories.nameRequired"));
+// //       Alert.alert(t("error"), t("FavoriteCategories.noName"));
 // //       return;
 // //     }
 // //     // If folder already exists, just add to it
@@ -152,7 +152,7 @@
 // //       onFavorited?.();
 // //     } catch (err) {
 // //       console.error("Error creating folder or adding prayer:", err);
-// //       Alert.alert(t("toast.error"), t("FavoriteCategories.createFailed"));
+// //       Alert.alert(t("error"), t("FavoriteCategories.createFailed"));
 // //     } finally {
 // //       setIsProcessing(false);
 // //     }
@@ -494,7 +494,7 @@
 //       setNewName("");
 //       closeSheet();
 //     } catch (e) {
-//       Alert.alert(t("toast.error"));
+//       Alert.alert(t("error"));
 //     } finally {
 //       setLoading(false);
 //       reload().catch(console.error);
@@ -511,7 +511,7 @@
 //       onFavorited?.();
 //       setNewName("");
 //     } catch {
-//       Alert.alert(t("toast.error"));
+//       Alert.alert(t("error"));
 //     } finally {
 //       setLoading(false);
 //       reload().catch(console.error);
@@ -538,7 +538,7 @@
 //   const handleCreate = async () => {
 //     const trimmed = newName.trim();
 //     if (!trimmed) {
-//       Alert.alert(t("toast.error"), t("nameRequired"));
+//       Alert.alert(t("error"), t("noName"));
 //       return;
 //     }
 //     if (loading) return;
@@ -551,7 +551,7 @@
 //       await handleAdd(folder);
 //       setColor(COLORS[0]);
 //     } catch {
-//       Alert.alert(t("toast.error"));
+//       Alert.alert(t("error"));
 //       setLoading(false);
 //     }
 //   };
@@ -855,7 +855,7 @@ export default function FavoritePrayerPickerModal({
       setNewName("");
       closeSheet();
     } catch (e) {
-      Alert.alert(t("toast.error"));
+      Alert.alert(t("error"));
     } finally {
       setLoading(false);
       reload().catch(console.error);
@@ -872,7 +872,7 @@ export default function FavoritePrayerPickerModal({
       onFavorited?.();
       setNewName("");
     } catch {
-      Alert.alert(t("toast.error"));
+      Alert.alert(t("error"));
     } finally {
       setLoading(false);
       reload().catch(console.error);
@@ -899,7 +899,7 @@ export default function FavoritePrayerPickerModal({
   const handleCreate = async () => {
     const trimmed = newName.trim();
     if (!trimmed) {
-      Alert.alert(t("toast.error"), t("nameRequired"));
+      Alert.alert(t("error"), t("noName"));
       return;
     }
     if (loading) return;
@@ -912,7 +912,7 @@ export default function FavoritePrayerPickerModal({
       await handleAdd(folder);
       setColor(COLORS[0]);
     } catch {
-      Alert.alert(t("toast.error"));
+      Alert.alert(t("error"));
       setLoading(false);
     }
   };

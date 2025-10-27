@@ -49,6 +49,7 @@ import {
 } from "react-native-safe-area-context";
 import GlobalVideoHost from "@/player/GlobalVideoHost";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LanguageCode } from "@/constants/Types";
 
 //! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
@@ -79,7 +80,8 @@ function AppContent() {
   const [storesHydrated, setStoresHydrated] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const { t } = useTranslation();
-  const isDbReady = useDatabaseSync(language || "de");
+  const lang = (language ?? "de") as LanguageCode;
+  const isDbReady = useDatabaseSync(lang);
   const router = useRouter();
 
   // Effect to set color theme from Storage

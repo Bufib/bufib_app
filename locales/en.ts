@@ -111,6 +111,8 @@ export const en = {
   showAll: "Show all",
   noSearchResult: "No result found",
 bottomInformationRenderPrayer: "is pronounced like the following: ",
+  noName: "Please provide a name",
+
 
   // Tasbih
   dhikrFree: "Free",
@@ -244,6 +246,7 @@ bottomInformationRenderPrayer: "is pronounced like the following: ",
   countdownDaysToGo: "{{count}} days to go",
 
   // Quran
+  basmala: "In the name of God, the Most Gracious, the Most Merciful!", //! Anpassen an Quran text in Datanbank
   quranTitle: "Holy Quran",
   quranSubtitle: "Chapter List (Suras)",
   selectLanguage: "Select Language",

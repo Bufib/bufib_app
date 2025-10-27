@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { useCallback } from "react";
 
-const PAGE_SIZE = 1;
+const PAGE_SIZE = 5;
 
 export function useNewsArticles(language: string) {
   const queryClient = useQueryClient();

@@ -714,6 +714,7 @@ import {
 } from "react-native-safe-area-context";
 import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { useTranslation } from "react-i18next";
+import ArrowUp from "./ArrowUp";
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
@@ -912,6 +913,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
             <View style={[styles.titleContainer, {}]}>
               <ThemedText
                 style={[styles.title, { fontSize: fontSize, color: "#fff" }]}
+                
               >
                 {prayer.name} ({indices.length} {t("lines")})
               </ThemedText>
@@ -1187,13 +1189,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
       />
 
       {showScrollUp && (
-        <TouchableOpacity style={styles.scrollButton} onPress={scrollToTop}>
-          <AntDesign
-            name="up"
-            size={24}
-            color={Colors[colorScheme].defaultIcon}
-          />
-        </TouchableOpacity>
+        <ArrowUp scrollToTop={scrollToTop} />
       )}
 
       <BottomSheet
@@ -1267,8 +1263,8 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   titleContainer: {
-    marginRight: 16,
     gap: 10,
+    backgroundColor: "red"
   },
   title: {
     fontWeight: "700",

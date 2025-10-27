@@ -74,7 +74,7 @@
 // //         } else {
 // //           const prayerRows = await getPrayersForCategory(
 // //             categoryData.id,
-// //             language || "de"
+// //             lang
 // //           );
 // //           setAllPrayers(prayerRows);
 // //           setFilteredPrayers(prayerRows);
@@ -962,7 +962,11 @@ import {
   Platform,
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
-import { PrayerCategoryType, PrayerWithCategory } from "@/constants/Types";
+import {
+  LanguageCode,
+  PrayerCategoryType,
+  PrayerWithCategory,
+} from "@/constants/Types";
 import {
   getAllPrayersForArabicTree,
   getCategoryByTitle,
@@ -991,6 +995,7 @@ export default function CategoryScreen() {
   const themeStyles = CoustomTheme();
   const { t } = useTranslation();
   const { language, isArabic } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
   const [childCategories, setChildCategories] = useState<PrayerCategoryType[]>(
     []
   );
@@ -1031,7 +1036,7 @@ export default function CategoryScreen() {
         } else {
           const prayerRows = await getPrayersForCategoryTree(
             categoryData.id,
-            language || "de"
+            lang
           );
           setAllPrayers(prayerRows);
           setFilteredPrayers(prayerRows);
@@ -1067,7 +1072,7 @@ export default function CategoryScreen() {
     try {
       const subcategoryPrayers = await getPrayersForCategory(
         cat.id,
-        language || "de"
+        lang
       );
       setFilteredPrayers(subcategoryPrayers);
     } catch {

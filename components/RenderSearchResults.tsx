@@ -25,6 +25,7 @@ import {
   CombinedResult,
   PrayerType,
   QuestionType,
+  LanguageCode,
 } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";
@@ -32,6 +33,7 @@ import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SearchScreen = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -43,6 +45,8 @@ const SearchScreen = () => {
   >([]);
   const [manualLoading, setManualLoading] = useState<boolean>(false);
   const colorScheme = useColorScheme() || "light";
+   const { language } = useLanguage();
+    const lang = (language ?? "de") as LanguageCode;
   const podcastQuery = useSearchPodcasts(searchTerm);
   const newsArticleSearchQuery = useSearchNewsArticles(searchTerm); // Added
   const { t } = useTranslation();

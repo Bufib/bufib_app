@@ -12,7 +12,7 @@ import { useLanguage } from "@/contexts/LanguageContext"; // Your language conte
 
 export function useSearchNewsArticles(searchTerm: string) {
   const { language } = useLanguage();
-  const lang = language ?? "de"; // Default to 'de' if no language is set in context
+  const lang = language ?? "de"; 
 
   return useQuery<NewsArticlesType[], Error>({
     // Query key: Uniquely identifies this search query.

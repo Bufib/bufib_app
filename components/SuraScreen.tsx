@@ -2183,6 +2183,8 @@ import { StickyHeader } from "./StickyHeader";
 import { useSuraData } from "@/hooks/useSuraData";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { vkey } from "@/stores/suraStore";
+import BasmalaRow from "./BasmalaRow";
+import ArrowUp from "./ArrowUp";
 
 const SuraScreen: React.FC = () => {
   const colorScheme = useColorScheme() || "light";
@@ -2366,6 +2368,15 @@ const SuraScreen: React.FC = () => {
     []
   );
 
+  // Helper: should we show basmala before this row?
+  const shouldShowBasmala = (v: QuranVerseType, index: number) => {
+    if (v.sura === 1 || v.sura === 9) return false;
+    // Aggregates: show when a new sura starts
+    if (isJuzMode || isPageMode) return v.aya === 1;
+    // Sura mode: show once before first verse
+    return index === 0;
+  };
+
   const renderVerse = useCallback(
     ({ item, index }: { item: QuranVerseType; index: number }) => {
       const arabicVerse = arabicByKey.get(vkey(item.sura, item.aya));
@@ -2373,18 +2384,29 @@ const SuraScreen: React.FC = () => {
         bookmarksBySura.get(item.sura)?.has(item.aya) ?? false;
 
       return (
-        <VerseCard
-          item={item}
-          arabicVerse={arabicVerse}
-          isBookmarked={isVerseBookmarked}
-          isJuzMode={isJuzMode || isPageMode}
-          translitContentWidth={translitContentWidth}
-          translitBaseStyle={translitBaseStyle}
-          hasTafsir={hasTafsir}
-          onBookmark={(v) => handleBookmarkVerse(v, index)}
-          onOpenInfo={handleOpenInfo}
-          language={lang}
-        />
+        <>
+          {shouldShowBasmala(item, index) && (
+            <BasmalaRow
+              fontSize={fontSize}
+              lineHeight={lineHeight}
+              lang={lang}
+              rtl={rtl}
+              t={t}
+            />
+          )}
+          <VerseCard
+            item={item}
+            arabicVerse={arabicVerse}
+            isBookmarked={isVerseBookmarked}
+            isJuzMode={isJuzMode || isPageMode}
+            translitContentWidth={translitContentWidth}
+            translitBaseStyle={translitBaseStyle}
+            hasTafsir={hasTafsir}
+            onBookmark={(v) => handleBookmarkVerse(v, index)}
+            onOpenInfo={handleOpenInfo}
+            language={lang}
+          />
+        </>
       );
     },
     [
@@ -2480,9 +2502,7 @@ const SuraScreen: React.FC = () => {
       )}
 
       {scrollY > 200 && (
-        <TouchableOpacity style={styles.arrowUp} onPress={scrollToTop}>
-          <AntDesign name="up" size={28} color="white" />
-        </TouchableOpacity>
+       <ArrowUp scrollToTop={scrollToTop} />
       )}
 
       {/* Bottom Sheet for Verse Info */}

@@ -47,7 +47,7 @@
 // //   const [scrollY, setScrollY] = useState(0);
 // //   const { triggerRefreshFavorites } = useRefreshFavorites();
 // //   const { language, isArabic } = useLanguage();
-// //   const { fetchNewsArticleById } = useNewsArticles(language || "de");
+// //   const { fetchNewsArticleById } = useNewsArticles(lang);
 
 // //   const scrollViewRef = useRef<ScrollView>(null);
 // //   const handleScroll = (event: any) => {
@@ -2132,6 +2132,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import i18n from "@/utils/i18n";
+import ArrowUp from "./ArrowUp";
 
 type Row = { key: "content" };
 type SavedBookmark = { ratio: number; addedAt: number };
@@ -2172,7 +2173,7 @@ export default function NewsArticleDetailScreen({
   const { language, isArabic } = useLanguage();
   const rtl = isArabic();
   const lang = (language ?? "de") as LanguageCode;
-  const { fetchNewsArticleById } = useNewsArticles(language || "de");
+  const { fetchNewsArticleById } = useNewsArticles(lang);
   const bookmarkKey = (articleId: number) =>
     `bookmark:newsArticle:${articleId}:${language}`;
 
@@ -2446,7 +2447,7 @@ export default function NewsArticleDetailScreen({
                 source={require("@/assets/images/3.png")}
                 style={{ width: 70, height: 70, margin: 0 }}
               />
-            ) : (null)}
+            ) : null}
           </View>
           <View style={styles.nameDateTime}>
             <Text
@@ -2713,11 +2714,7 @@ export default function NewsArticleDetailScreen({
         </TouchableOpacity>
       )}
 
-      {scrollY > 200 && (
-        <TouchableOpacity style={styles.arrowUp} onPress={scrollToTop}>
-          <AntDesign name="up" size={28} color="white" />
-        </TouchableOpacity>
-      )}
+      {scrollY > 200 && <ArrowUp scrollToTop={scrollToTop} />}
     </SafeAreaView>
   );
 }

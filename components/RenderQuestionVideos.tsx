@@ -125,14 +125,16 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 import { useVideos } from "@/hooks/useVideos";
 import { hlsUrl } from "@/utils/cloudinary";
+import { LanguageCode } from "@/constants/Types";
 export default function RenderQuestionVideos() {
   const { categoryName } = useLocalSearchParams<{ categoryName: string }>();
   const scheme = useColorScheme() || "light";
   const theme = Colors[scheme];
   const { language } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
   const { t } = useTranslation();
 
-  const { data, isLoading, error } = useVideos(language || "de");
+  const { data, isLoading, error } = useVideos(lang);
   // your hook also exposes derived maps; but we can filter here if needed:
   const videosForCategory =
     (data ?? []).filter((v: any) => v.video_category === categoryName) ?? [];

@@ -17,21 +17,14 @@ import { useAuthStore } from "@/stores/authStore";
 import { Colors } from "@/constants/Colors";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "@/components/ThemedText";
-import { NoInternet } from "./NoInternet";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-
-interface DeleteUserModalProps {
-  isVisible: boolean;
-  onClose: () => void;
-  onDeleteSuccess?: () => void;
-  serverUrl: string;
-}
+import { DeleteUserModalPropsType } from "@/constants/Types";
 
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_ATTEMPTS = 3;
 const ATTEMPT_RESET_TIME = 300000; // 5 minutes in milliseconds
 
-const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
+const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
   isVisible,
   onClose,
   onDeleteSuccess,

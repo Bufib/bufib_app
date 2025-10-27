@@ -11,6 +11,7 @@ import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import Toast from "react-native-toast-message";
 import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageCode } from "@/constants/Types";
 type DonationAlertProps = {
   isVisible: boolean;
   onClose: () => void;
@@ -22,7 +23,8 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
 }) => {
   const colorScheme = useColorScheme();
   const { language } = useLanguage();
-  const dbInitialized = useDatabaseSync(language || "de");
+  const lang = (language ?? "de") as LanguageCode;
+  const dbInitialized = useDatabaseSync(lang);
   const [payPalLink, setPayPalLink] = useState<string | null>(null);
 
   // paypal

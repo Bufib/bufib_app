@@ -110,6 +110,7 @@ export const ar = {
   showAll: "إظهار الكل",
   noSearchResult: "لم يتم العثور على نتيجة",
   bottomInformationRenderPrayer: "ينطق كما يلي: ",
+  noName: "يرجى تقديم اسم",
 
   // Tasbih
   dhikrFree: "حر",
@@ -247,6 +248,7 @@ export const ar = {
   countdownDaysToGo: "متبقي {{count}} يومًا",
 
   // Quran
+  basmala: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
   quranTitle: "القرآن الكريم",
   quranSubtitle: "قائمة السور",
   selectLanguage: "اختر اللغة",

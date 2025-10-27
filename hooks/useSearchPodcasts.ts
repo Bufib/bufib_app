@@ -1,15 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
 import { PodcastType } from "@/constants/Types";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function useSearchPodcasts(searchTerm: string) {
+  const { language } = useLanguage();
+  const lang = language ?? "de";
+
   return useQuery<PodcastType[], Error>({
     // 1) Query key: Includes the search term for effective caching and refetching.
-
     queryKey: ["search", "podcasts", searchTerm],
 
     // 2) Query function: Executes the asynchronous data fetching.
-
     queryFn: async () => {
       if (!searchTerm.trim()) {
         return [];
@@ -20,6 +22,7 @@ export function useSearchPodcasts(searchTerm: string) {
       const { data, error } = await supabase
         .from("podcasts")
         .select("*")
+        .eq("language_code", lang)
         .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
         .order("created_at", { ascending: false });
 

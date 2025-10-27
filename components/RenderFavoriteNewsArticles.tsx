@@ -13,7 +13,7 @@ import { getFavoriteNewsArticle } from "@/utils/favorites";
 import { useNewsArticles } from "@/hooks/useNewsArticles";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
-import { NewsArticlesType } from "@/constants/Types";
+import { LanguageCode, NewsArticlesType } from "@/constants/Types";
 import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
@@ -28,9 +28,10 @@ const RenderFavoriteNewsArticles = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { language, isArabic } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
   const rtl =isArabic()
   const { t } = useTranslation();
-  const { fetchNewsArticleById } = useNewsArticles(language || "de");
+  const { fetchNewsArticleById } = useNewsArticles(lang);
   const colorScheme = useColorScheme() || "light";
   const { refreshTriggerFavorites } = useRefreshFavorites();
 

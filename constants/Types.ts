@@ -273,6 +273,14 @@ export type UserQuestionType = {
   created_at: string;
 };
 
+// Delete Account
+export type DeleteUserModalPropsType = {
+  isVisible: boolean;
+  onClose: () => void;
+  onDeleteSuccess?: () => void;
+  serverUrl: string;
+}
+
 // Expo Push Tokens per User
 export type UserTokenType = {
   id: number;

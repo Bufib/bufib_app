@@ -18,13 +18,15 @@ import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { useLanguage } from "@/contexts/LanguageContext";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { useTranslation } from "react-i18next";
+import { LanguageCode } from "@/constants/Types";
 
 export default function RenderQuestionVideosCategories() {
   const colorScheme = useColorScheme() || "light";
   const router = useRouter();
   const { language } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
   const { categories, isLoading, error } = useFetchVideoCategories(
-    language || "de"
+    lang
   );
   const { t } = useTranslation();
   if (isLoading) {

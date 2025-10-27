@@ -1,3 +1,5 @@
+
+
 export const de = {
   //LanguageSelectionScreen
   chooseLanguage: "Wähle deine Sprache aus",
@@ -108,6 +110,7 @@ export const de = {
   showAll: "Alles anzeigen",
   noSearchResult: "Kein Ergebnis gefunden",
   bottomInformationRenderPrayer: "Wird wie folgt ausgesprochen: ",
+  noName: "Bitte gebe einen Namen an",
   // Tasbih
   dhikrFree: "Frei",
   dhikrSubhanallah: "Subhanallah",
@@ -238,6 +241,7 @@ export const de = {
   countdownDaysToGo: "Noch {{count}} Tage",
 
   // Quran
+  basmala: "Im Namen Allahs, des Allerbarmers, des Barmherzigen!",
   quranTitle: "Edler Quran",
   quranSubtitle: "Kapitelliste (Suren)",
   selectLanguage: "Sprache wählen",

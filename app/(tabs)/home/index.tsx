@@ -45,7 +45,7 @@
 //     fetchNextPage: newsArticlesFetchNextPage,
 //     hasNextPage: newsArticlesHasNextPage,
 //     isFetchingNextPage: newsArticlesIsFetchingNextPage,
-//   } = useNewsArticles(language || "de");
+//   } = useNewsArticles(lang);
 
 //   const {
 //     data: newsData,
@@ -392,7 +392,12 @@ import RetryButton from "@/components/RetryButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
-import { NewsArticlesType, NewsType, PodcastType } from "@/constants/Types";
+import {
+  LanguageCode,
+  NewsArticlesType,
+  NewsType,
+  PodcastType,
+} from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNews } from "@/hooks/useNews";
 import { useNewsArticles } from "@/hooks/useNewsArticles";
@@ -422,6 +427,8 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
+
   const isAdmin = useAuthStore((state) => state.isAdmin);
 
   // News Articles Hook
@@ -433,7 +440,7 @@ export default function HomeScreen() {
     fetchNextPage: newsArticlesFetchNextPage,
     hasNextPage: newsArticlesHasNextPage,
     isFetchingNextPage: newsArticlesIsFetchingNextPage,
-  } = useNewsArticles(language || "de");
+  } = useNewsArticles(lang);
 
   // News Hook - Using the enhanced useNews hook with realtime features
   const {
@@ -448,7 +455,7 @@ export default function HomeScreen() {
     error: newsError,
     hasNextPage: newsHasNextPage,
     isFetchingNextPage: newsIsFetchingNextPage,
-  } = useNews(language || "de");
+  } = useNews(lang);
 
   // Podcasts Hook
   const {
@@ -459,7 +466,7 @@ export default function HomeScreen() {
     fetchNextPage: podcastsFetchNextPage,
     hasNextPage: podcastsHasNextPage,
     isFetchingNextPage: podcastsIsFetchingNextPage,
-  } = usePodcasts(language || "de");
+  } = usePodcasts(lang);
 
   // Flatten paginated data
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];

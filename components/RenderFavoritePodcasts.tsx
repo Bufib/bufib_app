@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { usePodcasts } from "@/hooks/usePodcasts"; // adjust the import path as needed
 import { getFavoritePodcasts } from "@/utils/favorites";
-import { PodcastType } from "@/constants/Types";
+import { LanguageCode, PodcastType } from "@/constants/Types";
 import { router, useFocusEffect } from "expo-router";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -26,6 +26,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 const RenderFavoritePodcasts = () => {
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const { language, isArabic } = useLanguage();
+  const lang = (language ?? "de") as LanguageCode;
   const rtl = isArabic()
   const {
     data: infiniteData,
@@ -33,7 +34,7 @@ const RenderFavoritePodcasts = () => {
     isError,
     fetchNextPage,
     hasNextPage,
-  } = usePodcasts(language || "de");
+  } = usePodcasts(lang);
 
   const { refreshTriggerFavorites, triggerRefreshFavorites } =
     useRefreshFavorites();
