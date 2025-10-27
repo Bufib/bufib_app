@@ -1810,9 +1810,9 @@
 //   },
 // });
 
-//! Ohne fix für abgeschnittener text
+//! Ohne fix für abgeschnittener text und ohne usereducer
 import { Colors } from "@/constants/Colors";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   StyleSheet,
@@ -1958,8 +1958,9 @@ export default function RenderTasbih() {
       : activeDhikrId;
 
   // Find the full data for the counter being displayed/acted upon
-  const activeCounter = counters.find(
-    (counter) => counter.id === targetCounterId
+  const activeCounter = useMemo(
+    () => counters.find((counter) => counter.id === targetCounterId),
+    [counters, targetCounterId]
   );
 
   // Determine the correct limit for the current context

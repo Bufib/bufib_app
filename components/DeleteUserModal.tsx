@@ -19,6 +19,7 @@ import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "@/components/ThemedText";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { DeleteUserModalPropsType } from "@/constants/Types";
+import { useTranslation } from "react-i18next";
 
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_ATTEMPTS = 3;
@@ -42,7 +43,7 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
   const [attemptCount, setAttemptCount] = useState<number>(0);
   const [lastAttemptTime, setLastAttemptTime] = useState<number>(0);
   const hasInternet = useConnectionStatus();
-
+  const { t } = useTranslation();
   // Reset attempt count after timeout
   useEffect(() => {
     if (attemptCount > 0) {
@@ -94,9 +95,9 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
         (ATTEMPT_RESET_TIME - (Date.now() - lastAttemptTime)) / 1000
       );
       setError(
-        `Zu viele Versuche. Bitte versuche es in ${Math.ceil(
+        `${t("deleteUserToOftenText")} ${Math.ceil(
           timeRemaining / 60
-        )} Minuten erneut.`
+        )} ${t("deleteUserToOftenMinutesAgain")}`
       );
       return;
     }
@@ -107,7 +108,7 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
     setLastAttemptTime(Date.now());
 
     if (!user?.email) {
-      setError("Du bist nicht eingeloggt!");
+      setError(t("deleteUserNotLoggedIn"));
       setLoading(false);
       return;
     }
@@ -122,7 +123,7 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
 
       if (signInError) {
         if (signInError.message === "Network request failed") {
-          setError("Keine Internetverbindung!");
+          setError(t("noInternetTitle"));
         } else {
           setError(signInError.message);
         }
@@ -134,7 +135,7 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
       // Ensure accessToken is available
       const accessToken = data.session?.access_token;
       if (!accessToken) {
-        setError("Authentifizierung fehlgeschlagen");
+        setError(t("authFailed"));
         setLoading(false);
         return;
       }
@@ -150,7 +151,7 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
 
       if (!response.ok) {
         const respJson = await response.json();
-        throw new Error(respJson.error || "Fehler beim Löschen des Accounts");
+        throw new Error(respJson.error || t("errorDeleteAccount"));
       }
 
       // Handle success
@@ -158,9 +159,9 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
       handleCancel();
     } catch (err: any) {
       if (err.name === "AbortError") {
-        setError("Zeitüberschreitung. Bitte versuche es erneut.");
+        setError(t("timeOverStepped"));
       } else {
-        setError(err.message || "Etwas ist schiefgelaufen");
+        setError(err.message || t("somethingWentWrong"));
         console.error("Error:", err);
       }
     } finally {
@@ -180,14 +181,13 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
           {showConfirmation && (
             <>
               <ThemedText style={styles.title} type="title">
-                Account Löschen
+                {t("deleteAccount")}
               </ThemedText>
               <ThemedText style={styles.warningText}>
-                Bist du sicher, dass du deinen Account löschen möchtest? Diese
-                Aktion kann nicht rückgängig gemacht werden.
+                {t("deleteAccountConfirmation1")}
               </ThemedText>
               <ThemedText style={styles.warningSubText}>
-                Alle deine Daten werden permanent gelöscht.
+               {t("deleteAccountConfirmation2")}
               </ThemedText>
               <View style={styles.buttonRow}>
                 <Pressable
@@ -200,14 +200,14 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
                   onPress={handleProceedToPassword}
                 >
                   <Text style={styles.buttonTextDelete}>
-                    Ja, Account löschen
+                    {t("yesDeleteAccount")}
                   </Text>
                 </Pressable>
                 <Pressable
                   style={[styles.button, styles.cancelButton]}
                   onPress={handleCancel}
                 >
-                  <Text style={styles.buttonTextCancel}>Abbrechen</Text>
+                  <Text style={styles.buttonTextCancel}>{t("abort")}</Text>
                 </Pressable>
               </View>
             </>
@@ -217,10 +217,10 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
               <View>
                 <ThemedText style={styles.title} type="title">
-                  Passwort bestätigen
+                  {t("confirmPassowrdTitle")}
                 </ThemedText>
                 <ThemedText style={styles.subtitle}>
-                  Bitte gib dein Passwort ein, um die Löschung zu bestätigen.
+                 {t("confirmPasswordText")}
                 </ThemedText>
 
                 <View style={styles.passwordContainer}>
@@ -267,14 +267,14 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
                     onPress={handleConfirm}
                     disabled={loading || password.length === 0}
                   >
-                    <Text style={styles.buttonTextDelete}>Bestätigen</Text>
+                    <Text style={styles.buttonTextDelete}>{t("confirm")}</Text>
                   </Pressable>
                   <Pressable
                     style={[styles.button, styles.cancelButton]}
                     onPress={handleCancel}
                     disabled={loading}
                   >
-                    <Text style={styles.buttonTextCancel}>Abbrechen</Text>
+                    <Text style={styles.buttonTextCancel}>{t("abort")}</Text>
                   </Pressable>
                 </View>
               </View>

@@ -67,6 +67,7 @@ export const ar = {
   selectFolder: "حدد مجلدًا",
   enterFolderName: "أدخل اسمًا للمجلد الخاص بك",
   confirm: "تأكيد",
+  abort: "إحباط",
 
   // Navigation
   knowledge: "معرفة",
@@ -193,7 +194,21 @@ export const ar = {
   internetBackTitle: "تمت استعادة الاتصال",
   noInternetMessage: "لن تتلقى أي تحديثات خلال هذا الوقت",
 
+  // Account
   successDeletion: "تم حذف الحساب بنجاح!",
+  deleteUserToOftenText: "محاولات كثيرة جدًا. يرجى المحاولة بعد",
+  deleteUserToOftenMinutesAgain: "دقائق.",
+  deleteUserNotLoggedIn: "أنت غير مسجّل الدخول!",
+  authFailed: "فشلت المصادقة",
+  errorDeleteAccount: "حدث خطأ أثناء حذف الحساب",
+  timeOverStepped: "انتهت المهلة. يرجى المحاولة مجددًا.",
+  somethingWentWrong: "حدث خطأ ما",
+  deleteAccountConfirmation1:
+    "هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+  deleteAccountConfirmation2: "سيتم حذف جميع بياناتك بشكل دائم.",
+  yesDeleteAccount: "نعم، احذف الحساب",
+  confirmPassowrdTitle: "تأكيد كلمة المرور",
+  confirmPasswordText: "يرجى إدخال كلمة المرور لتأكيد الحذف.",
 
   // Settings
   logout: "تسجيل الخروج",

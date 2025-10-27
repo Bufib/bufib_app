@@ -68,6 +68,7 @@ export const en = {
   selectFolder: "Select a folder",
   enterFolderName: "Enter a name for your folder",
   confirm: "Confirm",
+  abort: "Cancle",
 
   // Navigation
   knowledge: "Knowledge",
@@ -110,9 +111,8 @@ export const en = {
   names: "Asma-ul-Husna",
   showAll: "Show all",
   noSearchResult: "No result found",
-bottomInformationRenderPrayer: "is pronounced like the following: ",
+  bottomInformationRenderPrayer: "is pronounced like the following: ",
   noName: "Please provide a name",
-
 
   // Tasbih
   dhikrFree: "Free",
@@ -196,6 +196,19 @@ bottomInformationRenderPrayer: "is pronounced like the following: ",
 
   // Account
   successDeletion: "Account deleted successfully!",
+  deleteUserToOftenText: "Too many attempts. Please try again in",
+  deleteUserToOftenMinutesAgain: "minutes.",
+  deleteUserNotLoggedIn: "You are not logged in!",
+  authFailed: "Authentication failed",
+  errorDeleteAccount: "Error deleting the account",
+  timeOverStepped: "Timeout. Please try again.",
+  somethingWentWrong: "Something went wrong",
+  deleteAccountConfirmation1:
+    "Are you sure you want to delete your account? This action cannot be undone.",
+  deleteAccountConfirmation2: "All your data will be permanently deleted.",
+  yesDeleteAccount: "Yes, delete account",
+  confirmPassowrdTitle: "Confirm password",
+  confirmPasswordText: "Please enter your password to confirm the deletion.",
 
   // Settings
   logout: "Log out",

@@ -1,5 +1,3 @@
-
-
 export const de = {
   //LanguageSelectionScreen
   chooseLanguage: "Wähle deine Sprache aus",
@@ -192,6 +190,22 @@ export const de = {
 
   // Account
   successDeletion: "Account erfolgreich gelöscht!",
+  authFailed: "Authentifizierung fehlgeschlagen",
+  deleteUserToOftenText: "Zu viele Versuche. Bitte versuche es in",
+  deleteUserToOftenMinutesAgain: "Minuten erneut.",
+  deleteUserNotLoggedIn: "Du bist nicht eingeloggt!",
+  errorDeleteAccount: "Fehler beim Löschen des Accounts",
+  timeOverStepped: "Zeitüberschreitung. Bitte versuche es erneut.",
+  somethingWentWrong: "Etwas ist schiefgelaufen",
+  deleteAccount: "Account Löschen",
+  deleteAccountConfirmation1:
+    ' Bist du sicher, dass du deinen Account löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.',
+  deleteAccountConfirmation2: "Alle deine Daten werden permanent gelöscht.",
+  yesDeleteAccount: "Ja, Account löschen",
+  abort: "Abbrechen",
+  confirmPassowrdTitle: "Passwort bestätigen",
+  confirmPasswordText:
+    "Bitte gib dein Passwort ein, um die Löschung zu bestätigen.",
 
   // Settings
   logout: "Abmelden",
@@ -204,7 +218,6 @@ export const de = {
   receivePushNotifications: "Push-Benachrichtigungen erhalten",
   account: "Account",
   changePassword: "Passwort ändern",
-  deleteAccount: "Account löschen",
   questionsInDatabase: "Fragen in der Datenbank: {{count}}",
   databaseVersion: "Datenbank-Version: {{version}}",
   appVersion: "App-Version: {{version}}",
