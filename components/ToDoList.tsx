@@ -14,8 +14,6 @@ import { TodoListType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ThemedView } from "./ThemedView";
-import { getFullDayName } from "@/utils/dayNames";
 import { returnSize } from "@/utils/sizes";
 
 export const TodoList = ({
@@ -27,10 +25,9 @@ export const TodoList = ({
 }: TodoListType) => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const { language, isArabic } = useLanguage();
+  const {  rtl } = useLanguage();
   const { width, height } = useWindowDimensions();
   const { emptyIconSize, emptyTextSize, emptyGap } = returnSize(width, height);
-  const rtl = isArabic();
 
   if (!todos || todos.length === 0) {
     return (

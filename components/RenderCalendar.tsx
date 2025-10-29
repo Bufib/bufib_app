@@ -827,7 +827,11 @@ import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import CalendarLegend from "./CalendarLegend";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { CalendarType, LanguageCode } from "@/constants/Types";
+import {
+  CalendarSectionType,
+  CalendarType,
+  LanguageCode,
+} from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import {
   getAllCalendarDates,
@@ -835,20 +839,20 @@ import {
 } from "@/db/queries/calendar";
 import { CALENDARPALLETTE, Colors } from "@/constants/Colors";
 import { LoadingIndicator } from "./LoadingIndicator";
-
-type Section = { title: string; data: CalendarType[] };
+import { useCalendarVersionStore } from "@/stores/calandarVersionStore";
 
 const RenderCalendar: React.FC = () => {
   const colorScheme = useColorScheme() || "light";
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang } = useLanguage();
   const { t } = useTranslation();
-
   const [events, setEvents] = useState<CalendarType[]>([]);
   const [legendNames, setLegendNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [sections, setSections] = useState<Section[]>([]);
+  const [sections, setSections] = useState<CalendarSectionType[]>([]);
   const [nextUpcomingDiff, setNextUpcomingDiff] = useState<number | null>(null);
+  const calendarVersion = useCalendarVersionStore(
+    (state) => state.calendarVersion
+  );
 
   // Fetch calendar data and legend names
   useEffect(() => {
@@ -877,7 +881,7 @@ const RenderCalendar: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [t]);
+  }, [calendarVersion, t]);
 
   // Map legend names to colors
   const legendColorMap = Object.fromEntries(
@@ -931,7 +935,11 @@ const RenderCalendar: React.FC = () => {
   }, [events, t]);
 
   // Render section header with divider lines
-  const renderSectionHeader = ({ section }: { section: Section }) => (
+  const renderSectionHeader = ({
+    section,
+  }: {
+    section: CalendarSectionType;
+  }) => (
     <View style={styles.sectionHeaderRow}>
       <View
         style={[
@@ -1080,7 +1088,7 @@ const RenderCalendar: React.FC = () => {
   return (
     <SectionList
       sections={sections}
-      extraData={lang}
+      extraData={[lang, calendarVersion]}
       keyExtractor={(item) => `${lang}-${item.id}`}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}

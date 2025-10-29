@@ -4,8 +4,6 @@ import { Picker } from "@react-native-picker/picker";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "react-native";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
-import i18n from "@/utils/i18n";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 
 interface FontSizePickerModalProps {

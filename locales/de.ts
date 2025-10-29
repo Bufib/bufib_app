@@ -1,3 +1,5 @@
+import { askQuestionQuestionSendSuccess } from "@/constants/messages";
+
 export const de = {
   //LanguageSelectionScreen
   chooseLanguage: "Wähle deine Sprache aus",
@@ -9,6 +11,7 @@ export const de = {
   // News
   newsTitle: "Neuigkeiten",
   newsEmpty: "Es gibt derzeit noch keine Neuigkeiten!",
+  newNewsAvailable: "Neue Neuigkeiten verfügbar!",
 
   // Podcasts
   podcastsTitle: "Podcast",
@@ -132,7 +135,7 @@ export const de = {
   totalDhikr: "Gesamter Dhikr:",
   completedText: "abgeschlossen ✓",
 
-  // Weekly calender
+  // Weekly calendar
   weeklyToDoTitle: "Wochenplan",
   weeklyToDoSubtitle: "Plane deine Woche",
   addWeekly: "Hinzufügen",
@@ -182,6 +185,7 @@ export const de = {
   not_read_yet: "Noch nicht gelesen",
   day_plural: "e",
   day_singular: "",
+  askQuestionQuestionSendSuccess: "Deine Frage wurde erfolgreich gesendet!",
 
   // No internet
   noInternetTitle: "Keine Internetverbindung",

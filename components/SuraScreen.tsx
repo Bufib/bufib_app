@@ -2188,10 +2188,8 @@ import ArrowUp from "./ArrowUp";
 
 const SuraScreen: React.FC = () => {
   const colorScheme = useColorScheme() || "light";
-  const { language, isArabic } = useLanguage();
-  const rtl = isArabic();
+  const { lang, rtl } = useLanguage();
 
-  const lang = (language ?? "de") as LanguageCode;
   const { width } = useWindowDimensions();
   const { t } = useTranslation();
   const { suraId, juzId, pageId } = useLocalSearchParams<{
@@ -2454,7 +2452,6 @@ const SuraScreen: React.FC = () => {
               suraInfo={suraInfo}
               displayName={displayName}
               juzHeader={juzHeader}
-              isArabic={isArabic}
             />
           }
           stickyHeaderIndices={[0]}

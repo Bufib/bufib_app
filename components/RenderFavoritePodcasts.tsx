@@ -25,9 +25,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 
 const RenderFavoritePodcasts = () => {
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
-  const { language, isArabic } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
-  const rtl = isArabic()
+  const { lang, rtl } = useLanguage();
   const {
     data: infiniteData,
     isLoading,

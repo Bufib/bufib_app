@@ -25,9 +25,8 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { language, isArabic } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
-  const rtl = isArabic();
+  const { lang, rtl } = useLanguage();
+
 
   // fade-in animation value
   useEffect(() => {

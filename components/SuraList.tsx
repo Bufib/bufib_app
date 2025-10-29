@@ -3974,9 +3974,7 @@ const PageProgressBadge: React.FC<{ page: number }> = ({ page }) => {
 
 const SuraList: React.FC = () => {
   const { t } = useTranslation();
-  const { language, isArabic } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
-  const rtl = isArabic();
+  const { lang, rtl } = useLanguage();
 
   const [suras, setSuras] = useState<SuraRowType[]>([]);
   const [juzList, setJuzList] = useState<
@@ -4183,12 +4181,7 @@ const SuraList: React.FC = () => {
       );
       await propagateSuraDoneToJuzAndPages(suraId, totalVerses);
     },
-    [
-      t,
-      setTotalVerses,
-      updateBookmarkProgress,
-      propagateSuraDoneToJuzAndPages,
-    ]
+    [t, setTotalVerses, updateBookmarkProgress, propagateSuraDoneToJuzAndPages]
   );
 
   const DoneToggleButton: React.FC<{
@@ -4464,9 +4457,7 @@ const SuraList: React.FC = () => {
         <View
           style={[
             styles.cardContent,
-            rtl
-              ? { flexDirection: "row-reverse" }
-              : { flexDirection: "row" },
+            rtl ? { flexDirection: "row-reverse" } : { flexDirection: "row" },
           ]}
         >
           <View
@@ -4484,9 +4475,7 @@ const SuraList: React.FC = () => {
           </View>
 
           <View style={styles.contentSection}>
-            <ThemedText
-              style={[styles.suraName, rtl && styles.suraNameAr]}
-            >
+            <ThemedText style={[styles.suraName, rtl && styles.suraNameAr]}>
               {name}
             </ThemedText>
 
@@ -4557,9 +4546,7 @@ const SuraList: React.FC = () => {
         <View
           style={[
             styles.juzContent,
-            rtl
-              ? { flexDirection: "row-reverse" }
-              : { flexDirection: "row" },
+            rtl ? { flexDirection: "row-reverse" } : { flexDirection: "row" },
           ]}
         >
           <View style={{ flex: 1 }}>
@@ -4605,9 +4592,7 @@ const SuraList: React.FC = () => {
         <View
           style={[
             styles.juzContent,
-            rtl
-              ? { flexDirection: "row-reverse" }
-              : { flexDirection: "row" },
+            rtl ? { flexDirection: "row-reverse" } : { flexDirection: "row" },
           ]}
         >
           <View style={{ flex: 1 }}>

@@ -16,26 +16,24 @@ import { useTranslation } from "react-i18next";
  * LanguageContext to switch the app’s i18n language and persist it.
  */
 export function LanguageSwitcher() {
-  const { language, setAppLanguage, ready: langReady } = useLanguage();
+  const { lang, rtl, setAppLanguage, ready: langReady } = useLanguage();
   const { width, height } = useWindowDimensions();
   const { isLarge, isMedium } = returnSize(width, height);
   const { t } = useTranslation();
-  const { isArabic } = useLanguage();
-  const rtl = isArabic();
   const selectDeutsch = () => {
-    if (langReady && language !== "de") {
+    if (langReady && lang !== "de") {
       setAppLanguage("de");
     }
   };
 
   const selectEnglish = () => {
-    if (langReady && language !== "en") {
+    if (langReady && lang !== "en") {
       setAppLanguage("en");
     }
   };
 
   const selectArabic = () => {
-    if (langReady && language !== "ar") {
+    if (langReady && lang !== "ar") {
       setAppLanguage("ar");
     }
   };
@@ -55,7 +53,7 @@ export function LanguageSwitcher() {
           onPress={selectDeutsch}
           style={({ pressed }) => [
             styles.button,
-            language === "de" && styles.buttonActive,
+            lang === "de" && styles.buttonActive,
             { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
             rtl && { marginLeft: 0, marginRight: 8 },
           ]}
@@ -63,7 +61,7 @@ export function LanguageSwitcher() {
           <Text
             style={[
               styles.buttonText,
-              language === "de" && styles.buttonTextActive,
+              lang === "de" && styles.buttonTextActive,
             ]}
           >
             {t("deutsch")}
@@ -73,7 +71,7 @@ export function LanguageSwitcher() {
           onPress={selectEnglish}
           style={({ pressed }) => [
             styles.button,
-            language === "en" && styles.buttonActive,
+            lang === "en" && styles.buttonActive,
             { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
             rtl && { marginLeft: 0, marginRight: 8 },
           ]}
@@ -81,7 +79,7 @@ export function LanguageSwitcher() {
           <Text
             style={[
               styles.buttonText,
-              language === "en" && styles.buttonTextActive,
+              lang === "en" && styles.buttonTextActive,
             ]}
           >
             {t("english")}
@@ -91,7 +89,7 @@ export function LanguageSwitcher() {
           onPress={selectArabic}
           style={({ pressed }) => [
             styles.button,
-            language === "ar" && styles.buttonActive,
+            lang === "ar" && styles.buttonActive,
             { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
             rtl && { marginLeft: 0, marginRight: 8 },
           ]}
@@ -99,7 +97,7 @@ export function LanguageSwitcher() {
           <Text
             style={[
               styles.buttonText,
-              language === "ar" && styles.buttonTextActive,
+              lang === "ar" && styles.buttonTextActive,
             ]}
           >
             {t("arabic")}

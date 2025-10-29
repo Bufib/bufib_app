@@ -7,7 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 export default function Names() {
-  const { language } = useLanguage();
+  const { lang } = useLanguage();
   const { t } = useTranslation();
 
   return (
@@ -23,7 +23,7 @@ export default function Names() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <NameCard name={item} />}
           numColumns={2}
-          extraData={language}
+          extraData={lang}
         />
       </ThemedView>
     </>

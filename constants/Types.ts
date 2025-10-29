@@ -1,12 +1,12 @@
 // Language
-export type LanguageContextType = {
-  language: string | null;
-  setAppLanguage: (lng: string) => Promise<void>;
-  ready: boolean;
-  isArabic: () => boolean;
-};
-
 export type LanguageCode = "de" | "ar" | "en";
+
+export type LanguageContextType = {
+  lang: LanguageCode;              // <— always defined
+  setAppLanguage: (lng: LanguageCode) => Promise<void>;
+  ready: boolean;
+  rtl: boolean;
+};
 
 // Gradient
 export type UseGradientOptionsType = {
@@ -113,7 +113,6 @@ export type PrayerInformationModalPropsType = {
   onChange?: (index: number) => void;
   onRequestClose?: () => void;
 };
-
 
 export type FavoritePrayerFolderType = {
   name: string;
@@ -295,13 +294,24 @@ export type UserQuestionType = {
   created_at: string;
 };
 
+export type SupabaseRealtimeContextType = {
+  userId: string | null;
+  hasNewNewsData: boolean;
+  clearNewNewsFlag: () => void;
+};
+
+export type WithLangType = {
+  language_code?: string | null;
+  id?: number | string;
+};
+
 // Delete Account
 export type DeleteUserModalPropsType = {
   isVisible: boolean;
   onClose: () => void;
   onDeleteSuccess?: () => void;
   serverUrl: string;
-}
+};
 
 // Expo Push Tokens per User
 export type UserTokenType = {
@@ -501,7 +511,7 @@ export type QuestionsFromUserType = {
   has_read_at: string;
 };
 
-// Calender
+// Calendar
 export type CalendarType = {
   id: number;
   title: string;
@@ -518,6 +528,8 @@ export type calendarLegendType = {
   type: string;
   created_at: string;
 };
+
+export type CalendarSectionType = { title: string; data: CalendarType[] };
 
 // Quran
 export type SuraType = {
@@ -552,8 +564,7 @@ export type StickyHeaderQuranPropsType = {
   suraInfo: SuraRowType | null;
   displayName: string;
   juzHeader: { title: string; subtitle?: string } | null;
-  isArabic: () => boolean;
-}
+};
 export interface AyahType {
   id: number;
   sura: number;

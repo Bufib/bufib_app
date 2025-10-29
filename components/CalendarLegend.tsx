@@ -15,6 +15,7 @@ import { LanguageCode } from "@/constants/Types";
 import { getCalendarLegendTypeNames } from "@/db/queries/calendar";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useTranslation } from "react-i18next";
+import { useCalendarVersionStore } from "@/stores/calandarVersionStore";
 
 const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
   const colorScheme = useColorScheme() || "light";
@@ -23,6 +24,10 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
   const [legendNames, setLegendNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const calendarVersion = useCalendarVersionStore(
+    (state) => state.calendarVersion
+  );
+
   const localDate = new Date()
     .toLocaleDateString(lang, {
       day: "numeric",
@@ -48,7 +53,7 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
     return () => {
       cancelled = true;
     };
-  }, [t]);
+  }, [t, calendarVersion]);
 
   const getItemColor = (index: number) => {
     return CALENDARPALLETTE[index % CALENDARPALLETTE.length];
@@ -85,7 +90,7 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
 
       <FlatList
         data={legendNames}
-        extraData={lang}
+        extraData={[lang, calendarVersion]}
         keyExtractor={(name) => `${lang}:${name.trim().toLowerCase()}`}
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}

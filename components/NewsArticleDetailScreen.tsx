@@ -3009,11 +3009,9 @@ export default function NewsArticleDetailScreen({
   const [bookmarkRatio, setBookmarkRatio] = useState<number | null>(null);
 
   const { triggerRefreshFavorites } = useRefreshFavorites();
-  const { language, isArabic } = useLanguage();
-  const rtl = isArabic();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang, rtl } = useLanguage();
   const { fetchNewsArticleById } = useNewsArticles(lang);
-  const bookmarkKey = (id: number) => `bookmark:newsArticle:${id}:${language}`;
+  const bookmarkKey = (id: number) => `bookmark:newsArticle:${id}:${lang}`;
 
   const flatListRef = useRef<FlatList<Row>>(null);
 
@@ -3026,7 +3024,7 @@ export default function NewsArticleDetailScreen({
   const handleScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const now = Date.now();
-      if (now - lastTickRef.current < 120) return; 
+      if (now - lastTickRef.current < 120) return;
       lastTickRef.current = now;
       const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
       setScrollY(contentOffset.y);
@@ -3101,7 +3099,7 @@ export default function NewsArticleDetailScreen({
         console.log("Failed to load bookmark", e);
       }
     })();
-  }, [articleId, language]);
+  }, [articleId, lang]);
 
   // Recompute overlay Y from ratio when sizes/ratio change
   useEffect(() => {
@@ -3127,7 +3125,7 @@ export default function NewsArticleDetailScreen({
         console.log("Failed to save bookmark", e);
       }
     },
-    [articleId, headerHeight, effectiveScrollableHeight, language]
+    [articleId, headerHeight, effectiveScrollableHeight, lang]
   );
 
   const clearBookmark = useCallback(() => {
@@ -3152,7 +3150,7 @@ export default function NewsArticleDetailScreen({
       ],
       { cancelable: true }
     );
-  }, [articleId, t, language]);
+  }, [articleId, t, lang]);
 
   const jumpToBookmark = useCallback(() => {
     if (overlayContentY == null) return;

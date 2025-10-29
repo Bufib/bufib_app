@@ -59,8 +59,7 @@ function VerseCard({
   );
   const colorScheme = useColorScheme() || "light";
   const { fontSize, lineHeight } = useFontSizeStore();
-  const { isArabic } = useLanguage();
-  const rtl = isArabic();
+  const { rtl } = useLanguage();
 
   const renderHtmlBaseStyle = useMemo<MixedStyleDeclaration>(
     () => ({

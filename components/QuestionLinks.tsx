@@ -18,14 +18,10 @@ import { Colors } from "@/constants/Colors";
 import { returnSize } from "@/utils/sizes";
 import { useTranslation } from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
-import { ThemedView } from "./ThemedView";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function QuestionLinks() {
   const { width, height } = useWindowDimensions();
   const { t } = useTranslation();
-  const { language } = useLanguage();
   // Dynamically calculate the size of each element based on screen width
   const { elementSize, fontSize, iconSize, imageSize, gap } = returnSize(
     width,

@@ -14,8 +14,7 @@ const NewsArticlePreviewCard = ({
 }: NewsArticlesPreviewType) => {
   const { gradientColors } = useGradient();
   const { t } = useTranslation();
-  const { language, isArabic } = useLanguage();
-  const rtl = isArabic();
+  const { rtl } = useLanguage();
   const formatedDate = formatDate(created_at);
 
   return (

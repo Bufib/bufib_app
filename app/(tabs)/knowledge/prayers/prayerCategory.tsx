@@ -992,14 +992,11 @@ import { ThemedView } from "@/components/ThemedView";
 export default function CategoryScreen() {
   const { prayerCategory } = useLocalSearchParams<{ prayerCategory: string }>();
   const colorScheme = useColorScheme() || "light";
-  const themeStyles = CoustomTheme();
   const { t } = useTranslation();
-  const { language, isArabic } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang, rtl } = useLanguage();
   const [childCategories, setChildCategories] = useState<PrayerCategoryType[]>(
     []
   );
-  const rtl = isArabic();
   const [allPrayers, setAllPrayers] = useState<PrayerWithCategory[]>([]);
   const [filteredPrayers, setFilteredPrayers] = useState<PrayerWithCategory[]>(
     []
@@ -1029,7 +1026,7 @@ export default function CategoryScreen() {
         setChildCategories(categoryRows);
 
         // Fetch prayers depending on language
-        if (language === "ar") {
+        if (lang === "ar") {
           const prayerRows = await getAllPrayersForArabicTree(categoryData.id);
           setAllPrayers(prayerRows);
           setFilteredPrayers(prayerRows);
@@ -1056,7 +1053,7 @@ export default function CategoryScreen() {
     };
 
     fetchData();
-  }, [prayerCategory, language]);
+  }, [prayerCategory, lang]);
 
   // Handle subcategory selection
   const handleSubcategoryPress = async (cat: PrayerCategoryType) => {

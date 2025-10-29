@@ -4,8 +4,7 @@ import { PodcastType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export function useSearchPodcasts(searchTerm: string) {
-  const { language } = useLanguage();
-  const lang = language ?? "de";
+  const { lang } = useLanguage();
 
   return useQuery<PodcastType[], Error>({
     // 1) Query key: Includes the search term for effective caching and refetching.

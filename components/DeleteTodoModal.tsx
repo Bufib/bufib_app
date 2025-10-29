@@ -4,7 +4,6 @@ import { View, Modal, TouchableOpacity, StyleSheet, useColorScheme } from "react
 import { ThemedText } from "./ThemedText"; // Adjust path
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 interface DeleteTodoModalProps {
   visible: boolean;
@@ -20,8 +19,6 @@ export const DeleteTodoModal: React.FC<DeleteTodoModalProps> = ({
 }) => {
  const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { language } = useLanguage();
-  const isRTL = language === "ar";
 
   return (
     <Modal

@@ -3056,8 +3056,7 @@ function reducer(state: State, action: Action): State {
 /* ---------- Component ---------- */
 export default function RenderTasbih() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { isArabic } = useLanguage();
-  const rtl = isArabic();
+  const { rtl } = useLanguage();
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
 

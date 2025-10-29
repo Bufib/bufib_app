@@ -13,7 +13,7 @@ type Name = {
 };
 const NameCard = ({ name }: { name: Name }) => {
   const colorScheme = useColorScheme() || "light";
-  const { language } = useLanguage();
+  const { lang } = useLanguage();
   
   return (
     <ThemedView
@@ -25,11 +25,11 @@ const NameCard = ({ name }: { name: Name }) => {
       <ThemedText style={styles.transliteration} type="subtitle">
         {name.transliteration}
       </ThemedText>
-      {language === "DE" ? (
+      {lang === "de" ? (
         <ThemedText style={styles.meaning} type="default">
           {name.german}
         </ThemedText>
-      ) : language === "EN" ? (
+      ) : lang === "en" ? (
         <ThemedText style={styles.meaning} type="default">
           {name.english}
         </ThemedText>

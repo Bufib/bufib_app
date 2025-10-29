@@ -9,20 +9,20 @@ import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { Colors } from "@/constants/Colors";
 import { StickyHeaderQuranPropsType } from "@/constants/Types";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const StickyHeaderQuran: React.FC<StickyHeaderQuranPropsType> = ({
   suraNumber,
   suraInfo,
   displayName,
   juzHeader,
-  isArabic,
 }) => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
   const [modalVisible, setModalVisible] = useState(false);
   const isMakki = !!suraInfo?.makki;
   const showJuzOrPage = !!juzHeader;
-  const rtl = isArabic();
+  const { rtl } = useLanguage();
 
   return (
     <LinearGradient

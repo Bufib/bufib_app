@@ -14,10 +14,10 @@ const STORAGE_KEY = "prayer_app_weekly_todos";
 
 export function useWeeklyTodos(): UseWeeklyTodosResult {
   // Use primary language from i18n.languages[0], fallback to 'de'
-  const { language } = useLanguage();
+  const { lang } = useLanguage();
 
   const [todosByDay, setTodosByDay] = useState<WeeklyTodosType>(
-    () => defaultWeeklyTodos[language] ?? defaultWeeklyTodos.de
+    () => defaultWeeklyTodos[lang] ?? defaultWeeklyTodos.de
   );
   const [loading, setLoading] = useState(true);
 
@@ -40,7 +40,7 @@ export function useWeeklyTodos(): UseWeeklyTodosResult {
     return () => {
       active = false;
     };
-  }, [language]);
+  }, [lang]);
 
   // Persist todos whenever they change
   useEffect(() => {

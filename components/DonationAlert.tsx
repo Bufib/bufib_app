@@ -22,15 +22,11 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
   onClose,
 }) => {
   const colorScheme = useColorScheme();
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
-  const dbInitialized = useDatabaseSync(lang);
+  const { lang } = useLanguage();
   const [payPalLink, setPayPalLink] = useState<string | null>(null);
 
   // paypal
-  // paypal
   useEffect(() => {
-    if (!dbInitialized) return;
     let cancelled = false;
     (async () => {
       try {
@@ -44,7 +40,7 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
     return () => {
       cancelled = true; // avoid setState on unmounted component
     };
-  }, [dbInitialized]);
+  }, []);
 
   return (
     <Modal

@@ -71,7 +71,7 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const colorScheme = useColorScheme() || "light";
-  const { ready: languageContextReady, language } = useLanguage();
+  const { ready: languageContextReady, lang } = useLanguage();
   const restoreSession = useAuthStore((state) => state.restoreSession);
   const [isSessionRestored, setIsSessionRestored] = useState(false);
   const hasInternet = useConnectionStatus();
@@ -79,7 +79,6 @@ function AppContent() {
   const [storesHydrated, setStoresHydrated] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const { t } = useTranslation();
-  const lang = (language ?? "de") as LanguageCode;
   const isDbReady = useDatabaseSync(lang);
   const router = useRouter();
 
@@ -225,7 +224,7 @@ function AppContent() {
   }
 
   // 2. If language not yet selected (after initial readiness)
-  if (language === null) {
+  if (lang === null) {
     return <LanguageSelection />;
   }
 
@@ -356,18 +355,18 @@ function AppContent() {
 export default function RootLayout() {
   return (
     <GlobalVideoHost>
-      <LanguageProvider>
-        <SQLiteProvider
-          databaseName="bufib.db"
-          useSuspense={false}
-          onInit={async (db) => {
-            await db.execAsync(migrationSQL);
-            setDatabase(db);
-          }}
-        >
+      <SQLiteProvider
+        databaseName="bufib.db"
+        useSuspense={false}
+        onInit={async (db) => {
+          await db.execAsync(migrationSQL);
+          setDatabase(db);
+        }}
+      >
+        <LanguageProvider>
           <AppContent />
-        </SQLiteProvider>
-      </LanguageProvider>
+        </LanguageProvider>
+      </SQLiteProvider>
     </GlobalVideoHost>
   );
 }

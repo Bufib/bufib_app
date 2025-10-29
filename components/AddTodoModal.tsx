@@ -26,8 +26,7 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
   const [newTodo, setNewTodo] = useState<string>("");
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { language, isArabic } = useLanguage();
-  const rtl = isArabic();
+  const { rtl } = useLanguage();
   // Clear out the input:
   useEffect(() => {
     if (visible) {

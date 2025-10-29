@@ -69,8 +69,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 const PodcastPreviewCard: FC<PodcastProps> = ({ podcast }) => {
   const { gradientColors } = useGradient();
-  const { language, isArabic } = useLanguage();
-  const rtl = isArabic();
+  const { rtl, lang } = useLanguage();
   const formattedDate = formatDate(podcast.created_at);
   const { t } = useTranslation();
   const soundBars = useMemo(
@@ -106,7 +105,7 @@ const PodcastPreviewCard: FC<PodcastProps> = ({ podcast }) => {
             <Text
               style={[
                 styles.title,
-                { textAlign: language === "ar" ? "right" : "left" },
+                { textAlign: lang === "ar" ? "right" : "left" },
               ]}
               numberOfLines={3}
               ellipsizeMode="tail"
@@ -123,10 +122,7 @@ const PodcastPreviewCard: FC<PodcastProps> = ({ podcast }) => {
               <Text style={styles.playText}>{t("listen")}</Text>
             </View>
             <Text
-              style={[
-                styles.createdAt,
-                { textAlign: rtl ? "left" : "right" },
-              ]}
+              style={[styles.createdAt, { textAlign: rtl ? "left" : "right" }]}
             >
               {formattedDate}
             </Text>

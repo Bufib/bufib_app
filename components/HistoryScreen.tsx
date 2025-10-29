@@ -22,8 +22,7 @@ import { AHLULBAYT_DATA } from "@/data/historyData";
 const HistoryScreen: React.FC = () => {
   const scheme = (useColorScheme() ?? "light") as "light" | "dark";
   const { t } = useTranslation();
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang } = useLanguage();
 
   const screenWidth = Dimensions.get("window").width;
   const cardWidth = (screenWidth - 48) / 2.2;
@@ -32,7 +31,7 @@ const HistoryScreen: React.FC = () => {
   const handleCardPress = (item: HistoryDataType) => {
     router.push({
       pathname: item.route,
-      params: { language: language, personId: item.id },
+      params: { language: lang, personId: item.id },
     });
   };
 

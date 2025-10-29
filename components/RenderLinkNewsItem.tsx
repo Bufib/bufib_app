@@ -19,8 +19,7 @@ const RenderLinkNewsItem = ({
   isExternal,
 }: RenderLinkNewsItemProps) => {
   const colorScheme = useColorScheme();
-  const { isArabic } = useLanguage();
-  const rtl = isArabic()
+  const { rtl } = useLanguage();
   return (
     <Pressable
       key={index}

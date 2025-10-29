@@ -3,7 +3,7 @@
 // import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 // import indexPrayer from "@/app/(tabs)/knowledge/prayers/indexPrayer";
 // import indexQuestion from "@/app/(tabs)/knowledge/questions/indexQuestion";
-// import indexCalender from "@/app/(tabs)/knowledge/calendar/indexCalender";
+// import indexCalandar from "@/app/(tabs)/knowledge/calendar/indexCalandar";
 // import indexQuran from "@/app/(tabs)/knowledge/quran/indexQuran";
 // import indexHistory from "@/app/(tabs)/knowledge/history/indexHistory";
 // import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,7 +14,7 @@
 // const renderScene = SceneMap({
 //   questionsScreen: indexQuestion,
 //   prayerScreen: indexPrayer,
-//   calenderScreen: indexCalender,
+//   CalandarScreen: indexCalandar,
 //   quranScreen: indexQuran,
 //   historyScreen: indexHistory,
 // });
@@ -38,8 +38,8 @@
 //         icon: require("@/assets/images/qAndAHeaderLogo.png"),
 //       },
 //       {
-//         key: "calenderScreen",
-//         title: t("calenderScreenTitle"),
+//         key: "CalandarScreen",
+//         title: t("CalandarScreenTitle"),
 //         icon: require("@/assets/images/qAndAHeaderLogo.png"),
 //       },
 //       {
@@ -109,8 +109,8 @@ import {
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import indexPrayer from "@/app/(tabs)/knowledge/prayers/indexPrayer";
 import indexQuestion from "@/app/(tabs)/knowledge/questions/indexQuestion";
-import indexCalender from "@/app/(tabs)/knowledge/calendar/indexCalender";
 import indexQuran from "@/app/(tabs)/knowledge/quran/indexQuran";
+import indexCalandar from "@/app/(tabs)/knowledge/calendar/indexCalendar";
 import indexHistory from "@/app/(tabs)/knowledge/history/indexHistory";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
@@ -123,7 +123,7 @@ import { LanguageCode } from "@/constants/Types";
 const renderScene = SceneMap({
   questionsScreen: indexQuestion,
   prayerScreen: indexPrayer,
-  calendarScreen: indexCalender,
+  calendarScreen: indexCalandar,
   quranScreen: indexQuran,
   historyScreen: indexHistory,
 });
@@ -134,8 +134,6 @@ export default function TopNavigationKnowledge() {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
 
   const routes = React.useMemo(
     () => [

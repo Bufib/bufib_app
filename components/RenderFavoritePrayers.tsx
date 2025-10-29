@@ -343,8 +343,7 @@ const FavoritePrayersScreen: React.FC = () => {
   // Zustand trigger (useful if other screens must refresh too)
   const { refreshTriggerFavorites, triggerRefreshFavorites } =
     useRefreshFavorites();
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang } = useLanguage();
   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [prayers, setPrayers] = useState<PrayerType[]>([]);

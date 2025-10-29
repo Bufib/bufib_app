@@ -29,8 +29,7 @@ function RenderQuestionSubCategoryItems() {
   const [isLoading, setIsLoading] = useState(true);
   const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme() || "light";
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang } = useLanguage();
   const {t} = useTranslation()
 
   useEffect(() => {

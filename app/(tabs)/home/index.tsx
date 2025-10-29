@@ -427,7 +427,6 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const { t } = useTranslation();
   const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
 
   const isAdmin = useAuthStore((state) => state.isAdmin);
 
@@ -440,7 +439,7 @@ export default function HomeScreen() {
     fetchNextPage: newsArticlesFetchNextPage,
     hasNextPage: newsArticlesHasNextPage,
     isFetchingNextPage: newsArticlesIsFetchingNextPage,
-  } = useNewsArticles(lang);
+  } = useNewsArticles(language);
 
   // News Hook - Using the enhanced useNews hook with realtime features
   const {
@@ -455,7 +454,7 @@ export default function HomeScreen() {
     error: newsError,
     hasNextPage: newsHasNextPage,
     isFetchingNextPage: newsIsFetchingNextPage,
-  } = useNews(lang);
+  } = useNews(language);
 
   // Podcasts Hook
   const {
@@ -466,7 +465,7 @@ export default function HomeScreen() {
     fetchNextPage: podcastsFetchNextPage,
     hasNextPage: podcastsHasNextPage,
     isFetchingNextPage: podcastsIsFetchingNextPage,
-  } = usePodcasts(lang);
+  } = usePodcasts(language);
 
   // Flatten paginated data
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];

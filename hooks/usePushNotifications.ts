@@ -403,7 +403,7 @@ async function getOrCreateGuestId(): Promise<string> {
 
 export function usePushNotifications() {
   const router = useRouter();
-  const { language } = useLanguage(); // <- your UI language code: "de" | "ar" | "en" ...
+  const { lang } = useLanguage(); // <- your UI language code: "de" | "ar" | "en" ...
   const getNotifications = useNotificationStore((s) => s.getNotifications);
   const session = useAuthStore((s) => s.session);
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -447,7 +447,7 @@ export function usePushNotifications() {
         expo_push_token: token,
         app_version: Constants.expoConfig?.extra?.appVersion,
         platform: Platform.OS,
-        language_code: language || "de",
+        language_code: lang || "de",
       };
 
       if (isLoggedIn && session?.user?.id) {
@@ -480,7 +480,7 @@ export function usePushNotifications() {
         lightColor: "#057958",
       });
     }
-  }, [getNotifications, isLoggedIn, session?.user?.id, language]);
+  }, [getNotifications, isLoggedIn, session?.user?.id, lang]);
 
   // Register once when notifications are enabled / session changes / language changes
   useEffect(() => {

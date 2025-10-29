@@ -40,10 +40,8 @@ const HistoryText = ({
 }) => {
   const colorScheme = useColorScheme() || "light";
   const levelProgress = useLevelProgressStore();
-  const { language, isArabic } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang, rtl } = useLanguage();
   const { t } = useTranslation();
-  const rtl = isArabic();
   return (
     <SafeAreaView
       edges={["top"]}

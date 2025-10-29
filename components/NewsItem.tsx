@@ -538,8 +538,7 @@ export const NewsItem = ({
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const [currentPage, setCurrentPage] = useState(0);
   const flatListRef = useRef<FlatList<string>>(null);
-  const { isArabic } = useLanguage();
-  const rtl = isArabic();
+  const { rtl } = useLanguage();
   const [imageDimensions, setImageDimensions] = useState<{
     [key: string]: number;
   }>({});
@@ -702,7 +701,6 @@ const styles = StyleSheet.create({
   newsItem: {
     padding: 15,
     borderRadius: 8,
-    marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

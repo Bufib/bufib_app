@@ -22,16 +22,12 @@ const LatestQuestions: React.FC = () => {
   //State & Hooks
   const [latestQuestions, setLatestQuestions] = useState<QuestionType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
-  const dbInitialized = useDatabaseSync(lang);
+  const { lang } = useLanguage();
   const themeStyles = CoustomTheme();
   const colorScheme = useColorScheme();
-  const {t} = useTranslation()
-  //Data‐Loading Effect
-  useEffect(() => {
-    if (!dbInitialized) return;
+  const { t } = useTranslation();
 
+  useEffect(() => {
     const loadLatestQuestions = async () => {
       setIsLoading(true);
       try {
@@ -45,7 +41,7 @@ const LatestQuestions: React.FC = () => {
     };
 
     loadLatestQuestions();
-  }, [dbInitialized, t]);
+  }, [t]);
 
   // loading
   if (isLoading) {

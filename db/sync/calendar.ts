@@ -375,13 +375,13 @@
 
 // export default syncCalendar;
 
-// db/sync/calendar.ts
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
+import { useCalendarVersionStore } from "@/stores/calandarVersionStore";
 
 export default async function syncCalendar(): Promise<void> {
   try {
-    // 1) Fetch ALL languages (no .eq("language_code", …))
+    // 1) Fetch ALL languages
     const [legendRes, calRes] = await Promise.all([
       supabase
         .from("calendarLegend")
@@ -462,6 +462,8 @@ export default async function syncCalendar(): Promise<void> {
     console.log(
       `Calendar & calendarLegend synced (FULL replace, ALL languages).`
     );
+    // Increment the calendar version after successful sync
+    useCalendarVersionStore.getState().incrementCalendarVersion();
   } catch (err) {
     console.error("Critical error in syncCalendar:", err);
   }

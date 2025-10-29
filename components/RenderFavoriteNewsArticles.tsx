@@ -27,9 +27,7 @@ const RenderFavoriteNewsArticles = () => {
   const [articles, setArticles] = useState<NewsArticlesType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { language, isArabic } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
-  const rtl =isArabic()
+  const { lang, rtl } = useLanguage();
   const { t } = useTranslation();
   const { fetchNewsArticleById } = useNewsArticles(lang);
   const colorScheme = useColorScheme() || "light";

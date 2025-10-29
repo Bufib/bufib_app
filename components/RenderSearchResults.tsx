@@ -45,8 +45,7 @@ const SearchScreen = () => {
   >([]);
   const [manualLoading, setManualLoading] = useState<boolean>(false);
   const colorScheme = useColorScheme() || "light";
-   const { language } = useLanguage();
-    const lang = (language ?? "de") as LanguageCode;
+   const { lang } = useLanguage();
   const podcastQuery = useSearchPodcasts(searchTerm);
   const newsArticleSearchQuery = useSearchNewsArticles(searchTerm); 
   const { t } = useTranslation();

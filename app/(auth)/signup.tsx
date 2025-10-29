@@ -95,7 +95,7 @@ export default function SignUpScreen() {
   // Theming
   const themeStyles = CoustomTheme();
   const colorScheme = useColorScheme();
-  const { language } = useLanguage();
+  const { lang } = useLanguage();
   // Loading state
   const [isLoading, setIsLoading] = useState(false);
 
@@ -587,7 +587,7 @@ export default function SignUpScreen() {
         ref={captchaRef}
         siteKey={HCAPTCHA_SITE_KEY}
         baseUrl={HCAPTCHA_BASE_URL}
-        languageCode={language}
+        languageCode={lang}
         onMessage={onCaptchaMessage}
         size="invisible"
       />

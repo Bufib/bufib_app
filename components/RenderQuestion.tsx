@@ -44,8 +44,7 @@ const RenderQuestion = ({
   const [hasCopiedKhamenei, setHasCopiedKhamenei] = useState(false);
   const [hasCopiedSistani, setHasCopiedSistani] = useState(false);
   const { t } = useTranslation();
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang } = useLanguage();
 
   useEffect(() => {
     let cancelled = false;

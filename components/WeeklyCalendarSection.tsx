@@ -50,7 +50,7 @@ export const WeeklyCalendarSection: React.FC<
     <View style={styles.container}>
       {/* Header */}
       <View style={[styles.calendarHeader]}>
-        <View style={styles.calenderHeaderContainer}>
+        <View style={styles.calendarHeaderContainer}>
           <AntDesign
             name="calendar"
             size={isLarge ? 45 : isMedium ? 40 : 35}
@@ -62,10 +62,10 @@ export const WeeklyCalendarSection: React.FC<
               paddingBottom: 7,
             }}
           />
-          <View style={[styles.calenderTextContainer]}>
+          <View style={[styles.calendarTextContainer]}>
             <ThemedText
               style={[
-                styles.calenderTextTitle,
+                styles.calendarTextTitle,
                 { fontSize: isLarge ? 20 : isMedium ? 16 : 14 },
               ]}
             >
@@ -73,7 +73,7 @@ export const WeeklyCalendarSection: React.FC<
             </ThemedText>
             <ThemedText
               style={[
-                styles.calenderTextSubtitle,
+                styles.calendarTextSubtitle,
                 { fontSize: isLarge ? 16 : isMedium ? 14 : 12 },
               ]}
             >
@@ -151,20 +151,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
-  calenderHeaderContainer: {
+  calendarHeaderContainer: {
     flexDirection: "row",
     gap: 15,
     marginLeft: 13,
   },
-  calenderTextContainer: {
+  calendarTextContainer: {
     flexDirection: "column",
     gap: 1,
     justifyContent: "center",
   },
-  calenderTextTitle: {
+  calendarTextTitle: {
     fontWeight: "600",
   },
-  calenderTextSubtitle: {},
+  calendarTextSubtitle: {},
   addButton: {
     paddingRight: 15,
   },

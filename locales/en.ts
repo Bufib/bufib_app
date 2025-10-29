@@ -10,6 +10,7 @@ export const en = {
   // News
   newsTitle: "News",
   newsEmpty: "There are no news yet!",
+  newNewsAvailable: "New news available!",
 
   // Podcasts
   podcastsTitle: "Podcast",
@@ -77,7 +78,7 @@ export const en = {
   prayerScreenTitle: "Prayers and more",
   newsArticleScreenTitle: "Articles",
   podcastScreenTitle: "Podcasts",
-  calendarScreenTitle: "Calender",
+  calendarScreenTitle: "Calendar",
   quranScreen: "Quran",
   historyScreen: "History",
 
@@ -137,7 +138,7 @@ export const en = {
   totalDhikr: "Total dhikr:",
   completedText: "completed ✓",
 
-  // Weekly calender
+  // Weekly calendar
   weeklyToDoTitle: "Weekly Schedule",
   weeklyToDoSubtitle: "Plan your week",
 
@@ -209,6 +210,7 @@ export const en = {
   yesDeleteAccount: "Yes, delete account",
   confirmPassowrdTitle: "Confirm password",
   confirmPasswordText: "Please enter your password to confirm the deletion.",
+  askQuestionQuestionSendSuccess: "Your question has been sent successfully!",
 
   // Settings
   logout: "Log out",

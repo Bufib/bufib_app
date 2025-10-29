@@ -11,8 +11,7 @@ import { useLanguage } from "@/contexts/LanguageContext"; // Your language conte
  */
 
 export function useSearchNewsArticles(searchTerm: string) {
-  const { language } = useLanguage();
-  const lang = language ?? "de"; 
+  const { lang } = useLanguage();
 
   return useQuery<NewsArticlesType[], Error>({
     // Query key: Uniquely identifies this search query.
@@ -47,7 +46,7 @@ export function useSearchNewsArticles(searchTerm: string) {
 
     // Options:
     // `enabled`: The query will only run if searchTerm (trimmed) is not empty and language is available.
-    enabled: !!searchTerm.trim() && Boolean(language),
+    enabled: !!searchTerm.trim() && Boolean(lang),
 
     // `placeholderData`: Keeps previous results visible while new ones are loading.
     // Useful for a smoother UX when the search term changes.

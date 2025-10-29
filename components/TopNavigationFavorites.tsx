@@ -14,7 +14,6 @@ import FavoritePodcasts from "@/app/(tabs)/favorites/favoritePodcasts";
 import i18n from "@/utils/i18n";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 import { Image } from "expo-image";
 import favoritePodcasts from "@/app/(tabs)/favorites/favoritePodcasts";
@@ -34,8 +33,6 @@ export default function TopNavigationFavorites() {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
   const routes = React.useMemo(
     () => [
       {

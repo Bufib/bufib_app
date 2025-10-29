@@ -842,8 +842,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { language, isArabic } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang, rtl } = useLanguage();
   const flashListRef = useRef<any>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ["70%"], []);
@@ -854,7 +853,6 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const [showScrollUp, setShowScrollUp] = useState(false);
   const showUpRef = useRef(false);
 
-  const rtl = isArabic();
   // Fetch prayer on mount (removed favorite check)
   useEffect(() => {
     let alive = true;
@@ -879,7 +877,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     if (!prayer) return;
     const initial: Record<string, boolean> = {};
     prayer.translations.forEach((t) => {
-      initial[t.language_code] = t.language_code === language;
+      initial[t.language_code] = t.language_code === lang;
     });
     setSelectTranslations(initial);
   }, [prayer, t]);
@@ -939,8 +937,8 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
   const notesForLang = useMemo(() => {
     if (!prayer) return "";
-    if (language == "ar") return prayer.arabic_notes || "";
-    const tr = prayer.translations.find((t) => t.language_code === language);
+    if (lang == "ar") return prayer.arabic_notes || "";
+    const tr = prayer.translations.find((t) => t.language_code === lang);
     return tr?.translated_notes || "";
   }, [prayer, t]);
 

@@ -10,6 +10,7 @@ export const ar = {
   // News
   newsTitle: "أخبار",
   newsEmpty: "لا توجد أخبار حتى الآن",
+  newNewsAvailable: "أخبار جديدة متاحة",
 
   // Podcasts
   podcastsTitle: "بودكاست",
@@ -209,6 +210,7 @@ export const ar = {
   yesDeleteAccount: "نعم، احذف الحساب",
   confirmPassowrdTitle: "تأكيد كلمة المرور",
   confirmPasswordText: "يرجى إدخال كلمة المرور لتأكيد الحذف.",
+  askQuestionQuestionSendSuccess: "تم إرسال سؤالك بنجاح!",
 
   // Settings
   logout: "تسجيل الخروج",

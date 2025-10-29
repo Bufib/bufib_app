@@ -1,38 +1,125 @@
+// // src/screens/LanguageSelection.tsx
+// import React from "react";
+// import { View, Button, StyleSheet, Text, Pressable } from "react-native";
+// import { useTranslation } from "react-i18next";
+// import { useLanguage } from "@/contexts/LanguageContext";
+// import { Colors } from "@/constants/Colors";
+
+// const LANGUAGES = [
+//   { code: "en", label: "English" },
+//   { code: "de", label: "Deutsch" },
+//   { code: "ar", label: "العربية" },
+// ];
+
+// export default function LanguageSelection() {
+//   const { t } = useTranslation();
+//   const { setAppLanguage } = useLanguage();
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>Choose your language</Text>
+//       {LANGUAGES.map(({ code, label }) => (
+//         <View key={code} style={styles.button}>
+//           <Pressable onPress={() => setAppLanguage(code)}>
+//             <Text style={{ fontSize: 20, color: Colors.universal.link }}>
+//               {label}
+//             </Text>
+//           </Pressable>
+//         </View>
+//       ))}
+//     </View>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: "center",
+//     padding: 24,
+//   },
+//   title: {
+//     fontSize: 24,
+//     marginBottom: 16,
+//     textAlign: "center",
+//   },
+//   button: {
+//     marginVertical: 8,
+//     alignItems: "center"
+//   },
+// });
+
 // src/screens/LanguageSelection.tsx
-import React from "react";
-import { View, Button, StyleSheet, Text, Pressable } from "react-native";
-import { useTranslation } from "react-i18next";
+import React, { useCallback } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ThemedText } from "./ThemedText";
+import { LanguageCode } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
 
-const LANGUAGES = [
+const LANGUAGES: { code: LanguageCode; label: string }[] = [
   { code: "en", label: "English" },
   { code: "de", label: "Deutsch" },
   { code: "ar", label: "العربية" },
 ];
 
 export default function LanguageSelection() {
-  const { t } = useTranslation();
-  const { setAppLanguage } = useLanguage();
+  const { lang, setAppLanguage, ready, rtl } = useLanguage();
+
+  const onPick = useCallback(
+    async (code: LanguageCode) => {
+      await setAppLanguage(code);
+    },
+    [setAppLanguage]
+  );
+
+  if (!ready) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose your language</Text>
-      {LANGUAGES.map(({ code, label }) => (
-        <View key={code} style={styles.button}>
-          <Pressable onPress={() => setAppLanguage(code)}>
-            <Text style={{ fontSize: 20, color: Colors.universal.link }}>
-              {label}
+      <Text style={[styles.title, rtl && { textAlign: "right" }]}>
+        Choose your language
+      </Text>
+
+      {LANGUAGES.map(({ code, label }) => {
+        const selected = code === lang;
+        return (
+          <Pressable
+            key={code}
+            onPress={() => onPick(code)}
+            disabled={selected}
+            accessibilityRole="button"
+            accessibilityState={{ selected }}
+            style={[styles.button, selected && styles.buttonSelected]}
+          >
+            <Text
+              style={[styles.buttonText, selected && styles.buttonTextSelected]}
+            >
+              {label} {selected ? "✓" : ""}
             </Text>
           </Pressable>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
@@ -45,6 +132,20 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 8,
-    alignItems: "center"
+    alignItems: "center",
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  buttonSelected: {
+    borderColor: Colors.universal.link,
+  },
+  buttonText: {
+    fontSize: 20,
+    color: Colors.universal.link,
+  },
+  buttonTextSelected: {
+    fontWeight: "700",
   },
 });

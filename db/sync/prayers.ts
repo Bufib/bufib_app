@@ -254,7 +254,7 @@
 
 // export default syncPrayers;
 
-// syncPrayers.ts
+
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
 import {

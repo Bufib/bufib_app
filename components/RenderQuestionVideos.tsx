@@ -130,8 +130,7 @@ export default function RenderQuestionVideos() {
   const { categoryName } = useLocalSearchParams<{ categoryName: string }>();
   const scheme = useColorScheme() || "light";
   const theme = Colors[scheme];
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang } = useLanguage();
   const { t } = useTranslation();
 
   const { data, isLoading, error } = useVideos(lang);
@@ -150,7 +149,10 @@ export default function RenderQuestionVideos() {
   if (error) {
     return (
       <ThemedView style={styles.centeredContainer}>
-        <ThemedText style={{ color: theme.error }} type="subtitle">
+        <ThemedText
+          style={{ color: theme.error, textAlign: "center" }}
+          type="subtitle"
+        >
           {t("error")} {error.message}
         </ThemedText>
       </ThemedView>
@@ -160,7 +162,14 @@ export default function RenderQuestionVideos() {
   if (!videosForCategory.length) {
     return (
       <ThemedView style={styles.centeredContainer}>
-        <ThemedText type="subtitle">{t("noVideoFound")}</ThemedText>
+        <ThemedText
+          type="subtitle"
+          style={{
+            textAlign: "center",
+          }}
+        >
+          {t("noVideoFound")}
+        </ThemedText>
       </ThemedView>
     );
   }

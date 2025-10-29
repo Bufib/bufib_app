@@ -46,10 +46,7 @@ const Settings = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const { getNotifications, toggleGetNotifications, permissionStatus } =
     useNotificationStore();
-  const { isArabic, language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
-  const rtl = isArabic();
-  const dbInitialized = useDatabaseSync(lang);
+  const { lang, rtl } = useLanguage();
   const hasInternet = useConnectionStatus();
   const logout = useLogout();
   const effectiveEnabled = getNotifications && permissionStatus === "granted";
@@ -87,10 +84,9 @@ const Settings = () => {
       } catch {}
     })();
   }, []);
-  
+
   // 2) Get version, PayPal and question count
   useEffect(() => {
-    if (!dbInitialized) return;
     (async () => {
       try {
         const version = await AsyncStorage.getItem("database_version");
@@ -105,7 +101,7 @@ const Settings = () => {
         Alert.alert("Fehler", error.message);
       }
     })();
-  }, [dbInitialized]);
+  }, []);
 
   // 3) Toggle dark mode (persist + set scheme)
   const toggleDarkMode = async () => {

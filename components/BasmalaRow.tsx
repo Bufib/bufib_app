@@ -1,7 +1,5 @@
-import { StyleSheet, Text, useColorScheme, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React from "react";
-import { useFontSizeStore } from "@/stores/fontSizeStore";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemedText } from "./ThemedText";
 import { Colors } from "@/constants/Colors";
 
@@ -10,13 +8,13 @@ const BasmalaRow = ({
   lineHeight,
   rtl,
   lang,
-  t
+  t,
 }: {
   fontSize: number;
   lineHeight: number;
   rtl: boolean;
   lang: string;
-  t: (language: string) => string
+  t: (language: string) => string;
 }) => {
   return (
     <View style={styles.basmalaWrap}>

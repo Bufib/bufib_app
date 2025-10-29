@@ -35,8 +35,7 @@ export default function QuestionDetailScreen() {
   const hasInternet = useConnectionStatus();
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { isArabic } = useLanguage();
-  const rtl = isArabic()
+  const { rtl } = useLanguage();
   // 4. If user is not logged in, redirect to login
   useEffect(() => {
     if (!isLoggedIn) {

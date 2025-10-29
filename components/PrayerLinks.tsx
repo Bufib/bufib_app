@@ -29,7 +29,7 @@ import { PrayerQuestionLinksType, TodoToDeleteType } from "@/constants/Types";
 const PrayerLinks = () => {
   const colorScheme: ColorSchemeName = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { language } = useLanguage();
+  const { lang, rtl } = useLanguage();
 
   const {
     todosByDay,
@@ -128,10 +128,6 @@ const PrayerLinks = () => {
     setSelectedDay(dayIndex);
   }, []);
 
-  const isRTL = language === "ar";
-  const flexDirection = isRTL
-    ? { flexDirection: "row-reverse" as const }
-    : { flexDirection: "row" as const };
   const { width, height } = useWindowDimensions();
 
   const { elementSize, fontSize, iconSize, imageSize, gap } = returnSize(

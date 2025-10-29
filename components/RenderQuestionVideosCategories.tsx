@@ -23,8 +23,7 @@ import { LanguageCode } from "@/constants/Types";
 export default function RenderQuestionVideosCategories() {
   const colorScheme = useColorScheme() || "light";
   const router = useRouter();
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang } = useLanguage();
   const { categories, isLoading, error } = useFetchVideoCategories(
     lang
   );
