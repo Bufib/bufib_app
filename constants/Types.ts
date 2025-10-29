@@ -6,6 +6,7 @@ export type LanguageContextType = {
   setAppLanguage: (lng: LanguageCode) => Promise<void>;
   ready: boolean;
   rtl: boolean;
+  hasStoredLanguage: boolean;
 };
 
 // Gradient

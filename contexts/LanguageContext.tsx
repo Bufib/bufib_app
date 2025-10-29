@@ -83,27 +83,27 @@ const LanguageContext = createContext<LanguageContextType>({
   setAppLanguage: async () => {},
   ready: false,
   rtl: false,
+  hasStoredLanguage: false,
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const { i18n, ready: i18nReady } = useTranslation();
   const [lang, setLang] = useState<LanguageCode>(DEFAULT_LANG);
   const [checkedStorage, setCheckedStorage] = useState(false);
+  const [hasStoredLanguage, setHasStoredLanguage] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        // keep key "language" to preserve existing users
         const stored = (await AsyncStorage.getItem(
           "language"
         )) as LanguageCode | null;
-        const next = stored ?? DEFAULT_LANG;
+        const next = stored ?? "de";
         await i18n.changeLanguage(next);
-        if (mounted) setLang(next);
-      } catch (e) {
-        if (mounted) setLang(DEFAULT_LANG);
-        console.warn("Language init failed:", e);
+        if (!mounted) return;
+        setLang(next);
+        setHasStoredLanguage(!!stored);
       } finally {
         if (mounted) setCheckedStorage(true);
       }
@@ -137,9 +137,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const ready = i18nReady && checkedStorage;
   const rtl = lang === "ar";
 
-  const value = useMemo(
-    () => ({ lang, setAppLanguage, ready, rtl }),
-    [lang, setAppLanguage, ready, rtl]
+ const value = useMemo(
+    () => ({ lang, setAppLanguage, ready: i18nReady && checkedStorage, rtl: lang === "ar", hasStoredLanguage }),
+    [lang, setAppLanguage, i18nReady, checkedStorage, hasStoredLanguage]
   );
 
   return (

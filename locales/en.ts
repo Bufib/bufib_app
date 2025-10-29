@@ -87,6 +87,11 @@ export const en = {
   newAppVersionAvailable:
     "A new version of the app is available in the App Store!",
   dataBaseUpdated: "The app data has been updated!",
+  databaseUpdateQuestions: "The questions have been updated!",
+  databaseUpdatePrayer: "The prayers have been updated!",
+  databaseUpdateCalendar: "The calendar has been updated!",
+  databaseUpdateQuran: "The Quran translation/commentary has been updated!",
+  databaseUpdatePaypal: "The PayPal link has been updated!",
 
   // Questions
   categories: "Categories",

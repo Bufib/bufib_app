@@ -42,13 +42,8 @@ import Toast from "react-native-toast-message";
 import { migrationSQL } from "../db/migrations";
 import { setDatabase } from "../db";
 import MiniPlayerBar from "@/components/MiniPlayerBar";
-import {
-  SafeAreaProvider,
-  initialWindowMetrics,
-} from "react-native-safe-area-context";
 import GlobalVideoHost from "@/player/GlobalVideoHost";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LanguageCode } from "@/constants/Types";
 
 //! Needed or sign up won't work!
 // If removeEventListener doesn’t exist, patch it on-the-fly:
@@ -71,7 +66,11 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const colorScheme = useColorScheme() || "light";
-  const { ready: languageContextReady, lang } = useLanguage();
+  const {
+    ready: languageContextReady,
+    lang,
+    hasStoredLanguage,
+  } = useLanguage();
   const restoreSession = useAuthStore((state) => state.restoreSession);
   const [isSessionRestored, setIsSessionRestored] = useState(false);
   const hasInternet = useConnectionStatus();
@@ -79,7 +78,7 @@ function AppContent() {
   const [storesHydrated, setStoresHydrated] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const { t } = useTranslation();
-  const isDbReady = useDatabaseSync(lang);
+  const isDbReady = useDatabaseSync();
   const router = useRouter();
 
   // Effect to set color theme from Storage
@@ -224,7 +223,7 @@ function AppContent() {
   }
 
   // 2. If language not yet selected (after initial readiness)
-  if (lang === null) {
+  if (languageContextReady && !hasStoredLanguage) {
     return <LanguageSelection />;
   }
 

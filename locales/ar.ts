@@ -86,6 +86,11 @@ export const ar = {
   updateAvailable: "تحديث جديد متوفر",
   newAppVersionAvailable: "إصدار جديد من التطبيق متوفّر في متجر التطبيقات!",
   dataBaseUpdated: "تم تحديث التاريخ",
+  databaseUpdateQuestions: "تم تحديث الأسئلة!",
+  databaseUpdatePrayer: "تم تحديث الأدعية!",
+  databaseUpdateCalendar: "تم تحديث التقويم!",
+  databaseUpdateQuran: "تم تحديث ترجمة/تفسير القرآن!",
+  databaseUpdatePaypal: "تم تحديث رابط باي بال!",
 
   // Questions
   categories: "فئات",

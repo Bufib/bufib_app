@@ -92,9 +92,9 @@ export const userQuestionsNewAnswerForQuestions = () => {
     text1: "Neue Nachricht verfügbar",
     text1Style: { fontWeight: "500" },
     topOffset: 60,
- onPress() {
-     router.replace("/(askQuestion)/")
- },
+    onPress() {
+      router.replace("/(askQuestion)/");
+    },
   });
 };
 
@@ -104,7 +104,6 @@ export const userQuestionInputNewQuestion = () => {
     text1: "Deine Frage wurde abgeschickt!",
     text1Style: { fontWeight: "500" },
     topOffset: 60,
-
   });
 };
 
@@ -122,10 +121,42 @@ export const askQuestionQuestionSendSuccess = () => {
 };
 
 // Database update
-export const databaseUpdate = () => {
+export const databaseUpdateQuestions = () => {
   return Toast.show({
     type: "success",
-    text1: i18n.t("dataBaseUpdated"),
+    text1: i18n.t("databaseUpdateQuestions"),
+    text1Style: { fontWeight: "500" },
+    topOffset: 60,
+  });
+};
+export const databaseUpdateQuran = () => {
+  return Toast.show({
+    type: "success",
+    text1: i18n.t("databaseUpdateQuran"),
+    text1Style: { fontWeight: "500" },
+    topOffset: 60,
+  });
+};
+export const databaseUpdatePrayer = () => {
+  return Toast.show({
+    type: "success",
+    text1: i18n.t("databaseUpdatePrayer"),
+    text1Style: { fontWeight: "500" },
+    topOffset: 60,
+  });
+};
+export const databaseUpdateCalendar = () => {
+  return Toast.show({
+    type: "success",
+    text1: i18n.t("databaseUpdateCalendar"),
+    text1Style: { fontWeight: "500" },
+    topOffset: 60,
+  });
+};
+export const databaseUpdatePaypal = () => {
+  return Toast.show({
+    type: "success",
+    text1: i18n.t("databaseUpdatePaypal"),
     text1Style: { fontWeight: "500" },
     topOffset: 60,
   });

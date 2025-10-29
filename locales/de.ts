@@ -83,7 +83,11 @@ export const de = {
   // Database
   updateAvailable: "Update Verfügbar",
   newAppVersionAvailable: "Eine neue version ist im App-Store verfügbar!",
-  dataBaseUpdated: "Die daten wurden aktualsiert!",
+  databaseUpdateQuestions: "Die Fragen wurden aktualsiert!",
+  databaseUpdatePrayer: "Die Gebete wurden aktualsiert!",
+  databaseUpdateCalendar: "Der Kalendar wurde aktualsiert!",
+  databaseUpdateQuran: "Die Übersetzung/Tafsir des Qurans wurden aktualsiert!",
+  databaseUpdatePaypal: "Der PayPal-Link wurde aktualsiert!",
 
   // Questions
   categories: "Kategorien",

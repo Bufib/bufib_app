@@ -348,13 +348,6 @@ export const migrationSQL = `
   -- (moved here) page → sura lookups if you use them
   CREATE INDEX IF NOT EXISTS idx_sura_start_end ON sura(startPage, endPage);
 
-  -- PAYPAL
-  CREATE TABLE IF NOT EXISTS paypal (
-    id INTEGER PRIMARY KEY,
-    link TEXT NOT NULL UNIQUE,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-  );
-
   -- QUESTIONS
   CREATE TABLE IF NOT EXISTS question_categories (
     id INTEGER PRIMARY KEY,
