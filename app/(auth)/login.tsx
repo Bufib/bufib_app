@@ -281,7 +281,7 @@ export default function LoginScreen() {
               </Pressable>
 
               {/* SIGNUP */}
-              {/* <Pressable
+              <Pressable
                 style={[
                   styles.buttonContainer,
                   { backgroundColor: "transparent", borderColor: "#057958" },
@@ -296,7 +296,7 @@ export default function LoginScreen() {
                 >
                   Jetzt kostenlos registrieren!
                 </ThemedText>
-              </Pressable> */}
+              </Pressable>
             </View>
           </View>
         </View>

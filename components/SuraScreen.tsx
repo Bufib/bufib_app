@@ -2179,7 +2179,7 @@ import { getPageStart } from "@/db/queries/quran";
 import { useReadingProgressQuran } from "@/stores/useReadingProgressQuran";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { seedPageIndex } from "@/utils/quranIndex";
-import { StickyHeader } from "./StickyHeader";
+import { StickyHeaderQuran } from "./StickyHeaderQuran";
 import { useSuraData } from "@/hooks/useSuraData";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { vkey } from "@/stores/suraStore";
@@ -2213,12 +2213,23 @@ const SuraScreen: React.FC = () => {
   const suraNumber = useMemo(() => Number(suraId ?? 1), [suraId]);
   const [scrollY, setScrollY] = useState(0);
   const flatListRef = useRef<FlatList<QuranVerseType>>(null);
+  const [showArrow, setShowArrow] = useState(false);
+  const showArrowRef = useRef(false);
 
-  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-    setScrollY(contentOffset.y);
-  };
-
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const y = e.nativeEvent.contentOffset.y;
+      // hysteresis to avoid flicker near the threshold
+      const THRESH = 200;
+      const HYST = 16;
+      const next = showArrowRef.current ? y > THRESH - HYST : y > THRESH + HYST;
+      if (next !== showArrowRef.current) {
+        showArrowRef.current = next;
+        setShowArrow(next);
+      }
+    },
+    []
+  );
   const scrollToTop = () => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
@@ -2433,13 +2444,12 @@ const SuraScreen: React.FC = () => {
         <FlatList
           ref={flatListRef}
           data={verses}
-          bounces={false}
           onScroll={handleScroll}
           extraData={Array.from(bookmarksBySura.entries())}
           keyExtractor={(v) => `${v.sura}-${v.aya}`}
           renderItem={renderVerse}
           ListHeaderComponent={
-            <StickyHeader
+            <StickyHeaderQuran
               suraNumber={suraNumber}
               suraInfo={suraInfo}
               displayName={displayName}
@@ -2501,9 +2511,7 @@ const SuraScreen: React.FC = () => {
         />
       )}
 
-      {scrollY > 200 && (
-       <ArrowUp scrollToTop={scrollToTop} />
-      )}
+      {showArrow && <ArrowUp scrollToTop={scrollToTop} />}
 
       {/* Bottom Sheet for Verse Info */}
       <BottomSheet

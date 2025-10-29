@@ -1134,7 +1134,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 
-  // Modern card with glassmorphic effect
   card: {
     borderRadius: 16,
     padding: 20,

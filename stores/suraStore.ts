@@ -1,9 +1,9 @@
 // utils/storage.ts
 
-import  Storage  from "expo-sqlite/kv-store";
 import { InteractionManager } from "react-native";
 import { SuraRowType } from "@/constants/Types";
 import { seedPageIndex, getJuzCoverageForSura } from "@/utils/quranIndex";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Key generator for arabic verse lookup across juz/page
 export const vkey = (s: number, a: number) => `${s}:${a}`;
@@ -55,7 +55,7 @@ export async function loadBookmarkedVerses(
 ): Promise<Set<number>> {
   try {
     const bookmarksKey = getBookmarksKey(suraNumber);
-    const storedBookmarks = await Storage.getItemAsync(bookmarksKey);
+    const storedBookmarks = await AsyncStorage.getItem(bookmarksKey);
     if (storedBookmarks) {
       const arr = JSON.parse(storedBookmarks) as number[];
       return new Set(arr);

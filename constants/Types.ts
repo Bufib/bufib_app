@@ -93,6 +93,28 @@ export type PrayerQuestionLinksType = {
   value: string;
 };
 
+export type IntroTranslation = {
+  language_code: string;
+  translated_introduction?: string | null;
+};
+
+export type PrayerMinimal = {
+  translations: IntroTranslation[];
+};
+
+export type PrayerInformationModalPropsType = {
+  prayer: PrayerMinimal | null;
+  language: LanguageCode;
+  rtl: boolean;
+  colorScheme: "light" | "dark";
+  fontSize: number;
+  lineHeight: number;
+  snapPoints?: (string | number)[];
+  onChange?: (index: number) => void;
+  onRequestClose?: () => void;
+};
+
+
 export type FavoritePrayerFolderType = {
   name: string;
   color: string;
@@ -525,7 +547,7 @@ export type UseSuraDataParams = {
   setTotalVersesForPage: (page: number, total: number) => void;
 };
 
-export type StickyHeaderProps = {
+export type StickyHeaderQuranPropsType = {
   suraNumber: number;
   suraInfo: SuraRowType | null;
   displayName: string;

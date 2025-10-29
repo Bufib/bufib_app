@@ -1,5 +1,6 @@
 import { supabase } from "@/utils/supabase";
-import Storage from "expo-sqlite/kv-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
  const syncPayPal = async () => {
   try {
@@ -12,7 +13,7 @@ import Storage from "expo-sqlite/kv-store";
       return;
     }
     if (data?.link) {
-      Storage.setItemAsync("paypal", data.link);
+      AsyncStorage.setItem("paypal", data.link);
     } else {
       console.warn("No PayPal link found in Supabase.");
     }

@@ -66,13 +66,13 @@
 
 //     try {
 //       // --- FETCH REMOTE DB VERSION ---
-//       const storedVersion = await Storage.getItemAsync("database_version");
+//       const storedVersion = await Storage.getItem("database_version");
 //       const remoteVersion = await fetchVersionFromSupabase();
 
 //       if (remoteVersion) {
 //         const versionChanged = remoteVersion !== storedVersion;
 //         const langVersionKey = `synced_${language}_${remoteVersion}`;
-//         const alreadySyncedLang = await Storage.getItemAsync(langVersionKey);
+//         const alreadySyncedLang = await Storage.getItem(langVersionKey);
 
 //         if (versionChanged) {
 //           // New DB version → sync all relevant data
@@ -190,7 +190,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { Alert, Platform } from "react-native";
 import Constants from "expo-constants";
-import Storage from "expo-sqlite/kv-store";
+
 import debounce from "lodash.debounce";
 
 import {
@@ -214,6 +214,7 @@ import { router } from "expo-router";
 import { supabase } from "@/utils/supabase";
 import { databaseUpdate } from "@/constants/messages";
 import { whenDatabaseReady, safeInitializeDatabase } from "@/db";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
  * Manages local DB sync with Supabase.
@@ -285,25 +286,25 @@ export function useDatabaseSync(language: string = i18n.language): boolean {
         ) => {
           if (!remoteVersion) return false; // nothing to do if not provided
 
-          const storedVersion = await Storage.getItemAsync(storedVersionKey);
+          const storedVersion = await AsyncStorage.getItem(storedVersionKey);
           const versionChanged = remoteVersion !== storedVersion;
 
           const langKey = languageScoped
             ? `${langMarkerPrefix}_${language}_${remoteVersion}`
             : `${langMarkerPrefix}_${remoteVersion}`;
 
-          const alreadySyncedLang = await Storage.getItemAsync(langKey);
+          const alreadySyncedLang = await AsyncStorage.getItem(langKey);
 
           if (versionChanged) {
             // New dataset version → full sync for this dataset
             await runSync();
-            await Storage.setItemAsync(storedVersionKey, remoteVersion);
-            await Storage.setItemAsync(langKey, "true");
+            await AsyncStorage.setItem(storedVersionKey, remoteVersion);
+            await AsyncStorage.setItem(langKey, "true");
             return true;
           } else if (!alreadySyncedLang) {
             // Same dataset version, but first time for this language
             await runSync();
-            await Storage.setItemAsync(langKey, "true");
+            await AsyncStorage.setItem(langKey, "true");
             return true;
           }
           return false;

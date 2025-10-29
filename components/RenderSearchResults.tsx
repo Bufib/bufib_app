@@ -48,7 +48,7 @@ const SearchScreen = () => {
    const { language } = useLanguage();
     const lang = (language ?? "de") as LanguageCode;
   const podcastQuery = useSearchPodcasts(searchTerm);
-  const newsArticleSearchQuery = useSearchNewsArticles(searchTerm); // Added
+  const newsArticleSearchQuery = useSearchNewsArticles(searchTerm); 
   const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
 

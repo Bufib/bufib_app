@@ -14,7 +14,6 @@ import { useLogout } from "@/utils/useLogout";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import Storage from "expo-sqlite/kv-store";
 import React, { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -34,6 +33,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 import { LanguageCode } from "@/constants/Types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
@@ -76,38 +76,41 @@ const Settings = () => {
     });
   };
 
+  // 1) Load saved dark mode preference
   useEffect(() => {
-    const savedColorSetting = Storage.getItemSync("isDarkMode");
-    Appearance.setColorScheme(savedColorSetting === "true" ? "dark" : "light");
+    (async () => {
+      try {
+        const savedColorSetting = await AsyncStorage.getItem("isDarkMode");
+        Appearance.setColorScheme(
+          savedColorSetting === "true" ? "dark" : "light"
+        );
+      } catch {}
+    })();
   }, []);
-
-  // Get version and count and paypal
+  
+  // 2) Get version, PayPal and question count
   useEffect(() => {
     if (!dbInitialized) return;
+    (async () => {
+      try {
+        const version = await AsyncStorage.getItem("database_version");
+        setVersion(version);
 
-    try {
-      // Get the version
-      const version = Storage.getItemSync("database_version");
-      setVersion(version);
+        const paypal = await AsyncStorage.getItem("paypal");
+        setPayPalLink(paypal);
 
-      // Get the paypalLink
-      const paypal = Storage.getItemSync("paypal");
-      setPayPalLink(paypal);
-
-      // Get the version count
-      const countQuestions = async () => {
         const count = await getQuestionCount();
         setQuestionCount(count);
-      };
-      countQuestions();
-    } catch (error: any) {
-      Alert.alert("Fehler", error.message);
-    }
+      } catch (error: any) {
+        Alert.alert("Fehler", error.message);
+      }
+    })();
   }, [dbInitialized]);
 
+  // 3) Toggle dark mode (persist + set scheme)
   const toggleDarkMode = async () => {
     const newDarkMode = !isDarkMode;
-    Storage.setItemSync("isDarkMode", `${newDarkMode}`);
+    await AsyncStorage.setItem("isDarkMode", `${newDarkMode}`);
     setIsDarkMode(newDarkMode);
     Appearance.setColorScheme(newDarkMode ? "dark" : "light");
   };
@@ -161,10 +164,7 @@ const Settings = () => {
             <View style={[styles.settingRow, rtl && styles.rtl]}>
               <View>
                 <ThemedText
-                  style={[
-                    styles.settingTitle,
-                    rtl && { textAlign: "right" },
-                  ]}
+                  style={[styles.settingTitle, rtl && { textAlign: "right" }]}
                 >
                   {t("darkMode")}
                 </ThemedText>
@@ -190,10 +190,7 @@ const Settings = () => {
             <View style={[styles.settingRow, rtl && styles.rtl]}>
               <View>
                 <ThemedText
-                  style={[
-                    styles.settingTitle,
-                    rtl && { textAlign: "right" },
-                  ]}
+                  style={[styles.settingTitle, rtl && { textAlign: "right" }]}
                 >
                   {t("notifications")}
                 </ThemedText>
@@ -227,10 +224,7 @@ const Settings = () => {
           {isLoggedIn && (
             <View style={styles.section}>
               <ThemedText
-                style={[
-                  styles.sectionTitle,
-                  rtl && { textAlign: "right" },
-                ]}
+                style={[styles.sectionTitle, rtl && { textAlign: "right" }]}
               >
                 {t("account")}
               </ThemedText>
@@ -269,10 +263,7 @@ const Settings = () => {
 
           <View style={styles.infoSection}>
             <ThemedText
-              style={[
-                styles.questionCount,
-                rtl && { textAlign: "right" },
-              ]}
+              style={[styles.questionCount, rtl && { textAlign: "right" }]}
             >
               {t("questionsInDatabase", { count: questionCount })}
             </ThemedText>
@@ -280,19 +271,13 @@ const Settings = () => {
             {isAdmin && isLoggedIn && (
               <>
                 <ThemedText
-                  style={[
-                    styles.versionText,
-                    rtl && { textAlign: "right" },
-                  ]}
+                  style={[styles.versionText, rtl && { textAlign: "right" }]}
                 >
                   {t("databaseVersion", { version: version })}
                 </ThemedText>
 
                 <ThemedText
-                  style={[
-                    styles.versionText,
-                    rtl && { textAlign: "right" },
-                  ]}
+                  style={[styles.versionText, rtl && { textAlign: "right" }]}
                 >
                   {t("appVersion", { version: Constants.expoConfig?.version })}
                 </ThemedText>
@@ -301,10 +286,7 @@ const Settings = () => {
           </View>
 
           <View
-            style={[
-              styles.footer,
-              rtl && { flexDirection: "row-reverse" },
-            ]}
+            style={[styles.footer, rtl && { flexDirection: "row-reverse" }]}
           >
             <Pressable
               onPress={() =>
@@ -314,10 +296,7 @@ const Settings = () => {
               }
             >
               <ThemedText
-                style={[
-                  styles.footerLink,
-                  rtl && { textAlign: "right" },
-                ]}
+                style={[styles.footerLink, rtl && { textAlign: "right" }]}
               >
                 {t("dataPrivacy")}
               </ThemedText>
@@ -325,10 +304,7 @@ const Settings = () => {
 
             <Pressable onPress={() => router.push("/settings/about")}>
               <ThemedText
-                style={[
-                  styles.footerLink,
-                  rtl && { textAlign: "right" },
-                ]}
+                style={[styles.footerLink, rtl && { textAlign: "right" }]}
               >
                 {t("aboutTheApp")}
               </ThemedText>
@@ -336,10 +312,7 @@ const Settings = () => {
 
             <Pressable onPress={() => router.push("/settings/impressum")}>
               <ThemedText
-                style={[
-                  styles.footerLink,
-                  rtl && { textAlign: "right" },
-                ]}
+                style={[styles.footerLink, rtl && { textAlign: "right" }]}
               >
                 {t("imprint")}
               </ThemedText>

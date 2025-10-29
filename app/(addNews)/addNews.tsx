@@ -35,7 +35,7 @@ export default function AddNews() {
   const hasInternet = useConnectionStatus();
   const colorScheme = useColorScheme() || "light";
 
-  const LanguageButton = ({ code, label, selected, onPress }) => (
+  const LanguageButton = ({ code, label, selected, onPress }: any) => (
     <Pressable
       style={[
         styles.langButton,

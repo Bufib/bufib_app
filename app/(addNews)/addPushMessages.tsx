@@ -17,6 +17,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   useColorScheme,
+  View,
 } from "react-native";
 
 const AddPushMessages: React.FC = () => {
@@ -26,6 +27,7 @@ const AddPushMessages: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
   const hasInternet = useConnectionStatus();
   const colorScheme = useColorScheme() || "light";
+  const [selectedLanguage, setSelectedLanguage] = useState("de");
   const handleSubmit = async () => {
     if (!title.trim() && !message.trim()) {
       Alert.alert("Fehler", "Bitte gebe einen Titel oder eine Nachricht ein!");
@@ -38,6 +40,7 @@ const AddPushMessages: React.FC = () => {
       const { error } = await supabase.from("push_notifications").insert({
         title: title.trim(),
         body: message.trim(),
+        language_code: selectedLanguage.trim(),
       });
 
       if (error) throw error;
@@ -53,6 +56,27 @@ const AddPushMessages: React.FC = () => {
       setIsSending(false);
     }
   };
+
+  const LanguageButton: React.FC<{
+    code: string;
+    label: string;
+    selected: boolean;
+    onPress: () => void;
+  }> = ({ code, label, selected, onPress }) => (
+    <Pressable
+      style={[
+        styles.langButton,
+        selected ? styles.langButtonSelected : styles.langButtonUnselected,
+      ]}
+      onPress={onPress}
+    >
+      <Text
+        style={selected ? styles.langTextSelected : styles.langTextUnselected}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
 
   return (
     <KeyboardAvoidingView
@@ -102,7 +126,26 @@ const AddPushMessages: React.FC = () => {
               onChangeText={setMessage}
               multiline
             />
-
+            <View style={styles.langContainer}>
+              <LanguageButton
+                code="de"
+                label="DE"
+                selected={selectedLanguage === "de"}
+                onPress={() => setSelectedLanguage("de")}
+              />
+              <LanguageButton
+                code="ar"
+                label="AR"
+                selected={selectedLanguage === "ar"}
+                onPress={() => setSelectedLanguage("ar")}
+              />
+              <LanguageButton
+                code="en"
+                label="EN"
+                selected={selectedLanguage === "en"}
+                onPress={() => setSelectedLanguage("en")}
+              />
+            </View>
             <Pressable
               style={[
                 styles.button,
@@ -165,6 +208,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
+  },
+  langButton: {
+    flex: 1,
+    padding: 10,
+    marginHorizontal: 4,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  langButtonSelected: { backgroundColor: Colors.universal.primary },
+  langButtonUnselected: {},
+  langTextSelected: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  langTextUnselected: {
+    color: Colors.universal.primary,
+    fontWeight: "600",
+  },
+  langContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
   },
 });
 

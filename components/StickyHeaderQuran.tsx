@@ -8,9 +8,9 @@ import { ThemedText } from "@/components/ThemedText";
 import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { Colors } from "@/constants/Colors";
-import { StickyHeaderProps } from "@/constants/Types";
+import { StickyHeaderQuranPropsType } from "@/constants/Types";
 
-export const StickyHeader: React.FC<StickyHeaderProps> = ({
+export const StickyHeaderQuran: React.FC<StickyHeaderQuranPropsType> = ({
   suraNumber,
   suraInfo,
   displayName,
@@ -23,7 +23,7 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({
   const isMakki = !!suraInfo?.makki;
   const showJuzOrPage = !!juzHeader;
   const rtl = isArabic();
-  
+
   return (
     <LinearGradient
       colors={["#3bc963", "#2ea853", "#228a3f"]}
@@ -52,9 +52,7 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({
                   </>
                 ) : (
                   <>
-                    <Text
-                      style={[styles.suraName, rtl && styles.suraNameAr]}
-                    >
+                    <Text style={[styles.suraName, rtl && styles.suraNameAr]}>
                       {displayName ||
                         suraInfo?.label_en ||
                         suraInfo?.label ||

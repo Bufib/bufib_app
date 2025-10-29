@@ -2,13 +2,13 @@
 
 import { useCallback } from "react";
 import { Alert } from "react-native";
-import  Storage  from "expo-sqlite/kv-store";
 import { useTranslation } from "react-i18next";
 import { LanguageCode, QuranVerseType } from "@/constants/Types";
 import { getSurahDisplayName } from "@/db/queries/quran";
 import { getJuzPosForVerse, getPagePosForVerse } from "@/utils/quranIndex";
 import { useReadingProgressQuran } from "@/stores/useReadingProgressQuran";
 import { getBookmarkDetailKey, getBookmarksKey } from "@/stores/suraStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface UseBookmarksParams {
   lang: LanguageCode;
@@ -95,8 +95,8 @@ export function useBookmarks({
           nextMap.set(s, nextSet);
           setBookmarksBySura(nextMap);
 
-          await Storage.setItemAsync(bookmarksKey, JSON.stringify([n]));
-          await Storage.setItemAsync(
+          await AsyncStorage.setItem(bookmarksKey, JSON.stringify([n]));
+          await AsyncStorage.setItem(
             detailKey(n),
             JSON.stringify({
               suraNumber: s,
@@ -125,11 +125,11 @@ export function useBookmarks({
 
           const arr = Array.from(currentSet);
           if (arr.length) {
-            await Storage.setItemAsync(bookmarksKey, JSON.stringify(arr));
+            await AsyncStorage.setItem(bookmarksKey, JSON.stringify(arr));
           } else {
-            await Storage.removeItemAsync(bookmarksKey);
+            await AsyncStorage.removeItem(bookmarksKey);
           }
-          await Storage.removeItemAsync(detailKey(verseNumber));
+          await AsyncStorage.removeItem(detailKey(verseNumber));
 
           // Reset SURAH progress only. Do NOT reset Juz/Page here.
           updateBookmarkProgress(s, 0, -1, lang);
@@ -150,7 +150,7 @@ export function useBookmarks({
                 style: "destructive",
                 onPress: async () => {
                   try {
-                    await Storage.removeItemAsync(detailKey(prev));
+                    await AsyncStorage.removeItem(detailKey(prev));
                     await writeBookmark(verseNumber);
                   } catch (e) {
                     console.error("Bookmark replace failed", e);

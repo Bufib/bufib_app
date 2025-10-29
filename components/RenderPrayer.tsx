@@ -17,13 +17,18 @@
 //   useColorScheme,
 //   Alert,
 //   TextStyle,
+//   NativeSyntheticEvent,
+//   NativeScrollEvent,
 // } from "react-native";
 // import { getPrayerWithTranslations } from "@/db/queries/prayers";
-// import { PrayerType, PrayerWithTranslationType } from "@/constants/Types";
+// import {
+//   LanguageCode,
+//   PrayerType,
+//   PrayerWithTranslationType,
+// } from "@/constants/Types";
 // import { useLanguage } from "@/contexts/LanguageContext";
 // import { ThemedView } from "./ThemedView";
 // import { ThemedText } from "./ThemedText";
-// import i18n from "@/utils/i18n";
 // import { Colors } from "@/constants/Colors";
 // import AntDesign from "@expo/vector-icons/AntDesign";
 // import Ionicons from "@expo/vector-icons/Ionicons";
@@ -34,29 +39,52 @@
 // import { Stack } from "expo-router";
 // import FontSizePickerModal from "./FontSizePickerModal";
 // import { useFontSizeStore } from "@/stores/fontSizeStore";
-// import { Storage } from "expo-sqlite/kv-store";
-// import CategoryPickerBottomSheet from "./CategoryPickerModal";
+// import FavoritePrayerPickerModal from "./FavoritePrayerPickerModal";
 // import { LoadingIndicator } from "./LoadingIndicator";
-// import { SafeAreaView } from "react-native-safe-area-context";
+// import {
+//   SafeAreaView,
+//   useSafeAreaInsets,
+// } from "react-native-safe-area-context";
 // import HeaderLeftBackButton from "./HeaderLeftBackButton";
 // import { useTranslation } from "react-i18next";
+// import ArrowUp from "./ArrowUp";
+// import { FlatList } from "react-native-gesture-handler";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // type PrayerWithTranslations = PrayerType & {
 //   translations: PrayerWithTranslationType[];
 // };
 
-// interface RenderPrayerProps {
-//   prayerID: number;
-// }
+// const SCROLL_UP_THRESH = 120;
+// const SCROLL_UP_HYST = 16;
 
+// //! With key which seems to be wrong
+// // const markdownRules = (
+// //   customFontSize: number,
+// //   textColor: string,
+// //   index: number
+// // ): RenderRules => ({
+// //   code_inline: (_node, _children, _parent, styles) => (
+// //     <Text
+// //       key={index}
+// //       style={{
+// //         fontSize: customFontSize,
+// //         ...(styles.text as TextStyle),
+// //         color: textColor,
+// //       }}
+// //     >
+// //       {_node.content}
+// //     </Text>
+// //   ),
+// // });
+
+// //! Without
 // const markdownRules = (
 //   customFontSize: number,
-//   textColor: string,
-//   index: number
+//   textColor: string
 // ): RenderRules => ({
 //   code_inline: (_node, _children, _parent, styles) => (
 //     <Text
-//       key={index}
 //       style={{
 //         fontSize: customFontSize,
 //         ...(styles.text as TextStyle),
@@ -68,7 +96,7 @@
 //   ),
 // });
 
-// const RenderPrayer: React.FC<RenderPrayerProps> = ({ prayerID }) => {
+// const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 //   const [isLoading, setIsLoading] = useState(true);
 //   const [prayer, setPrayer] = useState<PrayerWithTranslations | null>(null);
 //   const [selectTranslations, setSelectTranslations] = useState<
@@ -80,33 +108,36 @@
 
 //   const colorScheme = useColorScheme() || "light";
 //   const { t } = useTranslation();
-//   const { language } = useLanguage();
-//   console.log(t)
-//   const flashListRef = useRef<FlashList<any>>(null);
-
-//   const [scrollOffset, setScrollOffset] = useState(0);
-//   const showScrollUp = scrollOffset > 50;
-
+//   const { language, isArabic } = useLanguage();
+//   const lang = (language ?? "de") as LanguageCode;
+//   const flashListRef = useRef<any>(null);
 //   const bottomSheetRef = useRef<BottomSheet>(null);
 //   const snapPoints = useMemo(() => ["70%"], []);
-
 //   const { fontSize, lineHeight } = useFontSizeStore();
 //   const [fontSizeModalVisible, setFontSizeModalVisible] = useState(false);
 //   const [pickerVisible, setPickerVisible] = useState(false);
+//   const insets = useSafeAreaInsets();
+//   const [showScrollUp, setShowScrollUp] = useState(false);
+//   const showUpRef = useRef(false);
 
+//   const rtl = isArabic();
 //   // Fetch prayer on mount (removed favorite check)
-//   useLayoutEffect(() => {
+//   useEffect(() => {
+//     let alive = true;
 //     (async () => {
 //       try {
 //         setIsLoading(true);
 //         const data = await getPrayerWithTranslations(prayerID);
-//         setPrayer(data as PrayerWithTranslations);
-//       } catch (err) {
-//         console.error(err);
+//         if (alive) setPrayer(data as PrayerWithTranslations);
+//       } catch (e) {
+//         console.error(e);
 //       } finally {
-//         setIsLoading(false);
+//         if (alive) setIsLoading(false);
 //       }
 //     })();
+//     return () => {
+//       alive = false;
+//     };
 //   }, [prayerID]);
 
 //   // Init translation toggles
@@ -122,7 +153,7 @@
 //   // Load bookmark
 //   useEffect(() => {
 //     try {
-//       const b = Storage.getItemSync(`Bookmark-${prayerID}`);
+//       const b = AsyncStorage.getItem(`Bookmark-${prayerID}`);
 //       setBookmark(b ? parseInt(b, 10) : null);
 //     } catch {
 //       setBookmark(null);
@@ -176,21 +207,21 @@
 //   const handleBookmark = useCallback(
 //     (index: number) => {
 //       if (bookmark === index) {
-//         Storage.removeItemSync(`Bookmark-${prayerID}`);
+//         AsyncStorage.removeItem(`Bookmark-${prayerID}`);
 //         setBookmark(null);
 //       } else if (bookmark) {
 //         Alert.alert(t("confirmBookmarkChange"), t("bookmarkReplaceQuestion"), [
 //           {
 //             text: t("replace"),
 //             onPress: () => {
-//               Storage.setItemSync(`Bookmark-${prayerID}`, String(index));
+//               AsyncStorage.setItem(`Bookmark-${prayerID}`, String(index));
 //               setBookmark(index);
 //             },
 //           },
 //           { text: t("cancel"), style: "cancel" },
 //         ]);
 //       } else {
-//         Storage.setItemSync(`Bookmark-${prayerID}`, String(index));
+//         AsyncStorage.setItem(`Bookmark-${prayerID}`, String(index));
 //         setBookmark(index);
 //       }
 //     },
@@ -200,6 +231,21 @@
 //   const handleSheetChanges = useCallback((index: number) => {
 //     /* no-op */
 //   }, []);
+
+//   const handleScroll = useCallback(
+//     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+//       const y = e.nativeEvent.contentOffset.y;
+//       // Hysteresis avoids flicker near the boundary
+//       const next = showUpRef.current
+//         ? y > SCROLL_UP_THRESH - SCROLL_UP_HYST
+//         : y > SCROLL_UP_THRESH + SCROLL_UP_HYST;
+//       if (next !== showUpRef.current) {
+//         showUpRef.current = next;
+//         setShowScrollUp(next);
+//       }
+//     },
+//     []
+//   );
 
 //   if (isLoading) {
 //     return (
@@ -211,67 +257,75 @@
 //   if (!prayer) {
 //     return (
 //       <ThemedView style={styles.container}>
-//         <ThemedText>{t("noPrayerFound")}</ThemedText>
+//         <ThemedText>{t("noData")}</ThemedText>
 //       </ThemedView>
 //     );
 //   }
 
 //   return (
-//     <ThemedView
-//       style={[
-//         styles.container,
-//         { backgroundColor: Colors[colorScheme].background },
-//       ]}
-//     >
+//     <ThemedView style={[styles.container]}>
+
+//       <View
+//         style={{
+//           height: insets.top,
+//           backgroundColor: Colors[colorScheme].prayerHeaderBackground,
+//         }}
+//       />
 //       {/* Header Buttons */}
 
-//       <SafeAreaView
+//       <ThemedView
 //         style={[
 //           styles.header,
-//           { backgroundColor: Colors[colorScheme].prayerHeaderBackground },
+//           {
+//             backgroundColor: Colors[colorScheme].prayerHeaderBackground,
+//           },
 //         ]}
 //       >
-//         <View style={styles.headerContent}>
-//           <HeaderLeftBackButton color={"#fff"} style={{ marginRight: 15 }} />
+//         <View style={[styles.headerContent]}>
+//           <View style={{ flexDirection: "row", gap: 10, paddingRight: 30 }}>
+//             <HeaderLeftBackButton color="#fff" style={{}} />
 
-//           <View style={styles.titleContainer}>
-//             <Text style={[styles.title, { fontSize: fontSize }]}>
-//               {prayer.name} ({indices.length} {t("lines")})
-//             </Text>
-//             <Text
-//               style={[styles.arabicTitle, { fontSize: fontSize }]}
-//               numberOfLines={1}
-//             >
-//               {prayer.arabic_title}
-//             </Text>
+//             <View style={[styles.titleContainer]}>
+//               <ThemedText
+//                 style={[styles.title, { fontSize: fontSize, color: "#fff" }]}
+//               >
+//                 {prayer.name} ({indices.length} {t("lines")})
+//               </ThemedText>
+//               <ThemedText
+//                 style={[
+//                   styles.arabicTitle,
+//                   { fontSize: fontSize, color: "#fff" },
+//                 ]}
+//               >
+//                 {prayer.arabic_title}
+//               </ThemedText>
+//             </View>
 //           </View>
 //           <View style={styles.headerControls}>
 //             <TouchableOpacity onPress={() => setFontSizeModalVisible(true)}>
-//               <Ionicons name="text" size={28} color="white" />
+//               <Ionicons name="text" size={28} color="#fff" />
 //             </TouchableOpacity>
 //             <TouchableOpacity onPress={() => bottomSheetRef.current?.expand()}>
 //               <Ionicons
 //                 name="information-circle-outline"
 //                 size={32}
-//                 color="white"
+//                 color="#fff"
 //               />
 //             </TouchableOpacity>
 //             <TouchableOpacity onPress={() => setPickerVisible(true)}>
-//               <AntDesign name="addfolder" size={25} color="white" />
+//               <AntDesign name="folder-add" size={25} color="#fff" />
 //             </TouchableOpacity>
 //           </View>
 //         </View>
-//       </SafeAreaView>
+//       </ThemedView>
 
 //       {/* Content */}
-//       <FlashList
+//       <FlatList
 //         ref={flashListRef}
 //         scrollEventThrottle={16}
-//         onScroll={({ nativeEvent }) =>
-//           setScrollOffset(nativeEvent.contentOffset.y)
-//         }
+//         onScroll={handleScroll}
+//         keyExtractor={(i) => i.toString()}
 //         data={indices}
-//         estimatedItemSize={200}
 //         extraData={[bookmark, selectTranslations]}
 //         ListHeaderComponent={
 //           <>
@@ -376,7 +430,12 @@
 //                 },
 //               ]}
 //             >
-//               <View style={styles.lineNumberBadge}>
+//               <View
+//                 style={[
+//                   styles.lineNumberBadge,
+//                   rtl ? { left: 16 } : { right: 16 },
+//                 ]}
+//               >
 //                 <Text style={styles.lineNumber}>{index + 1}</Text>
 //               </View>
 
@@ -387,6 +446,11 @@
 //                   size={20}
 //                   color={Colors[colorScheme].defaultIcon}
 //                   onPress={() => handleBookmark(index + 1)}
+//                   style={
+//                     rtl
+//                       ? { alignSelf: "flex-end" }
+//                       : { alignSelf: "flex-start" }
+//                   }
 //                 />
 //               ) : (
 //                 <Octicons
@@ -394,17 +458,18 @@
 //                   size={20}
 //                   color={Colors[colorScheme].defaultIcon}
 //                   onPress={() => handleBookmark(index + 1)}
+//                   style={
+//                     rtl
+//                       ? { alignSelf: "flex-end" }
+//                       : { alignSelf: "flex-start" }
+//                   }
 //                 />
 //               )}
 
 //               {/* Arabic */}
 //               {arabic && (
 //                 <Markdown
-//                   rules={markdownRules(
-//                     fontSize,
-//                     Colors[colorScheme].text,
-//                     index
-//                   )}
+//                   rules={markdownRules(fontSize, Colors[colorScheme].text)}
 //                   style={{
 //                     body: {
 //                       fontSize: fontSize * 1.3,
@@ -422,11 +487,7 @@
 //               {/* Transliteration */}
 //               {translit && (
 //                 <Markdown
-//                   rules={markdownRules(
-//                     fontSize,
-//                     Colors[colorScheme].text,
-//                     index
-//                   )}
+//                   rules={markdownRules(fontSize, Colors[colorScheme].text)}
 //                   style={{
 //                     body: {
 //                       fontSize: fontSize,
@@ -434,7 +495,6 @@
 //                       color: Colors[colorScheme].prayerTransliterationText,
 //                       fontStyle: "italic",
 //                       marginBottom: 16,
-//                       borderBottomColor: Colors[colorScheme].border,
 //                       paddingBottom: 16,
 //                     },
 //                   }}
@@ -455,12 +515,7 @@
 //                     {tr.code.toUpperCase()}
 //                   </Text>
 //                   <Markdown
-//                     rules={markdownRules(
-//                       fontSize,
-//                       Colors[colorScheme].text,
-
-//                       index
-//                     )}
+//                     rules={markdownRules(fontSize, Colors[colorScheme].text)}
 //                     style={{
 //                       body: {
 //                         fontSize,
@@ -490,7 +545,7 @@
 //                 {t("notes")}
 //               </ThemedText>
 //               <Markdown
-//                 rules={markdownRules(fontSize, Colors[colorScheme].text, 0)}
+//                 rules={markdownRules(fontSize, Colors[colorScheme].text)}
 //                 style={{
 //                   body: {
 //                     fontSize: fontSize,
@@ -507,11 +562,7 @@
 //         ListFooterComponentStyle={{ paddingBottom: 20 }}
 //       />
 
-//       {showScrollUp && (
-//         <TouchableOpacity style={styles.scrollButton} onPress={scrollToTop}>
-//           <AntDesign name="up" size={24} color="white" />
-//         </TouchableOpacity>
-//       )}
+//       {showScrollUp && <ArrowUp scrollToTop={scrollToTop} />}
 
 //       <BottomSheet
 //         ref={bottomSheetRef}
@@ -521,11 +572,29 @@
 //         onChange={handleSheetChanges}
 //         backgroundStyle={{ backgroundColor: Colors.universal.secondary }}
 //       >
-//         <BottomSheetView style={styles.bottomSheet}>
-//           <Text style={[styles.bottomSheetText, { fontSize: 35 }]}>`</Text>
-//           <Text style={styles.bottomSheetText}>
-//             {t("bottomInformationRenderPrayer")}
+//         <BottomSheetView
+//           style={[
+//             styles.bottomSheet,
+//             rtl
+//               ? {
+//                   flexDirection: "row-reverse",
+//                 }
+//               : {
+//                   flexDirection: "row",
+//                 },
+//           ]}
+//         >
+//           <Text
+//             style={[
+//               styles.bottomSheetText,
+//               { fontSize: 35, color: Colors[colorScheme].text },
+//             ]}
+//           >
+//             `
 //           </Text>
+//           <ThemedText style={styles.bottomSheetText}>
+//             {t("bottomInformationRenderPrayer")}
+//           </ThemedText>
 //           <Text style={[styles.bottomSheetText, { color: "#FFFFFF" }]}>ع</Text>
 //           <Text style={[styles.bottomSheetText, { color: "#FFFFFF" }]}>
 //             (ayn)
@@ -538,7 +607,7 @@
 //         onClose={() => setFontSizeModalVisible(false)}
 //       />
 
-//       <CategoryPickerBottomSheet
+//       <FavoritePrayerPickerModal
 //         visible={pickerVisible}
 //         prayerId={prayerID}
 //         onClose={() => setPickerVisible(false)}
@@ -549,7 +618,6 @@
 
 // export default RenderPrayer;
 
-// // Styles remain largely the same, no direct changes needed here for favorite logic removal
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,
@@ -560,30 +628,27 @@
 //     alignItems: "center",
 //   },
 //   header: {
-//     padding: 20,
+//     padding: 10,
 //     marginBottom: 20,
 //   },
 //   headerContent: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
+//     flexDirection: "column",
 //   },
 //   titleContainer: {
-//     flex: 1,
-//     marginRight: 16,
 //     gap: 10,
 //   },
 //   title: {
 //     fontWeight: "700",
-//     color: "white",
 //     marginBottom: 4,
+//     lineHeight: 35,
 //   },
 //   arabicTitle: {
 //     fontSize: 18,
-//     color: "rgba(255,255,255,0.9)",
 //   },
 //   headerControls: {
 //     flexDirection: "row",
 //     alignItems: "center",
+//     alignSelf: "flex-end",
 //     gap: 15,
 //   },
 //   introContainer: {
@@ -626,7 +691,6 @@
 //   lineNumberBadge: {
 //     position: "absolute",
 //     top: -8,
-//     right: 16,
 //     width: 24,
 //     height: 24,
 //     borderRadius: 12,
@@ -634,7 +698,7 @@
 //     justifyContent: "center",
 //     alignItems: "center",
 //   },
-//   lineNumber: { color: "white", fontSize: 12, fontWeight: "700" },
+//   lineNumber: { fontSize: 12, fontWeight: "700" },
 //   translationBlock: {
 //     marginTop: 12,
 //     paddingTop: 8,
@@ -645,7 +709,6 @@
 //   notesTitle: {},
 //   notesText: {},
 //   bottomSheet: {
-//     flexDirection: "row",
 //     alignItems: "center",
 //     gap: 10,
 //     padding: 20,
@@ -686,6 +749,9 @@ import {
   useColorScheme,
   Alert,
   TextStyle,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+  Keyboard,
 } from "react-native";
 import { getPrayerWithTranslations } from "@/db/queries/prayers";
 import {
@@ -706,7 +772,6 @@ import { FlashList } from "@shopify/flash-list";
 import { Stack } from "expo-router";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
-import Storage from "expo-sqlite/kv-store";
 import FavoritePrayerPickerModal from "./FavoritePrayerPickerModal";
 import { LoadingIndicator } from "./LoadingIndicator";
 import {
@@ -717,10 +782,15 @@ import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { useTranslation } from "react-i18next";
 import ArrowUp from "./ArrowUp";
 import { FlatList } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import PrayerInformationModal from "./PrayerInformationModal";
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
 };
+
+const SCROLL_UP_THRESH = 120;
+const SCROLL_UP_HYST = 16;
 
 //! With key which seems to be wrong
 // const markdownRules = (
@@ -775,14 +845,14 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const { language, isArabic } = useLanguage();
   const lang = (language ?? "de") as LanguageCode;
   const flashListRef = useRef<any>(null);
-  const [scrollOffset, setScrollOffset] = useState(0);
-  const showScrollUp = scrollOffset > 50;
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ["70%"], []);
   const { fontSize, lineHeight } = useFontSizeStore();
   const [fontSizeModalVisible, setFontSizeModalVisible] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
   const insets = useSafeAreaInsets();
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const showUpRef = useRef(false);
 
   const rtl = isArabic();
   // Fetch prayer on mount (removed favorite check)
@@ -816,12 +886,22 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
   // Load bookmark
   useEffect(() => {
-    try {
-      const b = Storage.getItemSync(`Bookmark-${prayerID}`);
-      setBookmark(b ? parseInt(b, 10) : null);
-    } catch {
-      setBookmark(null);
-    }
+    let canceled = false;
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(`Bookmark-${prayerID}`);
+        if (canceled) return;
+
+        const n = raw != null ? Number.parseInt(raw, 10) : NaN;
+        setBookmark(Number.isFinite(n) ? n : null);
+      } catch (e) {
+        if (!canceled) setBookmark(null);
+      }
+    })();
+
+    return () => {
+      canceled = true;
+    };
   }, [prayerID]);
 
   const processLines = (text?: string) =>
@@ -871,21 +951,21 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const handleBookmark = useCallback(
     (index: number) => {
       if (bookmark === index) {
-        Storage.removeItemSync(`Bookmark-${prayerID}`);
+        AsyncStorage.removeItem(`Bookmark-${prayerID}`);
         setBookmark(null);
       } else if (bookmark) {
         Alert.alert(t("confirmBookmarkChange"), t("bookmarkReplaceQuestion"), [
           {
             text: t("replace"),
             onPress: () => {
-              Storage.setItemSync(`Bookmark-${prayerID}`, String(index));
+              AsyncStorage.setItem(`Bookmark-${prayerID}`, String(index));
               setBookmark(index);
             },
           },
           { text: t("cancel"), style: "cancel" },
         ]);
       } else {
-        Storage.setItemSync(`Bookmark-${prayerID}`, String(index));
+        AsyncStorage.setItem(`Bookmark-${prayerID}`, String(index));
         setBookmark(index);
       }
     },
@@ -895,6 +975,26 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const handleSheetChanges = useCallback((index: number) => {
     /* no-op */
   }, []);
+
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const y = e.nativeEvent.contentOffset.y;
+      // Hysteresis avoids flicker near the boundary
+      const next = showUpRef.current
+        ? y > SCROLL_UP_THRESH - SCROLL_UP_HYST
+        : y > SCROLL_UP_THRESH + SCROLL_UP_HYST;
+      if (next !== showUpRef.current) {
+        showUpRef.current = next;
+        setShowScrollUp(next);
+      }
+    },
+    []
+  );
+
+  const closeSheet = () => {
+    Keyboard.dismiss();
+    bottomSheetRef.current?.close();
+  };
 
   if (isLoading) {
     return (
@@ -913,110 +1013,74 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
   return (
     <ThemedView style={[styles.container]}>
-      {/* SafareView seems to be buggy that why we go with insets.top only in this component */}
-
-      <View
-        style={{
-          height: insets.top,
-          backgroundColor: Colors[colorScheme].prayerHeaderBackground,
-        }}
-      />
-      {/* Header Buttons */}
-
-      <ThemedView
-        style={[
-          styles.header,
-          {
-            backgroundColor: Colors[colorScheme].prayerHeaderBackground,
-          },
-        ]}
-      >
-        <View style={[styles.headerContent]}>
-          <View style={{ flexDirection: "row", gap: 10, paddingRight: 30 }}>
-            <HeaderLeftBackButton color="#fff" style={{}} />
-
-            <View style={[styles.titleContainer]}>
-              <ThemedText
-                style={[styles.title, { fontSize: fontSize, color: "#fff" }]}
-              >
-                {prayer.name} ({indices.length} {t("lines")})
-              </ThemedText>
-              <ThemedText
-                style={[
-                  styles.arabicTitle,
-                  { fontSize: fontSize, color: "#fff" },
-                ]}
-              >
-                {prayer.arabic_title}
-              </ThemedText>
-            </View>
-          </View>
-          <View style={styles.headerControls}>
-            <TouchableOpacity onPress={() => setFontSizeModalVisible(true)}>
-              <Ionicons name="text" size={28} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => bottomSheetRef.current?.expand()}>
-              <Ionicons
-                name="information-circle-outline"
-                size={32}
-                color="#fff"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setPickerVisible(true)}>
-              <AntDesign name="folder-add" size={25} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ThemedView>
-
       {/* Content */}
       <FlatList
         ref={flashListRef}
         scrollEventThrottle={16}
-        onScroll={({ nativeEvent }) =>
-          setScrollOffset(nativeEvent.contentOffset.y)
-        }
+        onScroll={handleScroll}
         keyExtractor={(i) => i.toString()}
         data={indices}
+        stickyHeaderIndices={[0]}
+        stickyHeaderHiddenOnScroll
         extraData={[bookmark, selectTranslations]}
         ListHeaderComponent={
-          <>
-            {prayer.translations.find((t) => t.language_code === language)
-              ?.translated_introduction && (
-              <View
-                style={[
-                  styles.introContainer,
-                  {
-                    backgroundColor:
-                      Colors[colorScheme].prayerIntroductionBackground,
-                  },
-                ]}
-              >
-                <Markdown
-                  style={{
-                    body: {
-                      fontSize: fontSize,
-                      lineHeight: lineHeight,
-                      color: Colors[colorScheme].text,
-                    },
-                  }}
-                >
-                  {
-                    prayer.translations.find(
-                      (t) => t.language_code === language
-                    )?.translated_introduction
-                  }
-                </Markdown>
+          <View
+            style={[
+              styles.header,
+              {
+                backgroundColor: Colors[colorScheme].prayerHeaderBackground,
+                paddingTop: insets.top,
+                paddingRight: insets.right,
+                paddingLeft: insets.left,
+                marginBottom: 20,
+              },
+            ]}
+          >
+            <View style={[styles.headerContent]}>
+              <HeaderLeftBackButton color="#fff" style={{ marginLeft: 5 }} />
+
+              <View style={{ paddingHorizontal: 20 }}>
+                <View style={[styles.titleContainer]}>
+                  <ThemedText
+                    style={[
+                      styles.title,
+                      { fontSize: fontSize, color: "#fff" },
+                    ]}
+                  >
+                    {prayer.name} ({indices.length} {t("lines")})
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.arabicTitle,
+                      { fontSize: fontSize, color: "#fff", textAlign: "right" },
+                    ]}
+                  >
+                    {prayer.arabic_title}
+                  </ThemedText>
+                </View>
               </View>
-            )}
+              <View style={styles.headerControls}>
+                <TouchableOpacity onPress={() => setFontSizeModalVisible(true)}>
+                  <Ionicons name="text" size={28} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => bottomSheetRef.current?.expand()}
+                >
+                  <Ionicons
+                    name="information-circle-outline"
+                    size={32}
+                    color="#fff"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setPickerVisible(true)}>
+                  <AntDesign name="folder-add" size={25} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            </View>
 
             {/* Language Toggle */}
-            <View style={styles.languageSelectContainer}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.languageButtons}
-              >
+            <View style={[styles.languageSelectContainer, {}]}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {prayer.translations.map((tr) => (
                   <TouchableOpacity
                     key={tr.language_code}
@@ -1044,11 +1108,10 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                     <Text
                       style={[
                         styles.languageButtonText,
-                        selectTranslations[tr.language_code]
-                          ? {
-                              color: Colors[colorScheme].prayerButtonTextActive,
-                            }
-                          : { color: Colors[colorScheme].text },
+
+                        {
+                          color: "#000",
+                        },
                       ]}
                     >
                       {tr.language_code.toUpperCase()}
@@ -1057,7 +1120,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                 ))}
               </ScrollView>
             </View>
-          </>
+          </View>
         }
         renderItem={({ item: index }) => {
           const arabic = formatted?.arabicLines[index];
@@ -1216,43 +1279,18 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
       {showScrollUp && <ArrowUp scrollToTop={scrollToTop} />}
 
-      <BottomSheet
+      <PrayerInformationModal
         ref={bottomSheetRef}
-        index={-1}
+        prayer={prayer}
+        language={lang}
+        rtl={rtl}
+        colorScheme={colorScheme}
+        fontSize={fontSize}
+        lineHeight={lineHeight}
         snapPoints={snapPoints}
-        enablePanDownToClose
         onChange={handleSheetChanges}
-        backgroundStyle={{ backgroundColor: Colors.universal.secondary }}
-      >
-        <BottomSheetView
-          style={[
-            styles.bottomSheet,
-            rtl
-              ? {
-                  flexDirection: "row-reverse",
-                }
-              : {
-                  flexDirection: "row",
-                },
-          ]}
-        >
-          <Text
-            style={[
-              styles.bottomSheetText,
-              { fontSize: 35, color: Colors[colorScheme].text },
-            ]}
-          >
-            `
-          </Text>
-          <ThemedText style={styles.bottomSheetText}>
-            {t("bottomInformationRenderPrayer")}
-          </ThemedText>
-          <Text style={[styles.bottomSheetText, { color: "#FFFFFF" }]}>ع</Text>
-          <Text style={[styles.bottomSheetText, { color: "#FFFFFF" }]}>
-            (ayn)
-          </Text>
-        </BottomSheetView>
-      </BottomSheet>
+        onRequestClose={closeSheet}
+      />
 
       <FontSizePickerModal
         visible={fontSizeModalVisible}
@@ -1281,10 +1319,10 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 10,
-    marginBottom: 20,
   },
   headerContent: {
     flexDirection: "column",
+    gap: 10,
   },
   titleContainer: {
     gap: 10,
@@ -1302,25 +1340,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "flex-end",
     gap: 15,
+    marginRight: 15,
+    marginTop: 20,
   },
-  introContainer: {
-    margin: 16,
-    padding: 16,
-    borderRadius: 12,
-  },
+  prayerInformationContainer: {},
+
   languageSelectContainer: {
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginTop: 10,
+    marginBottom: 10,
   },
-  languageButtons: {
-    paddingBottom: 8,
-    paddingRight: 16,
-  },
+
   languageButton: {
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
     marginRight: 8,
+    borderWidth: 1,
   },
   languageButtonText: { fontSize: 14, fontWeight: "500" },
   prayerSegment: {

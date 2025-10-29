@@ -2993,7 +2993,6 @@ export default function NewsArticleDetailScreen({
 
   // scroll/progress (throttled)
   const [scrollY, setScrollY] = useState(0);
-  const [progress, setProgress] = useState(0);
   const lastTickRef = useRef(0);
 
   // layout + coords conversion
@@ -3027,14 +3026,10 @@ export default function NewsArticleDetailScreen({
   const handleScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const now = Date.now();
-      if (now - lastTickRef.current < 120) return; // throttle ~8 fps
+      if (now - lastTickRef.current < 120) return; 
       lastTickRef.current = now;
-
       const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
       setScrollY(contentOffset.y);
-
-      const total = Math.max(1, contentSize.height - layoutMeasurement.height);
-      setProgress(clamp01(contentOffset.y / total));
     },
     []
   );
@@ -3071,7 +3066,7 @@ export default function NewsArticleDetailScreen({
     return () => {
       alive = false;
     };
-  }, [articleId, fetchNewsArticleById, t]);
+  }, [articleId, t]);
 
   // Favorite state
   useEffect(() => {
@@ -3301,7 +3296,6 @@ export default function NewsArticleDetailScreen({
             source={{ uri }}
             style={{ width: "100%", height: 200, marginVertical: 12 }}
             contentFit="cover"
-            cachePolicy="memory-disk"
             transition={100}
           />
         );
@@ -3545,18 +3539,15 @@ export default function NewsArticleDetailScreen({
         </View>
       </View>
 
-      {/* Progress bar */}
+      {/* Border */}
       <View
-        style={[
-          styles.progressBar,
-          { backgroundColor: Colors[colorScheme].border },
-        ]}
+        style={[styles.border, { backgroundColor: Colors[colorScheme].border }]}
       >
         <View
           style={[
-            styles.progressFill,
+            styles.borderFill,
             {
-              width: `${Math.round(progress * 100)}%`,
+              width: "100%",
               backgroundColor: Colors[colorScheme].tint,
             },
           ]}
@@ -3745,14 +3736,14 @@ const styles = StyleSheet.create({
 
   contentSection: { flex: 1 },
 
-  progressBar: {
+  border: {
     height: 2,
     marginHorizontal: 15,
     borderRadius: 2,
     marginTop: 15,
     overflow: "hidden",
   },
-  progressFill: { height: "100%", borderRadius: 2 },
+  borderFill: { height: "100%", borderRadius: 2 },
 
   articleContent: { paddingHorizontal: 30 },
 

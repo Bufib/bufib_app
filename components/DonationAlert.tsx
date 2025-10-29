@@ -6,12 +6,12 @@ import { ThemedView } from "@/components/ThemedView";
 import { useColorScheme } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState } from "react";
-import  Storage  from "expo-sqlite/kv-store";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import Toast from "react-native-toast-message";
 import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageCode } from "@/constants/Types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type DonationAlertProps = {
   isVisible: boolean;
   onClose: () => void;
@@ -28,16 +28,22 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
   const [payPalLink, setPayPalLink] = useState<string | null>(null);
 
   // paypal
+  // paypal
   useEffect(() => {
     if (!dbInitialized) return;
-
-    // Get the paypalLink
-    try {
-      const paypal = Storage.getItemSync("paypal");
-      setPayPalLink(paypal);
-    } catch (error: any) {
-      Alert.alert("Fehler", error.message);
-    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const paypal = await AsyncStorage.getItem("paypal"); // string | null
+        if (!cancelled) setPayPalLink(paypal ?? null);
+      } catch (error: any) {
+        if (!cancelled)
+          Alert.alert("Fehler", error?.message ?? "Unbekannter Fehler");
+      }
+    })();
+    return () => {
+      cancelled = true; // avoid setState on unmounted component
+    };
   }, [dbInitialized]);
 
   return (

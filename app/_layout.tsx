@@ -25,7 +25,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, usePathname, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { SQLiteProvider } from "expo-sqlite";
-import  Storage  from "expo-sqlite/kv-store";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -86,15 +85,15 @@ function AppContent() {
 
   // Effect to set color theme from Storage
   useEffect(() => {
-    const setColorTheme = () => {
+    const setColorTheme = async () => {
       try {
-        const savedColorScheme = Storage.getItemSync("isDarkMode");
+        const savedColorScheme = await AsyncStorage.getItem("isDarkMode");
         if (savedColorScheme === "true") {
           Appearance.setColorScheme("dark");
         } else if (savedColorScheme === "false") {
           Appearance.setColorScheme("light");
         }
-        // If null or undefined, it will use system default or whatever Appearance.setColorScheme(null) does.
+        // If null, keep system default.
       } catch (error) {
         console.error("Failed to set color scheme from storage:", error);
       }
