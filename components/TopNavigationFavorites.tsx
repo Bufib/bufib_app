@@ -20,6 +20,7 @@ import favoritePodcasts from "@/app/(tabs)/favorites/favoritePodcasts";
 import favoritePrayers from "@/app/(tabs)/favorites/favoritePrayers";
 import favoriteQuestions from "@/app/(tabs)/favorites/favoriteQuestions";
 import { LanguageCode } from "@/constants/Types";
+import { useLanguage } from "@/contexts/LanguageContext";
 const renderScene = SceneMap({
   favoriteNewsArticles: FavoriteNewsArticles,
   favoritePrayers: FavoritePrayers,
@@ -31,7 +32,7 @@ export default function TopNavigationFavorites() {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
   const colorScheme = useColorScheme() || "light";
-  const { t } = useTranslation();
+  const { lang } = useLanguage();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const routes = React.useMemo(
     () => [
@@ -60,7 +61,7 @@ export default function TopNavigationFavorites() {
         icon: require("@/assets/images/qAndAHeaderLogo.png"),
       },
     ],
-    [t]
+    [lang]
   );
 
   // animate opacity on mount

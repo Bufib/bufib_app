@@ -367,7 +367,7 @@ const FavoritePrayersScreen: React.FC = () => {
     } finally {
       setIsLoadingFolders(false);
     }
-  }, [t]);
+  }, [lang]);
 
   const reloadPrayers = useCallback(
     async (folder: string | null) => {
@@ -393,7 +393,7 @@ const FavoritePrayersScreen: React.FC = () => {
         setIsLoadingPrayers(false);
       }
     },
-    [t] 
+    [lang] 
   );
 
   const onDeleteFolder = useCallback(
@@ -431,14 +431,14 @@ const FavoritePrayersScreen: React.FC = () => {
     (async () => {
       await reloadFolders();
     })();
-  }, [reloadFolders, refreshTriggerFavorites, t]);
+  }, [reloadFolders, refreshTriggerFavorites, lang]);
 
   // Load prayers whenever selectedFolder changes
   useEffect(() => {
     (async () => {
       await reloadPrayers(selectedFolder);
     })();
-  }, [selectedFolder, reloadPrayers, t]);
+  }, [selectedFolder, reloadPrayers, lang]);
 
   useFocusEffect(
     useCallback(() => {
@@ -565,7 +565,7 @@ const FavoritePrayersScreen: React.FC = () => {
         ) : (
           <FlatList
             data={prayers}
-            extraData={[t]}
+            extraData={lang}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderPrayerCard}
             contentContainerStyle={styles.prayerList}

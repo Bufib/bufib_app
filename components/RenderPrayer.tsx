@@ -880,7 +880,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
       initial[t.language_code] = t.language_code === lang;
     });
     setSelectTranslations(initial);
-  }, [prayer, t]);
+  }, [prayer, lang]);
 
   // Load bookmark
   useEffect(() => {
@@ -940,7 +940,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     if (lang == "ar") return prayer.arabic_notes || "";
     const tr = prayer.translations.find((t) => t.language_code === lang);
     return tr?.translated_notes || "";
-  }, [prayer, t]);
+  }, [prayer, lang]);
 
   const scrollToTop = useCallback(() => {
     flashListRef.current?.scrollToOffset({ offset: 0, animated: true });
@@ -967,7 +967,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         setBookmark(index);
       }
     },
-    [bookmark, prayerID, t]
+    [bookmark, prayerID, lang]
   );
 
   const handleSheetChanges = useCallback((index: number) => {

@@ -51,7 +51,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
     };
 
     loadSubcategories();
-  }, [category, t]);
+  }, [category, lang]);
 
   //  Display error state
   if (error && !isLoading && subcategories.length === 0) {

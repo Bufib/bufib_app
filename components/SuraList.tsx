@@ -4038,7 +4038,7 @@ const SuraList: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [t]);
+  }, [lang]);
 
   // Warm coverage for the last-read surah after interactions
   const lastSuraNumber = useLastSuraStore((s) => s.lastSura);
@@ -4048,7 +4048,7 @@ const SuraList: React.FC = () => {
       getJuzCoverageForSura(lastSuraNumber).catch(() => {});
       getPageCoverageForSura(lastSuraNumber).catch(() => {});
     });
-  }, [lastSuraNumber, t]);
+  }, [lastSuraNumber, lang]);
 
   useEffect(() => {
     Animated.spring(slideAnim, {
@@ -4088,7 +4088,7 @@ const SuraList: React.FC = () => {
         );
       }
     },
-    [t, updateBookmarkProgress]
+    [lang, updateBookmarkProgress]
   );
 
   const bumpJuzIfHigher = useCallback(
@@ -4099,7 +4099,7 @@ const SuraList: React.FC = () => {
         updateJuzBookmark(juz, uptoIndex1Based, uptoIndex1Based - 1, lang);
       }
     },
-    [t, updateJuzBookmark]
+    [lang, updateJuzBookmark]
   );
 
   const bumpPageIfHigher = useCallback(
@@ -4110,7 +4110,7 @@ const SuraList: React.FC = () => {
         updatePageBookmark(page, uptoIndex1Based, uptoIndex1Based - 1, lang);
       }
     },
-    [t, updatePageBookmark]
+    [lang, updatePageBookmark]
   );
 
   /* ----------------- Propagate: Juz/Page -> Surahs ----------------- */
@@ -4181,7 +4181,7 @@ const SuraList: React.FC = () => {
       );
       await propagateSuraDoneToJuzAndPages(suraId, totalVerses);
     },
-    [t, setTotalVerses, updateBookmarkProgress, propagateSuraDoneToJuzAndPages]
+    [lang, setTotalVerses, updateBookmarkProgress, propagateSuraDoneToJuzAndPages]
   );
 
   const DoneToggleButton: React.FC<{
@@ -4234,7 +4234,7 @@ const SuraList: React.FC = () => {
         ]);
       }
     },
-    [markSuraDone, updateBookmarkProgress, t]
+    [markSuraDone, updateBookmarkProgress, lang]
   );
 
   /* ----------------- JUZ: Done/Reset + propagate to Suras ----------------- */
@@ -4246,7 +4246,7 @@ const SuraList: React.FC = () => {
       bumpJuzIfHigher(juz, arr.length);
       await propagateJuzToSuras(juz); // bump affected suras
     },
-    [bumpJuzIfHigher, propagateJuzToSuras, setTotalVersesForJuz, t]
+    [bumpJuzIfHigher, propagateJuzToSuras, setTotalVersesForJuz, lang]
   );
 
   const DoneToggleButtonJuz: React.FC<{ juz: number; onPress: () => void }> = ({
@@ -4294,7 +4294,7 @@ const SuraList: React.FC = () => {
         ]);
       }
     },
-    [markJuzDone, setTotalVersesForJuz, updateJuzBookmark, t]
+    [markJuzDone, setTotalVersesForJuz, updateJuzBookmark, lang]
   );
 
   /* ----------------- PAGE: Done/Reset + propagate to Suras ----------------- */
@@ -4306,7 +4306,7 @@ const SuraList: React.FC = () => {
       bumpPageIfHigher(page, arr.length);
       await propagatePageToSuras(page);
     },
-    [bumpPageIfHigher, propagatePageToSuras, setTotalVersesForPage, t]
+    [bumpPageIfHigher, propagatePageToSuras, setTotalVersesForPage, lang]
   );
 
   const DoneToggleButtonPage: React.FC<{
@@ -4354,7 +4354,7 @@ const SuraList: React.FC = () => {
         ]);
       }
     },
-    [markPageDone, setTotalVersesForPage, updatePageBookmark, t]
+    [markPageDone, setTotalVersesForPage, updatePageBookmark, lang]
   );
 
   /* ----------------- CLEAR ALL per section (active tab) ----------------- */
@@ -4374,7 +4374,7 @@ const SuraList: React.FC = () => {
         },
       },
     ]);
-  }, [suras, t, updateBookmarkProgress]);
+  }, [suras, lang, updateBookmarkProgress]);
 
   const clearAllJuz = useCallback(() => {
     Alert.alert(t("confirm"), t("removeProgress"), [
@@ -4391,7 +4391,7 @@ const SuraList: React.FC = () => {
         },
       },
     ]);
-  }, [t, updateJuzBookmark]);
+  }, [lang, updateJuzBookmark]);
 
   const clearAllPages = useCallback(() => {
     Alert.alert(t("confirm"), t("removeProgress"), [
@@ -4409,7 +4409,7 @@ const SuraList: React.FC = () => {
         },
       },
     ]);
-  }, [pageList.length, t, updatePageBookmark]);
+  }, [pageList.length, lang, updatePageBookmark]);
 
   const renderClearAllBar = () => {
     let onPress: () => void = () => {};
@@ -4651,7 +4651,7 @@ const SuraList: React.FC = () => {
       {viewMode === "sura" ? (
         <FlatList
           data={suras}
-          extraData={[colorScheme, t]}
+          extraData={[colorScheme, lang]}
           renderItem={renderSuraItem}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
@@ -4660,7 +4660,7 @@ const SuraList: React.FC = () => {
       ) : viewMode === "juz" ? (
         <FlatList
           data={juzList}
-          extraData={[colorScheme, t]}
+          extraData={[colorScheme, lang]}
           renderItem={renderJuzItem}
           keyExtractor={(item) => item.juz.toString()}
           showsVerticalScrollIndicator={false}
@@ -4669,7 +4669,7 @@ const SuraList: React.FC = () => {
       ) : (
         <FlatList
           data={pageList}
-          extraData={[colorScheme, t]}
+          extraData={[colorScheme, lang]}
           renderItem={renderPageItem}
           keyExtractor={(item) => item.page.toString()}
           showsVerticalScrollIndicator={false}

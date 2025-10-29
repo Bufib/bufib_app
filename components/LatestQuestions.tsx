@@ -41,7 +41,7 @@ const LatestQuestions: React.FC = () => {
     };
 
     loadLatestQuestions();
-  }, [t]);
+  }, [lang]);
 
   // loading
   if (isLoading) {

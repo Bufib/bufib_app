@@ -53,7 +53,7 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
     return () => {
       cancelled = true;
     };
-  }, [t, calendarVersion]);
+  }, [lang, calendarVersion]);
 
   const getItemColor = (index: number) => {
     return CALENDARPALLETTE[index % CALENDARPALLETTE.length];

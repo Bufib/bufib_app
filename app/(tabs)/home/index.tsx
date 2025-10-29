@@ -426,7 +426,7 @@ import * as FileSystem from "expo-file-system";
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const { t } = useTranslation();
-  const { language } = useLanguage();
+  const { lang } = useLanguage();
 
   const isAdmin = useAuthStore((state) => state.isAdmin);
 
@@ -439,7 +439,7 @@ export default function HomeScreen() {
     fetchNextPage: newsArticlesFetchNextPage,
     hasNextPage: newsArticlesHasNextPage,
     isFetchingNextPage: newsArticlesIsFetchingNextPage,
-  } = useNewsArticles(language);
+  } = useNewsArticles(lang);
 
   // News Hook - Using the enhanced useNews hook with realtime features
   const {
@@ -454,7 +454,7 @@ export default function HomeScreen() {
     error: newsError,
     hasNextPage: newsHasNextPage,
     isFetchingNextPage: newsIsFetchingNextPage,
-  } = useNews(language);
+  } = useNews(lang);
 
   // Podcasts Hook
   const {
@@ -465,7 +465,7 @@ export default function HomeScreen() {
     fetchNextPage: podcastsFetchNextPage,
     hasNextPage: podcastsHasNextPage,
     isFetchingNextPage: podcastsIsFetchingNextPage,
-  } = usePodcasts(language);
+  } = usePodcasts(lang);
 
   // Flatten paginated data
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];

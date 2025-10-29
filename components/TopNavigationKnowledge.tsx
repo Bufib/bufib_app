@@ -132,7 +132,7 @@ export default function TopNavigationKnowledge() {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
   const colorScheme = useColorScheme() || "light";
-  const { t } = useTranslation();
+  const { lang } = useLanguage();
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const routes = React.useMemo(
@@ -163,7 +163,7 @@ export default function TopNavigationKnowledge() {
         icon: require("@/assets/images/historyHeaderLogo.png"),
       },
     ],
-    [t]
+    [lang]
   );
 
   // animate opacity on mount

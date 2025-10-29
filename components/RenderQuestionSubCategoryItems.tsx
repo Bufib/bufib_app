@@ -60,7 +60,7 @@ function RenderQuestionSubCategoryItems() {
     };
 
     loadQuestions();
-  }, [category, subcategory, t]);
+  }, [category, subcategory, lang]);
 
   //  Display error state
   if (error && !isLoading && questions.length === 0) {

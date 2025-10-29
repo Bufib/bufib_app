@@ -1234,7 +1234,9 @@ export default function CategoryScreen() {
                   <View
                     style={[
                       styles.prayerFooter,
-                      rtl ? { flexDirection: "row-reverse" } : {},
+                      rtl ? { flexDirection: "row-reverse", alignSelf: "flex-start" } : {
+                        flexDirection: "row", alignSelf: "flex-end"
+                      },
                     ]}
                   >
                     <Text
@@ -1405,9 +1407,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   prayerFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
+    justifyContent: "center",
+    gap: 2,
   },
   readMore: {
     fontSize: 14,

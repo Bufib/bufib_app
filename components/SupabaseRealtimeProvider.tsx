@@ -836,7 +836,7 @@ export const SupabaseRealtimeProvider = ({
     return () => {
       supabase.removeChannel(user_question_chanel).catch(console.error);
     };
-  }, [userId, queryClient, t]);
+  }, [userId, queryClient, lang]);
 
   // ---------- News (INSERT -> banner; UPDATE patch-with-fallback; DELETE invalidate) ----------
 useEffect(() => {

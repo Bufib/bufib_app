@@ -3064,7 +3064,7 @@ export default function NewsArticleDetailScreen({
     return () => {
       alive = false;
     };
-  }, [articleId, t]);
+  }, [articleId, lang]);
 
   // Favorite state
   useEffect(() => {
@@ -3150,7 +3150,7 @@ export default function NewsArticleDetailScreen({
       ],
       { cancelable: true }
     );
-  }, [articleId, t, lang]);
+  }, [articleId, lang]);
 
   const jumpToBookmark = useCallback(() => {
     if (overlayContentY == null) return;
@@ -3182,7 +3182,7 @@ export default function NewsArticleDetailScreen({
       // No previous bookmark
       saveBookmark(contentY);
     },
-    [bookmarkRatio, containerTop, scrollY, saveBookmark, t]
+    [bookmarkRatio, containerTop, scrollY, saveBookmark, lang]
   );
 
   // ---------- MEMOIZED MARKDOWN RULES (since your Markdown doesn't support `style`) ----------
@@ -3390,7 +3390,7 @@ export default function NewsArticleDetailScreen({
         </Pressable>
       );
     },
-    [article, colorScheme, fontSize, handleLongPress, mdRules, rtl, t]
+    [article, colorScheme, fontSize, handleLongPress, mdRules, lang]
   );
 
   // ===== Early returns AFTER all hooks =====
