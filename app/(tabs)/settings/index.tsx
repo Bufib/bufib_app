@@ -34,6 +34,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { HardResetButton } from "@/components/HardResetButton";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
@@ -52,6 +53,9 @@ const Settings = () => {
   const effectiveEnabled = getNotifications && permissionStatus === "granted";
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const { t } = useTranslation();
+
+  const paypallinkVersion = useDataVersionStore((s) => s.paypalVersion);
+
   // animate opacity on mount
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -101,7 +105,7 @@ const Settings = () => {
         Alert.alert("Fehler", error.message);
       }
     })();
-  }, []);
+  }, [paypallinkVersion]);
 
   // 3) Toggle dark mode (persist + set scheme)
   const toggleDarkMode = async () => {
@@ -216,7 +220,7 @@ const Settings = () => {
             </View>
             <LanguageSwitcher />
 
-           <HardResetButton />
+            <HardResetButton />
           </View>
 
           {isLoggedIn && (

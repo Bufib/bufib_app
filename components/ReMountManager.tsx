@@ -7,7 +7,7 @@ import { safeInitializeDatabase } from "@/db";
 import { runDatabaseSync } from "@/db/runDatabaseSync";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const REFETCH_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+const REFETCH_THRESHOLD = 0.5 * 60 * 1000; // 30 sec
 const LAST_FETCH_KEY = "lastFetchTime";
 
 interface ReMountManagerProps {
@@ -26,15 +26,17 @@ const ReMountManager = ({ children, onInitialize }: ReMountManagerProps) => {
   }, []);
 
   const shouldReinitialize = useCallback(async () => {
-    const lastFetchTime = await AsyncStorage.getItem(LAST_FETCH_KEY);
-    const timeSinceLastFetch = Date.now() - parseInt(lastFetchTime || "0", 10);
-    return timeSinceLastFetch > REFETCH_THRESHOLD;
+    const raw = await AsyncStorage.getItem(LAST_FETCH_KEY);
+    const last = Number(raw); // stricter than parseInt
+    const lastSafe = Number.isFinite(last) ? last : 0;
+    const timeSince = Math.max(0, Date.now() - lastSafe); // clamp to >= 0
+    return timeSince > REFETCH_THRESHOLD;
   }, []);
 
   // Use your guarded core sync instead of the old initializeDatabase()
   const runSyncIfNeeded = useCallback(async () => {
     try {
-      await safeInitializeDatabase(() => runDatabaseSync(lang));
+      await safeInitializeDatabase(() => runDatabaseSync());
       await updateLastFetchTime();
       onInitialize?.();
     } catch (error) {
