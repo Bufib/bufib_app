@@ -35,7 +35,8 @@ export default function QuestionDetailScreen() {
   const hasInternet = useConnectionStatus();
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { rtl } = useLanguage();
+  const { rtl, lang } = useLanguage();
+
   // 4. If user is not logged in, redirect to login
   useEffect(() => {
     if (!isLoggedIn) {
@@ -59,6 +60,7 @@ export default function QuestionDetailScreen() {
   useEffect(() => {
     const checkIfHasRead = async () => {
       if (!questionId || !question || !question.answer) {
+        console.log(!!question?.answer);
         return;
       }
 
@@ -66,7 +68,6 @@ export default function QuestionDetailScreen() {
         // Load the stored list (or empty array) of already read answer IDs
         const stored = await AsyncStorage.getItem("hasReadAnswers");
         const ids = stored ? JSON.parse(stored) : [];
-
         // Check if the current questionId is already in the list
         if (!ids.includes(questionId)) {
           // If not in the list, add it and update local storage
@@ -105,13 +106,12 @@ export default function QuestionDetailScreen() {
     if (question) {
       checkIfHasRead();
     }
-  }, [questionId, question, userId, queryClient]);
+  }, [questionId, question, userId, queryClient, lang]);
 
-  // Helper function to format the read time
   // Helper function to format the read time as a countdown
   const formatReadTime = (timestamp: any) => {
     if (!timestamp) {
-      return "Not read yet"; // Return a default message if no timestamp
+      return;
     }
 
     const readDate = new Date(timestamp);

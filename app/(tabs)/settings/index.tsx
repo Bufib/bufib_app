@@ -28,12 +28,12 @@ import {
   View,
   Animated,
   Easing,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { useDatabaseSync } from "@/hooks/useDatabaseSync";
-import { LanguageCode } from "@/constants/Types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { HardResetButton } from "@/components/HardResetButton";
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
@@ -215,6 +215,8 @@ const Settings = () => {
               />
             </View>
             <LanguageSwitcher />
+
+           <HardResetButton />
           </View>
 
           {isLoggedIn && (

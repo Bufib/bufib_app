@@ -18,10 +18,13 @@ import { Colors } from "@/constants/Colors";
 import { returnSize } from "@/utils/sizes";
 import { useTranslation } from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function QuestionLinks() {
   const { width, height } = useWindowDimensions();
   const { t } = useTranslation();
+  const { lang } = useLanguage();
   // Dynamically calculate the size of each element based on screen width
   const { elementSize, fontSize, iconSize, imageSize, gap } = returnSize(
     width,
@@ -152,7 +155,7 @@ export default function QuestionLinks() {
         <LatestQuestions />
       </View>
       {/* Login */}
-      {/* {language === "de" && (
+      {lang === "de" && (
         <TouchableOpacity
           style={styles.askQuestionButton}
           onPress={() => router.push("/(askQuestion)/")}
@@ -163,7 +166,7 @@ export default function QuestionLinks() {
             color="#fff"
           />
         </TouchableOpacity>
-      )} */}
+      )}
     </Animated.View>
   );
 }

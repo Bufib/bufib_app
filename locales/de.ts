@@ -22,6 +22,7 @@ export const de = {
   preparing: "Wird vorbereitet",
   stream: "Streamen",
   loading_stream: "Stream lädt",
+
   // General
   yes: "Ja",
   reset: "Zurücksetzen",
@@ -150,6 +151,7 @@ export const de = {
   noPlansForToday: "Es sind noch keine Pläne für diesen Tag vorhanden!",
   undo: "Alle zurücksetzen",
 
+
   // Days of week
   days: {
     short: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
@@ -232,6 +234,8 @@ export const de = {
   dataPrivacy: "Datenschutz",
   aboutTheApp: "Über die App",
   imprint: "Impressum",
+  hardResetDatabase: "Datenbank neu laden",
+  hardResetDatabaseText: "Dies wird die Datanbank neu laden und möglicherweise Fehler beheben.",
 
   // Language selector
   language: "Sprache",

@@ -13,7 +13,6 @@ import { LanguageCode, QuestionType } from "@/constants/Types";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
-import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";

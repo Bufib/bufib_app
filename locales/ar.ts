@@ -235,6 +235,8 @@ export const ar = {
   dataPrivacy: "خصوصية البيانات",
   aboutTheApp: "عن التطبيق",
   imprint: "البصمة",
+  hardResetDatabase: "إعادة تعيين قاعدة البيانات بشكل كامل",
+  hardResetDatabaseText: "سيؤدي هذا إلى إعادة تحميل قاعدة البيانات وقد يصلح بعض الأخطاء.",
 
   // Language selector
   language: "اللغة",

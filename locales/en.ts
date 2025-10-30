@@ -235,6 +235,9 @@ export const en = {
   dataPrivacy: "Data Privacy",
   aboutTheApp: "About the App",
   imprint: "Imprint",
+  hardResetDatabase: "Hard reset database",
+  hardResetDatabaseText: "This will reload the database and may fix some errors.",
+
 
   // Language selector
   language: "Language",

@@ -8,7 +8,6 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState } from "react";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import Toast from "react-native-toast-message";
-import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageCode } from "@/constants/Types";
 import AsyncStorage from "@react-native-async-storage/async-storage";

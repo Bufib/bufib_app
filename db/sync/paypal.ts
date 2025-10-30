@@ -65,7 +65,7 @@ const syncPayPal = async (): Promise<boolean> => {
     // Increment the paypal version after a successful *change*
     const { incrementPaypalVersion } = useDataVersionStore.getState();
     incrementPaypalVersion();
-
+    console.log("PayPal link updated locally.");
     return true;
   } catch (err) {
     console.error("Unexpected error fetching PayPal link:", err);
