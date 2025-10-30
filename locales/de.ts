@@ -70,6 +70,7 @@ export const de = {
   selectFolder: "Wähle einen Ordner aus",
   enterFolderName: "Gebe einen Namen für den Ordner ein",
   confirm: "Bestätigen",
+  syncFailedTryAgain: "Synchronisierung fehlgeschlagen. Bitte versuche es erneut.",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -89,6 +90,7 @@ export const de = {
   databaseUpdateCalendar: "Der Kalendar wurde aktualsiert!",
   databaseUpdateQuran: "Die Übersetzung/Tafsir des Qurans wurden aktualsiert!",
   databaseUpdatePaypal: "Der PayPal-Link wurde aktualsiert!",
+  update: "Aktualisieren",
 
   // Questions
   categories: "Kategorien",

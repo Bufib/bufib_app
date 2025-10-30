@@ -486,7 +486,6 @@
 //   return isReady;
 // }
 
-
 // src/hooks/useDatabaseSync.ts
 import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import { Alert, Platform } from "react-native";
@@ -511,6 +510,7 @@ import {
   databaseUpdateQuran,
 } from "@/constants/messages";
 import { router, usePathname } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 /** Robust version comparison helper (null/undefined/number-safe). */
 function changed(newVal: any, oldVal: any): boolean {
@@ -523,7 +523,7 @@ function changed(newVal: any, oldVal: any): boolean {
 export function useDatabaseSync(): boolean {
   const [isReady, setIsReady] = useState(false);
   const [isInitialSyncComplete, setIsInitialSyncComplete] = useState(false);
-
+  const { t } = useTranslation();
   // Mount + concurrency guards
   const isMountedRef = useRef(true);
   const isSyncingRef = useRef(false);
@@ -646,17 +646,12 @@ export function useDatabaseSync(): boolean {
             remoteAppVersion &&
             currentAppVersion !== remoteAppVersion
           ) {
-            Alert.alert(
-              i18n.t("updateAvailable"),
-              i18n.t("newAppVersionAvailable"),
-              [
-                {
-                  text: i18n.t("update") || "Update",
-                  onPress: () => handleOpenExternalUrl(getStoreURL()),
-                },
-                { text: i18n.t("later") || "Later", style: "cancel" },
-              ]
-            );
+            Alert.alert(t("updateAvailable"), t("newAppVersionAvailable"), [
+              {
+                text: t("update"),
+                onPress: () => handleOpenExternalUrl(getStoreURL()),
+              },
+            ]);
           }
 
           if (isMountedRef.current) {
@@ -677,13 +672,14 @@ export function useDatabaseSync(): boolean {
 
       // Still online but sync never succeeded → block UI; let user retry.
       Alert.alert(
-        i18n.t("error") || "Error",
+        t("error"),
         (lastError && (lastError.message || String(lastError))) ||
-          i18n.t("syncFailedTryAgain") ||
-          "Sync failed. Please try again.",
+          t("syncFailedTryAgain"),
         [
-          { text: i18n.t("retry") || "Retry", onPress: () => void initializeSafely() },
-          { text: i18n.t("cancel") || "Cancel", style: "cancel" },
+          {
+            text: t("retry"),
+            onPress: () => void initializeSafely(),
+          },
         ]
       );
       return;
@@ -698,9 +694,11 @@ export function useDatabaseSync(): boolean {
           setIsReady(true);
         }
       } else {
-        Alert.alert(i18n.t("error") || "Error", err?.message ?? String(err), [
-          { text: i18n.t("retry") || "Retry", onPress: () => void initializeSafely() },
-          { text: i18n.t("cancel") || "Cancel", style: "cancel" },
+        Alert.alert(t("error"), err?.message ?? String(err), [
+          {
+            text: t("retry"),
+            onPress: () => void initializeSafely(),
+          },
         ]);
       }
     } finally {
@@ -728,21 +726,42 @@ export function useDatabaseSync(): boolean {
 
       const { new: n, old: o } = payload;
 
-      const questionsChanged = changed(n?.question_data_version, o?.question_data_version);
-      const quranChanged     = changed(n?.quran_data_version,     o?.quran_data_version);
-      const calendarChanged  = changed(n?.calendar_data_version,  o?.calendar_data_version);
-      const prayerChanged    = changed(n?.prayer_data_version,    o?.prayer_data_version);
-      const paypalChanged    = changed(n?.paypal_data_version,    o?.paypal_data_version); // <- NEW
-      const appVersionChanged= changed(n?.app_version,            o?.app_version);
+      const questionsChanged = changed(
+        n?.question_data_version,
+        o?.question_data_version
+      );
+      const quranChanged = changed(
+        n?.quran_data_version,
+        o?.quran_data_version
+      );
+      const calendarChanged = changed(
+        n?.calendar_data_version,
+        o?.calendar_data_version
+      );
+      const prayerChanged = changed(
+        n?.prayer_data_version,
+        o?.prayer_data_version
+      );
+      const paypalChanged = changed(
+        n?.paypal_data_version,
+        o?.paypal_data_version
+      ); // <- NEW
+      const appVersionChanged = changed(n?.app_version, o?.app_version);
 
-      if (questionsChanged || quranChanged || calendarChanged || prayerChanged || paypalChanged) {
+      if (
+        questionsChanged ||
+        quranChanged ||
+        calendarChanged ||
+        prayerChanged ||
+        paypalChanged
+      ) {
         await initializeSafely();
         goHomeIfNeeded();
         questionsChanged && databaseUpdateQuestions();
-        quranChanged     && databaseUpdateQuran();
-        calendarChanged  && databaseUpdateCalendar();
-        prayerChanged    && databaseUpdatePrayer();
-        paypalChanged    && databaseUpdatePaypal(); // <- NEW
+        quranChanged && databaseUpdateQuran();
+        calendarChanged && databaseUpdateCalendar();
+        prayerChanged && databaseUpdatePrayer();
+        paypalChanged && databaseUpdatePaypal(); // <- NEW
       }
 
       if (appVersionChanged) {

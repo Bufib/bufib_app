@@ -70,6 +70,7 @@ export const en = {
   enterFolderName: "Enter a name for your folder",
   confirm: "Confirm",
   abort: "Cancle",
+  syncFailedTryAgain: "Sync failed. Please try again.",
 
   // Navigation
   knowledge: "Knowledge",
@@ -92,6 +93,7 @@ export const en = {
   databaseUpdateCalendar: "The calendar has been updated!",
   databaseUpdateQuran: "The Quran translation/commentary has been updated!",
   databaseUpdatePaypal: "The PayPal link has been updated!",
+  update: "Update",
 
   // Questions
   categories: "Categories",

@@ -69,6 +69,7 @@ export const ar = {
   enterFolderName: "أدخل اسمًا للمجلد الخاص بك",
   confirm: "تأكيد",
   abort: "إحباط",
+  syncFailedTryAgain: "فشل التزامن. يرجى المحاولة مرة أخرى.",
 
   // Navigation
   knowledge: "معرفة",
@@ -91,6 +92,7 @@ export const ar = {
   databaseUpdateCalendar: "تم تحديث التقويم!",
   databaseUpdateQuran: "تم تحديث ترجمة/تفسير القرآن!",
   databaseUpdatePaypal: "تم تحديث رابط باي بال!",
+  update: "تحديث",
 
   // Questions
   categories: "فئات",
