@@ -784,6 +784,7 @@ import ArrowUp from "./ArrowUp";
 import { FlatList } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PrayerInformationModal from "./PrayerInformationModal";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
@@ -852,6 +853,18 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const insets = useSafeAreaInsets();
   const [showScrollUp, setShowScrollUp] = useState(false);
   const showUpRef = useRef(false);
+  const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
+
+  const listExtraData = useMemo(
+    () => ({
+      prayersVersion,
+      bookmark,
+      // stringify because the object identity of selectTranslations changes;
+      // this only changes when its contents change
+      selectTranslationsKey: JSON.stringify(selectTranslations),
+    }),
+    [prayersVersion, bookmark, selectTranslations]
+  );
 
   // Fetch prayer on mount (removed favorite check)
   useEffect(() => {
@@ -870,7 +883,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     return () => {
       alive = false;
     };
-  }, [prayerID]);
+  }, [prayerID, prayersVersion]);
 
   // Init translation toggles
   useEffect(() => {
@@ -900,7 +913,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     return () => {
       canceled = true;
     };
-  }, [prayerID]);
+  }, [prayerID, prayersVersion]);
 
   const processLines = (text?: string) =>
     text
@@ -1020,7 +1033,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         data={indices}
         stickyHeaderIndices={[0]}
         stickyHeaderHiddenOnScroll
-        extraData={[bookmark, selectTranslations]}
+        extraData={listExtraData}
         ListHeaderComponent={
           <View
             style={[

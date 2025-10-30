@@ -220,10 +220,10 @@
 
 // export default syncQuestions;
 
-
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
 import { QuestionType } from "@/constants/Types";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 function serializeRelatedQuestion(value: any): string | null {
   if (value == null) return null;
@@ -244,9 +244,7 @@ function serializeRelatedQuestion(value: any): string | null {
 export default async function syncQuestions(): Promise<void> {
   try {
     // 1) Fetch ALL questions (no language filter)
-    const { data: questions, error } = await supabase
-      .from("questions")
-      .select(`
+    const { data: questions, error } = await supabase.from("questions").select(`
         id, title, question, answer, answer_sistani, answer_khamenei,
         question_category_name, question_subcategory_name, created_at, language_code,
         related_question
@@ -347,7 +345,12 @@ export default async function syncQuestions(): Promise<void> {
       }
     });
 
-    console.log("Questions synced successfully for ALL languages (full replace).");
+    console.log(
+      "Questions synced successfully for ALL languages (full replace)."
+    );
+    // Increment the question version after successful sync
+    const { incrementQuestionsVersion } = useDataVersionStore.getState();
+    incrementQuestionsVersion();
   } catch (err) {
     console.error("Critical error in syncQuestions:", err);
   }

@@ -64,6 +64,11 @@ const RenderFavoritePodcasts = () => {
     return allEpisodes.filter((ep) => idSet.has(ep.id));
   }, [allEpisodes, favoriteIds]);
 
+  const listExtraData = useMemo(
+    () => ({ favCount: favoriteIds.length, bump: refreshTriggerFavorites }),
+    [favoriteIds.length, refreshTriggerFavorites]
+  );
+
   // If still loading the first page of episodes, show a spinner
   if (isLoading) {
     return (
@@ -96,7 +101,7 @@ const RenderFavoritePodcasts = () => {
     <ThemedView style={styles.container}>
       <FlatList
         data={favoriteEpisodes}
-        extraData={[favoriteIds, refreshTriggerFavorites]}
+        extraData={listExtraData}
         keyExtractor={(item) => item.id.toString()}
         style={styles.listStyle}
         renderItem={({ item }) => {
@@ -106,7 +111,7 @@ const RenderFavoritePodcasts = () => {
                 styles.itemContainer,
                 {
                   backgroundColor: Colors[colorScheme].contrast,
-                  flexDirection: rtl  ? "row-reverse" : "row",
+                  flexDirection: rtl ? "row-reverse" : "row",
                 },
               ]}
               onPress={() => {
@@ -154,7 +159,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    
   },
   emptyText: {
     textAlign: "center",
@@ -172,8 +176,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 24,
-    gap: 15
-
+    gap: 15,
   },
   itemContainer: {
     flexDirection: "row",

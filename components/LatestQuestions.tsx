@@ -17,6 +17,8 @@ import { useDatabaseSync } from "@/hooks/useDatabaseSync";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
+import { runDatabaseSync } from "@/db/runDatabaseSync";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 const LatestQuestions: React.FC = () => {
   //State & Hooks
@@ -26,6 +28,7 @@ const LatestQuestions: React.FC = () => {
   const themeStyles = CoustomTheme();
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
+  const questionsVersion = useDataVersionStore((s) => s.questionsVersion);
 
   useEffect(() => {
     const loadLatestQuestions = async () => {
@@ -41,7 +44,7 @@ const LatestQuestions: React.FC = () => {
     };
 
     loadLatestQuestions();
-  }, [lang]);
+  }, [lang, questionsVersion]);
 
   // loading
   if (isLoading) {
@@ -104,6 +107,7 @@ const LatestQuestions: React.FC = () => {
   return (
     <FlatList
       data={latestQuestions}
+      extraData={questionsVersion}
       keyExtractor={(item) => item.id.toString()}
       renderItem={renderItem}
       style={styles.list}

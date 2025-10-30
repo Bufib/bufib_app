@@ -10,6 +10,7 @@ import FontSizePickerModal from "./FontSizePickerModal";
 import { Colors } from "@/constants/Colors";
 import { StickyHeaderQuranPropsType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export const StickyHeaderQuran: React.FC<StickyHeaderQuranPropsType> = ({
   suraNumber,

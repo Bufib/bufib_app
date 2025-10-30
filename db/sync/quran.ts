@@ -471,6 +471,7 @@
 
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 /**
  * Sync Quran data into local SQLite:
@@ -696,6 +697,9 @@ async function syncQuran(): Promise<void> {
     });
 
     console.log("Quran synced (ar, de, en, transliteration).");
+    // Increment the Quran version after successful sync
+    const { incrementQuranDataVersion } = useDataVersionStore.getState();
+    incrementQuranDataVersion();
   } catch (error) {
     console.error("Critical error in syncQuran:", error);
   }

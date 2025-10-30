@@ -2185,6 +2185,7 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 import { vkey } from "@/stores/suraStore";
 import BasmalaRow from "./BasmalaRow";
 import ArrowUp from "./ArrowUp";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 const SuraScreen: React.FC = () => {
   const colorScheme = useColorScheme() || "light";
@@ -2198,7 +2199,7 @@ const SuraScreen: React.FC = () => {
     pageId?: string;
   }>();
 
-  const [hasTafsir] = useState(true);
+  const [hasTafsir, setHasTafsir] = useState(true);
   const { fontSize, lineHeight } = useFontSizeStore();
   const [nextPage, setNextPage] = useState<number | null>(null);
   const [prevPage, setPrevPage] = useState<number | null>(null);
@@ -2214,6 +2215,7 @@ const SuraScreen: React.FC = () => {
   const [showArrow, setShowArrow] = useState(false);
   const showArrowRef = useRef(false);
 
+  const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
   const handleScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const y = e.nativeEvent.contentOffset.y;
@@ -2276,7 +2278,19 @@ const SuraScreen: React.FC = () => {
     setTotalVerses,
     setTotalVersesForJuz,
     setTotalVersesForPage,
+    quranDataVersion,
   });
+
+  const bmSig = useMemo(() => {
+    let acc = bookmarksBySura.size;
+    for (const set of bookmarksBySura.values()) acc += set.size;
+    return acc;
+  }, [bookmarksBySura]);
+
+  const listExtraData = useMemo(
+    () => ({ quranDataVersion, bmSig }),
+    [quranDataVersion, bmSig]
+  );
 
   const { handleBookmarkVerse } = useBookmarks({
     lang,
@@ -2318,7 +2332,7 @@ const SuraScreen: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [isPageMode, pageNumber]);
+  }, [isPageMode, pageNumber, quranDataVersion]);
 
   const arabicByKey = useMemo(
     () => new Map(arabicVerses.map((v) => [vkey(v.sura, v.aya), v])),
@@ -2443,7 +2457,7 @@ const SuraScreen: React.FC = () => {
           ref={flatListRef}
           data={verses}
           onScroll={handleScroll}
-          extraData={Array.from(bookmarksBySura.entries())}
+          extraData={listExtraData}
           keyExtractor={(v) => `${v.sura}-${v.aya}`}
           renderItem={renderVerse}
           ListHeaderComponent={

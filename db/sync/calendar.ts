@@ -377,7 +377,7 @@
 
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
-import { useCalendarVersionStore } from "@/stores/calandarVersionStore";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default async function syncCalendar(): Promise<void> {
   try {
@@ -463,7 +463,8 @@ export default async function syncCalendar(): Promise<void> {
       `Calendar & calendarLegend synced (FULL replace, ALL languages).`
     );
     // Increment the calendar version after successful sync
-    useCalendarVersionStore.getState().incrementCalendarVersion();
+    const { incrementCalendarVersion } = useDataVersionStore.getState();
+    incrementCalendarVersion();
   } catch (err) {
     console.error("Critical error in syncCalendar:", err);
   }

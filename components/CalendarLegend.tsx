@@ -15,18 +15,15 @@ import { LanguageCode } from "@/constants/Types";
 import { getCalendarLegendTypeNames } from "@/db/queries/calendar";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useTranslation } from "react-i18next";
-import { useCalendarVersionStore } from "@/stores/calandarVersionStore";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
   const colorScheme = useColorScheme() || "light";
-  const { language } = useLanguage();
-  const lang = (language ?? "de") as LanguageCode;
+  const { lang } = useLanguage();
   const [legendNames, setLegendNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  const calendarVersion = useCalendarVersionStore(
-    (state) => state.calendarVersion
-  );
+  const calendarVersion = useDataVersionStore((s) => s.calendarVersion);
 
   const localDate = new Date()
     .toLocaleDateString(lang, {
@@ -59,6 +56,13 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
     return CALENDARPALLETTE[index % CALENDARPALLETTE.length];
   };
 
+
+  const listExtraData = React.useMemo(
+  () => `${lang}|${calendarVersion}|${colorScheme}`,
+  [lang, calendarVersion, colorScheme]
+);
+
+
   if (loading) {
     return (
       <ThemedView style={styles.loadingContainer}>
@@ -90,7 +94,7 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
 
       <FlatList
         data={legendNames}
-        extraData={[lang, calendarVersion]}
+        extraData={listExtraData}
         keyExtractor={(name) => `${lang}:${name.trim().toLowerCase()}`}
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}

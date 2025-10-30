@@ -558,6 +558,7 @@ export type UseSuraDataParams = {
   setTotalVerses: (sura: number, total: number) => void;
   setTotalVersesForJuz: (juz: number, total: number) => void;
   setTotalVersesForPage: (page: number, total: number) => void;
+  quranDataVersion: number
 };
 
 export type StickyHeaderQuranPropsType = {

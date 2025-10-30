@@ -17,6 +17,7 @@ import { getSubcategoriesForCategory } from "@/db/queries/questions";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageCode } from "@/constants/Types";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 function RenderQuestionCategoryItems({ category }: { category: string }) {
   const [subcategories, setSubcategories] = useState<string[]>([]);
@@ -26,6 +27,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { lang, rtl } = useLanguage();
+  const questionsVersion = useDataVersionStore((s) => s.questionsVersion);
 
 
   // fade-in animation value
@@ -51,7 +53,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
     };
 
     loadSubcategories();
-  }, [category, lang]);
+  }, [category, lang, questionsVersion]);
 
   //  Display error state
   if (error && !isLoading && subcategories.length === 0) {
@@ -86,6 +88,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
       />
       <FlatList
         data={subcategories}
+        extraData={questionsVersion}
         keyExtractor={(item) => item.toString()}
         showsVerticalScrollIndicator={false}
         style={themeStyle.defaultBackgorundColor}

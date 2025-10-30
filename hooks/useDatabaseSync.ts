@@ -668,8 +668,7 @@ export function useDatabaseSync(): boolean {
 
     try {
       // Core dataset sync (questions, quran, calendar, prayers) + PayPal.
-      const res = await safeInitializeDatabase(() => runDatabaseSync(lang));
-
+      await runDatabaseSync(lang);
       // --- APP VERSION CHECK ---
       const currentAppVersion = Constants.expoConfig?.version;
       const remoteAppVersion = await fetchAppVersionFromSupabase();
@@ -729,9 +728,9 @@ export function useDatabaseSync(): boolean {
         await initializeSafely();
 
         // Navigate home (guard to avoid loops).
-        if (pathname !== "/(tabs)/home") {
+        // if (pathname !== "/(tabs)/home") {
           router.replace("/(tabs)/home");
-        }
+        // }
 
         questionsChanged && databaseUpdateQuestions();
         quranChanged && databaseUpdateQuran();
@@ -762,9 +761,9 @@ export function useDatabaseSync(): boolean {
           // Keep PayPal handling exactly as you had it.
           await syncPayPal();
 
-          if (pathname !== "/(tabs)/home") {
+          // if (pathname !== "/(tabs)/home") {
             router.replace("/(tabs)/home");
-          }
+          // }
           databaseUpdatePaypal();
         }
       )

@@ -3755,6 +3755,7 @@ import {
   getJuzCoverageForSura,
   getPageCoverageForSura,
 } from "@/utils/quranIndex";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const { badgeSize } = returnSize(screenWidth, screenHeight);
@@ -3986,6 +3987,12 @@ const SuraList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"sura" | "juz" | "page">("sura");
   const colorScheme = useColorScheme() || "light";
+  const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
+  
+  const listExtraData = useMemo(
+    () => ({ colorScheme, lang, quranDataVersion }),
+    [colorScheme, lang, quranDataVersion]
+  );
 
   // Animation for tab indicator
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -4038,7 +4045,7 @@ const SuraList: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [lang]);
+  }, [lang, quranDataVersion]);
 
   // Warm coverage for the last-read surah after interactions
   const lastSuraNumber = useLastSuraStore((s) => s.lastSura);
@@ -4048,7 +4055,7 @@ const SuraList: React.FC = () => {
       getJuzCoverageForSura(lastSuraNumber).catch(() => {});
       getPageCoverageForSura(lastSuraNumber).catch(() => {});
     });
-  }, [lastSuraNumber, lang]);
+  }, [lastSuraNumber, lang, quranDataVersion]);
 
   useEffect(() => {
     Animated.spring(slideAnim, {
@@ -4181,7 +4188,12 @@ const SuraList: React.FC = () => {
       );
       await propagateSuraDoneToJuzAndPages(suraId, totalVerses);
     },
-    [lang, setTotalVerses, updateBookmarkProgress, propagateSuraDoneToJuzAndPages]
+    [
+      lang,
+      setTotalVerses,
+      updateBookmarkProgress,
+      propagateSuraDoneToJuzAndPages,
+    ]
   );
 
   const DoneToggleButton: React.FC<{
@@ -4424,6 +4436,7 @@ const SuraList: React.FC = () => {
       onPress = clearAllPages;
       label = t("clearAllBookmarksQuran");
     }
+
     return (
       <View style={styles.clearAllRow}>
         <TouchableOpacity onPress={onPress} style={styles.clearAllButton}>
@@ -4651,7 +4664,7 @@ const SuraList: React.FC = () => {
       {viewMode === "sura" ? (
         <FlatList
           data={suras}
-          extraData={[colorScheme, lang]}
+          extraData={listExtraData}
           renderItem={renderSuraItem}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
@@ -4660,7 +4673,7 @@ const SuraList: React.FC = () => {
       ) : viewMode === "juz" ? (
         <FlatList
           data={juzList}
-          extraData={[colorScheme, lang]}
+          extraData={listExtraData}
           renderItem={renderJuzItem}
           keyExtractor={(item) => item.juz.toString()}
           showsVerticalScrollIndicator={false}
@@ -4669,7 +4682,7 @@ const SuraList: React.FC = () => {
       ) : (
         <FlatList
           data={pageList}
-          extraData={[colorScheme, lang]}
+          extraData={listExtraData}
           renderItem={renderPageItem}
           keyExtractor={(item) => item.page.toString()}
           showsVerticalScrollIndicator={false}

@@ -254,7 +254,6 @@
 
 // export default syncPrayers;
 
-
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
 import {
@@ -262,6 +261,7 @@ import {
   PrayerType,
   PrayerWithTranslationType,
 } from "@/constants/Types";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 // function normalizeParentId(parent: unknown): string | null {
 //   if (parent == null) return null;
@@ -394,6 +394,9 @@ export default async function syncPrayers(): Promise<void> {
     });
 
     console.log(`Prayers & translations synced (full replace, ALL languages).`);
+    // Increment the prayer version after successful sync
+    const { incrementPrayersVersion } = useDataVersionStore.getState();
+    incrementPrayersVersion();
   } catch (error) {
     console.error("Critical error in syncPrayers:", error);
   }

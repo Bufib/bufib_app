@@ -839,7 +839,7 @@ import {
 } from "@/db/queries/calendar";
 import { CALENDARPALLETTE, Colors } from "@/constants/Colors";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { useCalendarVersionStore } from "@/stores/calandarVersionStore";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 const RenderCalendar: React.FC = () => {
   const colorScheme = useColorScheme() || "light";
@@ -850,10 +850,12 @@ const RenderCalendar: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState<CalendarSectionType[]>([]);
   const [nextUpcomingDiff, setNextUpcomingDiff] = useState<number | null>(null);
-  const calendarVersion = useCalendarVersionStore(
-    (state) => state.calendarVersion
+  const calendarVersion = useDataVersionStore((s) => s.calendarVersion);
+  
+  const listExtraData = React.useMemo(
+    () => `${calendarVersion}|${colorScheme}`, // lang not needed; sections already change on lang
+    [calendarVersion, colorScheme]
   );
-
   // Fetch calendar data and legend names
   useEffect(() => {
     let cancelled = false;
@@ -1088,8 +1090,8 @@ const RenderCalendar: React.FC = () => {
   return (
     <SectionList
       sections={sections}
-      extraData={[lang, calendarVersion]}
-      keyExtractor={(item) => `${lang}-${item.id}`}
+      extraData={listExtraData}
+      keyExtractor={(item) => String(item.id)}
       stickySectionHeadersEnabled={false}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={

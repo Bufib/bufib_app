@@ -1,4 +1,217 @@
-// hooks/useSuraData.ts
+// // hooks/useSuraData.ts
+// //! Worked
+// import { useState, useEffect } from "react";
+// import { useTranslation } from "react-i18next";
+// import {
+//   LanguageCode,
+//   QuranVerseType,
+//   SuraRowType,
+//   UseSuraDataParams,
+// } from "@/constants/Types";
+// import {
+//   getSurahVerses,
+//   getSurahDisplayName,
+//   getSurahInfoByNumber,
+//   getJuzVerses,
+//   getJuzBounds,
+//   getPageVerses,
+//   getPageBounds,
+// } from "@/db/queries/quran";
+// import { whenDatabaseReady } from "@/db";
+// import { seedJuzIndex, seedPageIndex } from "@/utils/quranIndex";
+// import {
+//   loadBookmarkedVerses,
+//   preseedPagesForSurah,
+//   preseedJuzCoverageForSurah,
+// } from "@/stores/suraStore";
+
+// export function useSuraData({
+//   lang,
+//   suraNumber,
+//   isJuzMode,
+//   juzNumber,
+//   isPageMode,
+//   pageNumber,
+//   setTotalVerses,
+//   setTotalVersesForJuz,
+//   setTotalVersesForPage,
+//   quranDataVersion
+// }: UseSuraDataParams) {
+//   const { t } = useTranslation();
+//   const [loading, setLoading] = useState(true);
+//   const [verses, setVerses] = useState<QuranVerseType[]>([]);
+//   const [arabicVerses, setArabicVerses] = useState<QuranVerseType[]>([]);
+//   const [suraInfo, setSuraInfo] = useState<SuraRowType | null>(null);
+//   const [displayName, setDisplayName] = useState<string>("");
+//   const [juzHeader, setJuzHeader] = useState<{
+//     title: string;
+//     subtitle?: string;
+//   } | null>(null);
+//   const [bookmarksBySura, setBookmarksBySura] = useState<
+//     Map<number, Set<number>>
+//   >(new Map());
+
+//   useEffect(() => {
+//     let cancelled = false;
+
+//     (async () => {
+//       try {
+//         setLoading(true);
+//         await whenDatabaseReady();
+
+//         if (isJuzMode && juzNumber) {
+//           // --- JUZ MODE ---
+//           const [vers, arabicVers] = await Promise.all([
+//             getJuzVerses(lang, juzNumber),
+//             getJuzVerses("ar", juzNumber),
+//           ]);
+//           setTotalVersesForJuz(juzNumber, vers.length);
+//           seedJuzIndex(juzNumber, vers);
+
+//           const bounds = await getJuzBounds(juzNumber);
+//           if (bounds) {
+//             const startName =
+//               (await getSurahDisplayName(bounds.startSura, lang)) ??
+//               `Sura ${bounds.startSura}`;
+//             setJuzHeader({
+//               title: `${t("juz") ?? "Juz"} ${juzNumber}`,
+//               subtitle: `${t("startsAt") ?? "Starts at"} ${startName} ${
+//                 bounds.startAya
+//               }`,
+//             });
+//           } else {
+//             setJuzHeader({ title: `${t("juz") ?? "Juz"} ${juzNumber}` });
+//           }
+
+//           const distinctSuras = Array.from(new Set(vers.map((v) => v.sura)));
+//           const map = new Map<number, Set<number>>();
+//           for (const s of distinctSuras) {
+//             map.set(s, await loadBookmarkedVerses(s));
+//           }
+
+//           if (!cancelled) {
+//             setVerses(vers ?? []);
+//             setArabicVerses(arabicVers ?? []);
+//             setSuraInfo(null);
+//             setDisplayName("");
+//             setBookmarksBySura(map);
+//           }
+//         } else if (isPageMode && pageNumber) {
+//           // --- PAGE MODE ---
+//           const [vers, arabicVers] = await Promise.all([
+//             getPageVerses(lang, pageNumber),
+//             getPageVerses("ar", pageNumber),
+//           ]);
+//           setTotalVersesForPage(pageNumber, vers.length);
+//           seedPageIndex(pageNumber, vers);
+
+//           const bounds = await getPageBounds(pageNumber);
+//           if (bounds) {
+//             const startName =
+//               (await getSurahDisplayName(bounds.startSura, lang)) ??
+//               `Sura ${bounds.startSura}`;
+//             setJuzHeader({
+//               title: `${t("page") ?? "Page"} ${pageNumber}`,
+//               subtitle: `${t("startsAt") ?? "Starts at"} ${startName} ${
+//                 bounds.startAya
+//               }`,
+//             });
+//           } else {
+//             setJuzHeader({ title: `${t("page") ?? "Page"} ${pageNumber}` });
+//           }
+
+//           const distinctSuras = Array.from(
+//             new Set((vers ?? []).map((v) => v.sura))
+//           );
+//           const map = new Map<number, Set<number>>();
+//           for (const s of distinctSuras) {
+//             map.set(s, await loadBookmarkedVerses(s));
+//           }
+
+//           if (!cancelled) {
+//             setVerses((vers ?? []) as QuranVerseType[]);
+//             setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
+//             setSuraInfo(null);
+//             setDisplayName("");
+//             setBookmarksBySura(map);
+//           }
+//         } else {
+//           // --- SURAH MODE ---
+//           const [vers, arabicVers, info, name] = await Promise.all([
+//             getSurahVerses(lang, suraNumber),
+//             getSurahVerses("ar", suraNumber),
+//             getSurahInfoByNumber(suraNumber),
+//             getSurahDisplayName(suraNumber, lang),
+//           ]);
+//           const totalVerses = info?.nbAyat ?? vers?.length ?? 0;
+
+//           setTotalVerses(suraNumber, totalVerses);
+
+//           try {
+//             await preseedPagesForSurah(info!);
+//           } catch {}
+
+//           preseedJuzCoverageForSurah(suraNumber);
+
+//           const map = new Map<number, Set<number>>();
+//           map.set(suraNumber, await loadBookmarkedVerses(suraNumber));
+
+//           if (!cancelled) {
+//             setVerses((vers ?? []) as QuranVerseType[]);
+//             setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
+//             setSuraInfo(info ?? null);
+//             setDisplayName(name ?? "");
+//             setJuzHeader(null);
+//             setBookmarksBySura(map);
+//           }
+//         }
+//       } catch (error) {
+//         console.error("Failed to load verses:", error);
+//         if (!cancelled) {
+//           setVerses([]);
+//           setArabicVerses([]);
+//           setSuraInfo(null);
+//           setDisplayName("");
+//           setJuzHeader(null);
+//           setBookmarksBySura(new Map());
+//         }
+//       } finally {
+//         if (!cancelled) setLoading(false);
+//       }
+//     })();
+
+//     return () => {
+//       cancelled = true;
+//     };
+//   }, [
+//     lang,
+//     suraNumber,
+//     isJuzMode,
+//     juzNumber,
+//     isPageMode,
+//     pageNumber,
+//     setTotalVerses,
+//     setTotalVersesForJuz,
+//     setTotalVersesForPage,
+//     quranDataVersion
+//   ]);
+
+//   return {
+//     loading,
+//     verses,
+//     arabicVerses,
+//     suraInfo,
+//     displayName,
+//     juzHeader,
+//     bookmarksBySura,
+//     setBookmarksBySura,
+//   };
+// }
+
+
+
+
+//! Imporved
 
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,6 +248,7 @@ export function useSuraData({
   setTotalVerses,
   setTotalVersesForJuz,
   setTotalVersesForPage,
+  quranDataVersion, // ✅ triggers refetch on data bump
 }: UseSuraDataParams) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -46,6 +260,7 @@ export function useSuraData({
     title: string;
     subtitle?: string;
   } | null>(null);
+
   const [bookmarksBySura, setBookmarksBySura] = useState<
     Map<number, Set<number>>
   >(new Map());
@@ -58,20 +273,29 @@ export function useSuraData({
         setLoading(true);
         await whenDatabaseReady();
 
+        /* --------------------------- JUZ MODE --------------------------- */
         if (isJuzMode && juzNumber) {
-          // --- JUZ MODE ---
-          const [vers, arabicVers] = await Promise.all([
-            getJuzVerses(lang, juzNumber),
+          const [versRaw, arabicRaw] = await Promise.all([
+            getJuzVerses(lang as LanguageCode, juzNumber),
             getJuzVerses("ar", juzNumber),
           ]);
-          setTotalVersesForJuz(juzNumber, vers.length);
-          seedJuzIndex(juzNumber, vers);
+          const vers = (versRaw ?? []) as QuranVerseType[];
+          const arVers = (arabicRaw ?? []) as QuranVerseType[];
 
+          // totals + seed for fast coverage
+          setTotalVersesForJuz(juzNumber, vers.length);
+          try {
+            await seedJuzIndex(juzNumber, vers);
+          } catch {}
+
+          // header
           const bounds = await getJuzBounds(juzNumber);
           if (bounds) {
             const startName =
-              (await getSurahDisplayName(bounds.startSura, lang)) ??
-              `Sura ${bounds.startSura}`;
+              (await getSurahDisplayName(
+                bounds.startSura,
+                lang as LanguageCode
+              )) ?? `Sura ${bounds.startSura}`;
             setJuzHeader({
               title: `${t("juz") ?? "Juz"} ${juzNumber}`,
               subtitle: `${t("startsAt") ?? "Starts at"} ${startName} ${
@@ -82,33 +306,47 @@ export function useSuraData({
             setJuzHeader({ title: `${t("juz") ?? "Juz"} ${juzNumber}` });
           }
 
+          // bookmarks for all suras in this juz
           const distinctSuras = Array.from(new Set(vers.map((v) => v.sura)));
-          const map = new Map<number, Set<number>>();
-          for (const s of distinctSuras) {
-            map.set(s, await loadBookmarkedVerses(s));
-          }
+          const bookmarkPairs = await Promise.all(
+            distinctSuras.map(
+              async (s) => [s, await loadBookmarkedVerses(s)] as const
+            )
+          );
+          const map = new Map<number, Set<number>>(bookmarkPairs);
 
           if (!cancelled) {
-            setVerses(vers ?? []);
-            setArabicVerses(arabicVers ?? []);
+            setVerses(vers);
+            setArabicVerses(arVers);
             setSuraInfo(null);
             setDisplayName("");
             setBookmarksBySura(map);
           }
-        } else if (isPageMode && pageNumber) {
-          // --- PAGE MODE ---
-          const [vers, arabicVers] = await Promise.all([
-            getPageVerses(lang, pageNumber),
+          return;
+        }
+
+        /* --------------------------- PAGE MODE -------------------------- */
+        if (isPageMode && pageNumber) {
+          const [versRaw, arabicRaw] = await Promise.all([
+            getPageVerses(lang as LanguageCode, pageNumber),
             getPageVerses("ar", pageNumber),
           ]);
-          setTotalVersesForPage(pageNumber, vers.length);
-          seedPageIndex(pageNumber, vers);
+          const vers = (versRaw ?? []) as QuranVerseType[];
+          const arVers = (arabicRaw ?? []) as QuranVerseType[];
 
+          setTotalVersesForPage(pageNumber, vers.length);
+          try {
+            await seedPageIndex(pageNumber, vers);
+          } catch {}
+
+          // header
           const bounds = await getPageBounds(pageNumber);
           if (bounds) {
             const startName =
-              (await getSurahDisplayName(bounds.startSura, lang)) ??
-              `Sura ${bounds.startSura}`;
+              (await getSurahDisplayName(
+                bounds.startSura,
+                lang as LanguageCode
+              )) ?? `Sura ${bounds.startSura}`;
             setJuzHeader({
               title: `${t("page") ?? "Page"} ${pageNumber}`,
               subtitle: `${t("startsAt") ?? "Starts at"} ${startName} ${
@@ -119,45 +357,56 @@ export function useSuraData({
             setJuzHeader({ title: `${t("page") ?? "Page"} ${pageNumber}` });
           }
 
-          const distinctSuras = Array.from(
-            new Set((vers ?? []).map((v) => v.sura))
+          // bookmarks for suras on this page
+          const distinctSuras = Array.from(new Set(vers.map((v) => v.sura)));
+          const bookmarkPairs = await Promise.all(
+            distinctSuras.map(
+              async (s) => [s, await loadBookmarkedVerses(s)] as const
+            )
           );
-          const map = new Map<number, Set<number>>();
-          for (const s of distinctSuras) {
-            map.set(s, await loadBookmarkedVerses(s));
-          }
+          const map = new Map<number, Set<number>>(bookmarkPairs);
 
           if (!cancelled) {
-            setVerses((vers ?? []) as QuranVerseType[]);
-            setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
+            setVerses(vers);
+            setArabicVerses(arVers);
             setSuraInfo(null);
             setDisplayName("");
             setBookmarksBySura(map);
           }
-        } else {
-          // --- SURAH MODE ---
-          const [vers, arabicVers, info, name] = await Promise.all([
-            getSurahVerses(lang, suraNumber),
+          return;
+        }
+
+        /* --------------------------- SURAH MODE ------------------------- */
+        {
+          const [versRaw, arabicRaw, info, name] = await Promise.all([
+            getSurahVerses(lang as LanguageCode, suraNumber),
             getSurahVerses("ar", suraNumber),
             getSurahInfoByNumber(suraNumber),
-            getSurahDisplayName(suraNumber, lang),
+            getSurahDisplayName(suraNumber, lang as LanguageCode),
           ]);
-          const totalVerses = info?.nbAyat ?? vers?.length ?? 0;
 
+          const vers = (versRaw ?? []) as QuranVerseType[];
+          const arVers = (arabicRaw ?? []) as QuranVerseType[];
+
+          const totalVerses = info?.nbAyat ?? vers.length;
           setTotalVerses(suraNumber, totalVerses);
 
+          // best-effort warmups
           try {
-            await preseedPagesForSurah(info!);
+            if (info) {
+              await preseedPagesForSurah(info);
+            }
           } catch {}
-
-          preseedJuzCoverageForSurah(suraNumber);
+          try {
+            preseedJuzCoverageForSurah(suraNumber);
+          } catch {}
 
           const map = new Map<number, Set<number>>();
           map.set(suraNumber, await loadBookmarkedVerses(suraNumber));
 
           if (!cancelled) {
-            setVerses((vers ?? []) as QuranVerseType[]);
-            setArabicVerses((arabicVers ?? []) as QuranVerseType[]);
+            setVerses(vers);
+            setArabicVerses(arVers);
             setSuraInfo(info ?? null);
             setDisplayName(name ?? "");
             setJuzHeader(null);
@@ -183,16 +432,19 @@ export function useSuraData({
       cancelled = true;
     };
   }, [
+    // inputs that change what we load
     lang,
     suraNumber,
     isJuzMode,
     juzNumber,
     isPageMode,
     pageNumber,
+    // store updaters (stable in Zustand, but safe in deps)
     setTotalVerses,
     setTotalVersesForJuz,
     setTotalVersesForPage,
-    t,
+    // ✅ force refetch when the Quran dataset was updated
+    quranDataVersion,
   ]);
 
   return {

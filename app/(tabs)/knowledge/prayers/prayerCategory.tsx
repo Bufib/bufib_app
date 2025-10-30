@@ -988,6 +988,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { ThemedView } from "@/components/ThemedView";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function CategoryScreen() {
   const { prayerCategory } = useLocalSearchParams<{ prayerCategory: string }>();
@@ -1007,6 +1008,7 @@ export default function CategoryScreen() {
     useState<PrayerCategoryType | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] =
     useState<PrayerCategoryType | null>(null);
+  const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1053,7 +1055,7 @@ export default function CategoryScreen() {
     };
 
     fetchData();
-  }, [prayerCategory, lang]);
+  }, [prayerCategory, lang, prayersVersion]);
 
   // Handle subcategory selection
   const handleSubcategoryPress = async (cat: PrayerCategoryType) => {
@@ -1067,10 +1069,7 @@ export default function CategoryScreen() {
 
     setSelectedSubcategory(cat);
     try {
-      const subcategoryPrayers = await getPrayersForCategory(
-        cat.id,
-        lang
-      );
+      const subcategoryPrayers = await getPrayersForCategory(cat.id, lang);
       setFilteredPrayers(subcategoryPrayers);
     } catch {
       const filtered = allPrayers.filter(
@@ -1234,9 +1233,15 @@ export default function CategoryScreen() {
                   <View
                     style={[
                       styles.prayerFooter,
-                      rtl ? { flexDirection: "row-reverse", alignSelf: "flex-start" } : {
-                        flexDirection: "row", alignSelf: "flex-end"
-                      },
+                      rtl
+                        ? {
+                            flexDirection: "row-reverse",
+                            alignSelf: "flex-start",
+                          }
+                        : {
+                            flexDirection: "row",
+                            alignSelf: "flex-end",
+                          },
                     ]}
                   >
                     <Text
