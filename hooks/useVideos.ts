@@ -46,10 +46,9 @@
 //   } as const satisfies UseVideosResult & typeof query;
 // }
 
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
-import { UseVideosResultType, VideoType } from "@/constants/Types"; 
+import { UseVideosResultType, VideoType } from "@/constants/Types";
 
 export function useVideos(language: string) {
   const query = useQuery<VideoType[], Error>({
@@ -65,8 +64,12 @@ export function useVideos(language: string) {
       return data ?? [];
     },
     enabled: Boolean(language),
-    staleTime: 5 * 60 * 1000,
-    retry: 1,
+    retry: 3,
+    staleTime: 12 * 60 * 60 * 1000, // 12 hours
+    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   });
 
   const videos = query.data ?? [];

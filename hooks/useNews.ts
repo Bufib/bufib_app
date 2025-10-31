@@ -138,13 +138,13 @@ export function useNews(language: string) {
   const infiniteQuery = useInfiniteQuery<NewsType[], Error>({
     queryKey: ["news", language],
     enabled: Boolean(language),
-    staleTime: 5 * 60 * 1000,
-    retry: 1,
-    // IMPORTANT: Prevent automatic refetching on window focus or reconnect
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    // start at page 0
     initialPageParam: 0,
+    retry: 3,
+    staleTime: 12 * 60 * 60 * 1000, // 12 hours
+    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
 
     queryFn: async ({ pageParam = 0 }: { pageParam: any }) => {
       const from = pageParam * PAGE_SIZE;
@@ -199,17 +199,17 @@ export function useNews(language: string) {
   /** When user taps "New items available" - this is the key function */
   const handleRefresh = async () => {
     if (!showUpdateButton) return;
-    
+
     try {
       // Clear the entire cache to force a complete refresh
       await queryClient.resetQueries({
         queryKey: ["news", language],
         exact: true,
       });
-      
+
       // Now refetch from the beginning
       await refetch();
-      
+
       // Clear the flags after successful fetch
       clearNewNewsFlag();
       setShowUpdateButton(false);

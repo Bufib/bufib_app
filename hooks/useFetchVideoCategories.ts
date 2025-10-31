@@ -30,9 +30,12 @@ export function useFetchVideoCategories(languageCode: string) {
       return data ?? [];
     },
 
-    staleTime: 5 * 60 * 1000, // Data is considered fresh for 5 minutes
-    retry: 1, // Retry failed queries once
-    // The query will always be enabled since languageCode is now mandatory
+    retry: 3,
+    staleTime: 12 * 60 * 60 * 1000, // 12 hours
+    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
     enabled: !!languageCode, // Ensures the query runs only when languageCode is a non-empty string
   });
 

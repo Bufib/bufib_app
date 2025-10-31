@@ -907,9 +907,13 @@ export function usePodcasts(language: string) {
       return lastPage.length === PAGE_SIZE ? fetchedSoFar : undefined;
     },
     initialPageParam: 0,
-    staleTime: 5 * 60 * 1000,
+    enabled: Boolean(language),
+    retry: 3,
+    staleTime: 12 * 60 * 60 * 1000, // 12 hours
+    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    retry: 1,
   });
 
   // --- 2) Download-to-cache mutation (per language) ---

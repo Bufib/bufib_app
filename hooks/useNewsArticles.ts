@@ -16,9 +16,12 @@ export function useNewsArticles(language: string) {
   const infiniteQuery = useInfiniteQuery<NewsArticlesType[], Error>({
     queryKey,
     enabled: Boolean(language),
-    staleTime: 5 * 60 * 1000,
+    retry: 3,
+    staleTime: 12 * 60 * 60 * 1000, // 12 hours
+    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    retry: 1,
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }: { pageParam: any }) => {
       const from = pageParam * PAGE_SIZE;

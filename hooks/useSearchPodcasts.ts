@@ -34,6 +34,11 @@ export function useSearchPodcasts(searchTerm: string) {
 
     enabled: !!searchTerm.trim(),
     placeholderData: (previousData) => previousData,
-    staleTime: 5 * 60 * 1000, // 5 minutes. Data is considered fresh for this duration.
+    retry: 3,
+    staleTime: 12 * 60 * 60 * 1000, // 12 hours
+    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   });
 }

@@ -38,7 +38,7 @@ export function useSearchNewsArticles(searchTerm: string) {
         .order("created_at", { ascending: false });
       if (error) {
         console.error("Error searching news articles:", error);
-        throw error; 
+        throw error;
       }
 
       return data ?? []; // Return fetched data or an empty array
@@ -47,13 +47,11 @@ export function useSearchNewsArticles(searchTerm: string) {
     // Options:
     // `enabled`: The query will only run if searchTerm (trimmed) is not empty and language is available.
     enabled: !!searchTerm.trim() && Boolean(lang),
-
-    // `placeholderData`: Keeps previous results visible while new ones are loading.
-    // Useful for a smoother UX when the search term changes.
-    placeholderData: (previousData) => previousData,
-
-    staleTime: 5 * 60 * 1000, // Data is considered fresh for 5 minutes.
-    // gcTime: 10 * 60 * 1000, // Optional: How long unused data remains in cache
-    retry: 1, // Retry failed requests once.
+    retry: 3,
+    staleTime: 12 * 60 * 60 * 1000, // 12 hours
+    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   });
 }

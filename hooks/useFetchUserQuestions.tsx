@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
@@ -40,8 +39,10 @@ export const useFetchUserQuestions = () => {
     enabled: !!userId,
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 30, // 30 minutes
-    retry: 2,
     refetchOnWindowFocus: false,
+    retry: 3,
+    refetchOnMount: "always",
+    refetchOnReconnect: true,
   });
 
   const handleRefresh = async () => {
