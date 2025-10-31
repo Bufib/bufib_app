@@ -84,7 +84,7 @@ export const getQuestionInternalURL = async (
       SELECT * FROM questions
       WHERE title = ?
       AND language_code = ?;
-      ;
+      
     `,
       [questionTitle, language]
     );

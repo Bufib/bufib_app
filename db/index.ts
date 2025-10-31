@@ -57,6 +57,7 @@
 //   }
 // }
 // db/index.ts
+
 import * as SQLite from "expo-sqlite";
 
 let db: SQLite.SQLiteDatabase | null = null;

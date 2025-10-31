@@ -1,73 +1,87 @@
-// src/db/hardReset.ts
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDatabase, whenDatabaseReady, safeInitializeDatabase } from "@/db";
+import { migrateDbIfNeeded } from "./migrates";
 import { runDatabaseSync } from "@/db/runDatabaseSync";
 
+type SqliteMasterRow = { type: string; name: string };
+
 /**
- * Hard-reset local data (language-agnostic):
- * - deletes rows from all user tables (keeps schema/migrations)
- * - clears all dataset version/sync markers (for all languages)
- * - VACUUM
- * - re-syncs ALL datasets (forceAllLanguages=true) incl. PayPal
+ * Full hard reset (good > perfect):
+ * - Drop all user-defined objects (tables/views/indexes/triggers) atomically
+ * - Reset PRAGMA user_version → migration will re-run
+ * - Re-apply schema via migrateDbIfNeeded
+ * - Clear version markers + cached PayPal link
+ * - WAL checkpoint + VACUUM
+ * - Re-sync datasets
  */
 export async function hardResetAllData(): Promise<void> {
   await safeInitializeDatabase(async () => {
     await whenDatabaseReady();
     const db = getDatabase();
 
-    // 1) Delete rows from all user tables (keep schema/migrations)
-    const tables: { name: string }[] = await db.getAllAsync(
-      `SELECT name FROM sqlite_master
-       WHERE type='table'
-         AND name NOT LIKE 'sqlite_%'
-         AND name NOT LIKE 'pragma_%'`
-    );
+    // Exclusive TX helper (works on older/newer SDKs)
+    const runInTx =
+      (db as any).withExclusiveTransactionAsync?.bind(db) ??
+      (async (fn: (txn: any) => Promise<void>) => {
+        await db.execAsync("BEGIN IMMEDIATE;");
+        try {
+          await fn(db);
+          await db.execAsync("COMMIT;");
+        } catch (e) {
+          await db.execAsync("ROLLBACK;");
+          throw e;
+        }
+      });
 
-    const skip = new Set([
-      "migrations",
-      "expo_schema_migrations",
-      // add any meta tables you must preserve
-    ]);
+    // 1) Nuke everything user-defined 
+    await runInTx(async (tx: any) => {
+      await tx.execAsync("PRAGMA foreign_keys=OFF;");
+      await tx.execAsync("PRAGMA wal_checkpoint(TRUNCATE);");
 
-    await db.withTransactionAsync(async () => {
-      await db.execAsync("PRAGMA foreign_keys=OFF;");
-      for (const { name } of tables) {
-        if (skip.has(name)) continue;
-        await db.execAsync(`DELETE FROM "${name}";`);
+      const objs = (await tx.getAllAsync(`
+        SELECT type, name
+        FROM sqlite_master
+        WHERE name NOT LIKE 'sqlite_%'
+          AND name NOT LIKE 'pragma_%'
+      `)) as SqliteMasterRow[];
+
+      for (const { type, name } of objs) {
+        if (type === "table")   await tx.execAsync(`DROP TABLE IF EXISTS "${name}";`);
+        if (type === "view")    await tx.execAsync(`DROP VIEW IF EXISTS "${name}";`);
+        if (type === "trigger") await tx.execAsync(`DROP TRIGGER IF EXISTS "${name}";`);
+        if (type === "index")   await tx.execAsync(`DROP INDEX IF EXISTS "${name}";`);
       }
-      await db.execAsync("PRAGMA foreign_keys=ON;");
+
+      // Force migrations to re-run
+      await tx.execAsync("PRAGMA user_version=0;");
+      await tx.execAsync("PRAGMA foreign_keys=ON;");
     });
 
-    // 2) Clear ALL keys that govern dataset sync — independent of language
-    const allKeys = await AsyncStorage.getAllKeys();
+    // 2) Recreate schema atomically and bump user_version
+    await migrateDbIfNeeded(db);
 
+    // 3) Clear version markers + cached PayPal link (so sync runs)
     const exactKeys = [
       "question_data_version",
       "quran_data_version",
       "calendar_data_version",
       "prayer_data_version",
+      "paypal_data_version",
+      "paypal", // cached link itself
     ];
+    const allKeys = await AsyncStorage.getAllKeys();
+    const toRemove = allKeys.filter((k) => exactKeys.includes(k));
+    if (toRemove.length) await AsyncStorage.multiRemove(toRemove);
 
-    // remove every language-scoped marker (prefix only, any lang/version)
-    const prefixes = [
-      "synced_questions_",
-      "synced_quran_",
-      "synced_calendar_",
-      "synced_prayers_",
-    ];
-
-    const toRemove = allKeys.filter(
-      (k) => exactKeys.includes(k) || prefixes.some((p) => k.startsWith(p))
-    );
-
-    if (toRemove.length) {
-      await AsyncStorage.multiRemove(toRemove);
-    }
-
-    // 3) Reclaim space
+    // 4) Compact the file
+    await db.execAsync("PRAGMA wal_checkpoint(TRUNCATE);");
     await db.execAsync("VACUUM;");
 
-    // 4) Force a full re-sync for ALL datasets (and PayPal), independent of language
-    await runDatabaseSync();
+    // 5) Re-sync everything (no force needed because keys are gone)
+    try {
+      await runDatabaseSync();
+    } catch (e) {
+      console.warn("runDatabaseSync after hard reset failed:", e);
+    }
   });
 }

@@ -487,6 +487,7 @@
 // }
 
 // src/hooks/useDatabaseSync.ts
+
 import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import { Alert, Platform } from "react-native";
 import Constants from "expo-constants";

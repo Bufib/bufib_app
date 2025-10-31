@@ -832,7 +832,7 @@ const markdownRules = (
 });
 
 const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [prayer, setPrayer] = useState<PrayerWithTranslations | null>(null);
   const [selectTranslations, setSelectTranslations] = useState<
     Record<string, boolean>
@@ -1014,7 +1014,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
       </ThemedView>
     );
   }
-  if (!prayer) {
+  if (!prayer && !isLoading) {
     return (
       <ThemedView style={styles.container}>
         <ThemedText>{t("noData")}</ThemedText>
@@ -1058,7 +1058,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                       { fontSize: fontSize, color: "#fff" },
                     ]}
                   >
-                    {prayer.name} ({indices.length} {t("lines")})
+                    {prayer?.name} ({indices.length} {t("lines")})
                   </ThemedText>
                   <ThemedText
                     style={[
@@ -1066,7 +1066,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                       { fontSize: fontSize, color: "#fff", textAlign: "right" },
                     ]}
                   >
-                    {prayer.arabic_title}
+                    {prayer?.arabic_title}
                   </ThemedText>
                 </View>
               </View>
@@ -1092,7 +1092,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
             {/* Language Toggle */}
             <View style={[styles.languageSelectContainer, {}]}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {prayer.translations.map((tr) => (
+                {prayer?.translations.map((tr) => (
                   <TouchableOpacity
                     key={tr.language_code}
                     style={[
