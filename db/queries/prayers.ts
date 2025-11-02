@@ -9,30 +9,10 @@ import {
   PrayerWithTranslationType,
 } from "@/constants/Types";
 
-export const searchPrayers = async (
-  searchTerm: string
-): Promise<PrayerType[]> => {
-  try {
-    const db = await getDatabase();
-
-    return await db.getAllAsync<PrayerType>(
-      `
-      SELECT *
-      FROM prayers
-      WHERE name LIKE ? OR arabic_title LIKE ?;
-      `,
-      [`%${searchTerm}%`, `%${searchTerm}%`]
-    );
-  } catch (error) {
-    console.error("Error searching prayers:", error);
-    throw error;
-  }
-};
-
 export async function getPrayerWithTranslations(
   prayerId: number
 ): Promise<FullPrayer | null> {
-  const db = await getDatabase();
+  const db = getDatabase();
   const row = await db.getFirstAsync<PrayerRow>(
     `SELECT * FROM prayers WHERE id = ? LIMIT 1;`,
     [prayerId]
@@ -71,7 +51,7 @@ export async function getPrayersForCategory(
   categoryId: number,
   languageCode: string
 ): Promise<PrayerWithCategory[]> {
-  const db = await getDatabase();
+  const db = getDatabase();
   return await db.getAllAsync<PrayerWithCategory>(
     `SELECT
        p.id,
@@ -91,7 +71,7 @@ export async function getPrayersForCategory(
 export const getFavoritePrayersForFolder = async (
   folderName: string
 ): Promise<PrayerType[]> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   return await db.getAllAsync<PrayerType>(
     `
     SELECT p.*
@@ -108,7 +88,7 @@ export const getFavoritePrayersForFolder = async (
 export async function getAllPrayersForArabic(
   categoryId: number
 ): Promise<PrayerWithCategory[]> {
-  const db = await getDatabase();
+  const db = getDatabase();
   return await db.getAllAsync<PrayerWithCategory>(
     `SELECT
        id,
@@ -125,7 +105,7 @@ export async function getAllPrayersForArabic(
 export const getFoldersForPrayer = async (
   prayerId: number
 ): Promise<string[]> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   const rows = await db.getAllAsync<{ folder_name: string }>(
     `SELECT DISTINCT folder_name FROM favorite_prayers WHERE prayer_id = ?;`,
     [prayerId]
@@ -136,7 +116,7 @@ export const getFoldersForPrayer = async (
 export const getFavoritePrayerFolders = async (): Promise<
   FavoritePrayerFolderType[]
 > => {
-  const db = await getDatabase();
+  const db = getDatabase();
   const rows = await db.getAllAsync<{
     name: string;
     color: string;
@@ -163,7 +143,7 @@ export const getFavoritePrayerFolders = async (): Promise<
 
 export const getFavoritePrayers = async (): Promise<PrayerType[]> => {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getAllAsync<PrayerType>(`
       SELECT DISTINCT p.*
       FROM prayers p
@@ -178,7 +158,7 @@ export const getFavoritePrayers = async (): Promise<PrayerType[]> => {
 };
 
 export const createFolder = async (name: string, color: string) => {
-  const db = await getDatabase();
+  const db = getDatabase();
   await db.runAsync(
     `INSERT OR IGNORE INTO prayer_folders (name, color) VALUES (?, ?);`,
     [name, color]
@@ -190,7 +170,7 @@ export const addPrayerToFolder = async (
   prayerId: number,
   folder: { name: string; color: string }
 ): Promise<void> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   await db.runAsync(
     `
     INSERT OR IGNORE INTO favorite_prayers (prayer_id, folder_name, folder_color)
@@ -204,7 +184,7 @@ export async function removePrayerFromFolder(
   prayerId: number,
   folderName: string
 ): Promise<void> {
-  const db = await getDatabase();
+  const db = getDatabase();
   await db.runAsync(
     `
     DELETE FROM favorite_prayers
@@ -218,7 +198,7 @@ export const togglePrayerFavorite = async (
   prayerId: number,
   folder: { name: string; color: string }
 ): Promise<boolean> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   const row = await db.getFirstAsync<{ count: number }>(
     `SELECT COUNT(*) AS count
        FROM favorite_prayers
@@ -246,7 +226,7 @@ export const togglePrayerFavorite = async (
 export async function getCategoryByTitle(
   title: string
 ): Promise<PrayerCategoryType | null> {
-  const db = await getDatabase();
+  const db = getDatabase();
   const row = await db.getFirstAsync<PrayerCategoryType>(
     `SELECT id, title
      FROM prayer_categories
@@ -260,7 +240,7 @@ export async function getCategoryByTitle(
 export async function getChildCategories(
   parentId: number
 ): Promise<PrayerCategoryType[]> {
-  const db = await getDatabase();
+  const db = getDatabase();
   return await db.getAllAsync<PrayerCategoryType>(
     `SELECT pc.id, pc.title
      FROM prayer_categories pc,
@@ -275,7 +255,7 @@ export async function getChildCategories(
 export async function removeFolder(
   name: string
 ): Promise<{ deletedFolder: boolean; removedFavorites: number }> {
-  const db = await getDatabase();
+  const db = getDatabase();
 
   let removedFavorites = 0;
   let deletedFolder = false;
@@ -310,7 +290,7 @@ export async function removeFolder(
 
 // All descendant category ids of root (including root)
 export async function getCategoryTreeIds(rootId: number): Promise<number[]> {
-  const db = await getDatabase();
+  const db = getDatabase();
   const rows = await db.getAllAsync<{ id: number }>(
     `
     WITH RECURSIVE cat_tree(id) AS (
@@ -333,7 +313,7 @@ export async function getPrayersForCategoryTree(
   rootCategoryId: number,
   languageCode: string
 ): Promise<PrayerWithCategory[]> {
-  const db = await getDatabase();
+  const db = getDatabase();
   return db.getAllAsync<PrayerWithCategory>(
     `
     WITH RECURSIVE cat_tree(id) AS (
@@ -363,7 +343,7 @@ export async function getPrayersForCategoryTree(
 export async function getAllPrayersForArabicTree(
   rootCategoryId: number
 ): Promise<PrayerWithCategory[]> {
-  const db = await getDatabase();
+  const db = getDatabase();
   return db.getAllAsync<PrayerWithCategory>(
     `
     WITH RECURSIVE cat_tree(id) AS (

@@ -39,7 +39,7 @@
 // //   lang: Language,
 // //   limit = 50
 // // ): Promise<QuranVerseType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   const { table, col, select } = verseSelectFor(lang);
 
 // //   return db.getAllAsync<QuranVerseType>(
@@ -60,7 +60,7 @@
 // //   sura: number,
 // //   aya: number
 // // ): Promise<QuranVerseType | null> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 
 // //   if (lang === "en") {
 // //     const row = await db.getFirstAsync<
@@ -97,7 +97,7 @@
 // //   lang: Language,
 // //   sura: number
 // // ): Promise<QuranVerseType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 
 // //   if (lang === "en") {
 // //     return db.getAllAsync<QuranVerseType & { transliteration: string | null }>(
@@ -127,7 +127,7 @@
 
 // // /** List all surahs (metadata). */
 // // export async function getSurahList(): Promise<SuraRowType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<SuraRowType>(
 // //     `
 // //     SELECT
@@ -142,7 +142,7 @@
 // // export async function getSurahInfoByNumber(
 // //   surahNumber: number
 // // ): Promise<SuraRowType | null> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   const row = await db.getFirstAsync<SuraRowType>(
 // //     `
 // //     SELECT
@@ -171,7 +171,7 @@
 
 // // /** Markers for a given surah. */
 // // export async function getHizbForSurah(sura: number): Promise<MarkerRowType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<MarkerRowType>(
 // //     `SELECT id, sura, aya FROM hizb WHERE sura = ? ORDER BY aya;`,
 // //     [sura]
@@ -179,7 +179,7 @@
 // // }
 
 // // export async function getRukuForSurah(sura: number): Promise<MarkerRowType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<MarkerRowType>(
 // //     `SELECT id, sura, aya FROM ruku WHERE sura = ? ORDER BY aya;`,
 // //     [sura]
@@ -189,7 +189,7 @@
 // // export async function getSajdaForSurah(
 // //   sura: number
 // // ): Promise<(MarkerRowType & { type: number | null })[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<MarkerRowType & { type: number | null }>(
 // //     `SELECT id, sura, aya, type FROM sajda WHERE sura = ? ORDER BY aya;`,
 // //     [sura]
@@ -197,7 +197,7 @@
 // // }
 
 // // export async function getJuzForSurah(sura: number): Promise<JuzRow[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<JuzRow>(
 // //     `SELECT id, sura, aya, page FROM juz WHERE sura = ? ORDER BY aya;`,
 // //     [sura]
@@ -209,7 +209,7 @@
 // //   sura: number,
 // //   aya: number
 // // ): Promise<number | null> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   const row = await db.getFirstAsync<{ page: number }>(
 // //     `
 // //     SELECT page
@@ -262,7 +262,7 @@
 // //   lang: Language,
 // //   limit = 50
 // // ): Promise<QuranVerseType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   const { table, col, select } = verseSelectFor(lang);
 
 // //   return db.getAllAsync<QuranVerseType>(
@@ -283,7 +283,7 @@
 // //   sura: number,
 // //   aya: number
 // // ): Promise<QuranVerseType | null> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 
 // //   // Always include transliteration from aya_en_transliteration table
 // //   // as it contains the Arabic transliteration for all languages
@@ -346,7 +346,7 @@
 // //   lang: Language,
 // //   sura: number
 // // ): Promise<QuranVerseType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 
 // //   // Always include transliteration from aya_en_transliteration table
 // //   // as it contains the Arabic transliteration for all languages
@@ -397,7 +397,7 @@
 
 // // /** List all surahs (metadata). */
 // // export async function getSurahList(): Promise<SuraRowType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<SuraRowType>(
 // //     `
 // //     SELECT
@@ -412,7 +412,7 @@
 // // export async function getSurahInfoByNumber(
 // //   surahNumber: number
 // // ): Promise<SuraRowType | null> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   const row = await db.getFirstAsync<SuraRowType>(
 // //     `
 // //     SELECT
@@ -441,7 +441,7 @@
 
 // // /** Markers for a given surah. */
 // // export async function getHizbForSurah(sura: number): Promise<MarkerRowType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<MarkerRowType>(
 // //     `SELECT id, sura, aya FROM hizb WHERE sura = ? ORDER BY aya;`,
 // //     [sura]
@@ -449,7 +449,7 @@
 // // }
 
 // // export async function getRukuForSurah(sura: number): Promise<MarkerRowType[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<MarkerRowType>(
 // //     `SELECT id, sura, aya FROM ruku WHERE sura = ? ORDER BY aya;`,
 // //     [sura]
@@ -459,7 +459,7 @@
 // // export async function getSajdaForSurah(
 // //   sura: number
 // // ): Promise<(MarkerRowType & { type: number | null })[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<MarkerRowType & { type: number | null }>(
 // //     `SELECT id, sura, aya, type FROM sajda WHERE sura = ? ORDER BY aya;`,
 // //     [sura]
@@ -467,7 +467,7 @@
 // // }
 
 // // export async function getJuzForSurah(sura: number): Promise<JuzRow[]> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   return db.getAllAsync<JuzRow>(
 // //     `SELECT id, sura, aya, page FROM juz WHERE sura = ? ORDER BY aya;`,
 // //     [sura]
@@ -479,7 +479,7 @@
 // //   sura: number,
 // //   aya: number
 // // ): Promise<number | null> {
-// //   const db = await getDatabase();
+// //   const db = getDatabase();
 // //   const row = await db.getFirstAsync<{ page: number }>(
 // //     `
 // //     SELECT page
@@ -535,7 +535,7 @@
 //   lang: Language,
 //   limit = 50
 // ): Promise<QuranVerseType[]> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   const { table, col, select } = verseSelectFor(lang);
 
 //   return db.getAllAsync<QuranVerseType>(
@@ -556,7 +556,7 @@
 //   sura: number,
 //   aya: number
 // ): Promise<QuranVerseType | null> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 
 //   // Always include transliteration from aya_en_transliteration table
 //   // as it contains the Arabic transliteration for all languages
@@ -619,7 +619,7 @@
 //   lang: Language,
 //   sura: number
 // ): Promise<QuranVerseType[]> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 
 //   // Always include transliteration from aya_en_transliteration table
 //   // as it contains the Arabic transliteration for all languages
@@ -670,7 +670,7 @@
 
 // /** List all surahs (metadata). */
 // export async function getSurahList(): Promise<SuraRowType[]> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   return db.getAllAsync<SuraRowType>(
 //     `
 //     SELECT
@@ -685,7 +685,7 @@
 // export async function getSurahInfoByNumber(
 //   surahNumber: number
 // ): Promise<SuraRowType | null> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   const row = await db.getFirstAsync<SuraRowType>(
 //     `
 //     SELECT
@@ -714,7 +714,7 @@
 
 // /** Markers for a given surah. */
 // export async function getHizbForSurah(sura: number): Promise<MarkerRowType[]> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   return db.getAllAsync<MarkerRowType>(
 //     `SELECT id, sura, aya FROM hizb WHERE sura = ? ORDER BY aya;`,
 //     [sura]
@@ -722,7 +722,7 @@
 // }
 
 // export async function getRukuForSurah(sura: number): Promise<MarkerRowType[]> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   return db.getAllAsync<MarkerRowType>(
 //     `SELECT id, sura, aya FROM ruku WHERE sura = ? ORDER BY aya;`,
 //     [sura]
@@ -732,7 +732,7 @@
 // export async function getSajdaForSurah(
 //   sura: number
 // ): Promise<(MarkerRowType & { type: number | null })[]> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   return db.getAllAsync<MarkerRowType & { type: number | null }>(
 //     `SELECT id, sura, aya, type FROM sajda WHERE sura = ? ORDER BY aya;`,
 //     [sura]
@@ -740,7 +740,7 @@
 // }
 
 // export async function getJuzForSurah(sura: number): Promise<JuzRow[]> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   return db.getAllAsync<JuzRow>(
 //     `SELECT id, sura, aya, page FROM juz WHERE sura = ? ORDER BY aya;`,
 //     [sura]
@@ -752,7 +752,7 @@
 //   sura: number,
 //   aya: number
 // ): Promise<number | null> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   const row = await db.getFirstAsync<{ page: number }>(
 //     `
 //     SELECT page
@@ -768,7 +768,7 @@
 
 // /** Start (sura/aya) for a specific juz (1..30). */
 // export async function getJuzStart(juz: number): Promise<JuzStartType | null> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   const row = await db.getFirstAsync<{
 //     id: number;
 //     sura: number;
@@ -782,7 +782,7 @@
 
 // /** All juz starts in order 1..30. */
 // export async function getAllJuzStarts(): Promise<JuzStartType[]> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   const rows = await db.getAllAsync<{
 //     id: number;
 //     sura: number;
@@ -822,7 +822,7 @@
 //   sura: number,
 //   aya: number
 // ): Promise<number | null> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   const row = await db.getFirstAsync<{ id: number }>(
 //     `
 //     SELECT id
@@ -839,7 +839,7 @@
 // /** Compute [start, end) bounds for a juz (1..30). */
 // export async function getJuzBounds(juz: number): Promise<JuzBoundsType | null> {
 //   if (juz < 1 || juz > 30) return null;
-//   const db = await getDatabase();
+//   const db = getDatabase();
 
 //   const start = await db.getFirstAsync<{ sura: number; aya: number }>(
 //     `SELECT sura, aya FROM juz WHERE id = ? LIMIT 1;`,
@@ -878,7 +878,7 @@
 // export async function getJuzAyahRefs(
 //   juz: number
 // ): Promise<Array<{ sura: number; aya: number }>> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   const bounds = await getJuzBounds(juz);
 //   if (!bounds) return [];
 
@@ -913,7 +913,7 @@
 //   lang: Language,
 //   juz: number
 // ): Promise<(QuranVerseType & { transliteration: string | null })[]> {
-//   const db = await getDatabase();
+//   const db = getDatabase();
 //   const bounds = await getJuzBounds(juz);
 //   if (!bounds) return [];
 
@@ -1010,7 +1010,7 @@ async function getJuzRowAtOrBefore(
   aya: number
 ): Promise<{ id: number; page: number; sura: number; aya: number } | null> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getFirstAsync(
       `
       SELECT id, page, sura, aya
@@ -1029,30 +1029,9 @@ async function getJuzRowAtOrBefore(
 
 // --- queries ---------------------------------------------------------------
 
-/** LIKE search over verses in the chosen language. */
-export async function searchQuran(
-  searchTerm: string,
-  lang: Language,
-  limit = 50
-): Promise<QuranVerseType[]> {
-  try {
-    const db = await getDatabase();
-    const { table, col, select } = verseSelectFor(lang);
-    return await db.getAllAsync<QuranVerseType>(
-      `
-      SELECT ${select}
-      FROM ${table}
-      WHERE ${col} LIKE ?
-      ORDER BY sura, aya
-      LIMIT ?;
-      `,
-      [`%${searchTerm}%`, limit]
-    );
-  } catch (err) {
-    console.error("searchQuran error", { searchTerm, lang, limit, err });
-    return [];
-  }
-}
+
+
+
 
 /** Get a single ayah (always with Arabic transliteration). */
 export async function getAyah(
@@ -1061,7 +1040,7 @@ export async function getAyah(
   aya: number
 ): Promise<QuranVerseType | null> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
 
     if (lang === "ar") {
       const row = await db.getFirstAsync<
@@ -1126,7 +1105,7 @@ export async function getSurahVerses(
   sura: number
 ): Promise<QuranVerseType[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
 
     if (lang === "ar") {
       return await db.getAllAsync<
@@ -1185,7 +1164,7 @@ export async function getSurahVerses(
 /** List all surahs (metadata). */
 export async function getSurahList(): Promise<SuraRowType[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getAllAsync<SuraRowType>(
       `
       SELECT
@@ -1205,7 +1184,7 @@ export async function getSurahInfoByNumber(
   surahNumber: number
 ): Promise<SuraRowType | null> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const row = await db.getFirstAsync<SuraRowType>(
       `
       SELECT
@@ -1244,7 +1223,7 @@ export async function getSurahDisplayName(
 /** Markers for a given surah. */
 export async function getHizbForSurah(sura: number): Promise<MarkerRowType[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getAllAsync<MarkerRowType>(
       `SELECT id, sura, aya FROM hizb WHERE sura = ? ORDER BY aya;`,
       [sura]
@@ -1257,7 +1236,7 @@ export async function getHizbForSurah(sura: number): Promise<MarkerRowType[]> {
 
 export async function getRukuForSurah(sura: number): Promise<MarkerRowType[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getAllAsync<MarkerRowType>(
       `SELECT id, sura, aya FROM ruku WHERE sura = ? ORDER BY aya;`,
       [sura]
@@ -1272,7 +1251,7 @@ export async function getSajdaForSurah(
   sura: number
 ): Promise<(MarkerRowType & { type: number | null })[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getAllAsync<MarkerRowType & { type: number | null }>(
       `SELECT id, sura, aya, type FROM sajda WHERE sura = ? ORDER BY aya;`,
       [sura]
@@ -1285,7 +1264,7 @@ export async function getSajdaForSurah(
 
 export async function getJuzForSurah(sura: number): Promise<JuzRow[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getAllAsync<JuzRow>(
       `SELECT id, sura, aya, page FROM juz WHERE sura = ? ORDER BY aya;`,
       [sura]
@@ -1327,7 +1306,7 @@ export async function getJuzOfAyah(
 /** Start (sura/aya) for a specific juz (1..30). */
 export async function getJuzStart(juz: number): Promise<JuzStartType | null> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const row = await db.getFirstAsync<{
       id: number;
       sura: number;
@@ -1346,7 +1325,7 @@ export async function getJuzStart(juz: number): Promise<JuzStartType | null> {
 /** All juz starts in order 1..30. */
 export async function getAllJuzStarts(): Promise<JuzStartType[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const rows = await db.getAllAsync<{
       id: number;
       sura: number;
@@ -1398,7 +1377,7 @@ export async function getJuzButtonLabels(
 export async function getJuzBounds(juz: number): Promise<JuzBoundsType | null> {
   if (juz < 1 || juz > 30) return null;
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
 
     const start = await db.getFirstAsync<{ sura: number; aya: number }>(
       `SELECT sura, aya FROM juz WHERE id = ? LIMIT 1;`,
@@ -1442,7 +1421,7 @@ export async function getJuzAyahRefs(
   juz: number
 ): Promise<Array<{ sura: number; aya: number }>> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const bounds = await getJuzBounds(juz);
     if (!bounds) return [];
 
@@ -1485,7 +1464,7 @@ export async function getJuzVerses(
   juz: number
 ): Promise<(QuranVerseType & { transliteration: string | null })[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const bounds = await getJuzBounds(juz);
     if (!bounds) return [];
 
@@ -1550,7 +1529,7 @@ async function getPageRowAtOrBefore(
   aya: number
 ): Promise<{ id: number; sura: number; aya: number } | null> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getFirstAsync(
       `
       SELECT id, sura, aya
@@ -1570,7 +1549,7 @@ export async function getPageStart(
   page: number
 ): Promise<{ page: number; sura: number; aya: number } | null> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const row = await db.getFirstAsync<{
       id: number;
       sura: number;
@@ -1589,7 +1568,7 @@ export async function getPageBounds(page: number): Promise<{
   endAya: number | null;
 } | null> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
 
     const start = await db.getFirstAsync<{ sura: number; aya: number }>(
       `SELECT sura, aya FROM page WHERE id = ? LIMIT 1;`,
@@ -1628,7 +1607,7 @@ export async function getPageVerses(
   page: number
 ): Promise<(QuranVerseType & { transliteration: string | null })[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const bounds = await getPageBounds(page);
     if (!bounds) return [];
 
@@ -1702,7 +1681,7 @@ export async function getPageButtonLabels(
   lang: Language
 ): Promise<Array<{ page: number; label: string; sura: number; aya: number }>> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const rows = await db.getAllAsync<{
       id: number;
       sura: number;

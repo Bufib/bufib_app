@@ -30,36 +30,41 @@ function RenderQuestionSubCategoryItems() {
   const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme() || "light";
   const { lang } = useLanguage();
-  const {t} = useTranslation()
+  const { t } = useTranslation();
 
   useEffect(() => {
-    const loadQuestions = async () => {
+    let cancelled = false; // cleanup guard
+    setIsLoading(true);
+
+    (async () => {
       try {
-        setIsLoading(true);
-        const questions = await getQuestionsForSubcategory(
+        const qs = await getQuestionsForSubcategory(
           category,
           subcategory,
           lang
         );
+        if (cancelled) return;
 
-        if (questions) {
-          setQuestions(questions);
+        if (qs && qs.length) {
+          setQuestions(qs);
           setError(null);
         } else {
-          console.log("Fehler in RenderQuestionSubCategoryItems");
           setQuestions([]);
           setError("Fragen konnten nicht geladen werden!");
         }
-      } catch (error) {
-        console.log("Fehler in RenderQuestionSubCategoryItems " + error);
+      } catch (e) {
+        if (cancelled) return;
+        console.log("Fehler in RenderQuestionSubCategoryItems", e);
         setQuestions([]);
         setError("Fragen konnten nicht geladen werden!");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
-    };
+    })();
 
-    loadQuestions();
+    return () => {
+      cancelled = true; // stop late state updates
+    };
   }, [category, subcategory, lang]);
 
   //  Display error state
@@ -80,7 +85,7 @@ function RenderQuestionSubCategoryItems() {
   if (isLoading) {
     return (
       <View style={styles.centeredContainer}>
-       <LoadingIndicator size={"large"}/>
+        <LoadingIndicator size={"large"} />
       </View>
     );
   }

@@ -41,7 +41,7 @@
 
 // //     if (transErr) throw transErr;
 
-// //     const db = await getDatabase();
+// //     const db = getDatabase();
 
 // //     // 4) Perform all DB writes in one exclusive transaction
 // //     await db.withExclusiveTransactionAsync(async (txn) => {
@@ -166,7 +166,7 @@
 //       .eq("language_code", language);
 //     if (transErr) throw transErr;
 
-//     const db = await getDatabase();
+//     const db = getDatabase();
 //     const runTx =
 //       (db as any).withExclusiveTransactionAsync?.bind(db) ??
 //       db.withTransactionAsync.bind(db);
@@ -308,7 +308,7 @@ export default async function syncPrayers(): Promise<void> {
     if (prayerErr) throw prayerErr;
     if (transErr) throw transErr;
 
-    const db = await getDatabase();
+    const db = getDatabase();
     const runTx =
       (db as any).withExclusiveTransactionAsync?.bind(db) ??
       db.withTransactionAsync.bind(db);

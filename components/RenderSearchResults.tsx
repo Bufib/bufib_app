@@ -1,418 +1,691 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+// src/components/RenderSearchResults.tsx
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  View,
+  ActivityIndicator,
+  FlatList,
+  Keyboard,
+  Pressable,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
-  FlatList,
-  StyleSheet,
-  useColorScheme,
   TouchableOpacity,
-  Animated,
-  Easing,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
+  View,
+  useColorScheme,
 } from "react-native";
-import debounce from "lodash.debounce";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { searchQuestions } from "@/db/queries/questions";
-import { searchPrayers } from "@/db/queries/prayers";
-import { useSearchPodcasts } from "@/hooks/useSearchPodcasts";
-import { useSearchNewsArticles } from "@/hooks/useSearchNewsArticles";
-import {
+import debounce from "lodash.debounce";
+
+import { Colors } from "@/constants/Colors";
+import { useLanguage } from "@/contexts/LanguageContext";
+import type {
+  Language,
+  QuestionType,
+  QuranVerseType,
   PodcastType,
   NewsArticlesType,
-  CombinedResult,
-  PrayerType,
-  QuestionType,
-  LanguageCode,
 } from "@/constants/Types";
-import { Colors } from "@/constants/Colors";
+
+import {
+  searchPrayers,
+  searchQuran,
+  searchQuestions,
+  type PagedResult,
+} from "@/db/search";
+import { useSearchPodcasts } from "@/hooks/useSearchPodcasts";
+import { useSearchNewsArticles } from "@/hooks/useSearchNewsArticles";
 import { ThemedText } from "./ThemedText";
-import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons";
+import { ThemedView } from "./ThemedView";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
-import { LoadingIndicator } from "./LoadingIndicator";
-import { useLanguage } from "@/contexts/LanguageContext";
 
-const SearchScreen = () => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [questionAndPrayerResults, setQuestionAndPrayerResults] = useState<
-    CombinedResult[]
-  >([]);
-  const [combinedDisplayResults, setCombinedDisplayResults] = useState<
-    CombinedResult[]
-  >([]);
-  const [manualLoading, setManualLoading] = useState<boolean>(false);
+type TabType = "quran" | "questions" | "prayers" | "podcasts" | "news";
+
+type Props = {
+  initialTab?: TabType;
+  onPressQuran?: (v: { sura: number; aya: number }) => void;
+  onPressQuestion?: (v: { id: number }) => void;
+  onPressPrayer?: (v: { id: number }) => void;
+  onPressPodcast?: (v: { id: number }) => void;
+  onPressNews?: (v: { id: number }) => void;
+  pageSize?: number;
+};
+
+type QuranRow = QuranVerseType & {
+  id?: number;
+  transliteration: string | null;
+};
+type PrayerRow = {
+  id: number;
+  name: string;
+  prayer_text: string | null;
+  category_id: number | null;
+};
+type PodcastRow = PodcastType;
+type NewsRow = NewsArticlesType;
+type ResultRow = QuranRow | QuestionType | PrayerRow | PodcastRow | NewsRow;
+
+export default function RenderSearchResults({
+  initialTab = "quran",
+  onPressQuran,
+  onPressQuestion,
+  onPressPrayer,
+  onPressPodcast,
+  onPressNews,
+  pageSize = 30,
+}: Props) {
+  const { lang } = useLanguage();
   const colorScheme = useColorScheme() || "light";
-   const { lang } = useLanguage();
-  const podcastQuery = useSearchPodcasts(searchTerm);
-  const newsArticleSearchQuery = useSearchNewsArticles(searchTerm); 
   const { t } = useTranslation();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const performManualSearch = async (term: string) => {
-    if (term.trim().length === 0) {
-      setQuestionAndPrayerResults([]);
+  // ---- i18n key maps ----
+  const TAB_LABEL_KEY: Record<TabType, string> = {
+    quran: "tab_quran",
+    questions: "tab_questions",
+    prayers: "tab_prayers",
+    podcasts: "tab_podcasts",
+    news: "tab_news",
+  };
+  const PLACEHOLDER_KEY: Record<TabType, string> = {
+    quran: "placeholder_quran",
+    questions: "placeholder_questions",
+    prayers: "placeholder_prayers",
+    podcasts: "placeholder_podcasts",
+    news: "placeholder_news",
+  };
+
+  const [tab, setTab] = useState<TabType>(initialTab);
+  const [query, setQuery] = useState("");
+  const [debouncedTerm, setDebouncedTerm] = useState("");
+  const [rows, setRows] = useState<ResultRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [nextOffset, setNextOffset] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { rtl } = useLanguage();
+  // client-side paging for podcasts/news
+  const [visibleCount, setVisibleCount] = useState(pageSize);
+
+  // guard against stale responses
+  const reqIdRef = useRef(0);
+
+  // Debounce input (auto-search; no submit needed)
+  useEffect(() => {
+    const h = setTimeout(() => setDebouncedTerm(query.trim()), 350);
+    return () => clearTimeout(h);
+  }, [query]);
+
+  const canSearch = debouncedTerm.length > 0;
+
+  /* ---------- React Query hooks (only enabled on their tab) ---------- */
+  const {
+    data: podcastData = [],
+    isFetching: podcastsFetching,
+    error: podcastErr,
+  } = useSearchPodcasts(tab === "podcasts" ? debouncedTerm : ""); // disabled when not on podcasts tab
+
+  const {
+    data: newsData = [],
+    isFetching: newsFetching,
+    error: newsErr,
+  } = useSearchNewsArticles(tab === "news" ? debouncedTerm : ""); // disabled when not on news tab
+
+  /* ------------------------ Local DB search runner ------------------------ */
+  const runLocalSearch = useCallback(
+    async (opts?: { offset?: number; append?: boolean }) => {
+      if (!canSearch) {
+        setRows([]);
+        setTotal(0);
+        setNextOffset(null);
+        setError(null);
+        return;
+      }
+      if (tab === "podcasts" || tab === "news") return;
+
+      const myId = ++reqIdRef.current;
+      const offset = opts?.offset ?? 0;
+      const append = opts?.append ?? false;
+
+      try {
+        if (append) setIsLoadingMore(true);
+        else setIsLoading(true);
+
+        let result:
+          | PagedResult<QuranRow>
+          | PagedResult<QuestionType>
+          | PagedResult<PrayerRow>;
+
+        if (tab === "quran") {
+          result = await searchQuran(lang as Language, debouncedTerm, {
+            limit: pageSize,
+            offset,
+          });
+        } else if (tab === "questions") {
+          result = await searchQuestions(lang, debouncedTerm, {
+            limit: pageSize,
+            offset,
+          });
+        } else {
+          result = await searchPrayers(lang, debouncedTerm, {
+            limit: pageSize,
+            offset,
+          });
+        }
+
+        if (myId !== reqIdRef.current) return;
+
+        setError(null);
+        setTotal(result.total);
+        setNextOffset(result.nextOffset);
+        setRows((prev) => (append ? [...prev, ...result.rows] : result.rows));
+      } catch (e: any) {
+        if (myId !== reqIdRef.current) return;
+        console.warn("Search failed:", e);
+        setError(t("search_failed"));
+        if (!append) {
+          setRows([]);
+          setTotal(0);
+          setNextOffset(null);
+        }
+      } finally {
+        if (myId !== reqIdRef.current) return;
+        setIsLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [tab, lang, pageSize, debouncedTerm, canSearch, t]
+  );
+
+  /* -------- Single auto-search effect: runs on term/tab/lang changes ------- */
+  useEffect(() => {
+    reqIdRef.current++;
+    setVisibleCount(pageSize);
+
+    if (!canSearch) {
+      setRows([]);
+      setNextOffset(null);
+      setTotal(0);
+      setError(null);
       return;
     }
 
-    setManualLoading(true);
-    try {
-      const questionResults = await searchQuestions(term);
-      const prayerResults = await searchPrayers(term);
-
-      const questionsTagged: CombinedResult[] = questionResults.map(
-        (q: QuestionType) => ({
-          renderId: `question-${q.id}`,
-          type: "question",
-          questionId: q.id,
-          question: q.question,
-          title: q.title,
-          question_category_name: q.question_category_name,
-          question_subcategory_name: q.question_subcategory_name,
-        })
-      );
-
-      const prayersTagged: CombinedResult[] = prayerResults.map(
-        (p: PrayerType) => ({
-          renderId: `prayer-${p.id}`,
-          prayerId: p.id,
-          type: "prayer",
-          name: p.name,
-          arabic_text: p.arabic_text,
-        })
-      );
-
-      setQuestionAndPrayerResults([...questionsTagged, ...prayersTagged]);
-    } catch (err) {
-      console.error("Error running combined manual search:", err);
-      setQuestionAndPrayerResults([]);
-    } finally {
-      setManualLoading(false);
-    }
-  };
-
-  // animate opacity on mount
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
-  const debouncedManualSearch = useCallback(
-    debounce(performManualSearch, 300),
-    []
-  );
-
-  useEffect(() => {
-    if (searchTerm.trim().length > 0) {
-      debouncedManualSearch(searchTerm);
+    if (tab === "podcasts" || tab === "news") {
+      setError(null); // handled by React Query hooks
     } else {
-      setQuestionAndPrayerResults([]);
+      runLocalSearch();
     }
-    return () => {
-      debouncedManualSearch.cancel();
-    };
-  }, [searchTerm, debouncedManualSearch]);
+  }, [debouncedTerm, tab, lang, pageSize, canSearch, runLocalSearch]);
 
-  useEffect(() => {
-    const podcastsData = podcastQuery.data || [];
-    const podcastsTagged: CombinedResult[] = podcastsData.map(
-      (p: PodcastType) => ({
-        renderId: `podcast-${p.id}`,
-        podcastId: p.id,
-        type: "podcast",
-        podcastEpisodeTitle: p.title,
-        podcastEpisodeDescription: p.description,
-        podcast: p,
-      })
-    );
+  const loadMore = useCallback(() => {
+    if (!canSearch) return;
 
-    const newsArticlesData = newsArticleSearchQuery.data || [];
-    const newsArticlesTagged: CombinedResult[] = newsArticlesData.map(
-      (na: NewsArticlesType) => ({
-        renderId: `newsArticle-${na.id}`,
-        newsArticleId: na.id,
-        type: "newsArticle",
-        newsTitle: na.title,
-        newsSnippet:
-          na.title ||
-          (na.content ? na.content.substring(0, 100) + "..." : undefined),
-      })
-    );
+    if (tab === "podcasts") {
+      if (!podcastsFetching && visibleCount < podcastData.length) {
+        setVisibleCount((c) => c + pageSize);
+      }
+      return;
+    }
+    if (tab === "news") {
+      if (!newsFetching && visibleCount < newsData.length) {
+        setVisibleCount((c) => c + pageSize);
+      }
+      return;
+    }
 
-    if (searchTerm.trim().length === 0) {
-      setCombinedDisplayResults([]);
-    } else {
-      setCombinedDisplayResults([
-        ...questionAndPrayerResults,
-        ...podcastsTagged,
-        ...newsArticlesTagged, // Added
-      ]);
+    if (!isLoading && !isLoadingMore && nextOffset != null) {
+      runLocalSearch({ offset: nextOffset, append: true });
     }
   }, [
-    searchTerm,
-    questionAndPrayerResults,
-    podcastQuery.data,
-    newsArticleSearchQuery.data, // Added
+    canSearch,
+    tab,
+    podcastsFetching,
+    newsFetching,
+    visibleCount,
+    podcastData.length,
+    newsData.length,
+    pageSize,
+    isLoading,
+    isLoadingMore,
+    nextOffset,
+    runLocalSearch,
   ]);
 
-  const isLoading =
-    manualLoading ||
-    podcastQuery.isFetching ||
-    newsArticleSearchQuery.isFetching; // Added
+  const onClear = useCallback(() => {
+    setQuery("");
+    setRows([]);
+    setTotal(0);
+    setNextOffset(null);
+    setError(null);
+    setVisibleCount(pageSize);
+  }, [pageSize]);
 
-  const renderItem = ({ item }: { item: CombinedResult }) => {
-    let itemTextContent = "";
-    let itemTypeText = "";
-    let itemValue = "";
-    switch (item.type) {
-      case "question":
-        itemTypeText = t("question");
-        (itemValue = "question"),
-          (itemTextContent = item.question || item.title || "");
-        break;
-      case "prayer":
-        itemTypeText = t("prayer");
-        (itemValue = "prayer"),
-          (itemTextContent = item.name || item.arabic_text || "");
-        break;
-      case "podcast":
-        itemTypeText = t("podcast");
-        (itemValue = "podcast"),
-          (itemTextContent = item.podcastEpisodeTitle || "");
-        break;
-      case "newsArticle":
-        itemTypeText = t("newsArticle");
-        (itemValue = "newsArticle"), (itemTextContent = item.newsTitle || "");
-        break;
-      default:
-        itemTextContent = "";
-    }
+  /* ------------------------------ Rendering ------------------------------ */
 
-    return (
-      <TouchableOpacity
-        style={[
-          styles.itemContainer,
-          { backgroundColor: Colors[colorScheme].contrast },
-        ]}
-        onPress={() => {
-          if (item.type === "question") {
-            router.push({
-              pathname: "/(displayQuestion)",
-              params: {
-                category: item.question_category_name,
-                subcategory: item.question_subcategory_name,
-                questionId: item.questionId,
-                questionTitle: item.title,
-              },
-            });
-          } else if (item.type === "prayer") {
-            router.push({
-              pathname: "/prayer",
-              params: { prayer: item.prayerId.toString() },
-            });
-          } else if (item.type === "podcast") {
-            router.push({
-              pathname: "/(podcast)/indexPodcast",
-              params: { podcast: JSON.stringify(item.podcast) },
-            });
-          } else if (item.type === "newsArticle") {
-            router.push({
-              pathname: "/(newsArticle)",
-              params: { articleId: item.newsArticleId },
-            });
-          }
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingRight: 5,
-            marginBottom: 5,
-          }}
-        >
-          <ThemedText
-            style={[
-              styles.itemType,
-              { color: Colors[colorScheme].itemTypeColor },
-            ]}
-          >
-            {itemTypeText}
-          </ThemedText>
-          {itemValue === "question" ? (
-            <AntDesign
-              name="question-circle"
-              size={24}
-              color={Colors[colorScheme].defaultIcon}
-              style={styles.iconStyle}
-            />
-          ) : itemValue === "prayer" ? (
-            <Entypo
-              name="open-book"
-              size={24}
-              color={Colors[colorScheme].defaultIcon}
-              style={styles.iconStyle}
-            />
-          ) : itemValue === "podcast" ? (
-            <FontAwesome5
-              name="headphones"
-              size={24}
-              color={Colors[colorScheme].defaultIcon}
-              style={styles.iconStyle}
-            />
-          ) : (
-            <Entypo
-              name="news"
-              size={24}
-              color={Colors[colorScheme].defaultIcon}
-              style={styles.iconStyle}
-            />
-          )}
-        </View>
+  const activeLoading =
+    tab === "podcasts"
+      ? podcastsFetching
+      : tab === "news"
+      ? newsFetching
+      : isLoading || isLoadingMore;
 
-        <ThemedText style={styles.itemText}>{itemTextContent}</ThemedText>
-        {item.type === "podcast" && item.podcastEpisodeDescription && (
-          <ThemedText style={styles.itemDescription}>
-            {item.podcastEpisodeDescription}
-          </ThemedText>
-        )}
-        {item.type === "newsArticle" &&
-          item.newsSnippet && ( // Added
-            <ThemedText style={styles.itemDescription}>
-              {item.newsSnippet}
-            </ThemedText>
-          )}
-      </TouchableOpacity>
-    );
-  };
+  const activeError =
+    tab === "podcasts"
+      ? podcastErr?.message ?? null
+      : tab === "news"
+      ? newsErr?.message ?? null
+      : error;
 
-  return (
-    <TouchableWithoutFeedback
-      style={{ flex: 1 }}
-      onPress={() => Keyboard.dismiss()}
-    >
-      <Animated.View
-        style={{
-          flex: 1,
-          opacity: fadeAnim,
-        }}
-      >
-        <SafeAreaView
-          style={[
-            styles.container,
-            { backgroundColor: Colors[colorScheme].background },
-          ]}
-          edges={["top"]}
-        >
-          <TextInput
-            style={[
-              styles.input,
+  const activeTotal =
+    tab === "podcasts"
+      ? canSearch
+        ? podcastData.length
+        : 0
+      : tab === "news"
+      ? canSearch
+        ? newsData.length
+        : 0
+      : total;
+
+  const activeRows: ResultRow[] =
+    tab === "podcasts"
+      ? (podcastData.slice(0, visibleCount) as ResultRow[])
+      : tab === "news"
+      ? (newsData.slice(0, visibleCount) as ResultRow[])
+      : rows;
+
+  const placeholder = t(PLACEHOLDER_KEY[tab]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: ResultRow }) => {
+      if (tab === "quran") {
+        const v = item as QuranRow;
+        return (
+          <Pressable
+            onPress={() => onPressQuran?.({ sura: v.sura, aya: v.aya })}
+            style={({ pressed }) => [
+              styles.row,
               {
                 backgroundColor: Colors[colorScheme].contrast,
-                color: Colors[colorScheme].text,
+                opacity: pressed ? 0.8 : 1,
+                borderWidth: 0.2,
               },
             ]}
-            placeholder={t("searchPlaceholder")}
-            value={searchTerm}
-            onChangeText={setSearchTerm}
-            autoCorrect={false}
-            autoCapitalize="none"
-          />
-
-          {isLoading && (
-            <LoadingIndicator style={{ marginVertical: 12 }} size="large" />
-          )}
-
-          <FlatList
-            data={combinedDisplayResults}
-            keyExtractor={(item, index) => item.renderId}
-            keyboardDismissMode="on-drag"
-            renderItem={renderItem}
-            ListEmptyComponent={
-              !isLoading && searchTerm.trim().length > 0 ? (
-                <ThemedText style={styles.emptyText}>
-                  {t("noSearchResults")}
-                </ThemedText>
-              ) : null
-            }
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          />
-        </SafeAreaView>
-      </Animated.View>
-    </TouchableWithoutFeedback>
+          >
+            <ThemedText style={styles.rowTitle}>
+              {t("quran_sura_aya", { sura: v.sura, aya: v.aya })}
+            </ThemedText>
+            <ThemedText style={styles.rowSubtitle} numberOfLines={3}>
+              {v.text}
+            </ThemedText>
+            {!!v.transliteration && (
+              <ThemedText style={styles.rowTiny} numberOfLines={2}>
+                {v.transliteration}
+              </ThemedText>
+            )}
+          </Pressable>
+        );
+      } else if (tab === "questions") {
+        const q = item as QuestionType;
+        return (
+          <Pressable
+            onPress={() => onPressQuestion?.({ id: q.id })}
+            style={({ pressed }) => [
+              styles.row,
+              {
+                backgroundColor: Colors[colorScheme].contrast,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
+          >
+            <ThemedText style={styles.rowTitle} numberOfLines={2}>
+              {q.title}
+            </ThemedText>
+            <ThemedText style={styles.rowSubtitle} numberOfLines={3}>
+              {q.question}
+            </ThemedText>
+          </Pressable>
+        );
+      } else if (tab === "prayers") {
+        const p = item as PrayerRow;
+        return (
+          <Pressable
+            onPress={() => onPressPrayer?.({ id: p.id })}
+            style={({ pressed }) => [
+              styles.row,
+              {
+                backgroundColor: Colors[colorScheme].contrast,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
+          >
+            <ThemedText style={styles.rowTitle} numberOfLines={2}>
+              {p.name}
+            </ThemedText>
+            {!!p.prayer_text && (
+              <ThemedText
+                style={[styles.rowSubtitle, rtl && { textAlign: "right" }]}
+                numberOfLines={3}
+              >
+                {p.prayer_text}
+              </ThemedText>
+            )}
+          </Pressable>
+        );
+      } else if (tab === "podcasts") {
+        const pc = item as PodcastRow;
+        return (
+          <Pressable
+            onPress={() => onPressPodcast?.({ id: pc.id })}
+            style={({ pressed }) => [
+              styles.row,
+              {
+                backgroundColor: Colors[colorScheme].contrast,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
+          >
+            <Text style={styles.rowTitle} numberOfLines={2}>
+              {pc.title}
+            </Text>
+            {!!pc.description && (
+              <Text style={styles.rowSubtitle} numberOfLines={3}>
+                {pc.description}
+              </Text>
+            )}
+            <Text style={[styles.rowTiny, { marginTop: 6 }]}>
+              {new Date(pc.created_at).toLocaleDateString()}
+            </Text>
+          </Pressable>
+        );
+      } else {
+        const n = item as NewsRow;
+        return (
+          <Pressable
+            onPress={() => onPressNews?.({ id: n.id })}
+            style={({ pressed }) => [
+              styles.row,
+              {
+                backgroundColor: Colors[colorScheme].contrast,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
+          >
+            <Text style={styles.rowTitle} numberOfLines={2}>
+              {n.title}
+            </Text>
+            {!!n.content && (
+              <Text style={styles.rowSubtitle} numberOfLines={3}>
+                {n.content}
+              </Text>
+            )}
+            <Text style={[styles.rowTiny, { marginTop: 6 }]}>
+              {new Date(n.created_at).toLocaleDateString()}
+            </Text>
+          </Pressable>
+        );
+      }
+    },
+    [
+      tab,
+      colorScheme,
+      onPressQuran,
+      onPressQuestion,
+      onPressPrayer,
+      onPressPodcast,
+      onPressNews,
+      t,
+    ]
   );
-};
 
-export default SearchScreen;
+  // robust, UNIQUE keys
+  const hash = (s: string) => {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return Math.abs(h).toString(36);
+  };
+
+  const keyExtractor = useCallback(
+    (item: ResultRow, index: number) => {
+      if (tab === "quran") {
+        const v = item as Partial<QuranRow>;
+        if (v?.id != null) return `quran-${v.id}`;
+        const s = (v as any)?.sura;
+        const a = (v as any)?.aya;
+        if (Number.isFinite(s) && Number.isFinite(a)) return `quran-${s}-${a}`;
+        return `quran-fb-${hash(
+          `${(v as any)?.text ?? ""}-${(v as any)?.transliteration ?? ""}`
+        )}-${index}`;
+      } else if (tab === "questions") {
+        const q = item as QuestionType;
+        return q?.id != null
+          ? `question-${q.id}`
+          : `question-${hash(
+              `${q?.title ?? ""}-${q?.created_at ?? ""}`
+            )}-${index}`;
+      } else if (tab === "prayers") {
+        const p = item as PrayerRow;
+        return p?.id != null
+          ? `prayer-${p.id}`
+          : `prayer-${hash(`${p?.name ?? ""}`)}-${index}`;
+      } else if (tab === "podcasts") {
+        const pc = item as PodcastRow;
+        return pc?.id != null
+          ? `podcast-${pc.id}`
+          : `podcast-${hash(
+              `${pc?.title ?? ""}-${pc?.filename ?? ""}`
+            )}-${index}`;
+      } else {
+        const n = item as NewsRow;
+        return n?.id != null
+          ? `news-${n.id}`
+          : `news-${hash(`${n?.title ?? ""}-${n?.created_at ?? ""}`)}-${index}`;
+      }
+    },
+    [tab]
+  );
+
+  const ListHeader = (
+    <>
+      {/* HORIZONTALLY SCROLLABLE FILTER BAR */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.tabs,
+          { backgroundColor: Colors[colorScheme].background },
+        ]}
+      >
+        {(
+          ["quran", "questions", "prayers", "podcasts", "news"] as TabType[]
+        ).map((tKey) => {
+          const active = tKey === tab;
+          return (
+            <TouchableOpacity
+              key={tKey}
+              onPress={() => {
+                setTab(tKey);
+                Keyboard.dismiss();
+              }}
+              style={[
+                styles.tabBtn,
+                {
+                  backgroundColor: active
+                    ? Colors.universal.primary
+                    : "transparent",
+                },
+              ]}
+            >
+              <ThemedText style={styles.tabText}>
+                {t(TAB_LABEL_KEY[tKey])}
+              </ThemedText>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+
+      {/* SEARCH FIELD (auto-search; no submit needed) */}
+      <View
+        style={[
+          styles.searchBox,
+          { backgroundColor: Colors[colorScheme].contrast },
+        ]}
+      >
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t(PLACEHOLDER_KEY[tab])}
+          placeholderTextColor={Colors[colorScheme].text}
+          autoCapitalize="none"
+          autoCorrect={false}
+          returnKeyType="done"
+          style={[styles.input, { color: Colors[colorScheme].text }]}
+        />
+        {query.length > 0 && !activeLoading && (
+          <TouchableOpacity onPress={onClear} style={styles.clearBtn}>
+            <ThemedText style={{ fontSize: 18 }}>×</ThemedText>
+          </TouchableOpacity>
+        )}
+        {activeLoading && <ActivityIndicator style={{ marginLeft: 8 }} />}
+      </View>
+
+      {/* META LINE */}
+      {canSearch && !activeLoading && !activeError ? (
+        <ThemedText style={styles.meta}>
+          {t("results_count", { count: activeTotal })}
+        </ThemedText>
+      ) : null}
+    </>
+  );
+
+  const ListEmpty = (
+    <View style={styles.emptyWrap}>
+      {activeLoading ? null : activeError ? (
+        <ThemedText style={styles.emptyText}>{activeError}</ThemedText>
+      ) : (
+        <ThemedText style={styles.emptyText}>{t("noSearchResults")}</ThemedText>
+      )}
+    </View>
+  );
+
+  return (
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}
+      edges={["top", "left", "right"]}
+    >
+      <ThemedView style={styles.container}>
+        <FlatList
+          key={tab} // remount per tab to avoid stale keys
+          data={activeRows}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          ListHeaderComponent={ListHeader}
+          ListEmptyComponent={ListEmpty}
+          contentContainerStyle={{ paddingBottom: 40, gap: 15 }}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          onEndReachedThreshold={0.4}
+          onEndReached={loadMore}
+          extraData={{
+            debouncedTerm,
+            tab,
+            lang,
+            rowsLen: rows.length,
+            total,
+            isLoading,
+            isLoadingMore,
+          }}
+        />
+
+        {/* Bottom spinner for local DB paging */}
+        {isLoadingMore &&
+          (tab === "quran" || tab === "questions" || tab === "prayers") && (
+            <View style={styles.moreLoader}>
+              <ActivityIndicator />
+            </View>
+          )}
+      </ThemedView>
+    </SafeAreaView>
+  );
+}
+
+const RADIUS = 14;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
-    gap: 10,
+    padding: 12,
+  },
+  tabs: {
+    flexDirection: "row",
+    paddingVertical: 4,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: 10,
+    alignItems: "center",
+  },
+  tabBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginRight: 8,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  searchBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    borderRadius: RADIUS,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: 44,
   },
   input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    flex: 1,
     fontSize: 16,
-    marginBottom: 12,
   },
-  itemContainer: {
-    marginBottom: 16,
-    padding: 10,
-    borderRadius: 10,
-    ...Platform.select({
-      ios: {
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+  clearBtn: {
+    paddingHorizontal: 6,
+    paddingVertical: 4,
   },
-  itemType: {
+  meta: {
+    marginTop: 8,
+    marginBottom: 6,
     fontSize: 12,
-    marginBottom: 4,
-    fontWeight: "bold",
   },
-  itemText: {
+  row: {
+    padding: 12,
+    borderRadius: RADIUS,
+  },
+  rowTitle: {
     fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 4,
   },
-  itemDescription: {
+  rowSubtitle: {
     fontSize: 14,
-    marginTop: 4,
+    lineHeight: 20,
+  },
+  rowTiny: {
+    fontSize: 12,
+  },
+
+  emptyWrap: {
+    alignItems: "center",
+    paddingVertical: 40,
   },
   emptyText: {
+    fontSize: 14,
     textAlign: "center",
-    marginTop: 20,
+    paddingHorizontal: 24,
   },
-  iconStyle: {
-    ...Platform.select({
-      ios: {
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.2,
-        shadowRadius: 1,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+  moreLoader: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 8,
+    alignItems: "center",
   },
 });

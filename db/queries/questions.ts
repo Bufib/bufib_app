@@ -2,7 +2,7 @@ import { getDatabase } from "../index";
 import { QuestionType } from "@/constants/Types";
 
 export async function getQuestionCount(): Promise<number> {
-  const db = await getDatabase();
+  const db = getDatabase();
   const result = await db.getFirstAsync<{ count: number }>(
     "SELECT COUNT(*) as count FROM questions;"
   );
@@ -14,7 +14,7 @@ export const getSubcategoriesForCategory = async (
   language: string
 ): Promise<string[]> => {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const rows = await db.getAllAsync<{ question_subcategory_name: string }>(
       `
      SELECT DISTINCT question_subcategory_name
@@ -37,7 +37,7 @@ export const getQuestionsForSubcategory = async (
   language: string
 ): Promise<QuestionType[]> => {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getAllAsync<QuestionType>(
       `
       SELECT * FROM questions WHERE question_category_name = ? AND question_subcategory_name = ?  AND language_code = ? ORDER BY created_at DESC;
@@ -57,7 +57,7 @@ export const getQuestion = async (
   language: string
 ): Promise<QuestionType> => {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const rows = await db.getAllAsync<QuestionType>(
       `
       SELECT * FROM questions
@@ -78,7 +78,7 @@ export const getQuestionInternalURL = async (
   language: string
 ): Promise<QuestionType> => {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const rows = await db.getAllAsync<QuestionType>(
       `
       SELECT * FROM questions
@@ -95,29 +95,12 @@ export const getQuestionInternalURL = async (
   }
 };
 
-export const searchQuestions = async (
-  searchTerm: string
-): Promise<QuestionType[]> => {
-  try {
-    const db = await getDatabase();
-    return await db.getAllAsync<QuestionType>(
-      `
-      SELECT id, question_category_name, question_subcategory_name, question, title
-      FROM questions
-      WHERE question LIKE ? OR title LIKE ?;
-    `,
-      [`%${searchTerm}%`, `%${searchTerm}%`]
-    );
-  } catch (error) {
-    console.error("Error searching questions:", error);
-    throw error;
-  }
-};
+
 
 export const getLatestQuestions = async (
   language: string
 ): Promise<QuestionType[]> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   return await db.getAllAsync<QuestionType>(
     `
     SELECT * FROM questions
@@ -133,7 +116,7 @@ export const isQuestionInFavorite = async (
   questionId: number
 ): Promise<boolean> => {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const result = await db.getFirstAsync<{ count: number }>(
       `
       SELECT COUNT(*) as count FROM favorite_questions WHERE question_id = ?;
@@ -152,7 +135,7 @@ export const isQuestionInFavorite = async (
 
 export const getFavoriteQuestions = async (): Promise<QuestionType[]> => {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return await db.getAllAsync<QuestionType>(`
       SELECT q.*
       FROM questions   AS q
@@ -169,7 +152,7 @@ export const getFavoriteQuestions = async (): Promise<QuestionType[]> => {
 export const toggleQuestionFavorite = async (
   questionId: number
 ): Promise<boolean> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   const row = await db.getFirstAsync<{ count: number }>(
     `SELECT COUNT(*) AS count FROM favorite_questions WHERE question_id = ?;`,
     [questionId]
@@ -194,7 +177,7 @@ export const getRelatedQuestions = async (
   questionId: number,
   language: string
 ): Promise<QuestionType[]> => {
-  const db = await getDatabase();
+  const db = getDatabase();
 
   // 1) Read the JSON array from the source question
   const row = await db.getFirstAsync<{ related_question: string | null }>(

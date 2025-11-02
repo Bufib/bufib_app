@@ -185,6 +185,35 @@ export const en = {
   prayer: "Prayer",
   podcast: "Podcast",
   newsArticle: "Articles",
+
+  // Tabs (short labels)
+  tab_quran: "Qur’an",
+  tab_questions: "Questions",
+  tab_prayers: "Prayers",
+  tab_podcasts: "Podcasts",
+  tab_news: "News",
+
+  // Placeholders (per tab)
+  placeholder_quran: "Search the Qur’an",
+  placeholder_questions: "Search questions",
+  placeholder_prayers: "Search prayers",
+  placeholder_podcasts: "Search podcasts",
+  placeholder_news: "Search news",
+
+  // Meta / errors
+  results_count: "{{count}} results",
+  search_failed: "Search failed. Please try again.",
+
+  // Idle hint
+  type_to_search_quran: "Type to search Qur’an verses.",
+  type_to_search_questions: "Type to search questions.",
+  type_to_search_prayers: "Type to search prayers.",
+  type_to_search_podcasts: "Type to search podcasts.",
+  type_to_search_news: "Type to search news.",
+
+  // Quran row label
+  quran_sura_aya: "Surah {{sura}}:{{aya}}",
+
   // videos
   noVideoFound: "There are no videos for this category!",
 
@@ -238,8 +267,8 @@ export const en = {
   aboutTheApp: "About the App",
   imprint: "Imprint",
   hardResetDatabase: "Hard reset database",
-  hardResetDatabaseText: "This will reload the database and may fix some errors.",
-
+  hardResetDatabaseText:
+    "This will reload the database and may fix some errors.",
 
   // Language selector
   language: "Language",

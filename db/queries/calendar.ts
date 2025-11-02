@@ -7,7 +7,7 @@ export async function getAllCalendarDates(
   language: string
 ): Promise<CalendarType[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return db.getAllAsync<CalendarType>(
       `
       SELECT id, title, islamic_date, gregorian_date, description, legend_type, created_at, language_code
@@ -28,7 +28,7 @@ export async function getAllCalendarLegend(
   language: string
 ): Promise<calendarLegendType[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return db.getAllAsync<calendarLegendType>(
       `
       SELECT id, legend_type, created_at, language_code
@@ -49,7 +49,7 @@ export async function getCalendarLegendTypeNames(
   language: string
 ): Promise<string[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     const rows = await db.getAllAsync<{ legend_type: string }>(
       `
       SELECT legend_type
@@ -71,7 +71,7 @@ export async function getCalendarEventsCount(
   language: string
 ): Promise<Array<{ legend_type: string; count: number }>> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return db.getAllAsync<{ legend_type: string; count: number }>(
       `
       SELECT cl.legend_type AS legend_type, COUNT(c.id) AS count
@@ -97,7 +97,7 @@ export async function getCalendarEventsByLegendType(
   legend_type: string
 ): Promise<CalendarType[]> {
   try {
-    const db = await getDatabase();
+    const db = getDatabase();
     return db.getAllAsync<CalendarType>(
       `
       SELECT id, title, islamic_date, gregorian_date, description, legend_type, created_at, language_code

@@ -70,7 +70,8 @@ export const de = {
   selectFolder: "Wähle einen Ordner aus",
   enterFolderName: "Gebe einen Namen für den Ordner ein",
   confirm: "Bestätigen",
-  syncFailedTryAgain: "Synchronisierung fehlgeschlagen. Bitte versuche es erneut.",
+  syncFailedTryAgain:
+    "Synchronisierung fehlgeschlagen. Bitte versuche es erneut.",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
@@ -84,12 +85,12 @@ export const de = {
   edit: "Bearbeiten",
   // Database
   updateAvailable: "Update Verfügbar",
-  newAppVersionAvailable: "Eine neue version ist im App-Store verfügbar!",
-  databaseUpdateQuestions: "Die Fragen wurden aktualsiert!",
-  databaseUpdatePrayer: "Die Gebete wurden aktualsiert!",
-  databaseUpdateCalendar: "Der Kalendar wurde aktualsiert!",
-  databaseUpdateQuran: "Die Übersetzung/Tafsir des Qurans wurden aktualsiert!",
-  databaseUpdatePaypal: "Der PayPal-Link wurde aktualsiert!",
+  newAppVersionAvailable: "Eine neue Version ist im App-Store verfügbar!",
+  databaseUpdateQuestions: "Die Fragen wurden aktualisiert!",
+  databaseUpdatePrayer: "Die Gebete wurden aktualisiert!",
+  databaseUpdateCalendar: "Der Kalender wurde aktualisiert!",
+  databaseUpdateQuran: "Die Übersetzung/Tafsir des Qurans wurden aktualisiert!",
+  databaseUpdatePaypal: "Der PayPal-Link wurde aktualisiert!",
   update: "Aktualisieren",
 
   // Questions
@@ -153,7 +154,6 @@ export const de = {
   noPlansForToday: "Es sind noch keine Pläne für diesen Tag vorhanden!",
   undo: "Alle zurücksetzen",
 
-
   // Days of week
   days: {
     short: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
@@ -180,7 +180,29 @@ export const de = {
   question: "Frage",
   prayer: "Gebet",
   podcast: "Podcast",
-  newsArticle: "Neugikeiten",
+  newsArticle: "Neuigkeiten",
+
+  // Tabs (short labels)
+  tab_quran: "Qur’an",
+  tab_questions: "Fragen",
+  tab_prayers: "Bittgebete",
+  tab_podcasts: "Podcasts",
+  tab_news: "News",
+
+  // Placeholders (per tab)
+  placeholder_quran: "Qur’an durchsuchen",
+  placeholder_questions: "Fragen durchsuchen",
+  placeholder_prayers: "Bittgebete durchsuchen",
+  placeholder_podcasts: "Podcasts durchsuchen",
+  placeholder_news: "News durchsuchen",
+
+  // Meta / errors
+  results_count: "{{count}} Treffer",
+  search_failed: "Suche fehlgeschlagen. Bitte erneut versuchen.",
+
+  // Quran row label
+  quran_sura_aya: "Sure {{sura}}:{{aya}}",
+
   // videos
   noVideoFound: "Es wurden keine Videos für diese Kategorie gefunden!",
 
@@ -211,7 +233,7 @@ export const de = {
   somethingWentWrong: "Etwas ist schiefgelaufen",
   deleteAccount: "Account Löschen",
   deleteAccountConfirmation1:
-    ' Bist du sicher, dass du deinen Account löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.',
+    " Bist du sicher, dass du deinen Account löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
   deleteAccountConfirmation2: "Alle deine Daten werden permanent gelöscht.",
   yesDeleteAccount: "Ja, Account löschen",
   abort: "Abbrechen",
@@ -237,7 +259,8 @@ export const de = {
   aboutTheApp: "Über die App",
   imprint: "Impressum",
   hardResetDatabase: "Datenbank neu laden",
-  hardResetDatabaseText: "Dies wird die Datanbank neu laden und möglicherweise Fehler beheben.",
+  hardResetDatabaseText:
+    "Dies wird die Datanbank neu laden und möglicherweise Fehler beheben.",
 
   // Language selector
   language: "Sprache",

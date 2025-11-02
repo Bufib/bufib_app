@@ -15,7 +15,7 @@
 // // // //       return [];
 // // // //     }
 
-// // // //     const db = await getDatabase();
+// // // //     const db = getDatabase();
 
 // // // //     await db.withExclusiveTransactionAsync(async (txn) => {
 // // // //       const stmt = await txn.prepareAsync(
@@ -81,7 +81,7 @@
 // // // //       return [];
 // // // //     }
 
-// // // //     const db = await getDatabase();
+// // // //     const db = getDatabase();
 
 // // // //     // Perform all DB writes in a single exclusive transaction
 // // // //     await db.withExclusiveTransactionAsync(async (txn) => {
@@ -147,7 +147,7 @@
 // // //       return [];
 // // //     }
 
-// // //     const db = await getDatabase();
+// // //     const db = getDatabase();
 
 // // //     // 2) Perform all DB writes in one exclusive transaction
 // // //     await db.withExclusiveTransactionAsync(async (txn) => {
@@ -226,7 +226,7 @@
 // //     const types = legenTypRes.data ?? [];
 // //     const rows = calRes.data ?? [];
 
-// //     const db = await getDatabase();
+// //     const db = getDatabase();
 // //     const runTx =
 // //       (db as any).withExclusiveTransactionAsync?.bind(db) ??
 // //       db.withTransactionAsync.bind(db);
@@ -314,7 +314,7 @@
 //     const legends = legendRes.data ?? [];
 //     const rows = calRes.data ?? [];
 
-//     const db = await getDatabase();
+//     const db = getDatabase();
 //     const runTx =
 //       (db as any).withExclusiveTransactionAsync?.bind(db) ??
 //       db.withTransactionAsync.bind(db);
@@ -410,7 +410,7 @@ export default async function syncCalendar(): Promise<void> {
     const legends = legendRes.data ?? [];
     const rows = calRes.data ?? [];
 
-    const db = await getDatabase();
+    const db = getDatabase();
     const runTx =
       (db as any).withExclusiveTransactionAsync?.bind(db) ??
       db.withTransactionAsync.bind(db);

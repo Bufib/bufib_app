@@ -29,30 +29,35 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   const { lang, rtl } = useLanguage();
   const questionsVersion = useDataVersionStore((s) => s.questionsVersion);
 
-
-  // fade-in animation value
   useEffect(() => {
-    const loadSubcategories = async () => {
-      setIsLoading(true);
+    let cancelled = false;
+    setIsLoading(true);
+
+    (async () => {
       try {
-        const subcategories = await getSubcategoriesForCategory(category, lang);
-        if (subcategories) {
-          setSubcategories(subcategories);
+        const list = await getSubcategoriesForCategory(category, lang);
+        if (cancelled) return;
+
+        if (list && list.length) {
+          setSubcategories(list);
           setError(null);
         } else {
+          setSubcategories([]);
           setError("Kategorien konnten nicht geladen werden!");
-          console.log("No subcategories found");
         }
-      } catch (error) {
-        console.error("Error loading subcategories:", error);
+      } catch (e) {
+        if (cancelled) return;
+        console.error("Error loading subcategories:", e);
         setSubcategories([]);
         setError("Kategorien konnten nicht geladen werden!");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
-    };
+    })();
 
-    loadSubcategories();
+    return () => {
+      cancelled = true;
+    };
   }, [category, lang, questionsVersion]);
 
   //  Display error state

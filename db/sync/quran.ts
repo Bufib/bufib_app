@@ -82,7 +82,7 @@
 // // //     const ayahTranslitErr = ayahTranslitResult?.error ?? null;
 // // //     if (ayahTranslitErr) throw ayahTranslitErr;
 
-// // //     const db = await getDatabase();
+// // //     const db = getDatabase();
 
 // // //     // --- Transaction: mirror server state ---
 // // //     await db.withExclusiveTransactionAsync(async (txn) => {
@@ -313,7 +313,7 @@
 // //     if (ayahPrimaryErr) throw ayahPrimaryErr;
 // //     if (ayahTranslitErr) throw ayahTranslitErr;
 
-// //     const db = await getDatabase();
+// //     const db = getDatabase();
 
 // //     // --- Transaction: mirror server state ---
 // //     await db.withExclusiveTransactionAsync(async (txn) => {
@@ -577,7 +577,7 @@ async function syncQuran(): Promise<void> {
     if (ayaTrErr) throw ayaTrErr;
     if (pageErr) throw pageErr;
 
-    const db = await getDatabase();
+    const db = getDatabase();
 
     // --- Transaction: clear + insert ---
     await db.withExclusiveTransactionAsync(async (txn) => {

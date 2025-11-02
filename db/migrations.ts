@@ -441,13 +441,13 @@ export const migrationSQL = `
     related_question TEXT CHECK(related_question IS NULL OR json_valid(related_question)),
     language_code TEXT NOT NULL DEFAULT 'de'
   );
-  CREATE INDEX IF NOT EXISTS idx_questions_lang ON questions(language_code);
-  CREATE INDEX IF NOT EXISTS idx_questions_cat_sub_lang_created
-  ON questions(question_category_name, question_subcategory_name, language_code, created_at DESC);
-  CREATE INDEX IF NOT EXISTS idx_questions_title_lang_nocase
-  ON questions(title COLLATE NOCASE, language_code);
-  CREATE INDEX IF NOT EXISTS idx_questions_cat_lang_sub
-  ON questions(question_category_name, language_code, question_subcategory_name);
+    CREATE INDEX IF NOT EXISTS idx_questions_lang ON questions(language_code);
+    CREATE INDEX IF NOT EXISTS idx_questions_cat_sub_lang_created
+    ON questions(question_category_name, question_subcategory_name, language_code, created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_questions_title_lang_nocase
+    ON questions(title COLLATE NOCASE, language_code);
+    CREATE INDEX IF NOT EXISTS idx_questions_cat_lang_sub
+    ON questions(question_category_name, language_code, question_subcategory_name);
 
 
   CREATE TABLE IF NOT EXISTS favorite_questions (
@@ -533,6 +533,7 @@ export const migrationSQL = `
   CREATE INDEX IF NOT EXISTS idx_fav_prayers_folder      ON favorite_prayers(folder_name, created_at);
   CREATE INDEX IF NOT EXISTS idx_fav_prayers_created     ON favorite_prayers(created_at);
   CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_folder ON favorite_prayers(prayer_id, folder_name);
+  CREATE INDEX IF NOT EXISTS idx_prayer_translations_lang_pid ON prayer_translations(language_code, prayer_id);
 
   -- PODCASTS
   CREATE TABLE IF NOT EXISTS podcasts (

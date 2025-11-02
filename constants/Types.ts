@@ -2,7 +2,7 @@
 export type LanguageCode = "de" | "ar" | "en";
 
 export type LanguageContextType = {
-  lang: LanguageCode;              // <— always defined
+  lang: LanguageCode; // <— always defined
   setAppLanguage: (lng: LanguageCode) => Promise<void>;
   ready: boolean;
   rtl: boolean;
@@ -208,37 +208,45 @@ export type SearchResultQAType = {
   question: string;
 };
 
+// constants/Types.ts (or wherever CombinedResult lives)
 export type CombinedResult =
   | {
-      renderId: string;
       type: "question";
+      renderId: string;
       questionId: number;
-      title: string;
-      question: string;
+      title?: string;
+      question?: string;
       question_category_name?: string;
       question_subcategory_name?: string;
     }
   | {
-      renderId: string;
       type: "prayer";
+      renderId: string;
       prayerId: number;
-      name: string;
+      name?: string;
       arabic_text?: string;
     }
   | {
-      renderId: string;
       type: "podcast";
+      renderId: string;
       podcastId: number;
-      podcastEpisodeTitle: string;
+      podcastEpisodeTitle?: string;
       podcastEpisodeDescription?: string;
-      podcast: any;
+      podcast: PodcastType;
     }
   | {
-      renderId: string;
       type: "newsArticle";
+      renderId: string;
       newsArticleId: number;
-      newsTitle: string;
+      newsTitle?: string;
       newsSnippet?: string;
+    }
+  | {
+      type: "quran";
+      renderId: string; // e.g. "quran-2:255"
+      quranSura: number;
+      quranAya: number;
+      quranText: string; // localized to current lang
     };
 
 // Roles lookup
@@ -371,6 +379,14 @@ export type FullPrayer = PrayerType & {
   translations: PrayerWithTranslationType[];
 };
 
+export type PrayerSearchResult = {
+  id: number;
+  name: string;
+  arabic_title: string | null;
+  category_id: number;
+  translated_text: string | null;
+  matchType: 'name' | 'translation';
+}
 export type PrayerRow = {
   id: number;
   name: string;
@@ -558,7 +574,7 @@ export type UseSuraDataParams = {
   setTotalVerses: (sura: number, total: number) => void;
   setTotalVersesForJuz: (juz: number, total: number) => void;
   setTotalVersesForPage: (page: number, total: number) => void;
-  quranDataVersion: number
+  quranDataVersion: number;
 };
 
 export type StickyHeaderQuranPropsType = {

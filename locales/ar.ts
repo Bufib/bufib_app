@@ -185,6 +185,35 @@ export const ar = {
   prayer: "الصلاة",
   podcast: "بودكاست",
   newsArticle: "مقالات",
+
+  // Tabs (short labels)
+  tab_quran: "القرآن",
+  tab_questions: "الأسئلة",
+  tab_prayers: "الأدعية",
+  tab_podcasts: "بودكاست",
+  tab_news: "الأخبار",
+
+  // Placeholders (per tab)
+  placeholder_quran: "ابحث في القرآن",
+  placeholder_questions: "ابحث في الأسئلة",
+  placeholder_prayers: "ابحث في الأدعية",
+  placeholder_podcasts: "ابحث في البودكاست",
+  placeholder_news: "ابحث في الأخبار",
+
+  // Meta / errors
+  results_count: "{{count}} نتيجة",
+  search_failed: "فشلت عملية البحث. يرجى المحاولة مرة أخرى.",
+
+  // Idle hint
+  type_to_search_quran: "اكتب للبحث عن آيات القرآن.",
+  type_to_search_questions: "اكتب للبحث عن الأسئلة.",
+  type_to_search_prayers: "اكتب للبحث عن الأدعية.",
+  type_to_search_podcasts: "اكتب للبحث عن البودكاست.",
+  type_to_search_news: "اكتب للبحث عن الأخبار.",
+
+  // Quran row label
+  quran_sura_aya: "سورة {{sura}}:{{aya}}",
+
   // videos
   noVideoFound: "لا توجد مقاطع فيديو لهذه الفئة",
 
@@ -238,7 +267,8 @@ export const ar = {
   aboutTheApp: "عن التطبيق",
   imprint: "البصمة",
   hardResetDatabase: "إعادة تعيين قاعدة البيانات بشكل كامل",
-  hardResetDatabaseText: "سيؤدي هذا إلى إعادة تحميل قاعدة البيانات وقد يصلح بعض الأخطاء.",
+  hardResetDatabaseText:
+    "سيؤدي هذا إلى إعادة تحميل قاعدة البيانات وقد يصلح بعض الأخطاء.",
 
   // Language selector
   language: "اللغة",

@@ -20,7 +20,7 @@
 // //     }
 
 // //     const list = (questions ?? []) as QuestionType[];
-// //     const db = await getDatabase();
+// //     const db = getDatabase();
 
 // //     // 2) Single transaction
 // //     const runTx =
@@ -135,7 +135,7 @@
 //     }
 
 //     const list = (questions ?? []) as QuestionType[]; // may carry related_question alongside
-//     const db = await getDatabase();
+//     const db = getDatabase();
 
 //     // 2) Single transaction
 //     const runTx =
@@ -256,7 +256,7 @@ export default async function syncQuestions(): Promise<void> {
     }
 
     const list = (questions ?? []) as QuestionType[];
-    const db = await getDatabase();
+    const db = getDatabase();
 
     // 2) Single transaction
     const runTx =
