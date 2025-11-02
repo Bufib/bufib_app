@@ -797,6 +797,7 @@ import { isPodcastFavorited, togglePodcastFavorite } from "@/utils/favorites";
 import { ThemedText } from "./ThemedText";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
+import { useLanguage } from "@/contexts/LanguageContext";
 export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
@@ -842,6 +843,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [lastTime, setLastTIme] = useState<SavedProgress | null>(null);
+  const { lang } = useLanguage();
   // Animations
   const fadeAnim = useMemo(() => new Animated.Value(0), []);
   const slideAnim = useMemo(() => new Animated.Value(50), []);
@@ -880,7 +882,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const onPressToggleFavorite = async () => {
     if (!podcast?.id) return;
     try {
-      const next = await togglePodcastFavorite(podcast.id);
+      const next = await togglePodcastFavorite(podcast.id, lang);
       setIsFavorite(next);
       triggerRefreshFavorites();
     } catch {}

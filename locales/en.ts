@@ -69,7 +69,7 @@ export const en = {
   selectFolder: "Select a folder",
   enterFolderName: "Enter a name for your folder",
   confirm: "Confirm",
-  abort: "Cancle",
+  abort: "Cancel",
   syncFailedTryAgain: "Sync failed. Please try again.",
 
   // Navigation

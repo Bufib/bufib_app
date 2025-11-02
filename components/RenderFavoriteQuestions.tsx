@@ -1,4 +1,9 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, {
+  useState,
+  useLayoutEffect,
+  useEffect,
+  useCallback,
+} from "react";
 import {
   View,
   Pressable,
@@ -17,17 +22,19 @@ import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { QuestionType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { Colors } from "@/constants/Colors";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 function RenderFavoriteQuestions() {
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
-  const themeStyle = CoustomTheme();
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() || "light";
   const { refreshTriggerFavorites } = useRefreshFavorites();
+  const { lang } = useLanguage();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     let isMounted = true;
     const loadQuestions = async () => {
       try {
@@ -39,14 +46,14 @@ function RenderFavoriteQuestions() {
             setError(null);
           } else {
             setQuestions([]);
-            setError("Fehler beim Laden deiner Favoriten!");
+            setError(t("errorLoadingData"));
           }
         }
       } catch (err) {
         console.error("Error loading favorite questions:", err);
         if (isMounted) {
           setQuestions([]);
-          setError("Fehler beim Laden deiner Favoriten!");
+          setError(t("errorLoadingData"));
         }
       } finally {
         if (isMounted) {
@@ -59,7 +66,45 @@ function RenderFavoriteQuestions() {
     return () => {
       isMounted = false;
     };
-  }, [refreshTriggerFavorites]);
+  }, [refreshTriggerFavorites, lang]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: QuestionType }) => (
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: "/(displayQuestion)",
+            params: {
+              category: item.question_category_name ?? "",
+              subcategory: item.question_subcategory_name ?? "",
+              questionId: String(item.id),
+              questionTitle: item.title ?? "",
+            },
+          })
+        }
+      >
+        <ThemedView
+          style={[
+            styles.item,
+            { backgroundColor: Colors[colorScheme].contrast },
+          ]}
+        >
+          <View style={styles.questionContainer}>
+            <ThemedText style={styles.titleText}>{item.title}</ThemedText>
+            <ThemedText style={styles.questionText} numberOfLines={2}>
+              {item.question}
+            </ThemedText>
+          </View>
+          <Entypo
+            name="chevron-thin-right"
+            size={24}
+            color={colorScheme === "dark" ? "#fff" : "#000"}
+          />
+        </ThemedView>
+      </Pressable>
+    ),
+    [colorScheme, lang]
+  );
 
   if (error && !isLoading && questions.length === 0) {
     return (
@@ -86,43 +131,15 @@ function RenderFavoriteQuestions() {
   }
 
   return (
-    <ThemedView style={[styles.container, themeStyle.defaultBackgorundColor]}>
+    <ThemedView style={[styles.container]}>
       <FlatList
         data={questions}
         extraData={refreshTriggerFavorites}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        style={themeStyle.defaultBackgorundColor}
-        contentContainerStyle={styles.flatListStyle}
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() =>
-              router.push({
-                pathname: "/(displayQuestion)",
-                params: {
-                  category: item.question_category_name,
-                  subcategory: item.question_subcategory_name,
-                  questionId: item.id.toString(),
-                  questionTitle: item.title,
-                },
-              })
-            }
-          >
-            <ThemedView style={[styles.item, themeStyle.contrast]}>
-              <View style={styles.questionContainer}>
-                <ThemedText style={styles.titleText}>{item.title}</ThemedText>
-                <ThemedText style={styles.questionText} numberOfLines={2}>
-                  {item.question}
-                </ThemedText>
-              </View>
-              <Entypo
-                name="chevron-thin-right"
-                size={24}
-                color={colorScheme === "dark" ? "#fff" : "#000"}
-              />
-            </ThemedView>
-          </Pressable>
-        )}
+        style={{ backgroundColor: Colors[colorScheme].background }}
+        contentContainerStyle={styles.flatListContent}
+        renderItem={renderItem}
       />
     </ThemedView>
   );
@@ -138,9 +155,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-  flatListStyle: {
+  flatListContent: {
     paddingTop: 15,
     gap: 20,
+    paddingBottom: 24,
   },
   item: {
     flexDirection: "row",

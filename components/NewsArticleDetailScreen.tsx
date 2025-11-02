@@ -5645,7 +5645,7 @@ export default function NewsArticleDetailScreen({
   const onPressToggle = useCallback(async () => {
     if (!articleId) return;
     try {
-      const newFavStatus = await toggleNewsArticleFavorite(articleId);
+      const newFavStatus = await toggleNewsArticleFavorite(articleId, lang);
       setIsFavorite(newFavStatus);
       triggerRefreshFavorites();
     } catch (e) {
