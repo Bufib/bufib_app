@@ -999,7 +999,7 @@ export default function RenderSearchResults({
               onPressQuran
                 ? onPressQuran({ sura: v.sura, aya: v.aya })
                 : router.push({
-                    pathname: "/knowledge/quran/sura",
+                    pathname: "/(displaySura)",
                     params: { suraId: String(v.id) },
                   })
             }

@@ -3988,7 +3988,7 @@ const SuraList: React.FC = () => {
   const [viewMode, setViewMode] = useState<"sura" | "juz" | "page">("sura");
   const colorScheme = useColorScheme() || "light";
   const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
-  
+
   const listExtraData = useMemo(
     () => ({ colorScheme, lang, quranDataVersion }),
     [colorScheme, lang, quranDataVersion]
@@ -4462,7 +4462,7 @@ const SuraList: React.FC = () => {
           // Fire-and-forget: preseed relevant pages, then navigate
           preseedPagesForSurah(item).catch(() => {});
           router.push({
-            pathname: "/knowledge/quran/sura",
+            pathname: "/(displaySura)",
             params: { suraId: item.id.toString() },
           });
         }}
@@ -4551,7 +4551,7 @@ const SuraList: React.FC = () => {
         activeOpacity={0.5}
         onPress={() =>
           router.push({
-            pathname: "/knowledge/quran/sura",
+            pathname: "/(displaySura)",
             params: { juzId: String(item.juz) },
           })
         }
@@ -4597,8 +4597,8 @@ const SuraList: React.FC = () => {
         activeOpacity={0.8}
         onPress={() =>
           router.push({
-            pathname: "/knowledge/quran/sura",
-            params: { pageId: String(item.page) },
+            pathname: "/(displaySura)",
+        params: { pageId: String(item.page) },
           })
         }
       >
@@ -4710,7 +4710,7 @@ const LastReadHeader: React.FC<{
           // Optional warmup for pages of last-read surah
           preseedPagesForSurah(lastSuraRow).catch(() => {});
           router.push({
-            pathname: "/knowledge/quran/sura",
+            pathname: "/(displaySura)",
             params: { suraId: String(lastSuraRow.id) },
           });
         }
