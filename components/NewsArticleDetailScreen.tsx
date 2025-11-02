@@ -6171,9 +6171,9 @@ export default function NewsArticleDetailScreen({
                 accessibilityLabel={t("changeFontSize")}
                 style={[styles.actionBtn, {}]}
               >
-                <Text style={[styles.actionBtnText, { marginRight: 0 }]}>
+                <ThemedText style={[styles.actionBtnText, { marginRight: 0 }]}>
                   Aa
-                </Text>
+                </ThemedText>
               </TouchableOpacity>
 
               <TouchableOpacity
