@@ -28,7 +28,7 @@
 
 // // const FavoritePrayersScreen: React.FC = () => {
 // //   const { t } = useTranslation();
-// //   const { refreshTriggerFavorites, triggerRefreshFavorites } =
+// //   const { favoritesRefreshed, triggerRefreshFavorites } =
 // //     useRefreshFavorites();
 // //   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
 // //   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -54,7 +54,7 @@
 // //         setIsLoadingFolders(false);
 // //       }
 // //     })();
-// //   }, [t, refreshTriggerFavorites]);
+// //   }, [t, favoritesRefreshed]);
 
 // //   // When selectedFolder changes, load prayers for it
 // //   useEffect(() => {
@@ -343,7 +343,7 @@
 //   const colorScheme = useColorScheme() || "light";
 
 //   // Zustand trigger (useful if other screens must refresh too)
-//   const { refreshTriggerFavorites, triggerRefreshFavorites } =
+//   const { favoritesRefreshed, triggerRefreshFavorites } =
 //     useRefreshFavorites();
 //   const { lang } = useLanguage();
 //   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
@@ -434,7 +434,7 @@
 //     (async () => {
 //       await reloadFolders();
 //     })();
-//   }, [reloadFolders, refreshTriggerFavorites, lang]);
+//   }, [reloadFolders, favoritesRefreshed, lang]);
 
 //   // Load prayers whenever selectedFolder changes
 //   useEffect(() => {
@@ -657,7 +657,6 @@
 //   },
 // });
 
-//! Over engineered
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   View,
@@ -689,14 +688,14 @@ import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 const FavoritePrayersScreen: React.FC = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
 
   // Zustand trigger (useful if other screens must refresh too)
-  const { refreshTriggerFavorites, triggerRefreshFavorites } =
-    useRefreshFavorites();
+  const { favoritesRefreshed, triggerRefreshFavorites } = useRefreshFavorites();
   const { lang } = useLanguage();
   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -737,7 +736,7 @@ const FavoritePrayersScreen: React.FC = () => {
     } finally {
       setIsLoadingFolders(false);
     }
-  }, [lang]);
+  }, [lang, favoritesRefreshed]);
 
   const reloadPrayers = useCallback(
     async (folder: string | null) => {
@@ -784,7 +783,7 @@ const FavoritePrayersScreen: React.FC = () => {
         }
       }
     },
-    [lang]
+    [lang, favoritesRefreshed]
   );
 
   const onDeleteFolder = useCallback(
@@ -808,28 +807,18 @@ const FavoritePrayersScreen: React.FC = () => {
         await reloadPrayers(selectedFolder);
       }
     },
-    [
-      reloadFolders,
-      reloadPrayers,
-      selectedFolder,
-      lang,
-      triggerRefreshFavorites,
-    ]
+    [selectedFolder, reloadFolders, reloadPrayers, triggerRefreshFavorites, t]
   );
 
   // Initial & external trigger reload
   useEffect(() => {
-    (async () => {
-      await reloadFolders();
-    })();
-  }, [reloadFolders, refreshTriggerFavorites, lang]);
+    reloadFolders();
+  }, [reloadFolders]);
 
   // Load prayers whenever selectedFolder changes
   useEffect(() => {
-    (async () => {
-      await reloadPrayers(selectedFolder);
-    })();
-  }, [selectedFolder, reloadPrayers, lang]);
+    reloadPrayers(selectedFolder);
+  }, [selectedFolder, reloadPrayers]);
 
   useFocusEffect(
     useCallback(() => {
@@ -840,6 +829,10 @@ const FavoritePrayersScreen: React.FC = () => {
     }, [])
   );
 
+  const listExtraData = React.useMemo(
+    () => `${lang}|${favoritesRefreshed}`,
+    [lang, favoritesRefreshed]
+  );
   const renderFolderPill = (folder: FavoritePrayerFolderType) => {
     const isActive = folder.name === selectedFolder;
     return (
@@ -917,7 +910,7 @@ const FavoritePrayersScreen: React.FC = () => {
     <ThemedView style={styles.container}>
       {/* Folder pills */}
       <View style={styles.pillContainer}>
-        {isLoadingPrayers ? (
+        {isLoadingFolders ? (
           <LoadingIndicator size="large" />
         ) : (
           <ThemedView>
@@ -956,7 +949,7 @@ const FavoritePrayersScreen: React.FC = () => {
         ) : (
           <FlatList
             data={prayers}
-            extraData={lang}
+            extraData={listExtraData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderPrayerCard}
             contentContainerStyle={styles.flatListContent}
@@ -1012,7 +1005,6 @@ const styles = StyleSheet.create({
   prayerCard: {
     borderRadius: 8,
     padding: 16,
-    marginBottom: 12,
     ...Platform.select({
       ios: {
         shadowOffset: { width: 0, height: 2 },

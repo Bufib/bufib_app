@@ -31,7 +31,7 @@
 //   const { t } = useTranslation();
 //   const { fetchNewsArticleById } = useNewsArticles(lang);
 //   const colorScheme = useColorScheme() || "light";
-//   const { refreshTriggerFavorites } = useRefreshFavorites();
+//   const { favoritesRefreshed } = useRefreshFavorites();
 
 //   const loadFavorites = useCallback(async () => {
 //     console.log(
@@ -57,7 +57,7 @@
 
 //   useEffect(() => {
 //     loadFavorites();
-//   }, [refreshTriggerFavorites, loadFavorites]);
+//   }, [favoritesRefreshed, loadFavorites]);
 //   if (isLoading) {
 //     return (
 //       <ThemedView style={styles.centered}>
@@ -86,7 +86,7 @@
 //     <ThemedView style={styles.container}>
 //       <FlatList
 //         data={articles}
-//         extraData={refreshTriggerFavorites}
+//         extraData={favoritesRefreshed}
 //         keyExtractor={(item) => item.id.toString()}
 //         style={styles.listStyle}
 //         contentContainerStyle={styles.flatListContent}
@@ -226,7 +226,7 @@ import { formatDate } from "@/utils/formatDate";
 
 export default function NewsFavoritesScreen() {
   const { lang, rtl } = useLanguage();
-  const { refreshTriggerFavorites } = useRefreshFavorites();
+  const { favoritesRefreshed } = useRefreshFavorites();
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
 
@@ -239,7 +239,7 @@ export default function NewsFavoritesScreen() {
       const ids = await getFavoriteNewsArticle(lang);
       setFavoriteIds(ids);
     })();
-  }, [lang, refreshTriggerFavorites]);
+  }, [lang, favoritesRefreshed]);
 
   // Fetch favorite news in one query
   const {

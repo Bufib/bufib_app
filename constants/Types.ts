@@ -74,7 +74,7 @@ export type Sizes = {
 };
 
 export type triggerRefreshFavoritesType = {
-  refreshTriggerFavorites: number;
+  favoritesRefreshed: number;
   triggerRefreshFavorites: () => void;
 };
 
@@ -118,7 +118,7 @@ export type PrayerInformationModalPropsType = {
 export type FavoritePrayerFolderType = {
   name: string;
   color: string;
-  prayerCount: number;
+  prayerCount?: number;
 };
 
 // Answers table

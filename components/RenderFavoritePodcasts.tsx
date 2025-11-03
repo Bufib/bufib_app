@@ -37,7 +37,7 @@
 //     fetchNextPage,
 //   } = usePodcasts(lang);
 
-//   const { refreshTriggerFavorites, triggerRefreshFavorites } =
+//   const { favoritesRefreshed, triggerRefreshFavorites } =
 //     useRefreshFavorites();
 //   const colorScheme = useColorScheme() || "light";
 //   const { t } = useTranslation();
@@ -52,7 +52,7 @@
 //       }
 //     };
 //     loadFavorites();
-//   }, [refreshTriggerFavorites, lang]);
+//   }, [favoritesRefreshed, lang]);
 
 //   // 2) Flatten all loaded pages into a single array of PodcastType
 //   const allEpisodes = useMemo<PodcastType[]>(() => {
@@ -68,13 +68,13 @@
 //   }, [allEpisodes, favoriteIds, lang]);
 
 //   const listExtraData = useMemo(
-//     () => ({ favKey: favoriteIds.join(","), bump: refreshTriggerFavorites }),
-//     [favoriteIds, refreshTriggerFavorites, lang]
+//     () => ({ favKey: favoriteIds.join(","), bump: favoritesRefreshed }),
+//     [favoriteIds, favoritesRefreshed, lang]
 //   );
 
 //   useEffect(() => {
 //     setPagesRequested(0);
-//   }, [lang, refreshTriggerFavorites]);
+//   }, [lang, favoritesRefreshed]);
 
 //   useEffect(() => {
 //     const needMore =
@@ -266,7 +266,7 @@ import { formatDate } from "@/utils/formatDate";
 
 export default function RenderFavoritePodcasts() {
   const { lang, rtl } = useLanguage();
-  const { refreshTriggerFavorites } = useRefreshFavorites(); // triggers when user toggles a favorite elsewhere
+  const { favoritesRefreshed } = useRefreshFavorites(); // triggers when user toggles a favorite elsewhere
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
 
@@ -279,7 +279,7 @@ export default function RenderFavoritePodcasts() {
       const ids = await getFavoritePodcasts(lang);
       setFavoriteIds(ids);
     })();
-  }, [lang, refreshTriggerFavorites]);
+  }, [lang, favoritesRefreshed]);
 
   // Fetch favorite episodes by ID directly (no pagination dance)
   const {

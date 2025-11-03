@@ -835,28 +835,24 @@ const SuraScreen: React.FC = () => {
   // Add this useEffect after your other useEffects in SuraScreen component
 
   useEffect(() => {
-    // Only scroll if verseId is provided and data is loaded
     if (!verseId || loading || !verses.length) return;
 
     const targetAya = Number(verseId);
     if (isNaN(targetAya)) return;
 
-    // Find the index by aya number (simple since we're always in sura mode)
     const targetIndex = verses.findIndex((v) => v.aya === targetAya);
-
     if (targetIndex === -1) return;
 
-    // Small delay to ensure FlatList is fully rendered
     const timer = setTimeout(() => {
       flatListRef.current?.scrollToIndex({
         index: targetIndex,
         animated: true,
-        viewPosition: 0.2, // Position near top of screen
+        viewPosition: 0.2,
       });
     }, 300);
 
-    return () => clearTimeout(timer);
-  }, [verseId, loading, verses]);
+    return () => clearTimeout(timer); // ← ADD THIS (cleanup)
+  }, [verseId, loading, verses]); // ← ADD THIS (dependencies)
 
   const arabicByKey = useMemo(
     () => new Map(arabicVerses.map((v) => [vkey(v.sura, v.aya), v])),

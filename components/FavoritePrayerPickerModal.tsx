@@ -747,7 +747,13 @@
 
 //! Fix header aber mit keyboardavoidingView buggy
 
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   View,
   Text,
@@ -772,7 +778,11 @@ import { getFoldersForPrayer } from "@/db/queries/prayers";
 import { getFavoritePrayerFolders } from "@/db/queries/prayers";
 import { removePrayerFromFolder } from "@/db/queries/prayers";
 import { addPrayerToFolder } from "@/db/queries/prayers";
-import { FavoritePrayerFolderType } from "@/constants/Types";
+import {
+  FavoritePrayerFolderType,
+  PrayerCategoryType,
+  PrayerType,
+} from "@/constants/Types";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { Colors } from "@/constants/Colors";
 import { AntDesign } from "@expo/vector-icons";
@@ -820,12 +830,19 @@ export default function FavoritePrayerPickerModal({
   const snapPoints = useMemo(() => ["70%", "90%"], []);
 
   // reload both folders and assignments
-  const reload = async () => {
+  const reload = useCallback(async () => {
     const all = await getFavoritePrayerFolders();
     setFolders(all);
     const names = await getFoldersForPrayer(prayerId);
     setAssigned(new Set(names));
-  };
+  }, [prayerId]);
+
+  useEffect(() => {
+    if (visible) {
+      setNewName("");
+      setColor(COLORS[0]);
+    }
+  }, [visible]);
 
   useEffect(() => {
     if (visible) {
@@ -834,7 +851,7 @@ export default function FavoritePrayerPickerModal({
     } else {
       sheetRef.current?.close();
     }
-  }, [visible]);
+  }, [visible, reload]);
 
   const closeSheet = () => {
     Keyboard.dismiss();
@@ -850,15 +867,14 @@ export default function FavoritePrayerPickerModal({
       if (!assigned.has(f.name)) {
         await addPrayerToFolder(prayerId, { name: f.name, color: f.color });
       }
-      triggerRefresh();
+      await reload(); // Reload first
+      triggerRefresh(); // Then trigger parent
       onFavorited?.();
-      setNewName("");
       closeSheet();
     } catch (e) {
       Alert.alert(t("error"));
     } finally {
       setLoading(false);
-      reload().catch(console.error);
     }
   };
 
@@ -868,14 +884,13 @@ export default function FavoritePrayerPickerModal({
     setLoading(true);
     try {
       await removePrayerFromFolder(prayerId, f.name);
-      triggerRefresh();
-      onFavorited?.();
-      setNewName("");
+      await reload(); // Reload modal state immediately
+      triggerRefresh(); // Then trigger parent refresh
+      onFavorited?.(); // Then call callback
     } catch {
       Alert.alert(t("error"));
     } finally {
       setLoading(false);
-      reload().catch(console.error);
     }
   };
 
@@ -911,6 +926,7 @@ export default function FavoritePrayerPickerModal({
       if (!folder) folder = await createFolder(trimmed, color);
       await handleAdd(folder);
       setColor(COLORS[0]);
+      setNewName("");
     } catch {
       Alert.alert(t("error"));
       setLoading(false);
@@ -924,7 +940,9 @@ export default function FavoritePrayerPickerModal({
         <View style={styles.rowInfo}>
           <View style={[styles.colorDot, { backgroundColor: item.color }]} />
           <ThemedText style={styles.folderName}>{item.name}</ThemedText>
-          <ThemedText style={styles.folderCount}>({item.prayerCount})</ThemedText>
+          <ThemedText style={styles.folderCount}>
+            ({item.prayerCount})
+          </ThemedText>
         </View>
         {isAssigned ? (
           <TouchableOpacity
@@ -987,7 +1005,7 @@ export default function FavoritePrayerPickerModal({
         </View>
         <BottomSheetFlatList
           data={folders}
-          keyExtractor={(item) => item.name}
+          keyExtractor={(item: PrayerType) => item.name}
           renderItem={renderFolder}
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={

@@ -1758,14 +1758,14 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
   if (isLoading) {
     return (
-      <ThemedView style={styles.loadingContainer}>
+      <ThemedView style={styles.loadingAndNoDataContainer}>
         <LoadingIndicator size={"large"} />
       </ThemedView>
     );
   }
   if (!prayer && !isLoading) {
     return (
-      <ThemedView style={styles.container}>
+      <ThemedView style={styles.loadingAndNoDataContainer}>
         <ThemedText>{t("noData")}</ThemedText>
       </ThemedView>
     );
@@ -2028,7 +2028,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  loadingContainer: {
+  loadingAndNoDataContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

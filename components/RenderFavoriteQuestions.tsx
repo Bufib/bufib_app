@@ -31,7 +31,7 @@ function RenderFavoriteQuestions() {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const { refreshTriggerFavorites } = useRefreshFavorites();
+  const { favoritesRefreshed } = useRefreshFavorites();
   const { lang } = useLanguage();
 
   useEffect(() => {
@@ -66,7 +66,7 @@ function RenderFavoriteQuestions() {
     return () => {
       isMounted = false;
     };
-  }, [refreshTriggerFavorites, lang]);
+  }, [favoritesRefreshed, lang]);
 
   const renderItem = useCallback(
     ({ item }: { item: QuestionType }) => (
@@ -134,7 +134,7 @@ function RenderFavoriteQuestions() {
     <ThemedView style={[styles.container]}>
       <FlatList
         data={questions}
-        extraData={refreshTriggerFavorites}
+        extraData={favoritesRefreshed}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: Colors[colorScheme].background }}

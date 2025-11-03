@@ -705,6 +705,7 @@ import {
   TouchableOpacity,
   View,
   useColorScheme,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import debounce from "lodash.debounce";
@@ -731,7 +732,7 @@ import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
-import RenderHTML from "react-native-render-html";
+import HtmlRenderer from "./RenderHTML";
 
 type TabType = "quran" | "questions" | "prayers" | "podcasts" | "news";
 
@@ -798,6 +799,8 @@ export default function RenderSearchResults({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { rtl } = useLanguage();
+  const { width } = useWindowDimensions();
+  const contentWidth = Math.max(0, width - 64); // Adjust padding as needed
   // client-side paging for podcasts/news
   const [visibleCount, setVisibleCount] = useState(pageSize);
 
@@ -1019,10 +1022,17 @@ export default function RenderSearchResults({
             <ThemedText style={styles.rowSubtitle} numberOfLines={3}>
               {v.text}
             </ThemedText>
-            {!!v.transliteration && (
+            {/* {!!v.transliteration && (
               <ThemedText style={styles.rowTiny} numberOfLines={2}>
                 {v.transliteration}
               </ThemedText>
+            )} */}
+
+            {!!v.transliteration && (
+              <HtmlRenderer
+                html={v.transliteration}
+                contentWidth={contentWidth}
+              />
             )}
           </Pressable>
         );
@@ -1168,6 +1178,7 @@ export default function RenderSearchResults({
       onPressPrayer,
       onPressPodcast,
       onPressNews,
+      contentWidth,
       t,
       rtl,
     ]
