@@ -419,13 +419,13 @@ export function usePushNotifications() {
   const registerOrUpdateToken = useCallback(async () => {
     if (!getNotifications) return;
 
-    if (!Device.isDevice) {
-      Alert.alert(
-        "Physical Device Required",
-        "Push notifications only work on physical devices."
-      );
-      return;
-    }
+    // if (!Device.isDevice) {
+    //   Alert.alert(
+    //     "Physical Device Required",
+    //     "Push notifications only work on physical devices."
+    //   );
+    //   return;
+    // }
 
     try {
       const projectId =

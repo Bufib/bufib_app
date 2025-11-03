@@ -761,10 +761,7 @@
 //   );
 // }
 
-
-
-
-//! 
+//! Fix for re rendering by fixing onInit
 import "react-native-gesture-handler";
 import "react-native-reanimated";
 import AppReviewPrompt from "@/components/AppReviewPrompt";
@@ -794,7 +791,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { SQLiteProvider } from "expo-sqlite";
 import * as SQLite from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -814,6 +811,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setDatabase } from "../db";
 import { migrateDbIfNeeded, DB_NAME } from "@/db/migrates";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
+import { ThemedText } from "@/components/ThemedText";
 
 // If removeEventListener doesn’t exist, patch it on-the-fly:
 if (typeof (BackHandler as any).removeEventListener !== "function") {
@@ -846,7 +844,7 @@ function RetryMigrationScreen({
   const fg = colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
   const bg =
     colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
-
+  const { t } = useTranslation();
   return (
     <View
       style={{
@@ -866,7 +864,7 @@ function RetryMigrationScreen({
           textAlign: "center",
         }}
       >
-        Something went wrong while preparing the app
+        {t("initAppWentWrong")}
       </Text>
       <Text
         style={{ fontSize: 14, color: fg, opacity: 0.8, textAlign: "center" }}
@@ -1046,13 +1044,13 @@ function AppContent() {
         >
           {t("loading")}
         </Text>
-        <ActivityIndicator
-          size={"large"}
-          color={colorScheme === "dark" ? Colors.dark.tint : Colors.light.tint}
-        />
+        <LoadingIndicator size={"large"} />
         <Text style={{ fontSize: 16, textAlign: "center", color: fg }}>
-          {t("questionsAreBeingLoadedMessage")}
+          {t("dataIsBeingLoadedTitle")}
         </Text>
+        <ThemedText style={{ fontSize: 16, textAlign: "center", color: fg }}>
+          {t("dataIsBeingLoadedMessage")}
+        </ThemedText>
         <Toast />
       </View>
     );
@@ -1101,39 +1099,39 @@ export default function RootLayout() {
   const [migrationError, setMigrationError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
 
-  const handleRetry = useMemo(
-    () => async () => {
-      try {
-        setRetrying(true);
-        setMigrationError(null);
-        const db = await SQLite.openDatabaseAsync(DB_NAME);
-        await migrateDbIfNeeded(db); // atomic
-        setDatabase(db); // mark db ready for the app
-      } catch (e: any) {
-        console.error("DB migration retry failed:", e);
-        setMigrationError(e?.message ?? String(e));
-      } finally {
-        setRetrying(false);
-      }
-    },
-    []
-  );
+  // Memoize the onInit callback to prevent SQLiteProvider from reinitializing
+  const onInit = useCallback(async (db: SQLite.SQLiteDatabase) => {
+    try {
+      await migrateDbIfNeeded(db); // atomic; bumps user_version on success
+      setDatabase(db); // only after successful COMMIT
+    } catch (e: any) {
+      console.error("DB migration failed:", e);
+      setMigrationError(e?.message ?? String(e));
+      // Do NOT rethrow; we want to render a Retry UI instead of a red screen
+    }
+  }, []); // Empty deps - this only needs to run once
+
+  const handleRetry = useCallback(async () => {
+    try {
+      setRetrying(true);
+      setMigrationError(null);
+      const db = await SQLite.openDatabaseAsync(DB_NAME);
+      await migrateDbIfNeeded(db); // atomic
+      setDatabase(db); // mark db ready for the app
+    } catch (e: any) {
+      console.error("DB migration retry failed:", e);
+      setMigrationError(e?.message ?? String(e));
+    } finally {
+      setRetrying(false);
+    }
+  }, []);
 
   return (
     <GlobalVideoHost>
       <SQLiteProvider
         databaseName={DB_NAME}
         useSuspense={false}
-        onInit={async (db) => {
-          try {
-            await migrateDbIfNeeded(db); // atomic; bumps user_version on success
-            setDatabase(db); // only after successful COMMIT
-          } catch (e: any) {
-            console.error("DB migration failed:", e);
-            setMigrationError(e?.message ?? String(e));
-            // Do NOT rethrow; we want to render a Retry UI instead of a red screen
-          }
-        }}
+        onInit={onInit}
       >
         {migrationError ? (
           <RetryMigrationScreen

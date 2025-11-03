@@ -48,9 +48,8 @@ export const ar = {
   removeConfirmPrayer: "هل تريد إزالة الصلاة من المجلد؟",
   about: "حول التطبيق",
   impressum: "البيانات القانونية",
-  questionsAreBeingLoadedTitle: "يتم تحميل الأسئلة",
-  questionsAreBeingLoadedMessage:
-    "قد يستغرق ذلك بعض الوقت حسب سرعة اتصال الإنترنت",
+  dataIsBeingLoadedTitle: "يتم الآن تحميل البيانات",
+  dataIsBeingLoadedMessage: "قد يستغرق ذلك بعض الوقت حسب سرعة اتصال الإنترنت",
   font: "الخط",
   source: "مصادر",
   copied: "منقول",
@@ -70,7 +69,8 @@ export const ar = {
   confirm: "تأكيد",
   abort: "إحباط",
   syncFailedTryAgain: "فشل التزامن. يرجى المحاولة مرة أخرى.",
-
+  initAppWentWrong:
+    "حدث خطأ ما أثناء إعداد التطبيق. حاول إغلاق التطبيق وفتحه مرة أخرى.",
   // Navigation
   knowledge: "معرفة",
   settings: "إعدادات",

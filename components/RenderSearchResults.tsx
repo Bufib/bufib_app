@@ -731,6 +731,7 @@ import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
+import RenderHTML from "react-native-render-html";
 
 type TabType = "quran" | "questions" | "prayers" | "podcasts" | "news";
 
@@ -1000,7 +1001,7 @@ export default function RenderSearchResults({
                 ? onPressQuran({ sura: v.sura, aya: v.aya })
                 : router.push({
                     pathname: "/(displaySura)",
-                    params: { suraId: String(v.sura) },
+                    params: { suraId: String(v.sura), verseId: v.aya },
                   })
             }
             style={({ pressed }) => [

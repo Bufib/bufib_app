@@ -50,8 +50,8 @@ export const de = {
   readMore: "Mehr",
   about: "Über",
   impressum: "Impressum",
-  questionsAreBeingLoadedTitle: "Fragen werden geladen!",
-  questionsAreBeingLoadedMessage:
+  dataIsBeingLoadedTitle: "Daten werden geladen!",
+  dataIsBeingLoadedMessage:
     "Je nach Internetverbindung kann das einen Augenblick dauern.",
   font: "Schriftgröße",
   source: "Quellen: ",
@@ -72,6 +72,9 @@ export const de = {
   confirm: "Bestätigen",
   syncFailedTryAgain:
     "Synchronisierung fehlgeschlagen. Bitte versuche es erneut.",
+  initAppWentWrong:
+    "Beim Vorbereiten der App ist ein Fehler aufgetreten. Versuchen Sie, die App zu schließen und erneut zu öffnen.",
+
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",

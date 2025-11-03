@@ -675,10 +675,11 @@ const SuraScreen: React.FC = () => {
 
   const { width } = useWindowDimensions();
   const { t } = useTranslation();
-  const { suraId, juzId, pageId } = useLocalSearchParams<{
+  const { suraId, juzId, pageId, verseId } = useLocalSearchParams<{
     suraId?: string;
     juzId?: string;
     pageId?: string;
+    verseId?: string
   }>();
 
   const [hasTafsir, setHasTafsir] = useState(true);

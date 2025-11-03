@@ -48,8 +48,8 @@ export const en = {
   removeConfirmPrayer: "Do you want to remove this prayer from the folder?",
   about: "About",
   impressum: "Legal Notice",
-  questionsAreBeingLoadedTitle: "Questions are being loaded!",
-  questionsAreBeingLoadedMessage:
+  dataIsBeingLoadedTitle: "Data is being loaded!",
+  dataIsBeingLoadedMessage:
     "Depending on your internet connection, this may take a moment.",
   font: "font",
   source: "Sources: ",
@@ -71,7 +71,8 @@ export const en = {
   confirm: "Confirm",
   abort: "Cancel",
   syncFailedTryAgain: "Sync failed. Please try again.",
-
+  initAppWentWrong:
+    "Something went wrong while preparing the app. Try to close and open the app again.",
   // Navigation
   knowledge: "Knowledge",
   settings: "Settings",
