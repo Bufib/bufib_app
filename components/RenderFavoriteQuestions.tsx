@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 function RenderFavoriteQuestions() {
   const [questions, setQuestions] = useState<QuestionType[]>([]);
@@ -33,6 +34,7 @@ function RenderFavoriteQuestions() {
   const colorScheme = useColorScheme() || "light";
   const { favoritesRefreshed } = useRefreshFavorites();
   const { lang } = useLanguage();
+  const questionVersion = useDataVersionStore((s) => s.questionsVersion);
 
   useEffect(() => {
     let isMounted = true;
@@ -66,7 +68,12 @@ function RenderFavoriteQuestions() {
     return () => {
       isMounted = false;
     };
-  }, [favoritesRefreshed, lang]);
+  }, [favoritesRefreshed, lang, questionVersion]);
+
+    const listExtraData = React.useMemo(
+      () => `${lang}|${favoritesRefreshed}|${questionVersion}`,
+      [lang, favoritesRefreshed, questionVersion]
+    );
 
   const renderItem = useCallback(
     ({ item }: { item: QuestionType }) => (
@@ -134,7 +141,7 @@ function RenderFavoriteQuestions() {
     <ThemedView style={[styles.container]}>
       <FlatList
         data={questions}
-        extraData={favoritesRefreshed}
+        extraData={listExtraData}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: Colors[colorScheme].background }}

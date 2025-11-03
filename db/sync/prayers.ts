@@ -384,6 +384,12 @@ export default async function syncPrayers(): Promise<void> {
             t.updated_at as any,
           ]);
         }
+
+        // E) Orphan sweeps
+        await txn.runAsync(`
+        DELETE FROM favorite_prayers
+        WHERE prayer_id NOT IN (SELECT id FROM prayers);
+      `);
       } finally {
         await Promise.allSettled([
           insertCat.finalizeAsync(),

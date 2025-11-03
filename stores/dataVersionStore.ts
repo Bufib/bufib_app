@@ -10,6 +10,9 @@ interface DataVersionStore {
   calendarVersion: number;
   prayersVersion: number;
   paypalVersion: number;
+  podcastVersion: number;
+  newsArticleVersion: number;
+  videoVersion: number;
 
   // per-dataset updaters
   incrementQuestionsVersion: () => void;
@@ -17,6 +20,9 @@ interface DataVersionStore {
   incrementCalendarVersion: () => void;
   incrementPrayersVersion: () => void;
   incrementPaypalVersion: () => void;
+  incrementPodcastVersion: () => void;
+  incrementNewsArticleVersion: () => void;
+  incrementVideoVersion: () => void;
 
   // per-dataset resets (optional)
   resetQuestionsVersion: () => void;
@@ -24,6 +30,9 @@ interface DataVersionStore {
   resetCalendarVersion: () => void;
   resetPrayersVersion: () => void;
   resetPaypalVersion: () => void;
+  resetPodcastVersion: () => void;
+  resetNewsArticleVersion: () => void;
+  resetVideoVersion: () => void;
 
   // all reset (optional)
   resetAllVersions: () => void;
@@ -35,6 +44,9 @@ export const useDataVersionStore = create<DataVersionStore>((set) => ({
   calendarVersion: 0,
   prayersVersion: 0,
   paypalVersion: 0,
+  podcastVersion: 0,
+  newsArticleVersion: 0,
+  videoVersion: 0,
 
   incrementQuestionsVersion: () =>
     set((s) => ({ questionsVersion: s.questionsVersion + 1 })),
@@ -46,12 +58,21 @@ export const useDataVersionStore = create<DataVersionStore>((set) => ({
     set((s) => ({ prayersVersion: s.prayersVersion + 1 })),
   incrementPaypalVersion: () =>
     set((s) => ({ paypalVersion: s.paypalVersion + 1 })),
+  incrementPodcastVersion: () =>
+    set((s) => ({ podcastVersion: s.podcastVersion + 1 })),
+  incrementNewsArticleVersion: () =>
+    set((s) => ({ newsArticleVersion: s.newsArticleVersion + 1 })),
+  incrementVideoVersion: () =>
+    set((s) => ({ videoVersion: s.videoVersion + 1 })),
 
   resetQuestionsVersion: () => set({ questionsVersion: 0 }),
   resetQuranDataVersion: () => set({ quranDataVersion: 0 }),
   resetCalendarVersion: () => set({ calendarVersion: 0 }),
   resetPrayersVersion: () => set({ prayersVersion: 0 }),
   resetPaypalVersion: () => set({ paypalVersion: 0 }),
+  resetPodcastVersion: () => set({ podcastVersion: 0 }),
+  resetNewsArticleVersion: () => set({ newsArticleVersion: 0 }),
+  resetVideoVersion: () => set({ videoVersion: 0 }),
 
   resetAllVersions: () =>
     set({
@@ -60,5 +81,8 @@ export const useDataVersionStore = create<DataVersionStore>((set) => ({
       calendarVersion: 0,
       prayersVersion: 0,
       paypalVersion: 0,
+      podcastVersion: 0,
+      newsArticleVersion: 0,
+      videoVersion: 0,
     }),
 }));

@@ -515,7 +515,6 @@ export const migrationSQL = `
   CREATE INDEX IF NOT EXISTS idx_prayer_translations_lang ON prayer_translations(language_code);
   CREATE UNIQUE INDEX IF NOT EXISTS uq_prayer_translations_pid_lang
   ON prayer_translations(prayer_id, language_code);
-  CREATE UNIQUE INDEX IF NOT EXISTS uq_favorite_prayers_unique ON favorite_prayers(prayer_id, folder_name);
 
   -- FAVORITES / FOLDERS (used by your helpers)
   CREATE TABLE IF NOT EXISTS prayer_folders (
@@ -536,6 +535,7 @@ export const migrationSQL = `
   CREATE INDEX IF NOT EXISTS idx_fav_prayers_created     ON favorite_prayers(created_at);
   CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_folder ON favorite_prayers(prayer_id, folder_name);
   CREATE INDEX IF NOT EXISTS idx_prayer_translations_lang_pid ON prayer_translations(language_code, prayer_id);
+  CREATE UNIQUE INDEX IF NOT EXISTS uq_favorite_prayers_unique ON favorite_prayers(prayer_id, folder_name);
 
   -- PODCASTS
   CREATE TABLE IF NOT EXISTS podcasts (
@@ -557,17 +557,20 @@ export const migrationSQL = `
   );
   CREATE INDEX IF NOT EXISTS idx_video_categories_lang ON video_categories(language_code);
 
-  CREATE TABLE IF NOT EXISTS videos (
-    id INTEGER PRIMARY KEY,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    title TEXT NOT NULL,
-    language_code TEXT NOT NULL,
-    public_id TEXT NOT NULL,
-    video_category TEXT NOT NULL DEFAULT ''
-  );
-  CREATE INDEX IF NOT EXISTS idx_videos_category ON videos(video_category);
-  CREATE INDEX IF NOT EXISTS idx_videos_lang ON videos(language_code);
-  CREATE INDEX IF NOT EXISTS idx_videos_category_created ON videos(video_category, created_at);
-
+  
 
 `;
+
+
+//! Not needed?
+// CREATE TABLE IF NOT EXISTS videos (
+//     id INTEGER PRIMARY KEY,
+//     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//     title TEXT NOT NULL,
+//     language_code TEXT NOT NULL,
+//     public_id TEXT NOT NULL,
+//     video_category TEXT NOT NULL DEFAULT ''
+//   );
+//   CREATE INDEX IF NOT EXISTS idx_videos_category ON videos(video_category);
+//   CREATE INDEX IF NOT EXISTS idx_videos_lang ON videos(language_code);
+//   CREATE INDEX IF NOT EXISTS idx_videos_category_created ON videos(video_category, created_at);

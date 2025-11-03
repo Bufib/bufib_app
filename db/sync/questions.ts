@@ -336,6 +336,12 @@ export default async function syncQuestions(): Promise<void> {
             q.language_code,
           ]);
         }
+        // E) Orphan sweeps
+        await txn.runAsync(`
+        DELETE FROM favorite_questions
+        WHERE question_id NOT IN (SELECT id FROM questions);
+      `);
+
       } finally {
         await Promise.allSettled([
           catStmt.finalizeAsync(),
