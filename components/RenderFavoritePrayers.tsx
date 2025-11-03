@@ -707,6 +707,7 @@ const FavoritePrayersScreen: React.FC = () => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedRef = useRef(true);
   const requestIdRef = useRef(0);
+  const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
 
   // track mount/unmount
   useEffect(() => {
@@ -736,7 +737,7 @@ const FavoritePrayersScreen: React.FC = () => {
     } finally {
       setIsLoadingFolders(false);
     }
-  }, [lang, favoritesRefreshed]);
+  }, [lang, favoritesRefreshed, prayersVersion]);
 
   const reloadPrayers = useCallback(
     async (folder: string | null) => {
@@ -783,7 +784,7 @@ const FavoritePrayersScreen: React.FC = () => {
         }
       }
     },
-    [lang, favoritesRefreshed]
+    [lang, favoritesRefreshed, prayersVersion]
   );
 
   const onDeleteFolder = useCallback(
@@ -830,8 +831,8 @@ const FavoritePrayersScreen: React.FC = () => {
   );
 
   const listExtraData = React.useMemo(
-    () => `${lang}|${favoritesRefreshed}`,
-    [lang, favoritesRefreshed]
+    () => `${lang}|${favoritesRefreshed}|${prayersVersion}`,
+    [lang, favoritesRefreshed, prayersVersion]
   );
   const renderFolderPill = (folder: FavoritePrayerFolderType) => {
     const isActive = folder.name === selectedFolder;

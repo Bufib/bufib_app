@@ -74,12 +74,11 @@ export const getFavoritePrayersForFolder = async (
   const db = getDatabase();
   return await db.getAllAsync<PrayerType>(
     `
-    SELECT p.*
-      FROM prayers p
-      JOIN favorite_prayers f
-        ON p.id = f.prayer_id
-     WHERE f.folder_name = ?
-     ORDER BY datetime(f.created_at) DESC;
+    SELECT DISTINCT p.*
+    FROM favorite_prayers f
+    JOIN prayers p ON p.id = f.prayer_id
+    WHERE f.folder_name = ?
+    ORDER BY datetime(f.created_at) DESC;
     `,
     [folderName]
   );
@@ -125,15 +124,19 @@ export const getFavoritePrayerFolders = async (): Promise<
     SELECT
       f.name,
       f.color,
-      COALESCE(fp.count, 0) AS cnt
+      COALESCE(fp.cnt, 0) AS cnt
     FROM prayer_folders AS f
     LEFT JOIN (
-      SELECT folder_name, COUNT(*) AS count
-      FROM favorite_prayers
-      GROUP BY folder_name
-    ) fp ON f.name = fp.folder_name
+      SELECT
+        fp.folder_name,
+        COUNT(DISTINCT fp.prayer_id) AS cnt
+      FROM favorite_prayers fp
+      JOIN prayers p ON p.id = fp.prayer_id   -- ignore orphans
+      GROUP BY fp.folder_name
+    ) fp ON fp.folder_name = f.name
     ORDER BY LOWER(f.name);
   `);
+
   return rows.map((r) => ({
     name: r.name,
     color: r.color,

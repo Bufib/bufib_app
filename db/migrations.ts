@@ -510,10 +510,12 @@ export const migrationSQL = `
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     translated_notes TEXT
   );
+  
   CREATE INDEX IF NOT EXISTS idx_prayer_translations_pid ON prayer_translations(prayer_id);
   CREATE INDEX IF NOT EXISTS idx_prayer_translations_lang ON prayer_translations(language_code);
   CREATE UNIQUE INDEX IF NOT EXISTS uq_prayer_translations_pid_lang
   ON prayer_translations(prayer_id, language_code);
+  CREATE UNIQUE INDEX IF NOT EXISTS uq_favorite_prayers_unique ON favorite_prayers(prayer_id, folder_name);
 
   -- FAVORITES / FOLDERS (used by your helpers)
   CREATE TABLE IF NOT EXISTS prayer_folders (
