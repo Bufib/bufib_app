@@ -1029,10 +1029,6 @@ async function getJuzRowAtOrBefore(
 
 // --- queries ---------------------------------------------------------------
 
-
-
-
-
 /** Get a single ayah (always with Arabic transliteration). */
 export async function getAyah(
   lang: Language,
@@ -1710,3 +1706,4 @@ export async function getPageButtonLabels(
     return [];
   }
 }
+

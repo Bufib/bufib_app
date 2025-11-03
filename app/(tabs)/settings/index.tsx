@@ -77,17 +77,18 @@ const Settings = () => {
     });
   };
 
-  // 1) Load saved dark mode preference
-  useEffect(() => {
-    (async () => {
-      try {
-        const savedColorSetting = await AsyncStorage.getItem("isDarkMode");
-        Appearance.setColorScheme(
-          savedColorSetting === "true" ? "dark" : "light"
-        );
-      } catch {}
-    })();
-  }, []);
+  //! Maybe not needed
+  // // 1) Load saved dark mode preference
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const savedColorSetting = await AsyncStorage.getItem("isDarkMode");
+  //       Appearance.setColorScheme(
+  //         savedColorSetting === "true" ? "dark" : "light"
+  //       );
+  //     } catch {}
+  //   })();
+  // }, []);
 
   // 2) Get version, PayPal and question count
   useEffect(() => {

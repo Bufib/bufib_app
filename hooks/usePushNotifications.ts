@@ -440,7 +440,7 @@ export function usePushNotifications() {
         expo_push_token: string;
         app_version?: string;
         platform: string;
-        language_code: string; // ✅ store language here
+        language_code: string; 
         user_id?: string;
         guest_id?: string;
       } = {

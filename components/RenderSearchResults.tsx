@@ -1000,7 +1000,7 @@ export default function RenderSearchResults({
                 ? onPressQuran({ sura: v.sura, aya: v.aya })
                 : router.push({
                     pathname: "/(displaySura)",
-                    params: { suraId: String(v.id) },
+                    params: { suraId: String(v.sura) },
                   })
             }
             style={({ pressed }) => [
