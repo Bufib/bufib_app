@@ -263,12 +263,14 @@ import { Entypo } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "@/utils/formatDate";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function RenderFavoritePodcasts() {
   const { lang, rtl } = useLanguage();
   const { favoritesRefreshed } = useRefreshFavorites(); // triggers when user toggles a favorite elsewhere
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
+  const podcastVersion = useDataVersionStore((s) => s.podcastVersion);
 
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const favKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
@@ -279,7 +281,7 @@ export default function RenderFavoritePodcasts() {
       const ids = await getFavoritePodcasts(lang);
       setFavoriteIds(ids);
     })();
-  }, [lang, favoritesRefreshed]);
+  }, [lang, favoritesRefreshed, podcastVersion]);
 
   // Fetch favorite episodes by ID directly (no pagination dance)
   const {
@@ -289,7 +291,7 @@ export default function RenderFavoritePodcasts() {
     refetch,
     isFetching,
   } = useQuery({
-    queryKey: ["favorite-episodes", lang, favKey],
+    queryKey: ["favorite-episodes", lang, favKey, podcastVersion],
     enabled: favoriteIds.length > 0,
     queryFn: async (): Promise<PodcastType[]> => {
       const ids = favoriteIds.map(Number);
@@ -308,7 +310,6 @@ export default function RenderFavoritePodcasts() {
     refetchOnMount: "always",
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    
   });
 
   // Pull-to-refresh (optional but handy)
@@ -321,6 +322,11 @@ export default function RenderFavoritePodcasts() {
     await refetch();
     setRefreshing(false);
   };
+
+  const listExtraData = React.useMemo(
+    () => `${lang}|${podcastVersion}|${colorScheme}`,
+    [lang, podcastVersion, colorScheme]
+  );
 
   // Loading first data
   if (isLoading && favoriteIds.length > 0) {
@@ -353,6 +359,7 @@ export default function RenderFavoritePodcasts() {
     <ThemedView style={styles.container}>
       <FlatList
         data={favoriteEpisodes}
+        extraData={listExtraData}
         keyExtractor={(item) => String(item.id)}
         refreshing={refreshing || isFetching}
         onRefresh={onRefresh}

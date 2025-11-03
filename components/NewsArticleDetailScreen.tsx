@@ -6045,10 +6045,13 @@ export default function NewsArticleDetailScreen({
 
   if (error || !article) {
     return (
-      <View
+      <ThemedView
         style={[
-          styles.container,
-          { backgroundColor: Colors[colorScheme].background },
+          {
+            flex: 1,
+            backgroundColor: Colors[colorScheme].background,
+            justifyContent: "center",
+          },
         ]}
       >
         <View style={styles.errorContainer}>
@@ -6079,7 +6082,7 @@ export default function NewsArticleDetailScreen({
             {error}
           </Text>
         )}
-      </View>
+      </ThemedView>
     );
   }
 
@@ -6171,7 +6174,7 @@ export default function NewsArticleDetailScreen({
                 accessibilityLabel={t("changeFontSize")}
                 style={[styles.actionBtn, {}]}
               >
-                <ThemedText style={[styles.actionBtnText, { marginRight: 0 }]}>
+                <ThemedText type="subtitle" style={[styles.actionBtnText, {}]}>
                   Aa
                 </ThemedText>
               </TouchableOpacity>
@@ -6186,7 +6189,7 @@ export default function NewsArticleDetailScreen({
               >
                 <Ionicons
                   name={isFavorite ? "star" : "star-outline"}
-                  size={28}
+                  size={25}
                   color={
                     isFavorite
                       ? Colors.universal.favorite

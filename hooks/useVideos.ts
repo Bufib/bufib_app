@@ -49,8 +49,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
 import { UseVideosResultType, VideoType } from "@/constants/Types";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
+import { useMemo } from "react";
 
 export function useVideos(language: string) {
+  const videoVersion = useDataVersionStore((s) => s.videoVersion);
+
   const query = useQuery<VideoType[], Error>({
     queryKey: ["videos", language],
     queryFn: async () => {
@@ -73,15 +77,19 @@ export function useVideos(language: string) {
   });
 
   const videos = query.data ?? [];
-  const videosByCategory = videos.reduce<Record<string, VideoType[]>>(
-    (acc, vid) => {
-      (acc[vid.video_category] ||= []).push(vid);
-      return acc;
-    },
-    {}
+  const videosByCategory = useMemo(
+    () =>
+      (query.data ?? []).reduce<Record<string, VideoType[]>>((acc, vid) => {
+        (acc[vid.video_category] ||= []).push(vid);
+        return acc;
+      }, {}),
+    [query.data]
   );
 
-  const categories = Object.keys(videosByCategory);
+  const categories = useMemo(
+    () => Object.keys(videosByCategory),
+    [videosByCategory]
+  );
 
   return {
     ...query,

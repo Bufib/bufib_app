@@ -19,15 +19,22 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { useTranslation } from "react-i18next";
 import { LanguageCode } from "@/constants/Types";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function RenderQuestionVideosCategories() {
   const colorScheme = useColorScheme() || "light";
   const router = useRouter();
   const { lang } = useLanguage();
-  const { categories, isLoading, error } = useFetchVideoCategories(
-    lang
-  );
+  const videoVersion = useDataVersionStore((s) => s.videoVersion);
+
+  const { categories, isLoading, error } = useFetchVideoCategories(lang);
   const { t } = useTranslation();
+
+  const listExtraData = React.useMemo(
+    () => `${lang}|${videoVersion}|${colorScheme}`,
+    [lang, videoVersion, colorScheme]
+  );
+
   if (isLoading) {
     return (
       <ThemedView style={styles.centeredContainer}>
@@ -59,6 +66,7 @@ export default function RenderQuestionVideosCategories() {
       />
       <FlatList
         data={categories}
+        extraData={listExtraData}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: Colors[colorScheme].background }}
@@ -107,8 +115,7 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     paddingTop: 10,
-    gap: 15
-
+    gap: 15,
   },
   item: {
     flexDirection: "row",

@@ -284,14 +284,14 @@ export const migrationSQL = `
     language_code TEXT NOT NULL UNIQUE
   );
 
-  -- CALENDAR Legend (lookup table; no FK)
-  CREATE TABLE IF NOT EXISTS calendarLegend (
-    id INTEGER PRIMARY KEY,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    legend_type TEXT NOT NULL UNIQUE,
-    language_code TEXT NOT NULL 
-  );
 
+
+  CREATE TABLE IF NOT EXISTS calendarLegend (
+  id            INTEGER PRIMARY KEY,
+  created_at    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  legend_type   TEXT NOT NULL,
+  language_code TEXT NOT NULL
+);
   -- CALENDAR
   CREATE TABLE IF NOT EXISTS calendar (
     id INTEGER PRIMARY KEY,
@@ -304,9 +304,10 @@ export const migrationSQL = `
     language_code TEXT NOT NULL
   );
   -- Helpful indexes for common filters/sorts
-  CREATE INDEX IF NOT EXISTS idx_calendar_legend_type ON calendar(legend_type);
+  CREATE INDEX IF NOT EXISTS idx_calendar_lang_legend ON calendar(language_code, legend_type);
   CREATE INDEX IF NOT EXISTS idx_calendar_lang_created ON calendar(language_code, created_at);
   CREATE INDEX IF NOT EXISTS idx_calendar_gregorian ON calendar(gregorian_date);
+  CREATE UNIQUE INDEX IF NOT EXISTS uq_calendarLegend_type_lang ON calendarLegend(legend_type, language_code);
 
   -- QURAN: AYA TEXT TABLES
   CREATE TABLE IF NOT EXISTS aya_ar (
@@ -550,17 +551,18 @@ export const migrationSQL = `
 
   -- VIDEOS
   CREATE TABLE IF NOT EXISTS video_categories (
-    id INTEGER PRIMARY KEY,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    video_category TEXT NOT NULL UNIQUE,
-    language_code TEXT NOT NULL DEFAULT 'de'
-  );
-  CREATE INDEX IF NOT EXISTS idx_video_categories_lang ON video_categories(language_code);
+  id             INTEGER PRIMARY KEY,
+  created_at     TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  video_category TEXT NOT NULL,
+  language_code  TEXT NOT NULL DEFAULT 'de'
+);
 
+-- Composite uniqueness per language:
+CREATE UNIQUE INDEX IF NOT EXISTS uq_video_categories_cat_lang
+ON video_categories(video_category, language_code);
   
 
 `;
-
 
 //! Not needed?
 // CREATE TABLE IF NOT EXISTS videos (
@@ -574,3 +576,20 @@ export const migrationSQL = `
 //   CREATE INDEX IF NOT EXISTS idx_videos_category ON videos(video_category);
 //   CREATE INDEX IF NOT EXISTS idx_videos_lang ON videos(language_code);
 //   CREATE INDEX IF NOT EXISTS idx_videos_category_created ON videos(video_category, created_at);
+
+//! Old
+// -- CALENDAR Legend (lookup table; no FK)
+// CREATE TABLE IF NOT EXISTS calendarLegend (
+//   id INTEGER PRIMARY KEY,
+//   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   legend_type TEXT NOT NULL UNIQUE,
+//   language_code TEXT NOT NULL
+// );
+
+//  CREATE TABLE IF NOT EXISTS video_categories (
+//     id INTEGER PRIMARY KEY,
+//     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//     video_category TEXT NOT NULL UNIQUE,
+//     language_code TEXT NOT NULL DEFAULT 'de'
+//   );
+//   CREATE INDEX IF NOT EXISTS idx_video_categories_lang ON video_categories(language_code);

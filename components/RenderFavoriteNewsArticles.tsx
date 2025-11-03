@@ -223,23 +223,25 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "@/utils/formatDate";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function NewsFavoritesScreen() {
   const { lang, rtl } = useLanguage();
   const { favoritesRefreshed } = useRefreshFavorites();
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
+  const newsArticleVersion = useDataVersionStore((s) => s.newsArticleVersion);
 
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const favKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
-
+  console.log(newsArticleVersion)
   // Load favorite IDs from storage (scoped by language)
   useEffect(() => {
     (async () => {
       const ids = await getFavoriteNewsArticle(lang);
       setFavoriteIds(ids);
     })();
-  }, [lang, favoritesRefreshed]);
+  }, [lang, favoritesRefreshed, newsArticleVersion]);
 
   // Fetch favorite news in one query
   const {
@@ -247,7 +249,7 @@ export default function NewsFavoritesScreen() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["favorite-news", lang, favKey],
+   queryKey: ["favorite-news", lang, favKey, newsArticleVersion],
     enabled: favoriteIds.length > 0,
     queryFn: async (): Promise<NewsArticlesType[]> => {
       const ids = favoriteIds.map(Number);
@@ -268,6 +270,11 @@ export default function NewsFavoritesScreen() {
     refetchOnReconnect: true,
   });
 
+  const listExtraData = React.useMemo(
+    () => `${lang}|${newsArticleVersion}|${colorScheme}`,
+    [lang, newsArticleVersion, colorScheme]
+  );
+  
   if (isLoading && favoriteIds.length > 0) {
     return (
       <ThemedView style={styles.centered}>
@@ -298,6 +305,7 @@ export default function NewsFavoritesScreen() {
     <ThemedView style={styles.container}>
       <FlatList
         data={favoriteNews}
+        extraData={listExtraData}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.flatListContent}
         renderItem={({ item }) => (

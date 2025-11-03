@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
 import { VideoCategoryType } from "@/constants/Types";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 /**
  * Custom hook to fetch video categories from Supabase,
@@ -11,6 +12,8 @@ import { VideoCategoryType } from "@/constants/Types";
  * This parameter is now mandatory.
  */
 export function useFetchVideoCategories(languageCode: string) {
+  const videoVersion = useDataVersionStore((s) => s.videoVersion);
+
   // languageCode is no longer optional
   const query = useQuery<VideoCategoryType[], Error>({
     queryKey: ["video_categories", languageCode],
