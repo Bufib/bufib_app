@@ -679,7 +679,7 @@ const SuraScreen: React.FC = () => {
     suraId?: string;
     juzId?: string;
     pageId?: string;
-    verseId?: string
+    verseId?: string;
   }>();
 
   const [hasTafsir, setHasTafsir] = useState(true);
@@ -832,6 +832,32 @@ const SuraScreen: React.FC = () => {
     };
   }, [isPageMode, pageNumber, quranDataVersion]);
 
+  // Add this useEffect after your other useEffects in SuraScreen component
+
+  useEffect(() => {
+    // Only scroll if verseId is provided and data is loaded
+    if (!verseId || loading || !verses.length) return;
+
+    const targetAya = Number(verseId);
+    if (isNaN(targetAya)) return;
+
+    // Find the index by aya number (simple since we're always in sura mode)
+    const targetIndex = verses.findIndex((v) => v.aya === targetAya);
+
+    if (targetIndex === -1) return;
+
+    // Small delay to ensure FlatList is fully rendered
+    const timer = setTimeout(() => {
+      flatListRef.current?.scrollToIndex({
+        index: targetIndex,
+        animated: true,
+        viewPosition: 0.2, // Position near top of screen
+      });
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [verseId, loading, verses]);
+
   const arabicByKey = useMemo(
     () => new Map(arabicVerses.map((v) => [vkey(v.sura, v.aya), v])),
     [arabicVerses]
@@ -959,6 +985,16 @@ const SuraScreen: React.FC = () => {
           keyExtractor={(v) => `${v.sura}-${v.aya}`}
           renderItem={renderVerse}
           onViewableItemsChanged={onViewableItemsChanged}
+          onScrollToIndexFailed={(info) => {
+            // Retry after a short delay
+            setTimeout(() => {
+              flatListRef.current?.scrollToIndex({
+                index: info.index,
+                animated: true,
+                viewPosition: 0.2,
+              });
+            }, 500);
+          }}
           viewabilityConfig={viewabilityConfig}
           ListHeaderComponent={
             <StickyHeaderQuran
