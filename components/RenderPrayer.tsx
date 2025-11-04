@@ -1782,6 +1782,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         data={indices}
         stickyHeaderIndices={[0]}
         stickyHeaderHiddenOnScroll
+        bounces={false}
         extraData={listExtraData}
         ListHeaderComponent={
           <View

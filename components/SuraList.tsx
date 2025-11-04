@@ -2776,7 +2776,7 @@ async function preseedPagesForSurah(info: SuraRowType, firstBatchSize = 3) {
 
   // Defer the rest so we don't block interactions
   if (batch < total) {
-    InteractionManager.runAfterInteractions(() => {
+    setTimeout(() => {
       (async () => {
         for (let p = start + batch; p <= end; p++) {
           try {
@@ -2784,7 +2784,7 @@ async function preseedPagesForSurah(info: SuraRowType, firstBatchSize = 3) {
           } catch {}
         }
       })();
-    });
+    }, 0);
   }
 }
 
@@ -3051,10 +3051,10 @@ const SuraList: React.FC = () => {
   const setLastSura = useLastSuraStore((s) => s.setLastSura);
   useEffect(() => {
     if (!lastSuraNumber) return;
-    InteractionManager.runAfterInteractions(() => {
+    setTimeout(() => {
       getJuzCoverageForSura(lastSuraNumber).catch(() => {});
       getPageCoverageForSura(lastSuraNumber).catch(() => {});
-    });
+    }, 0);
   }, [lastSuraNumber, lang, quranDataVersion]);
 
   useEffect(() => {
@@ -3381,11 +3381,11 @@ const SuraList: React.FC = () => {
         text: t("reset"),
         style: "destructive",
         onPress: () => {
-          InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => {
             for (const s of suras) {
               updateBookmarkProgress(s.id, 0, -1, lang);
             }
-          });
+          }, 0);
         },
       },
     ]);
@@ -3398,11 +3398,11 @@ const SuraList: React.FC = () => {
         text: t("reset"),
         style: "destructive",
         onPress: () => {
-          InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => {
             for (let j = 1; j <= 30; j++) {
               updateJuzBookmark(j, 0, -1, lang);
             }
-          });
+          }, 0);
         },
       },
     ]);
@@ -3416,11 +3416,11 @@ const SuraList: React.FC = () => {
         style: "destructive",
         onPress: () => {
           const totalPages = pageList.length > 0 ? pageList.length : 604;
-          InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => {
             for (let p = 1; p <= totalPages; p++) {
               updatePageBookmark(p, 0, -1, lang);
             }
-          });
+          }, 0);
         },
       },
     ]);

@@ -1,8 +1,6 @@
 import { StyleSheet, useColorScheme } from "react-native";
 import React from "react";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { noInternetBody, noInternetHeader } from "@/constants/messages";
 import { Colors } from "@/constants/Colors";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { useEffect } from "react";
@@ -10,6 +8,8 @@ import Toast from "react-native-toast-message";
 import { useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/contexts/LanguageContext";
+
 interface NoInternetProps {
   showUI?: boolean;
   showToast?: boolean;
@@ -23,7 +23,7 @@ export const NoInternet = ({
   const prevConnected = useRef(true);
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
-
+  const { lang } = useLanguage();
   useEffect(() => {
     if (showToast && prevConnected.current !== hasInternet) {
       Toast.show({
@@ -33,7 +33,7 @@ export const NoInternet = ({
       });
       prevConnected.current = hasInternet;
     }
-  }, [hasInternet, showToast]);
+  }, [hasInternet, showToast, lang]);
 
   if (!showUI || hasInternet) return null;
 
@@ -46,9 +46,9 @@ export const NoInternet = ({
       ]}
     >
       <ThemedText style={styles.noInternetText}>
-        {noInternetHeader}
+        {t("noInternetTitle")}
         {"\n"}
-        {noInternetBody}
+        {t("noInternetMessage")}
       </ThemedText>
     </SafeAreaView>
   );

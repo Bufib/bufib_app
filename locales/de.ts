@@ -224,7 +224,7 @@ export const de = {
   noInternetTitle: "Keine Internetverbindung",
   internetBackTitle: "Verbindung wiederhergestellt",
   noInternetMessage: "Du erhälst keine updates in dieser Zeit!",
-
+ 
   // Account
   successDeletion: "Account erfolgreich gelöscht!",
   authFailed: "Authentifizierung fehlgeschlagen",
