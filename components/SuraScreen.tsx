@@ -979,6 +979,7 @@ const SuraScreen: React.FC = () => {
           onScroll={handleScroll}
           extraData={listExtraData}
           keyExtractor={(v) => `${v.sura}-${v.aya}`}
+          bounces={false}
           renderItem={renderVerse}
           onViewableItemsChanged={onViewableItemsChanged}
           onScrollToIndexFailed={(info) => {
