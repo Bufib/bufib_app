@@ -2701,7 +2701,6 @@
 
 // export default SuraList;
 
-
 import type React from "react";
 import {
   View,
