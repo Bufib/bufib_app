@@ -289,7 +289,7 @@ const Settings = () => {
           </View>
 
           <View
-            style={[styles.footer, rtl && { flexDirection: "row-reverse" }]}
+            style={[styles.footer, rtl && { flexDirection: "row-reverse" }, {borderTopColor: Colors[colorScheme].border}]}
           >
             <Pressable
               onPress={() =>
@@ -432,9 +432,9 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.1)",
-    marginBottom: 60,
+    borderTopWidth: 0.5,
+    marginBottom: 40,
+    paddingTop: 15
   },
   footerLink: {
     color: Colors.universal.link,

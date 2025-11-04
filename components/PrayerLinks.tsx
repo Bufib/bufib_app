@@ -257,11 +257,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    gap: 25,
-    padding: 10,
+    gap: 20,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    paddingBottom: 4
   },
   categoriesContainer: {
-    marginTop: 10,
     flexDirection: "row",
   },
 
@@ -313,9 +314,6 @@ const styles = StyleSheet.create({
   elementText: {
     fontWeight: "bold",
     textAlign: "center",
-  },
-  todoListContainer: {
-    flex: 1,
   },
 });
 

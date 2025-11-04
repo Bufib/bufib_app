@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     gap: 10,
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 5,
   },
   calendarHeaderContainer: {
     flexDirection: "row",
@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 10,
-    marginTop: 10,
-    marginBottom: 12,
+    marginTop: 3,
+    marginBottom: 5,
   },
   selectedDayTitle: {
     fontSize: 16,

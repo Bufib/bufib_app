@@ -2098,7 +2098,10 @@ const SuraList: React.FC = () => {
       <TouchableOpacity
         style={[
           styles.card,
-          { backgroundColor: Colors[colorScheme].background },
+          {
+            backgroundColor: Colors[colorScheme].background,
+            borderColor: Colors[colorScheme].border,
+          },
         ]}
         activeOpacity={0.5}
         onPress={() => {
@@ -2303,6 +2306,7 @@ const SuraList: React.FC = () => {
       />
 
       {/* Tab Selector */}
+
       <Tabs
         t={t}
         pageCount={pageList.length}
@@ -2592,7 +2596,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,0,0,0.3)",
     borderWidth: 0.5,
     borderColor: "rgba(255,0,0,0.25)",
-    marginRight: 16
+    marginRight: 16,
   },
   clearAllText: {
     fontSize: 13,

@@ -996,11 +996,11 @@ const RenderCalendar: React.FC = () => {
       : isOld
       ? {
           // For OUTDATED/PAST events:
-          backgroundColor: colorScheme === "dark" ? "#0B1220" : "#F1F5F9",
+          backgroundColor: colorScheme === "dark" ? "#6f767aff" : "#F1F5F9",
           borderWidth: 1,
-          borderColor: colorScheme === "dark" ? "#1E293B" : "#bcc3cbff",
+          borderColor: colorScheme === "dark" ? "#6f767aff" : "#bcc3cbff",
           borderLeftWidth: 4,
-          borderLeftColor: colorScheme === "dark" ? "#4B5563" : "#9CA3AF", // Darker gray for light mode
+          borderLeftColor: colorScheme === "dark" ? "#505456ff" : "#9CA3AF", // Darker gray for light mode
         }
       : {};
 

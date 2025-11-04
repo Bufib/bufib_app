@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
 
   categoriesContainer: {
     flexDirection: "column",
-    marginTop: 10,
+    marginTop: 8,
   },
 
   categories: {
