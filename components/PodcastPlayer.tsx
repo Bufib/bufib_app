@@ -1507,11 +1507,11 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom: 30,
   },
   content: {
     flex: 1,
     justifyContent: "flex-start",
+    paddingBottom: 30
   },
   heroSection: {
     flex: 1,
@@ -1621,7 +1621,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   loadingContainer: { alignItems: "center" },
-  loadingText: { fontSize: 16, color: "#000", marginTop: 12 },
+  loadingText: { fontSize: 16, marginTop: 12 },
   playerContainer: { margin: 20, borderRadius: 20, padding: 24 },
   progressSection: { marginBottom: 24 },
   timeLabels: {
