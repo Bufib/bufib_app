@@ -812,6 +812,7 @@ import { setDatabase } from "../db";
 import { migrateDbIfNeeded, DB_NAME } from "@/db/migrates";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { ThemedText } from "@/components/ThemedText";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 // If removeEventListener doesn’t exist, patch it on-the-fly:
 if (typeof (BackHandler as any).removeEventListener !== "function") {
@@ -1067,23 +1068,23 @@ function AppContent() {
             <NoInternet showUI={!hasInternet} showToast={true} />
             <QueryClientProvider client={queryClient}>
               <SupabaseRealtimeProvider>
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="index" />
-                  <Stack.Screen name="(tabs)" />
-                  <Stack.Screen name="(addNews)" />
-                  <Stack.Screen name="(auth)" />
-                  <Stack.Screen name="(displayQuestion)" />
-                  <Stack.Screen name="(newsArticle)" />
-                  <Stack.Screen name="(displayPrayer)" />
-                  <Stack.Screen name="(askQuestion)" />
-                  <Stack.Screen name="(podcast)" />
-                  <Stack.Screen
-                    name="+not-found"
-                    options={{ headerShown: true }}
-                  />
-                </Stack>
-                <MiniPlayerBar />
-                <AppReviewPrompt />
+                  <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="index" />
+                    <Stack.Screen name="(tabs)" />
+                    <Stack.Screen name="(addNews)" />
+                    <Stack.Screen name="(auth)" />
+                    <Stack.Screen name="(displayQuestion)" />
+                    <Stack.Screen name="(newsArticle)" />
+                    <Stack.Screen name="(displayPrayer)" />
+                    <Stack.Screen name="(askQuestion)" />
+                    <Stack.Screen name="(podcast)" />
+                    <Stack.Screen
+                      name="+not-found"
+                      options={{ headerShown: true }}
+                    />
+                  </Stack>
+                  <MiniPlayerBar />
+                  <AppReviewPrompt />
               </SupabaseRealtimeProvider>
             </QueryClientProvider>
           </MenuProvider>

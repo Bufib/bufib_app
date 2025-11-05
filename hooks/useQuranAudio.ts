@@ -181,6 +181,8 @@
 //   };
 // }
 
+
+//! Last that worked
 // hooks/useQuranAudio.ts
 import { useCallback, useEffect, useRef, useState } from "react";
 import { globalPlayer, useGlobalPlayer } from "@/player/useGlobalPlayer";
@@ -362,6 +364,7 @@ export function useQuranAudio(verses: QuranVerseType[], opts: AudioMetaOptions =
     }
   }, [verses.length]);
 
+  
   const stop = useCallback(() => {
     stopRaw();
     useGlobalPlayer.setState({ _quranNext: undefined, _quranPrev: undefined } as any);

@@ -1,6 +1,7 @@
 import { StyleSheet, Text, useColorScheme, View } from "react-native";
 import React from "react";
 import { router, Stack } from "expo-router";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 const _layout = () => {
   const colorScheme = useColorScheme() || "light";
