@@ -385,8 +385,8 @@ export type PrayerSearchResult = {
   arabic_title: string | null;
   category_id: number;
   translated_text: string | null;
-  matchType: 'name' | 'translation';
-}
+  matchType: "name" | "translation";
+};
 export type PrayerRow = {
   id: number;
   name: string;

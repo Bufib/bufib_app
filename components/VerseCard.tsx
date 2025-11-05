@@ -291,6 +291,7 @@ export type VerseCardProps = {
   language: string;
   isPlaying?: boolean;
   onPlayAudio?: () => void;
+  onPickReciter?: () => void
 };
 
 function VerseCard({
@@ -306,6 +307,7 @@ function VerseCard({
   language,
   isPlaying,
   onPlayAudio,
+  onPickReciter
 }: VerseCardProps) {
   const transliterationText = item.transliteration ?? "";
 
@@ -356,6 +358,7 @@ function VerseCard({
                 { backgroundColor: Colors[colorScheme].background, paddingLeft: 3 },
               ]}
               onPress={onPlayAudio}
+              onLongPress={onPickReciter}
             >
               <Ionicons
                 name={"play-outline"}

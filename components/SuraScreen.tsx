@@ -1347,6 +1347,7 @@ import BasmalaRow from "./BasmalaRow";
 import ArrowUp from "./ArrowUp";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { useQuranAudio } from "@/hooks/useQuranAudio";
+import { RECITERS, type ReciterId } from "@/hooks/useQuranAudio";
 
 const SuraScreen: React.FC = () => {
   const colorScheme = useColorScheme() || "light";
@@ -1366,7 +1367,7 @@ const SuraScreen: React.FC = () => {
   const [nextPage, setNextPage] = useState<number | null>(null);
   const [prevPage, setPrevPage] = useState<number | null>(null);
   const [jumping, setJumping] = useState(false);
-
+  const [reciter, setReciter] = useState<ReciterId>("alafasy");
   const isPageMode = !!pageId;
   const isJuzMode = !!juzId && !isPageMode;
   const juzNumber = isJuzMode ? Number(juzId) : null;
@@ -1376,6 +1377,12 @@ const SuraScreen: React.FC = () => {
   const flatListRef = useRef<FlatList<QuranVerseType>>(null);
   const [showArrow, setShowArrow] = useState(false);
   const showArrowRef = useRef(false);
+  const [pendingPick, setPendingPick] = useState<{
+    v: QuranVerseType;
+    i: number;
+  } | null>(null);
+  const reciterSheetRef = useRef<BottomSheet>(null);
+  const reciterSnaps = useMemo(() => [180], []); // tiny menu
 
   const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
   const handleScroll = useCallback(
@@ -1392,6 +1399,7 @@ const SuraScreen: React.FC = () => {
     },
     []
   );
+
   const scrollToTop = () => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
@@ -1443,10 +1451,20 @@ const SuraScreen: React.FC = () => {
       isJuzMode
         ? `${juzHeader?.title ?? "Juz"} • ${v.sura}:${v.aya}`
         : `${displayName ?? `Sura ${suraNumber}`} • ${v.aya}`,
-    artworkUri: undefined, // or "https://your.cdn/quran-cover.png"
+    reciter,
   });
 
+  const openReciterPicker = useCallback((v: QuranVerseType, i: number) => {
+    setPendingPick({ v, i });
+    // allow layout tick, then open
+    requestAnimationFrame(() => reciterSheetRef.current?.expand());
+  }, []);
 
+  const onChooseReciter = useCallback((id: ReciterId) => {
+    setReciter(id);
+    reciterSheetRef.current?.close();
+    // do NOT start playback here
+  }, []);
 
   const setLastSura = useLastSuraStore((s) => s.setLastSura); // you already have this
   const firstSura = verses?.[0]?.sura;
@@ -1468,6 +1486,13 @@ const SuraScreen: React.FC = () => {
       }
     }
   ).current;
+
+  useEffect(() => {
+    if (!pendingPick) return;
+    // Now the hook has re-rendered with the new reciter → safe to start
+    toggleVerse(pendingPick.v, pendingPick.i);
+    setPendingPick(null);
+  }, [reciter, pendingPick, toggleVerse]);
 
   const bmSig = useMemo(() => {
     let acc = bookmarksBySura.size;
@@ -1639,9 +1664,10 @@ const SuraScreen: React.FC = () => {
             onBookmark={(v) => handleBookmarkVerse(v, index)}
             onOpenInfo={handleOpenInfo}
             language={lang}
-            // ADD THESE NEW PROPS:
             isPlaying={isCurrentlyPlaying}
             onPlayAudio={() => toggleVerse(item, index)}
+            onPickReciter={() => openReciterPicker(item, index)}
+  
           />
         </>
       );
@@ -1882,6 +1908,60 @@ const SuraScreen: React.FC = () => {
           )}
         </BottomSheetScrollView>
       </BottomSheet>
+
+      <BottomSheet
+        ref={reciterSheetRef}
+        index={-1}
+        snapPoints={reciterSnaps}
+        enablePanDownToClose
+        onChange={(i) => {
+          if (i === -1) setPendingPick(null); // ⬅️ clear when closed
+        }}
+        backdropComponent={(props) => (
+          <BottomSheetBackdrop
+            {...props}
+            disappearsOnIndex={-1}
+            appearsOnIndex={0}
+            opacity={0.5}
+          />
+        )}
+        backgroundStyle={{ backgroundColor: Colors[colorScheme].background }}
+        handleIndicatorStyle={{
+          backgroundColor: Colors[colorScheme].defaultIcon,
+        }}
+      >
+        <View style={{ padding: 16, gap: 8 }}>
+          <ThemedText style={{ fontWeight: "700", marginBottom: 6 }}>
+            {t?.("chooseReciter") ?? "Wähle Rezitator"}
+          </ThemedText>
+
+          {(Object.keys(RECITERS) as ReciterId[]).map((id) => {
+            const active = id === reciter;
+            return (
+              <TouchableOpacity
+                key={id}
+                onPress={() => onChooseReciter(id)}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 12,
+                  borderRadius: 10,
+                  backgroundColor: active
+                    ? "rgba(99,102,241,0.15)"
+                    : "transparent",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <ThemedText>{RECITERS[id].label}</ThemedText>
+                {active ? (
+                  <Ionicons name="checkmark" size={18} color="#6366f1" />
+                ) : null}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </BottomSheet>
     </ThemedView>
   );
 };
@@ -1953,9 +2033,9 @@ const styles = StyleSheet.create({
   footerContainer: {
     flexDirection: "row",
     paddingHorizontal: 16,
-    paddingVertical: 12,
     justifyContent: "space-between",
     alignItems: "center",
+    paddingBottom: 40,
   },
   fabNext: {
     height: 56,
