@@ -303,6 +303,19 @@ export const ar = {
   countdownToday: "اليوم!",
   countdownDaysToGo: "متبقي {{count}} يومًا",
 
+  // Push-notification
+  pushNotificationsDisabledTitle: "تم تعطيل إشعارات الدفع",
+  pushNotificationsDisabledMessage:
+    "لتلقي الإشعارات، يرجى تفعيلها في إعدادات جهازك.",
+  openSettings: "فتح الإعدادات",
+  errorCheckingNotificationPermissions:
+    "حدث خطأ أثناء التحقق من صلاحيات الإشعارات:",
+  errorTogglingNotifications: "حدث خطأ أثناء تغيير إعدادات الإشعارات:",
+  noInternetConnectionTitle: "لا يوجد اتصال بالإنترنت",
+  noInternetConnectionMessage:
+    "تعذر تطبيق التغييرات لعدم وجود اتصال بالإنترنت.",
+  ok: "حسناً",
+
   // Quran
   basmala: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
   quranTitle: "القرآن الكريم",
@@ -321,9 +334,10 @@ export const ar = {
   sura: "سورة",
   page: "صفحة",
   clearAllBookmarksQuran: "إزالة كافة الإشارات المرجعية",
-
   removeProgress: " إزالة التقدم",
   markAsRead: "وضع علامة كمقروء",
+  chooseReciter: "اختر القارئ",
+
   // History
   sections: {
     prophets: "الأنبياء",

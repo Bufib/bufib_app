@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import RenderFavoritePodcasts from "@/components/RenderFavoritePodcasts";
 
@@ -8,4 +7,3 @@ const favoritePodcasts = () => {
 
 export default favoritePodcasts;
 
-const styles = StyleSheet.create({});

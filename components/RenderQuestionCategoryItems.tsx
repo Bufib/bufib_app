@@ -60,6 +60,11 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
     };
   }, [category, lang, questionsVersion]);
 
+
+   const listExtraData = React.useMemo(
+      () => `${questionsVersion}`,
+      [questionsVersion]
+    );
   //  Display error state
   if (error && !isLoading && subcategories.length === 0) {
     return (
@@ -93,7 +98,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
       />
       <FlatList
         data={subcategories}
-        extraData={questionsVersion}
+        // extraData={listExtraData}
         keyExtractor={(item) => item.toString()}
         showsVerticalScrollIndicator={false}
         style={themeStyle.defaultBackgorundColor}

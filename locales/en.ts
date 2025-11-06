@@ -84,6 +84,20 @@ export const en = {
   quranScreen: "Quran",
   historyScreen: "History",
 
+  // Push-notification
+
+  pushNotificationsDisabledTitle: "Push notifications disabled",
+  pushNotificationsDisabledMessage:
+    "To receive notifications, please enable them in your device settings.",
+  openSettings: "Open settings",
+  errorCheckingNotificationPermissions:
+    "Error checking notification permissions:",
+  errorTogglingNotifications: "Error toggling notifications:",
+  noInternetConnectionTitle: "No internet connection",
+  noInternetConnectionMessage:
+    "The changes could not be applied because there is no internet connection.",
+  ok: "OK",
+  
   // Database
   updateAvailable: "New update available",
   newAppVersionAvailable:
@@ -318,9 +332,10 @@ export const en = {
   sura: "Sura",
   page: "Page",
   clearAllBookmarksQuran: "Clear all bookmarks",
-
   removeProgress: " Remove Progress",
   markAsRead: "Mark as Read",
+  chooseReciter: "Choose  Reciter",
+
   // History
   sections: {
     prophets: "Prophets",

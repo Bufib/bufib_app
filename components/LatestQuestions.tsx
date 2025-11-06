@@ -4,19 +4,16 @@ import {
   StyleSheet,
   Pressable,
   FlatList,
-  ActivityIndicator,
   useColorScheme,
 } from "react-native";
 import { router } from "expo-router";
 import { getLatestQuestions } from "@/db/queries/questions";
-import { LanguageCode, QuestionType } from "@/constants/Types";
+import { QuestionType } from "@/constants/Types";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useTranslation } from "react-i18next";
-import { runDatabaseSync } from "@/db/runDatabaseSync";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 const LatestQuestions: React.FC = () => {
@@ -26,7 +23,6 @@ const LatestQuestions: React.FC = () => {
   const { lang } = useLanguage();
   const themeStyles = CoustomTheme();
   const colorScheme = useColorScheme();
-  const { t } = useTranslation();
   const questionsVersion = useDataVersionStore((s) => s.questionsVersion);
 
   useEffect(() => {
@@ -106,7 +102,6 @@ const LatestQuestions: React.FC = () => {
   return (
     <FlatList
       data={latestQuestions}
-      extraData={questionsVersion}
       keyExtractor={(item) => item.id.toString()}
       renderItem={renderItem}
       style={styles.list}

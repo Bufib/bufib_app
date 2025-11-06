@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   StyleSheet,
   useColorScheme,
@@ -11,7 +10,6 @@ import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import { CALENDARPALLETTE, Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { LanguageCode } from "@/constants/Types";
 import { getCalendarLegendTypeNames } from "@/db/queries/calendar";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useTranslation } from "react-i18next";
@@ -56,13 +54,6 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
     return CALENDARPALLETTE[index % CALENDARPALLETTE.length];
   };
 
-
-  const listExtraData = React.useMemo(
-  () => `${lang}|${calendarVersion}|${colorScheme}`,
-  [lang, calendarVersion, colorScheme]
-);
-
-
   if (loading) {
     return (
       <ThemedView style={styles.loadingContainer}>
@@ -94,7 +85,6 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
 
       <FlatList
         data={legendNames}
-        extraData={listExtraData}
         keyExtractor={(name) => `${lang}:${name.trim().toLowerCase()}`}
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}

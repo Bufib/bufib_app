@@ -191,8 +191,8 @@ export default function RenderQuestionVideosCategories() {
   const { categories, isLoading, error } = useFetchVideoCategories(lang);
 
   const listExtraData = React.useMemo(
-    () => `${lang}|${videoVersion}|${colorScheme}`,
-    [lang, videoVersion, colorScheme]
+    () => `${videoVersion}`,
+    [videoVersion]
   );
 
   // stable headerLeft renderer so options don't thrash
@@ -224,7 +224,7 @@ export default function RenderQuestionVideosCategories() {
       ) : (
         <FlatList
           data={categories}
-          extraData={listExtraData}
+          // extraData={listExtraData}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
           style={{ backgroundColor: Colors[colorScheme].background }}

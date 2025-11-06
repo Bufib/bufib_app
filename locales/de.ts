@@ -1,4 +1,3 @@
-import { askQuestionQuestionSendSuccess } from "@/constants/messages";
 
 export const de = {
   //LanguageSelectionScreen
@@ -146,6 +145,20 @@ export const de = {
   totalDhikr: "Gesamter Dhikr:",
   completedText: "abgeschlossen ✓",
 
+  // Push-notification
+  pushNotificationsDisabledTitle: "Push-Benachrichtigungen Deaktiviert",
+  pushNotificationsDisabledMessage:
+    "Um Benachrichtigungen zu erhalten, aktiviere diese bitte in deinen Einstellungen.",
+  openSettings: "Einstellungen öffnen",
+  errorCheckingNotificationPermissions:
+    "Fehler beim Überprüfen der Benachrichtigungsberechtigungen:",
+  errorTogglingNotifications:
+    "Fehler beim Ändern der Benachrichtigungseinstellungen:",
+  noInternetConnectionTitle: "Keine Internetverbindung",
+  noInternetConnectionMessage:
+    "Die Änderungen konnten nicht vorgenommen werden, weil keine Internetverbindung besteht.",
+  ok: "OK",
+
   // Weekly calendar
   weeklyToDoTitle: "Wochenplan",
   weeklyToDoSubtitle: "Plane deine Woche",
@@ -224,7 +237,7 @@ export const de = {
   noInternetTitle: "Keine Internetverbindung",
   internetBackTitle: "Verbindung wiederhergestellt",
   noInternetMessage: "Du erhälst keine updates in dieser Zeit!",
- 
+
   // Account
   successDeletion: "Account erfolgreich gelöscht!",
   authFailed: "Authentifizierung fehlgeschlagen",
@@ -311,6 +324,7 @@ export const de = {
   sura: "Sura",
   page: "Seite",
   clearAllBookmarksQuran: "Alle Lesezeichen entfernen",
+  chooseReciter: "Rezitator auswählen",
   // History
   sections: {
     prophets: "Propheten",

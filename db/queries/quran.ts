@@ -1207,8 +1207,8 @@ export async function getSurahDisplayName(
   try {
     const info = await getSurahInfoByNumber(surahNumber);
     if (!info) return null;
-    if (lang === "en") return info.label_en ?? info.label;
-    if (lang === "de") return info.label_de ?? info.label;
+    if (lang === "en" || lang === "de") return info.label_en ?? info.label;
+    if (lang === "ar") return info.label;
     return info.label;
   } catch (err) {
     console.error("getSurahDisplayName error", { surahNumber, lang, err });
@@ -1706,4 +1706,3 @@ export async function getPageButtonLabels(
     return [];
   }
 }
-

@@ -1,4 +1,4 @@
-// // //! Last that worked
+//! Last that worked
 // // // import React, {
 // // //   useEffect,
 // // //   useMemo,
@@ -1303,7 +1303,6 @@
 // //   },
 // // });
 
-
 //! Works without Alert
 // import React, {
 //   useEffect,
@@ -1669,7 +1668,7 @@
 //             isPlaying={isCurrentlyPlaying}
 //             onPlayAudio={() => toggleVerse(item, index)}
 //             onPickReciter={() => openReciterPicker(item, index)}
-  
+
 //           />
 //         </>
 //       );
@@ -2078,6 +2077,7 @@
 //     borderColor: Colors.universal.primary,
 //   },
 // });
+
 import React, {
   useEffect,
   useMemo,
@@ -2110,7 +2110,7 @@ import VerseCard from "@/components/VerseCard";
 import { useLastSuraStore } from "@/stores/useLastSura";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { QuranVerseType, LanguageCode } from "@/constants/Types";
+import { QuranVerseType, LanguageCode, SuraRowType } from "@/constants/Types";
 import { getPageStart } from "@/db/queries/quran";
 import { useReadingProgressQuran } from "@/stores/useReadingProgressQuran";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
@@ -2148,7 +2148,7 @@ const SuraScreen: React.FC = () => {
     v: QuranVerseType;
     i: number;
   } | null>(null);
-  
+
   const isPageMode = !!pageId;
   const isJuzMode = !!juzId && !isPageMode;
   const juzNumber = isJuzMode ? Number(juzId) : null;
@@ -2232,22 +2232,24 @@ const SuraScreen: React.FC = () => {
 
   const openReciterPicker = useCallback(
     (v: QuranVerseType, i: number) => {
-      const reciterOptions = (Object.keys(RECITERS) as ReciterId[]).map((id) => ({
-        text: `${RECITERS[id].label}${id === reciter ? " ✓" : ""}`,
-        onPress: () => {
-          if (id !== reciter) {
-            setReciter(id);
-            // Schedule play AFTER state update
-            setPendingPlay({ v, i });
-          } else {
-            // Same reciter, just play immediately
-            toggleVerse(v, i);
-          }
-        },
-      }));
+      const reciterOptions = (Object.keys(RECITERS) as ReciterId[]).map(
+        (id) => ({
+          text: `${RECITERS[id].label}${id === reciter ? " ✓" : ""}`,
+          onPress: () => {
+            if (id !== reciter) {
+              setReciter(id);
+              // Schedule play AFTER state update
+              setPendingPlay({ v, i });
+            } else {
+              // Same reciter, just play immediately
+              toggleVerse(v, i);
+            }
+          },
+        })
+      );
 
       Alert.alert(
-        t?.("chooseReciter") ?? "Choose Reciter",
+        t("chooseReciter"),
         undefined,
         [
           ...reciterOptions,
@@ -2284,17 +2286,26 @@ const SuraScreen: React.FC = () => {
   ).current;
 
   // Handle pending play after reciter state update
+  // useEffect(() => {
+  //   if (!pendingPlay) return;
+
+  //! Here
+  //   // Now the component has re-rendered with the new reciter value
+  //   // The toggleVerse callback will use the updated reciter
+  //   const timer = setTimeout(() => {
+  //     toggleVerse(pendingPlay.v, pendingPlay.i);
+  //     setPendingPlay(null);
+  //   }, 50);
+
+  //   return () => clearTimeout(timer);
+  // }, [pendingPlay, toggleVerse]);
+
   useEffect(() => {
     if (!pendingPlay) return;
 
-    // Now the component has re-rendered with the new reciter value
-    // The toggleVerse callback will use the updated reciter
-    const timer = setTimeout(() => {
-      toggleVerse(pendingPlay.v, pendingPlay.i);
-      setPendingPlay(null);
-    }, 50);
-
-    return () => clearTimeout(timer);
+    // No timeout needed - React batches updates
+    toggleVerse(pendingPlay.v, pendingPlay.i);
+    setPendingPlay(null);
   }, [pendingPlay, toggleVerse]);
 
   const bmSig = useMemo(() => {
@@ -2428,13 +2439,14 @@ const SuraScreen: React.FC = () => {
   );
 
   // Helper: should we show basmala before this row?
-  const shouldShowBasmala = (v: QuranVerseType, index: number) => {
-    if (v.sura === 1 || v.sura === 9) return false;
-    // Aggregates: show when a new sura starts
-    if (isJuzMode || isPageMode) return v.aya === 1;
-    // Sura mode: show once before first verse
-    return index === 0;
-  };
+  const shouldShowBasmala = useCallback(
+    (v: QuranVerseType, index: number) => {
+      if (v.sura === 1 || v.sura === 9) return false;
+      if (isJuzMode || isPageMode) return v.aya === 1;
+      return index === 0;
+    },
+    [isJuzMode, isPageMode]
+  );
 
   const renderVerse = useCallback(
     ({ item, index }: { item: QuranVerseType; index: number }) => {
@@ -2490,6 +2502,7 @@ const SuraScreen: React.FC = () => {
       lineHeight,
       rtl,
       t,
+      shouldShowBasmala,
     ]
   );
 
@@ -2504,7 +2517,7 @@ const SuraScreen: React.FC = () => {
           ref={flatListRef}
           data={verses}
           onScroll={handleScroll}
-          extraData={listExtraData}
+          // extraData={listExtraData}
           keyExtractor={(v) => `${v.sura}-${v.aya}`}
           bounces={false}
           renderItem={renderVerse}

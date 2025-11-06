@@ -7,11 +7,11 @@ interface FontSizeState {
   lineHeight: number;
   setFontSize: (size: number) => void;
   setLineHeight: (height: number) => void;
-  loadSettings: () => Promise<void>;
+  // loadSettings: () => Promise<void>;
 }
 
-const FONT_SIZE_KEY = "fontSize";
-const LINE_HEIGHT_KEY = "lineHeight";
+// const FONT_SIZE_KEY = "fontSize";
+// const LINE_HEIGHT_KEY = "lineHeight";
 
 export const useFontSizeStore = create<FontSizeState>()(
   persist(
@@ -30,15 +30,15 @@ export const useFontSizeStore = create<FontSizeState>()(
       },
 
       // Load settings from KV Store (optional custom logic)
-      loadSettings: async () => {
-        const storedFontSize = await AsyncStorage.getItem(FONT_SIZE_KEY);
-        const storedLineHeight = await AsyncStorage.getItem(LINE_HEIGHT_KEY);
+      // loadSettings: async () => {
+      //   const storedFontSize = await AsyncStorage.getItem(FONT_SIZE_KEY);
+      //   const storedLineHeight = await AsyncStorage.getItem(LINE_HEIGHT_KEY);
 
-        set({
-          fontSize: storedFontSize ? parseInt(storedFontSize, 10) : 20,
-          lineHeight: storedLineHeight ? parseInt(storedLineHeight, 10) : 40,
-        });
-      },
+      //   set({
+      //     fontSize: storedFontSize ? parseInt(storedFontSize, 10) : 20,
+      //     lineHeight: storedLineHeight ? parseInt(storedLineHeight, 10) : 40,
+      //   });
+      // },
     }),
     {
       name: "font-settings", // Unique key for the persisted state

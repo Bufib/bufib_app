@@ -842,11 +842,12 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const [isStream, setIsStream] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [lastTime, setLastTIme] = useState<SavedProgress | null>(null);
+  const [lastTime, setLastTime] = useState<SavedProgress | null>(null);
   const { lang } = useLanguage();
   // Animations
   const fadeAnim = useMemo(() => new Animated.Value(0), []);
   const slideAnim = useMemo(() => new Animated.Value(50), []);
+  const loadedPodcastIdRef = useRef<string | number | null>(null);
 
   // Cached file, if available
   const [cachedUri, setCachedUri] = useState<string | null>(null);
@@ -871,13 +872,19 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
 
   // Favorite
   useEffect(() => {
+    let mounted = true;
     (async () => {
       if (!podcast?.id) return;
       try {
-        setIsFavorite(await isPodcastFavorited(podcast.id));
+        const result = await isPodcastFavorited(podcast.id);
+        if (mounted) setIsFavorite(result);
       } catch {}
     })();
+    return () => {
+      mounted = false;
+    };
   }, [podcast?.id]);
+
   const { triggerRefreshFavorites } = useRefreshFavorites();
   const onPressToggleFavorite = async () => {
     if (!podcast?.id) return;
@@ -911,9 +918,46 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldShowInitial, podcast?.id]);
 
-  // ✅ If cached, preload the source (no autoplay) and show full controls paused.
+  //! Old
+  // // ✅ If cached, preload the source (no autoplay) and show full controls paused.
+  // useEffect(() => {
+  //   if (shouldShowInitial && cachedUri) {
+  //     const src: VideoSource = {
+  //       uri: cachedUri,
+  //       metadata: {
+  //         title: podcast.title ?? "Podcast",
+  //         artist: "Podcast",
+  //         ...(artworkUri ? { artwork: artworkUri } : {}),
+  //       },
+  //     };
+  //     load(src, {
+  //       autoplay: false, // show UI paused, user starts playback
+  //       title: podcast.title,
+  //       artwork: artworkUri,
+  //       podcastId: podcast.id,
+  //       filename: podcast.filename,
+  //       rate,
+  //     }).catch((e) => setPlayerError(e?.message ?? "Player error"));
+  //   }
+  // }, [
+  //   shouldShowInitial,
+  //   cachedUri,
+  //   load,
+  //   podcast.id,
+  //   podcast.filename,
+  //   podcast.title,
+  //   artworkUri,
+  //   rate,
+  // ]);
+
+  // Replace the current preload effect (lines 128-150) with:
   useEffect(() => {
-    if (shouldShowInitial && cachedUri) {
+    // Only load if: initial state, has cache, and haven't loaded this episode yet
+    if (
+      shouldShowInitial &&
+      cachedUri &&
+      loadedPodcastIdRef.current !== podcast.id
+    ) {
       const src: VideoSource = {
         uri: cachedUri,
         metadata: {
@@ -922,8 +966,11 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
           ...(artworkUri ? { artwork: artworkUri } : {}),
         },
       };
+
+      loadedPodcastIdRef.current = podcast.id; // Mark as loaded
+
       load(src, {
-        autoplay: false, // show UI paused, user starts playback
+        autoplay: false,
         title: podcast.title,
         artwork: artworkUri,
         podcastId: podcast.id,
@@ -931,16 +978,13 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
         rate,
       }).catch((e) => setPlayerError(e?.message ?? "Player error"));
     }
-  }, [
-    shouldShowInitial,
-    cachedUri,
-    load,
-    podcast.id,
-    podcast.filename,
-    podcast.title,
-    artworkUri,
-    rate,
-  ]);
+
+    // Reset tracking when switching episodes
+    if (!shouldShowInitial) {
+      loadedPodcastIdRef.current = null;
+    }
+  }, [shouldShowInitial, cachedUri, podcast.id]); // Only the essentials
+  // Metadata like title, artwork, rate are captured in closure—fine for this use case
 
   // Entrance animation
   useEffect(() => {
@@ -1083,10 +1127,12 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const showInitialButtons = shouldShowInitial && !cachedUri;
 
   // Get last time
+  // Get last time
   useEffect(() => {
+    let mounted = true;
     (async () => {
       if (!podcast?.id) {
-        setLastTIme(null);
+        if (mounted) setLastTime(null);
         return;
       }
       try {
@@ -1097,14 +1143,17 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
             duration = 0,
             savedAt = Date.now(),
           } = JSON.parse(json) || {};
-          setLastTIme({ position, duration, savedAt });
+          if (mounted) setLastTime({ position, duration, savedAt });
         } else {
-          setLastTIme(null);
+          if (mounted) setLastTime(null);
         }
       } catch {
         // ignore read errors; keep UI stable
       }
     })();
+    return () => {
+      mounted = false;
+    };
   }, [podcast?.id]);
 
   const handleLastTime = async () => {
@@ -1126,7 +1175,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
         JSON.stringify(payload)
       );
       // reflect immediately in UI
-      setLastTIme({
+      setLastTime({
         position: payload.position,
         duration: payload.duration,
         savedAt: payload.savedAt,
@@ -1511,7 +1560,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: "flex-start",
-    paddingBottom: 30
+    paddingBottom: 30,
   },
   heroSection: {
     flex: 1,

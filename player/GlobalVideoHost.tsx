@@ -116,6 +116,7 @@ export default function GlobalVideoHost({ children }: PropsWithChildren<{}>) {
           player={globalPlayer}
           allowsPictureInPicture
           nativeControls={false}
+          
         />
       </View>
     </>

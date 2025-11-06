@@ -1,13 +1,11 @@
 import React from "react";
-import { StyleSheet, View, FlatList, Text } from "react-native";
+import { StyleSheet, FlatList } from "react-native";
 import NameCard from "@/components/NameCard";
 import { ThemedView } from "@/components/ThemedView";
 import { names } from "@/utils/namesObject";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 export default function Names() {
-  const { lang } = useLanguage();
   const { t } = useTranslation();
 
   return (
@@ -23,7 +21,6 @@ export default function Names() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <NameCard name={item} />}
           numColumns={2}
-          extraData={lang}
         />
       </ThemedView>
     </>

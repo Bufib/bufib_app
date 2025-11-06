@@ -517,7 +517,7 @@ import { useTranslation } from "react-i18next";
 function changed(newVal: any, oldVal: any): boolean {
   const normalize = (val: any): string =>
     val === null || val === undefined ? "" : String(val);
-  console.log(normalize(newVal) !== normalize(oldVal))
+  console.log(normalize(newVal) !== normalize(oldVal));
   return normalize(newVal) !== normalize(oldVal);
 }
 
@@ -530,7 +530,6 @@ export function useDatabaseSync(): boolean {
   const isMountedRef = useRef(true);
   const isSyncingRef = useRef(false);
   const listenersSetupRef = useRef(false);
-
   // latest initializeDatabase for safeInitializeDatabase
   const initRef = useRef<() => Promise<void>>(async () => {});
 
@@ -542,9 +541,10 @@ export function useDatabaseSync(): boolean {
 
   // Guarded navigation to home
   const pathname = usePathname();
+
   const goHomeIfNeeded = useCallback(() => {
     if (!isMountedRef.current) return;
-    if (pathname !== "/(tabs)/home") {
+    if (pathname !== "/home") {
       router.replace("/(tabs)/home");
     }
   }, [pathname]);
@@ -584,8 +584,7 @@ export function useDatabaseSync(): boolean {
       return false;
     }
   };
-  
-  
+
   const initializeDatabase = useCallback(async () => {
     if (!isMountedRef.current) return;
 
@@ -751,10 +750,11 @@ export function useDatabaseSync(): boolean {
       ); // <- NEW
       const appVersionChanged = changed(n?.app_version, o?.app_version);
 
-      console.log(payload.eventType,
-  Object.keys(payload.old || {}),  // likely only ["id"]
-  Object.keys(payload.new || {})   // full set
-);
+      console.log(
+        payload.eventType,
+        Object.keys(payload.old || {}), // likely only ["id"]
+        Object.keys(payload.new || {}) // full set
+      );
 
       if (
         questionsChanged ||
@@ -763,7 +763,13 @@ export function useDatabaseSync(): boolean {
         prayerChanged ||
         paypalChanged
       ) {
-        console.log(questionsChanged,quranChanged,calendarChanged,prayerChanged,paypalChanged)
+        console.log(
+          questionsChanged,
+          quranChanged,
+          calendarChanged,
+          prayerChanged,
+          paypalChanged
+        );
         await initializeSafely();
         goHomeIfNeeded();
         questionsChanged && databaseUpdateQuestions();

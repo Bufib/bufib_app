@@ -71,8 +71,8 @@ function RenderFavoriteQuestions() {
   }, [favoritesRefreshed, lang, questionVersion]);
 
     const listExtraData = React.useMemo(
-      () => `${lang}|${favoritesRefreshed}|${questionVersion}`,
-      [lang, favoritesRefreshed, questionVersion]
+      () => `${favoritesRefreshed}|${questionVersion}`,
+      [favoritesRefreshed, questionVersion]
     );
 
   const renderItem = useCallback(
@@ -141,7 +141,7 @@ function RenderFavoriteQuestions() {
     <ThemedView style={[styles.container]}>
       <FlatList
         data={questions}
-        extraData={listExtraData}
+        // extraData={listExtraData}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: Colors[colorScheme].background }}
