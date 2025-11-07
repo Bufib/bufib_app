@@ -9,6 +9,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { StatusBar } from "expo-status-bar";
+import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 
 const RenderCard = () => {
   const colorScheme = useColorScheme() || "light";
@@ -80,7 +81,7 @@ const RenderCard = () => {
 
   return (
     <ThemedView style={[styles.container]}>
-        <StatusBar style="light"/>
+      <StatusBar style="light" />
       <ScrollView
         style={[
           styles.scrollView,
@@ -198,6 +199,19 @@ const RenderCard = () => {
               </View>
             </LinearGradient>
           </View>
+        </View>
+        <View style={styles.sourceContainer}>
+          <ThemedText style={styles.source}> {t("source")}</ThemedText>
+          <ThemedText
+            style={[styles.source, { color: Colors.universal.link, marginLeft: 5 }]}
+            onPress={() =>
+              handleOpenExternalUrl(
+                "http://www.eslam.de/begriffe/m/muhammad.htm"
+              )
+            }
+          >
+            http://www.eslam.de/begriffe/m/muhammad.htm
+          </ThemedText>
         </View>
       </ScrollView>
     </ThemedView>
@@ -366,7 +380,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     letterSpacing: 0.5,
-    textAlign: "center"
+    textAlign: "center",
   },
   titleSubtext: {
     color: "rgba(255, 255, 255, 0.8)",
@@ -374,4 +388,10 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     marginTop: 4,
   },
+  sourceContainer: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+
+  source: {},
 });
