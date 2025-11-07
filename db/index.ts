@@ -58,6 +58,7 @@
 // }
 // db/index.ts
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SQLite from "expo-sqlite";
 
 let db: SQLite.SQLiteDatabase | null = null;
@@ -105,11 +106,10 @@ export async function safeInitializeDatabase(
 ): Promise<void> {
   // Always remember the latest function so the next rerun uses it
   latestInitFn = initFn;
-
   // If an init is already running, request a rerun and return that same promise
   if (ongoingInit) {
     rerunRequested = true;
-    return ongoingInit; // still Promise<void>
+    return ongoingInit; // still Promise<void> 
   }
 
   // Start a new single-flight init

@@ -8,12 +8,10 @@ import { useColorScheme } from "react-native";
 import { getQuestion, getRelatedQuestions } from "@/db/queries/questions";
 import { useState, useEffect } from "react";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import * as Clipboard from "expo-clipboard";
 import Feather from "@expo/vector-icons/Feather";
 import Markdown from "react-native-markdown-display";
-import { NoInternet } from "./NoInternet";
-import { LanguageCode, QuestionType } from "@/constants/Types";
+import { QuestionType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -71,7 +69,7 @@ const RenderQuestion = ({
     return () => {
       cancelled = true;
     };
-  }, [category, subcategory, questionId, i18n.language]);
+  }, [category, subcategory, questionId, lang,]);
 
   // 2) Load related questions
   useEffect(() => {
@@ -93,7 +91,7 @@ const RenderQuestion = ({
     return () => {
       cancelled = true;
     };
-  }, [questionId, i18n.language]);
+  }, [questionId, lang]);
 
   const copyToClipboardMarja = async (
     answer: string | undefined,

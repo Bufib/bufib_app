@@ -15,7 +15,11 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select images.",
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": ["de", "en", "ar"],
+        "CFBundleLocalizations": [
+          "de",
+          "en",
+          "ar"
+        ],
         "CFBundleDevelopmentRegion": "de",
         "NSUserNotificationsUsageDescription": "Wir senden Push-Benachrichtigungen, u"
       }
@@ -54,8 +58,12 @@
       "expo-web-browser",
       [
         "expo-video",
-        { "supportsBackgroundPlayback": true, "supportsPictureInPicture": true }
-      ]
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,

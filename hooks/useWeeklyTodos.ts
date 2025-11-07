@@ -13,7 +13,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const STORAGE_KEY = "prayer_app_weekly_todos";
 
 export function useWeeklyTodos(): UseWeeklyTodosResult {
-  // Use primary language from i18n.languages[0], fallback to 'de'
+
   const { lang } = useLanguage();
 
   const [todosByDay, setTodosByDay] = useState<WeeklyTodosType>(
