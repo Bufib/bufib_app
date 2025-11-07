@@ -6,7 +6,6 @@ import { Colors } from "@/constants/Colors";
 import { QuestionsFromUserType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { useFetchUserQuestions } from "@/hooks/useFetchUserQuestions";
 import { useAuthStore } from "@/stores/authStore";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import getStatusColor from "@/utils/getStatusColor";
@@ -48,8 +47,6 @@ export default function QuestionDetailScreen() {
     "questionsFromUser",
     userId,
   ]);
-
-  const { data: questions, isRefetching, refetch } = useFetchUserQuestions();
 
   // 6. Find the specific question in the cached array
   const question = cachedQuestions?.find(
@@ -125,11 +122,15 @@ export default function QuestionDetailScreen() {
       readDate.getTime() + countdownDurationDays * 24 * 60 * 60 * 1000
     );
 
+    console.log(readDate);
+
     // Calculate the difference between now and the expiry date in milliseconds
     const diffMs = expiryDate.getTime() - now.getTime();
+    console.log(diffMs);
 
     // Convert milliseconds to days (using Math.ceil to round up for "still N days left")
     const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    console.log(daysLeft);
 
     // Format the actual read time (e.g., "June 16, 2025, 10:30 AM") for context if needed
     const actualDateTime = readDate.toLocaleDateString("en-US", {
@@ -183,17 +184,19 @@ export default function QuestionDetailScreen() {
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
-          refreshing={isRefetching}
-          onRefresh={() => {
-            // If user is offline show a message
+          refreshing={false}
+          onRefresh={async () => {
             if (!hasInternet) {
               Toast.show({
                 type: "error",
-                text1: "Es bestehte keine Internetverbindung!",
+                text1: t("noInternetTitle"),
               });
               return;
             }
-            refetch();
+
+            await queryClient.invalidateQueries({
+              queryKey: ["questionsFromUser", userId],
+            });
           }}
         />
       }

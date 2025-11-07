@@ -15,13 +15,17 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-   <Stack screenOptions={{headerTintColor: colorScheme === "dark" ? "#d0d0c0" : "#000"}}>
+      <Stack
+        screenOptions={{
+          headerTintColor: colorScheme === "dark" ? "#d0d0c0" : "#000",
+        }}
+      >
         <Stack.Screen
           name="index"
           options={{
             headerShown: true,
             headerTitle: "",
-            
+
             headerLeft: () => {
               return (
                 <Ionicons
@@ -32,7 +36,7 @@ export default function RootLayout() {
                   onPress={() =>
                     router.canGoBack()
                       ? router.back()
-                      : router.replace("/(tabs)/knowledge/(questions)/indexQuestion.tsx")
+                      : router.replace("/knowledge/questions/indexQuestion")
                   }
                 />
               );
@@ -44,10 +48,10 @@ export default function RootLayout() {
           options={{ headerShown: true, headerTitle: "" }}
         />
         <Stack.Screen
-          name="[questionId]"
+          name="questionDetailScreen"
           options={{
             headerShown: true,
-            headerTitle: ""
+            headerTitle: "",
           }}
         />
       </Stack>

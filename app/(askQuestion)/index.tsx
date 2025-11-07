@@ -52,18 +52,18 @@ export default function Index() {
     isError,
   } = useFetchUserQuestions();
 
-  /**
-   * 5. Optionally refetch on screen focus
-   *    This ensures we always have fresh data when user returns.
-   */
-  useFocusEffect(
-    useCallback(() => {
-      // Only refetch if connected and we have a session
-      if (hasInternet && session) {
-        refetch();
-      }
-    }, [hasInternet, session])
-  );
+  // /**
+  //  * 5. Optionally refetch on screen focus
+  //  *    This ensures we always have fresh data when user returns.
+  //  */
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     // Only refetch if connected and we have a session
+  //     if (hasInternet && session) {
+  //       refetch();
+  //     }
+  //   }, [hasInternet, session])
+  // );
 
   // 6. Render item (memoized for performance)
   const renderQuestion = useCallback(
@@ -72,7 +72,7 @@ export default function Index() {
         style={[styles.questionCard, themeStyles.contrast]}
         onPress={() =>
           router.push({
-            pathname: "/(askQuestion)/[questionId]",
+            pathname: "/(askQuestion)/questionDetailScreen",
             params: { questionId: item.id },
           })
         }
