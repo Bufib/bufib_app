@@ -276,6 +276,8 @@ export const ar = {
   resetPasswordResendDisabledText:
     "لقد وصلت إلى الحد الأقصى من المحاولات. يرجى المحاولة مرة أخرى لاحقاً.",
   resetPasswordResendButton: "طلب رمز جديد",
+  noAnswereToQuestion: "رسالة جديدة متاحة",
+
   // Settings
   logout: "تسجيل الخروج",
   login: "تسجيل الدخول",

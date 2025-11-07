@@ -89,11 +89,11 @@ export const newsDeletedSuccessToast = () => {
 export const userQuestionsNewAnswerForQuestions = () => {
   return Toast.show({
     type: "info",
-    text1: "Neue Nachricht verfügbar",
+    text1: i18n.t("noAnswereToQuestion"),
     text1Style: { fontWeight: "500" },
     topOffset: 60,
     onPress() {
-      router.replace("/(askQuestion)/");
+      router.push("/(askQuestion)/");
     },
   });
 };

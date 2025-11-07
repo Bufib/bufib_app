@@ -292,6 +292,8 @@ export const en = {
   resetPasswordResendDisabledText:
     "Maximum attempts reached. Please try again later.",
   resetPasswordResendButton: "Request new code",
+  noAnswereToQuestion: "New message available",
+
   // Settings
   logout: "Log out",
   login: "Log in",
