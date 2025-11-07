@@ -388,7 +388,7 @@
 //   );
 // }
 
-//! Fix for re rendering by fixing onInit
+//! Fix for re rendering by fixing onInit. Last worked
 
 import "react-native-gesture-handler";
 import "react-native-reanimated";

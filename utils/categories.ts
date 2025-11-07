@@ -1,4 +1,3 @@
-import i18n from "./i18n";
 import { PrayerQuestionLinksType } from "@/constants/Types";
 
 export const questionCategories: PrayerQuestionLinksType[] = [

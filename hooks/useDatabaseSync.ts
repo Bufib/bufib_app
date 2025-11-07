@@ -544,9 +544,9 @@ export function useDatabaseSync(): boolean {
 
   const goHomeIfNeeded = useCallback(() => {
     if (!isMountedRef.current) return;
-    if (pathname !== "/home") {
+    // if (pathname !== "/home") {
       router.replace("/(tabs)/home");
-    }
+    // }
   }, [pathname]);
 
   // Single-flight initialize wrapper

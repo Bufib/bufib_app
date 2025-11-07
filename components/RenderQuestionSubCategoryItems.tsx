@@ -92,12 +92,11 @@ function RenderQuestionSubCategoryItems() {
 
   // Main render with questions
   return (
-    <View style={[styles.container, themeStyle.defaultBackgorundColor]}>
+    <ThemedView style={[styles.container]}>
       <FlatList
         data={questions}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        style={themeStyle.defaultBackgorundColor}
         contentContainerStyle={styles.flatListStyle}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -129,7 +128,7 @@ function RenderQuestionSubCategoryItems() {
           </TouchableOpacity>
         )}
       />
-    </View>
+    </ThemedView>
   );
 }
 
@@ -144,8 +143,9 @@ const styles = StyleSheet.create({
   },
   error: {},
   flatListStyle: {
-    paddingTop: 10,
+    paddingTop: 15,
     gap: 15,
+    paddingBottom: 15
   },
   item: {
     flexDirection: "row",

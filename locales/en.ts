@@ -97,7 +97,7 @@ export const en = {
   noInternetConnectionMessage:
     "The changes could not be applied because there is no internet connection.",
   ok: "OK",
-  
+
   // Database
   updateAvailable: "New update available",
   newAppVersionAvailable:
@@ -263,6 +263,35 @@ export const en = {
   confirmPasswordText: "Please enter your password to confirm the deletion.",
   askQuestionQuestionSendSuccess: "Your question has been sent successfully!",
 
+  resetPasswordCodeRequired: "Code is required",
+  resetPasswordNewPasswordRequired: "Password is required",
+  resetPasswordNewPasswordMinLength:
+    "Password must be at least 8 characters long.",
+  resetPasswordConfirmPasswordRequired: "Password confirmation is required",
+  resetPasswordConfirmPasswordMinLength:
+    "Password confirmation must be at least 8 characters long.",
+  resetPasswordPasswordsDoNotMatch: "Passwords do not match",
+
+  errorTitle: "Error",
+  successTitle: "Success",
+
+  resetPasswordEmailRequired: "E-mail is required",
+  resetPasswordSessionError:
+    "Session could not be created after code verification.",
+  resetPasswordInvalidOrExpiredCode: "The code is invalid or has expired.",
+  unexpectedErrorMessage: "An unexpected error has occurred.",
+
+  resetPasswordResendSuccessMessage: "A new code has been sent to your e-mail.",
+  resetPasswordSuccessMessage: "Your password has been updated successfully.",
+
+  resetPasswordCodePlaceholder: "Enter reset code",
+  resetPasswordNewPasswordPlaceholder: "Enter new password",
+  resetPasswordConfirmPasswordPlaceholder: "Confirm password",
+
+  resetPasswordSubmitButton: "Update password",
+  resetPasswordResendDisabledText:
+    "Maximum attempts reached. Please try again later.",
+  resetPasswordResendButton: "Request new code",
   // Settings
   logout: "Log out",
   login: "Log in",
@@ -337,7 +366,7 @@ export const en = {
   chooseReciter: "Choose  Reciter",
 
   // History
-  sections: {
+  sectionsTitle: {
     prophets: "Prophets",
     ahlulbayt: "Ahlul-Bayt",
     ashura: "Ashura",
@@ -388,6 +417,41 @@ export const en = {
     day8: "Day 8",
     day9: "Day 9",
     day10: "Day 10",
+  },
+
+  // Muhammad (s.)
+
+  sections: {
+    life: "Life",
+    status: "Status & Lineage",
+    family: "Family",
+    revelation: "Revelation & Mission",
+    migration: "Migration & Victory",
+    miracles: "Miracles",
+    titles: "Honorary Titles",
+  },
+  content: {
+    born: "Born 570 CE in Mecca",
+    died: "Died 632 CE in Medina",
+    age: "Passed away at the age of 63",
+    seal: "The Seal of the Prophets and the best of all creation",
+    lineage: "His lineage reaches back to Abraham (a.) through Ishmael (a.)",
+    alamin: "Before his mission, he was known as 'Al-Amin' – The Trustworthy",
+    khadija: "He married Khadija (a.) and had Fatima (a.) with her",
+    ali: "Imam Ali (a.) prepared his burial",
+    hira: "In the cave of Hira, he received the first revelation through Gabriel (a.)",
+    mission: "He called for pure monotheism, justice, and equality",
+    persecution: "Due to persecution by the Meccans, he migrated to Medina",
+    return: "After years, he returned and liberated Mecca peacefully",
+    kaaba:
+      "He destroyed the idols in the Kaaba and restored the pilgrimage [Hajj]",
+    quran: "He performed many miracles, the greatest being the Holy Quran",
+  },
+  titles: {
+    mustafa: "Mustafa",
+    mercy: "Mercy to the Worlds",
+    perfect: "Al-Insan al-Kamil",
+    perfectDesc: "The Perfect Human",
   },
 } as const;
 

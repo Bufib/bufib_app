@@ -1,14 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import RenderCard from "@/components/RenderCard";
 
 const muhammad = () => {
-  return (
-    <View>
-      <Text>muhammad</Text>
-    </View>
-  );
+  return <RenderCard />;
 };
 
 export default muhammad;
-
-const styles = StyleSheet.create({});

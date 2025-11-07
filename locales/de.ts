@@ -1,4 +1,3 @@
-
 export const de = {
   //LanguageSelectionScreen
   chooseLanguage: "Wähle deine Sprache aus",
@@ -257,6 +256,36 @@ export const de = {
   confirmPasswordText:
     "Bitte gib dein Passwort ein, um die Löschung zu bestätigen.",
 
+  resetPasswordCodeRequired: "Code wird benötigt",
+  resetPasswordNewPasswordRequired: "Passwort wird benötigt",
+  resetPasswordNewPasswordMinLength:
+    "Das Passwort muss mindestens 8 Zeichen lang sein.",
+  resetPasswordConfirmPasswordRequired: "Passwortbestätigung wird benötigt",
+  resetPasswordConfirmPasswordMinLength:
+    "Die Passwortbestätigung muss mindestens 8 Zeichen lang sein.",
+  resetPasswordPasswordsDoNotMatch: "Passwörter stimmen nicht überein",
+
+  errorTitle: "Fehler",
+  successTitle: "Erfolg",
+
+  resetPasswordEmailRequired: "E-Mail wird benötigt",
+  resetPasswordSessionError:
+    "Die Sitzung konnte nach der Code-Bestätigung nicht erstellt werden.",
+  resetPasswordInvalidOrExpiredCode: "Der Code ist ungültig oder abgelaufen.",
+  unexpectedErrorMessage: "Ein unerwarteter Fehler ist aufgetreten.",
+
+  resetPasswordResendSuccessMessage:
+    "Ein neuer Code wurde an deine E-Mail-Adresse gesendet.",
+  resetPasswordSuccessMessage: "Dein Passwort wurde erfolgreich aktualisiert.",
+
+  resetPasswordCodePlaceholder: "Reset-Code eingeben",
+  resetPasswordNewPasswordPlaceholder: "Neues Passwort eingeben",
+  resetPasswordConfirmPasswordPlaceholder: "Passwort bestätigen",
+
+  resetPasswordSubmitButton: "Passwort aktualisieren",
+  resetPasswordResendDisabledText:
+    "Maximale Versuche erreicht. Bitte versuche es später erneut.",
+  resetPasswordResendButton: "Neuen Code anfordern",
   // Settings
   logout: "Abmelden",
   login: "Anmelden",
@@ -326,7 +355,7 @@ export const de = {
   clearAllBookmarksQuran: "Alle Lesezeichen entfernen",
   chooseReciter: "Rezitator auswählen",
   // History
-  sections: {
+  sectionsTitle: {
     prophets: "Propheten",
     ahlulbayt: "Ahlul-Bayt",
     ashura: "Ashura",
@@ -377,6 +406,42 @@ export const de = {
     day8: "Tag 8",
     day9: "Tag 9",
     day10: "Tag 10",
+  },
+
+  sections: {
+    life: "Leben",
+    status: "Stellung & Abstammung",
+    family: "Familie",
+    revelation: "Offenbarung & Mission",
+    migration: "Hidschra & Sieg",
+    miracles: "Wunder",
+    titles: "Ehrentitel",
+  },
+  content: {
+    born: "Geboren 570 n.Chr. in Mekka",
+    died: "Gestorben 632 n.Chr. in Medina",
+    age: "Verstarb im Alter von 63 Jahren",
+    seal: "Das Siegel der Propheten und das beste aller Geschöpfe",
+    lineage: "Sein Stammbaum reicht bis zu Abraham (a.) über Ismael (a.)",
+    alamin:
+      "Schon vor seiner Berufung galt er als 'Al-Amin' – der Vertrauenswürdige",
+    khadija: "Er heiratete Chadidscha (a.) und hatte mit ihr Fatima (a.)",
+    ali: "Imam Ali (a.) bereitete seine Beisetzung vor",
+    hira: "In der Höhle Hira empfing er durch Gabriel (a.) die erste Offenbarung",
+    mission:
+      "Er rief zu reinem Monotheismus, Gerechtigkeit und Gleichberechtigung auf",
+    persecution:
+      "Wegen der Verfolgung durch die Mekkaner wanderte er nach Medina aus",
+    return: "Nach Jahren kehrte er zurück und befreite Mekka friedlich",
+    kaaba:
+      "Er zerstörte die Götzen in der Kaaba und stellte die Pilgerfahrt [Hadsch] wieder her",
+    quran: "Er vollbrachte viele Wunder, das größte ist der Heilige Quran",
+  },
+  titles: {
+    mustafa: "Mustafa",
+    mercy: "Gnade für die Welten",
+    perfect: "Al-Insan al-Kamil",
+    perfectDesc: "Der vollkommene Mensch",
   },
 } as const;
 

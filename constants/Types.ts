@@ -208,6 +208,15 @@ export type SearchResultQAType = {
   question: string;
 };
 
+
+// Account
+export type SignUpFormValues = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
 // constants/Types.ts (or wherever CombinedResult lives)
 export type CombinedResult =
   | {

@@ -2543,7 +2543,7 @@ const SuraScreen: React.FC = () => {
           }
           stickyHeaderIndices={[0]}
           stickyHeaderHiddenOnScroll
-          contentContainerStyle={{}}
+          contentContainerStyle={{paddingBottom: 30}}
           ListHeaderComponentStyle={{}}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}

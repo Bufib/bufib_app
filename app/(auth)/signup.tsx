@@ -1,3 +1,4 @@
+// Signup
 import React, { useRef, useEffect, useState } from "react";
 import {
   View,
@@ -40,10 +41,10 @@ import {
   signUpUserPasswordConformation,
   cancleCaptcha,
 } from "@/constants/messages";
-import { SignUpFormValues } from "@/utils/types";
 import { NoInternet } from "@/components/NoInternet";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { SignUpFormValues } from "@/constants/Types";
 
 // Define validation schema with Zod
 const schema = z

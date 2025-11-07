@@ -1,50 +1,48 @@
-// import React, { useState } from "react";
+// import React, { useState, useEffect } from "react";
 // import {
 //   View,
 //   TextInput,
 //   Alert,
 //   StyleSheet,
-//   Button,
 //   Text,
 //   Pressable,
 //   useColorScheme,
 //   ActivityIndicator,
+//   Platform,
+//   Keyboard,
+//   KeyboardAvoidingView,
 // } from "react-native";
 // import { useForm, Controller } from "react-hook-form";
 // import { z } from "zod";
 // import { zodResolver } from "@hookform/resolvers/zod";
 // import Feather from "@expo/vector-icons/Feather";
-// import NetInfo from "@react-native-community/netinfo";
-// import { useEffect } from "react";
 // import { supabase } from "@/utils/supabase";
 // import { useLocalSearchParams, router } from "expo-router";
 // import { Colors } from "@/constants/Colors";
-// import { ThemedView } from "./ThemedView";
-// import { ThemedText } from "./ThemedText";
-// import { coustomTheme } from "@/utils/coustomTheme";
-
+// import { CoustomTheme } from "@/utils/coustomTheme";
+// import { TouchableWithoutFeedback } from "react-native";
+// import { NoInternet } from "./NoInternet";
+// import { useConnectionStatus } from "@/hooks/useConnectionStatus";
+// import { signUpUserPasswordFormat } from "@/constants/messages";
 // /**
-//  * Enhanced Zod Schema:
-//  * - If your reset code is numeric or must be 6 digits, you can use .regex(/^\d{6}$/)
-//  * - or keep it as is if your code can be any string from Supabase.
+//  * Schema for resetting password.
 //  */
 // const schema = z
 //   .object({
 //     code: z
-//       .string()
+//       .string({ required_error: "Code wird benötigt" })
 //       .nonempty("Code wird benötigt")
-//       //! .regex(/^\d{6}$/, "Code muss 6 Ziffern enthalten") // Example if code is always 6 digits
 //       .min(1, "Code wird benötigt"),
 //     newPassword: z
-//       .string()
+//       .string({ required_error: "Password wird benötigt" })
 //       .nonempty("Password wird benötigt")
 //       .min(8, "Passwort muss mindestens 8 Zeichen lang sein")
 //       .regex(
-//         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^+=\-]).{8,}$/,
-//         "Passwort muss mind. einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten"
+//         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=\-\[\]{};\:"\\|'<>?,./~]).{8,}$/,
+//         signUpUserPasswordFormat
 //       ),
 //     confirmPassword: z
-//       .string()
+//       .string({ required_error: "Password wird benötigt" })
 //       .nonempty("Password wird benötigt")
 //       .min(8, "Passwort muss mindestens 8 Zeichen lang sein"),
 //   })
@@ -59,14 +57,12 @@
 //   const params = useLocalSearchParams();
 //   const email = Array.isArray(params.email) ? params.email[0] : params.email;
 //   const [loading, setLoading] = useState(false);
-
-//   // Show/hide password fields
 //   const [showPassword, setShowPassword] = useState(false);
 //   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-//   const themeStyles = coustomTheme();
-
+//   const [resendCount, setResendCount] = useState(0);
+//   const themeStyles = CoustomTheme();
 //   const colorScheme = useColorScheme();
-
+//   const hasInternet = useConnectionStatus();
 //   const {
 //     control,
 //     handleSubmit,
@@ -75,111 +71,19 @@
 //     resolver: zodResolver(schema),
 //   });
 
-//   // const handleUpdatePassword = async (data: ResetPasswordFormValues) => {
-//   //   if (!email) {
-//   //     Alert.alert("Error", "E-mail wird benötigt!");
-//   //     return;
-//   //   }
-
-//   //   // Check for internet connectivity
-//   //   const netInfo = await NetInfo.fetch();
-//   //   if (!netInfo.isConnected) {
-//   //     Alert.alert(
-//   //       "Keine Internetverbindung",
-//   //       "Bitte überprüfe deine Verbindung."
-//   //     );
-//   //     return;
-//   //   }
-
-//   //   try {
-//   //     setLoading(true);
-
-//   //     // Verify the recovery token
-//   //     const { data: verifyData, error: verifyError } =
-//   //       await supabase.auth.verifyOtp({
-//   //         email,
-//   //         token: data.code,
-//   //         type: "recovery",
-//   //       });
-
-//   //     if (verifyError) throw verifyError;
-
-//   //     if (!verifyData.session) {
-//   //       throw new Error("Session could not be created after OTP verification.");
-//   //     }
-
-//   //     console.log("OTP verified successfully");
-
-//   //     // Defer the password update operation
-
-//   //     try {
-//   //       const { error: updateError } = await supabase.auth.updateUser({
-//   //         password: data.newPassword,
-//   //       });
-//   //       if (updateError) throw updateError;
-
-//   //       // Success
-//   //       Alert.alert("Erfolg", "Dein Passwort wurde aktualisiert.");
-//   //       router.replace("/login");
-//   //     } catch (updateError) {
-//   //       if (updateError instanceof Error) {
-//   //         Alert.alert("Error", updateError.message);
-//   //       } else {
-//   //         Alert.alert("Error", "Ein unerwarteter Fehler ist aufgetreten.");
-//   //       }
-//   //     } finally {
-//   //       setLoading(false);
-//   //     }
-//   //   } catch (error) {
-//   //     if (error instanceof Error) {
-//   //       // More user-friendly errors:
-//   //       if (error.message.includes("Invalid or expired token")) {
-//   //         Alert.alert("Fehler", "Der Code ist ungültig oder abgelaufen.");
-//   //       } else {
-//   //         Alert.alert("Error", error.message);
-//   //       }
-//   //     } else {
-//   //       Alert.alert("Error", "Ein unerwarteter Fehler ist aufgetreten.");
-//   //     }
-//   //     setLoading(false); // Ensure loading is stopped in case of error
-//   //   }
-//   // };
-
-//   useEffect(() => {
-//     const {
-//       data: { subscription },
-//     } = supabase.auth.onAuthStateChange((event, session) => {
-//       if (event === "USER_UPDATED") {
-//         Alert.alert("Erfolg", "Dein Passwort wurde aktualisiert.", [
-//           {
-//             text: "OK",
-//             onPress: () => router.replace("/login"),
-//           },
-//         ]);
-//       }
-//     });
-
-//     return () => {
-//       subscription.unsubscribe();
-//     };
-//   }, []);
-
-//   // Move the handler to the main component
+//   // This handler verifies the OTP code and updates the password.
 //   const handleUpdatePassword = async (data: ResetPasswordFormValues) => {
 //     if (!email) {
 //       Alert.alert("Error", "E-mail wird benötigt!");
 //       return;
 //     }
-
-//     const netInfo = await NetInfo.fetch();
-//     if (!netInfo.isConnected) {
+//     if (!hasInternet) {
 //       Alert.alert(
 //         "Keine Internetverbindung",
 //         "Bitte überprüfe deine Verbindung."
 //       );
 //       return;
 //     }
-
 //     try {
 //       setLoading(true);
 //       const { data: verifyData, error: verifyError } =
@@ -188,20 +92,17 @@
 //           token: data.code,
 //           type: "recovery",
 //         });
-
 //       if (verifyError) throw verifyError;
 //       if (!verifyData.session) {
 //         throw new Error("Session could not be created after OTP verification.");
 //       }
-
 //       console.log("OTP verified successfully");
 
 //       const { error: updateError } = await supabase.auth.updateUser({
 //         password: data.newPassword,
 //       });
-
 //       if (updateError) throw updateError;
-//       // Success handling is now in the event listener
+//       // Success is handled in the auth state change listener.
 //     } catch (error) {
 //       if (error instanceof Error) {
 //         if (error.message.includes("Invalid or expired token")) {
@@ -217,118 +118,210 @@
 //     }
 //   };
 
+//   // This handler sends a new recovery token (OTP) to the user's email.
+//   const handleResendToken = async () => {
+//     if (!email) {
+//       Alert.alert("Error", "E-mail wird benötigt!");
+//       return;
+//     }
+
+//     // Check if maximum attempts have been reached
+//     if (resendCount >= 3) {
+//       Alert.alert(
+//         "Fehler",
+//         "Du hast die maximale Anzahl an Versuchen erreicht. Bitte versuche es später erneut."
+//       );
+//       return;
+//     }
+
+//     if (!hasInternet) {
+//       Alert.alert(
+//         "Keine Internetverbindung",
+//         "Bitte überprüfe deinen Verbindung."
+//       );
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+//       // Using Supabase's resetPasswordForEmail method to send a new recovery email.
+//       const { error } = await supabase.auth.resetPasswordForEmail(email);
+//       if (error) {
+//         throw error;
+//       }
+//       Alert.alert("Erfolg", "Ein neuer Code wurde an deine E-Mail gesendet.");
+
+//       // Increment the resend count
+//       setResendCount((prev) => prev + 1);
+//     } catch (error) {
+//       if (error instanceof Error) {
+//         Alert.alert("Error", error.message);
+//       } else {
+//         Alert.alert("Error", "Ein unerwarteter Fehler ist aufgetreten.");
+//       }
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Listen to auth state changes to handle a successful password update.
+//   useEffect(() => {
+//     const {
+//       data: { subscription },
+//     } = supabase.auth.onAuthStateChange((event, session) => {
+//       if (event === "USER_UPDATED") {
+//         Alert.alert("Erfolg", "Dein Passwort wurde aktualisiert.", [
+//           {
+//             text: "OK",
+//             onPress: () => router.replace("/login"),
+//           },
+//         ]);
+//       }
+//     });
+//     return () => {
+//       subscription.unsubscribe();
+//     };
+//   }, []);
+
 //   return (
-//     <ThemedView style={styles.container}>
-//       {/* CODE FIELD */}
-//       <Controller
-//         control={control}
-//         name="code"
-//         render={({ field: { onChange, value } }) => (
-//           <TextInput
-//             style={[styles.input, themeStyles.contrast, themeStyles.text]}
-//             placeholder="Reset-Code eingeben"
-//             onChangeText={onChange}
-//             value={value}
-//             keyboardType="number-pad"
-//           />
-//         )}
-//       />
-//       {errors.code && <Text style={styles.error}>{errors.code.message}</Text>}
-
-//       {/* NEW PASSWORD FIELD */}
-//       <Controller
-//         control={control}
-//         name="newPassword"
-//         render={({ field: { onChange, value } }) => (
-//           <View style={[styles.passwordContainer, themeStyles.contrast]}>
+//     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+//       <KeyboardAvoidingView
+//         behavior={Platform.OS === "ios" ? "padding" : "height"}
+//         style={[styles.container, themeStyles.defaultBackgorundColor]}
+//         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+//         enabled
+//       >
+//         {/* CODE FIELD */}
+//         <Controller
+//           control={control}
+//           name="code"
+//           render={({ field: { onChange, value } }) => (
 //             <TextInput
-//               style={[styles.passwordInput, themeStyles.text]}
-//               placeholder="Neues Passwort eingeben"
+//               style={[styles.input, themeStyles.contrast, themeStyles.text]}
+//               placeholder="Reset-Code eingeben"
 //               onChangeText={onChange}
 //               value={value}
-//               secureTextEntry={!showPassword}
+//               keyboardType="number-pad"
 //             />
-//             <Pressable
-//               onPress={() => setShowPassword(!showPassword)}
-//               style={styles.eyeIcon}
-//             >
-//               {showPassword ? (
-//                 <Feather
-//                   name="eye"
-//                   size={24}
-//                   color={colorScheme === "dark" ? "#fff" : "#000"}
-//                 />
-//               ) : (
-//                 <Feather
-//                   name="eye-off"
-//                   size={24}
-//                   color={colorScheme === "dark" ? "#fff" : "#000"}
-//                 />
-//               )}
-//             </Pressable>
-//           </View>
-//         )}
-//       />
-//       {errors.newPassword && (
-//         <Text style={styles.error}>{errors.newPassword.message}</Text>
-//       )}
-
-//       {/* CONFIRM PASSWORD FIELD */}
-//       <Controller
-//         control={control}
-//         name="confirmPassword"
-//         render={({ field: { onChange, value } }) => (
-//           <View style={[styles.passwordContainer, themeStyles.contrast]}>
-//             <TextInput
-//               style={[styles.passwordInput, themeStyles.text]}
-//               placeholder="Passwort bestätigen"
-//               onChangeText={onChange}
-//               value={value}
-//               secureTextEntry={!showConfirmPassword}
-//             />
-//             <Pressable
-//               onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-//               style={styles.eyeIcon}
-//             >
-//               {showConfirmPassword ? (
-//                 <Feather
-//                   name="eye"
-//                   size={24}
-//                   color={colorScheme === "dark" ? "#fff" : "#000"}
-//                 />
-//               ) : (
-//                 <Feather
-//                   name="eye-off"
-//                   size={24}
-//                   color={colorScheme === "dark" ? "#fff" : "#000"}
-//                 />
-//               )}
-//             </Pressable>
-//           </View>
-//         )}
-//       />
-//       {errors.confirmPassword && (
-//         <Text style={styles.error}>{errors.confirmPassword.message}</Text>
-//       )}
-
-//       {/* 3) Button with a basic loading indicator */}
-//       {loading ? (
-//         <ActivityIndicator
-//           style={styles.loadingIndicator}
-//           color={Colors.universal.primary}
+//           )}
 //         />
-//       ) : (
+//         {errors.code && <Text style={styles.error}>{errors.code.message}</Text>}
+
+//         {/* NEW PASSWORD FIELD */}
+//         <Controller
+//           control={control}
+//           name="newPassword"
+//           render={({ field: { onChange, value } }) => (
+//             <View style={[styles.passwordContainer, themeStyles.contrast]}>
+//               <TextInput
+//                 style={[styles.passwordInput, themeStyles.text]}
+//                 placeholder="Neues Passwort eingeben"
+//                 onChangeText={onChange}
+//                 value={value}
+//                 secureTextEntry={!showPassword}
+//               />
+//               <Pressable
+//                 onPress={() => setShowPassword(!showPassword)}
+//                 style={styles.eyeIcon}
+//               >
+//                 {showPassword ? (
+//                   <Feather
+//                     name="eye"
+//                     size={24}
+//                     color={colorScheme === "dark" ? "#fff" : "#000"}
+//                   />
+//                 ) : (
+//                   <Feather
+//                     name="eye-off"
+//                     size={24}
+//                     color={colorScheme === "dark" ? "#fff" : "#000"}
+//                   />
+//                 )}
+//               </Pressable>
+//             </View>
+//           )}
+//         />
+//         {errors.newPassword && (
+//           <Text style={styles.error}>{errors.newPassword.message}</Text>
+//         )}
+
+//         {/* CONFIRM PASSWORD FIELD */}
+//         <Controller
+//           control={control}
+//           name="confirmPassword"
+//           render={({ field: { onChange, value } }) => (
+//             <View style={[styles.passwordContainer, themeStyles.contrast]}>
+//               <TextInput
+//                 style={[styles.passwordInput, themeStyles.text]}
+//                 placeholder="Passwort bestätigen"
+//                 onChangeText={onChange}
+//                 value={value}
+//                 secureTextEntry={!showConfirmPassword}
+//               />
+//               <Pressable
+//                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+//                 style={styles.eyeIcon}
+//               >
+//                 {showConfirmPassword ? (
+//                   <Feather
+//                     name="eye"
+//                     size={24}
+//                     color={colorScheme === "dark" ? "#fff" : "#000"}
+//                   />
+//                 ) : (
+//                   <Feather
+//                     name="eye-off"
+//                     size={24}
+//                     color={colorScheme === "dark" ? "#fff" : "#000"}
+//                   />
+//                 )}
+//               </Pressable>
+//             </View>
+//           )}
+//         />
+//         {errors.confirmPassword && (
+//           <Text style={styles.error}>{errors.confirmPassword.message}</Text>
+//         )}
+
+//         {/* Submit button to update password */}
+//         {loading ? (
+//           <ActivityIndicator
+//             style={styles.loadingIndicator}
+//             color={Colors.universal.primary}
+//           />
+//         ) : (
+//           <Pressable
+//             disabled={loading || !hasInternet}
+//             style={({ pressed }) => [
+//               styles.resetButton,
+//               pressed && styles.buttonPressed,
+//               (loading || !hasInternet) && styles.disable,
+//             ]}
+//             onPress={handleSubmit(handleUpdatePassword)}
+//           >
+//             <Text style={styles.resetButtonText}>Passwort aktualisieren</Text>
+//           </Pressable>
+//         )}
+//         {/* Resend Token button */}
 //         <Pressable
-//           style={({ pressed }) => [
-//             styles.resetButton,
-//             pressed && styles.buttonPressed,
-//           ]}
-//           onPress={handleSubmit(handleUpdatePassword)}
+//           style={styles.resendButton}
+//           onPress={handleResendToken}
+//           disabled={resendCount >= 3 || loading || !hasInternet}
 //         >
-//           <Text style={styles.resetButtonText}>Passwort aktualisieren</Text>
+//           <Text
+//             style={[
+//               styles.resendButtonText,
+//               resendCount >= 3 && styles.disabledButton,
+//               (loading || !hasInternet) && styles.disable,
+//             ]}
+//           >
+//             {resendCount >= 3
+//               ? "Maximale Versuche erreicht. Falls du wieder keinen code bekommen hast, versuche es später noch einmal!"
+//               : "Neuen Code anfordern"}
+//           </Text>
 //         </Pressable>
-//       )}
-//     </ThemedView>
+//       </KeyboardAvoidingView>
+//     </TouchableWithoutFeedback>
 //   );
 // }
 
@@ -355,6 +348,13 @@
 //     borderRadius: 6,
 //     marginBottom: 16,
 //   },
+//   passwordInput: {
+//     flex: 1,
+//     padding: 12,
+//   },
+//   eyeIcon: {
+//     padding: 10,
+//   },
 //   resetButton: {
 //     marginTop: 5,
 //     alignSelf: "center",
@@ -370,19 +370,38 @@
 //     fontSize: 16,
 //     color: "#fff",
 //   },
-//   passwordInput: {
-//     flex: 1,
-//     padding: 12,
+//   resendButton: {
+//     opacity: 1,
+//     marginTop: 15,
+//     alignSelf: "center",
 //   },
-//   eyeIcon: {
-//     padding: 10,
+//   resendButtonText: {
+//     fontSize: 16,
+//     textAlign: "center",
+//     color: Colors.universal.primary,
+//     textDecorationLine: "underline",
+//   },
+//   disable: {
+//     opacity: 0.5,
+//   },
+//   disabledButton: {
+//     color: Colors.universal.error,
+//     textDecorationLine: "none",
+//     lineHeight: 23,
 //   },
 //   loadingIndicator: {
 //     marginVertical: 16,
 //   },
 // });
 
-import React, { useState, useEffect } from "react";
+// export default ResetPassword;
+
+
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import {
   View,
   TextInput,
@@ -395,6 +414,7 @@ import {
   Platform,
   Keyboard,
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -404,49 +424,58 @@ import { supabase } from "@/utils/supabase";
 import { useLocalSearchParams, router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { CoustomTheme } from "@/utils/coustomTheme";
-import { TouchableWithoutFeedback } from "react-native";
 import { NoInternet } from "./NoInternet";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { signUpUserPasswordFormat } from "@/constants/messages";
-/**
- * Schema for resetting password.
- */
-const schema = z
-  .object({
-    code: z
-      .string({ required_error: "Code wird benötigt" })
-      .nonempty("Code wird benötigt")
-      .min(1, "Code wird benötigt"),
-    newPassword: z
-      .string({ required_error: "Password wird benötigt" })
-      .nonempty("Password wird benötigt")
-      .min(8, "Passwort muss mindestens 8 Zeichen lang sein")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=\-\[\]{};\:"\\|'<>?,./~]).{8,}$/,
-        signUpUserPasswordFormat
-      ),
-    confirmPassword: z
-      .string({ required_error: "Password wird benötigt" })
-      .nonempty("Password wird benötigt")
-      .min(8, "Passwort muss mindestens 8 Zeichen lang sein"),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwörter stimmen nicht überein",
-    path: ["confirmPassword"],
-  });
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
-type ResetPasswordFormValues = z.infer<typeof schema>;
+/**
+ * Build schema with translated validation messages.
+ */
+const createSchema = (t: TFunction) =>
+  z
+    .object({
+      code: z
+        .string({ required_error: t("resetPasswordCodeRequired") })
+        .nonempty(t("resetPasswordCodeRequired"))
+        .min(1, t("resetPasswordCodeRequired")),
+      newPassword: z
+        .string({ required_error: t("resetPasswordNewPasswordRequired") })
+        .nonempty(t("resetPasswordNewPasswordRequired"))
+        .min(8, t("resetPasswordNewPasswordMinLength"))
+        .regex(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+=\-\[\]{};\:"\\|'<>?,./~]).{8,}$/,
+          signUpUserPasswordFormat
+        ),
+      confirmPassword: z
+        .string({ required_error: t("resetPasswordConfirmPasswordRequired") })
+        .nonempty(t("resetPasswordConfirmPasswordRequired"))
+        .min(8, t("resetPasswordConfirmPasswordMinLength")),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t("resetPasswordPasswordsDoNotMatch"),
+      path: ["confirmPassword"],
+    });
+
+type ResetPasswordFormValues = z.infer<ReturnType<typeof createSchema>>;
 
 export function ResetPassword() {
+  const { t } = useTranslation();
+  const schema = useMemo(() => createSchema(t), [t]);
+
   const params = useLocalSearchParams();
   const email = Array.isArray(params.email) ? params.email[0] : params.email;
+
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resendCount, setResendCount] = useState(0);
+
   const themeStyles = CoustomTheme();
   const colorScheme = useColorScheme();
   const hasInternet = useConnectionStatus();
+
   const {
     control,
     handleSubmit,
@@ -455,117 +484,126 @@ export function ResetPassword() {
     resolver: zodResolver(schema),
   });
 
-  // This handler verifies the OTP code and updates the password.
+  // Verify OTP code and update password.
   const handleUpdatePassword = async (data: ResetPasswordFormValues) => {
     if (!email) {
-      Alert.alert("Error", "E-mail wird benötigt!");
+      Alert.alert(t("errorTitle"), t("resetPasswordEmailRequired"));
       return;
     }
+
     if (!hasInternet) {
       Alert.alert(
-        "Keine Internetverbindung",
-        "Bitte überprüfe deine Verbindung."
+        t("noInternetConnectionTitle"),
+        t("noInternetConnectionMessage")
       );
       return;
     }
+
     try {
       setLoading(true);
+
       const { data: verifyData, error: verifyError } =
         await supabase.auth.verifyOtp({
           email,
           token: data.code,
           type: "recovery",
         });
+
       if (verifyError) throw verifyError;
+
       if (!verifyData.session) {
-        throw new Error("Session could not be created after OTP verification.");
+        throw new Error(t("resetPasswordSessionError"));
       }
-      console.log("OTP verified successfully");
 
       const { error: updateError } = await supabase.auth.updateUser({
         password: data.newPassword,
       });
+
       if (updateError) throw updateError;
       // Success is handled in the auth state change listener.
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         if (error.message.includes("Invalid or expired token")) {
-          Alert.alert("Fehler", "Der Code ist ungültig oder abgelaufen.");
+          Alert.alert(
+            t("errorTitle"),
+            t("resetPasswordInvalidOrExpiredCode")
+          );
         } else {
-          Alert.alert("Error", error.message);
+          Alert.alert(t("errorTitle"), error.message);
         }
       } else {
-        Alert.alert("Error", "Ein unerwarteter Fehler ist aufgetreten.");
+        Alert.alert(t("errorTitle"), t("unexpectedErrorMessage"));
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // This handler sends a new recovery token (OTP) to the user's email.
+  // Send a new recovery token (OTP).
   const handleResendToken = async () => {
     if (!email) {
-      Alert.alert("Error", "E-mail wird benötigt!");
+      Alert.alert(t("errorTitle"), t("resetPasswordEmailRequired"));
       return;
     }
 
-    // Check if maximum attempts have been reached
     if (resendCount >= 3) {
       Alert.alert(
-        "Fehler",
-        "Du hast die maximale Anzahl an Versuchen erreicht. Bitte versuche es später erneut."
+        t("errorTitle"),
+        t("resetPasswordMaxResendReachedMessage")
       );
       return;
     }
 
     if (!hasInternet) {
       Alert.alert(
-        "Keine Internetverbindung",
-        "Bitte überprüfe deinen Verbindung."
+        t("noInternetConnectionTitle"),
+        t("noInternetConnectionMessage")
       );
       return;
     }
 
     try {
       setLoading(true);
-      // Using Supabase's resetPasswordForEmail method to send a new recovery email.
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
-      if (error) {
-        throw error;
-      }
-      Alert.alert("Erfolg", "Ein neuer Code wurde an deine E-Mail gesendet.");
 
-      // Increment the resend count
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) throw error;
+
+      Alert.alert(
+        t("successTitle"),
+        t("resetPasswordResendSuccessMessage")
+      );
+
       setResendCount((prev) => prev + 1);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        Alert.alert(t("errorTitle"), error.message);
       } else {
-        Alert.alert("Error", "Ein unerwarteter Fehler ist aufgetreten.");
+        Alert.alert(t("errorTitle"), t("unexpectedErrorMessage"));
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Listen to auth state changes to handle a successful password update.
+  // Listen for successful password update.
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === "USER_UPDATED") {
-        Alert.alert("Erfolg", "Dein Passwort wurde aktualisiert.", [
+        Alert.alert(t("successTitle"), t("resetPasswordSuccessMessage"), [
           {
-            text: "OK",
+            text: t("ok"),
             onPress: () => router.replace("/login"),
           },
         ]);
       }
     });
+
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [t]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -575,6 +613,9 @@ export function ResetPassword() {
         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         enabled
       >
+        {/* Optional global offline banner */}
+        {!hasInternet && <NoInternet />}
+
         {/* CODE FIELD */}
         <Controller
           control={control}
@@ -582,14 +623,16 @@ export function ResetPassword() {
           render={({ field: { onChange, value } }) => (
             <TextInput
               style={[styles.input, themeStyles.contrast, themeStyles.text]}
-              placeholder="Reset-Code eingeben"
+              placeholder={t("resetPasswordCodePlaceholder")}
               onChangeText={onChange}
               value={value}
               keyboardType="number-pad"
             />
           )}
         />
-        {errors.code && <Text style={styles.error}>{errors.code.message}</Text>}
+        {errors.code && (
+          <Text style={styles.error}>{errors.code.message}</Text>
+        )}
 
         {/* NEW PASSWORD FIELD */}
         <Controller
@@ -599,7 +642,7 @@ export function ResetPassword() {
             <View style={[styles.passwordContainer, themeStyles.contrast]}>
               <TextInput
                 style={[styles.passwordInput, themeStyles.text]}
-                placeholder="Neues Passwort eingeben"
+                placeholder={t("resetPasswordNewPasswordPlaceholder")}
                 onChangeText={onChange}
                 value={value}
                 secureTextEntry={!showPassword}
@@ -637,13 +680,15 @@ export function ResetPassword() {
             <View style={[styles.passwordContainer, themeStyles.contrast]}>
               <TextInput
                 style={[styles.passwordInput, themeStyles.text]}
-                placeholder="Passwort bestätigen"
+                placeholder={t("resetPasswordConfirmPasswordPlaceholder")}
                 onChangeText={onChange}
                 value={value}
                 secureTextEntry={!showConfirmPassword}
               />
               <Pressable
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                onPress={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
                 style={styles.eyeIcon}
               >
                 {showConfirmPassword ? (
@@ -664,10 +709,12 @@ export function ResetPassword() {
           )}
         />
         {errors.confirmPassword && (
-          <Text style={styles.error}>{errors.confirmPassword.message}</Text>
+          <Text style={styles.error}>
+            {errors.confirmPassword.message}
+          </Text>
         )}
 
-        {/* Submit button to update password */}
+        {/* Submit button */}
         {loading ? (
           <ActivityIndicator
             style={styles.loadingIndicator}
@@ -683,9 +730,12 @@ export function ResetPassword() {
             ]}
             onPress={handleSubmit(handleUpdatePassword)}
           >
-            <Text style={styles.resetButtonText}>Passwort aktualisieren</Text>
+            <Text style={styles.resetButtonText}>
+              {t("resetPasswordSubmitButton")}
+            </Text>
           </Pressable>
         )}
+
         {/* Resend Token button */}
         <Pressable
           style={styles.resendButton}
@@ -700,8 +750,8 @@ export function ResetPassword() {
             ]}
           >
             {resendCount >= 3
-              ? "Maximale Versuche erreicht. Falls du wieder keinen code bekommen hast, versuche es später noch einmal!"
-              : "Neuen Code anfordern"}
+              ? t("resetPasswordResendDisabledText")
+              : t("resetPasswordResendButton")}
           </Text>
         </Pressable>
       </KeyboardAvoidingView>

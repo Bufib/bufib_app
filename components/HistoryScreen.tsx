@@ -82,7 +82,7 @@ const HistoryScreen: React.FC = () => {
         colors={["rgba(45, 90, 61, 1)", "rgba(74, 124, 78, 1)"]}
         style={styles.headerGradient}
       >
-        <Text style={styles.headerTitle}>{t("sections.ahlulbayt")}</Text>
+        <Text style={styles.headerTitle}>{t("sectionsTitle.ahlulbayt")}</Text>
       </LinearGradient>
     </View>
   );

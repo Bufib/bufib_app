@@ -248,6 +248,34 @@ export const ar = {
   confirmPasswordText: "يرجى إدخال كلمة المرور لتأكيد الحذف.",
   askQuestionQuestionSendSuccess: "تم إرسال سؤالك بنجاح!",
 
+  resetPasswordCodeRequired: "رمز التحقق مطلوب",
+  resetPasswordNewPasswordRequired: "كلمة المرور مطلوبة",
+  resetPasswordNewPasswordMinLength:
+    "يجب أن تكون كلمة المرور مكونة من 8 أحرف على الأقل.",
+  resetPasswordConfirmPasswordRequired: "تأكيد كلمة المرور مطلوب",
+  resetPasswordConfirmPasswordMinLength:
+    "يجب أن يكون تأكيد كلمة المرور مكوناً من 8 أحرف على الأقل.",
+  resetPasswordPasswordsDoNotMatch: "كلمتا المرور غير متطابقتين",
+
+  errorTitle: "خطأ",
+  successTitle: "نجاح",
+
+  resetPasswordEmailRequired: "البريد الإلكتروني مطلوب",
+  resetPasswordSessionError: "تعذر إنشاء جلسة بعد التحقق من الرمز.",
+  resetPasswordInvalidOrExpiredCode: "الرمز غير صالح أو منتهي الصلاحية.",
+  unexpectedErrorMessage: "حدث خطأ غير متوقع.",
+
+  resetPasswordResendSuccessMessage: "تم إرسال رمز جديد إلى بريدك الإلكتروني.",
+  resetPasswordSuccessMessage: "تم تحديث كلمة المرور بنجاح.",
+
+  resetPasswordCodePlaceholder: "أدخل رمز الاستعادة",
+  resetPasswordNewPasswordPlaceholder: "أدخل كلمة المرور الجديدة",
+  resetPasswordConfirmPasswordPlaceholder: "تأكيد كلمة المرور",
+
+  resetPasswordSubmitButton: "تحديث كلمة المرور",
+  resetPasswordResendDisabledText:
+    "لقد وصلت إلى الحد الأقصى من المحاولات. يرجى المحاولة مرة أخرى لاحقاً.",
+  resetPasswordResendButton: "طلب رمز جديد",
   // Settings
   logout: "تسجيل الخروج",
   login: "تسجيل الدخول",
@@ -339,7 +367,7 @@ export const ar = {
   chooseReciter: "اختر القارئ",
 
   // History
-  sections: {
+  sectionsTitle: {
     prophets: "الأنبياء",
     ahlulbayt: "أهل البيت",
     ashura: "عاشوراء",
@@ -390,6 +418,38 @@ export const ar = {
     day8: "اليوم الثامن",
     day9: "اليوم التاسع",
     day10: "اليوم العاشر",
+  },
+
+  sections: {
+    life: "الحياة",
+    status: "المكانة والنسب",
+    family: "العائلة",
+    revelation: "الوحي والرسالة",
+    migration: "الهجرة والنصر",
+    miracles: "المعجزات",
+    titles: "الألقاب الشريفة",
+  },
+  content: {
+    born: "ولد عام 570 م في مكة",
+    died: "توفي عام 632 م في المدينة",
+    age: "توفي عن عمر 63 عاماً",
+    seal: "خاتم الأنبياء وأفضل الخلق أجمعين",
+    lineage: "ينتسب نسبه إلى إبراهيم (ع) عن طريق إسماعيل (ع)",
+    alamin: "كان يُعرف قبل بعثته بـ 'الأمين' – الجدير بالثقة",
+    khadija: "تزوج من خديجة (ع) وأنجب منها فاطمة (ع)",
+    ali: "قام الإمام علي (ع) بتجهيزه للدفن",
+    hira: "في غار حراء نزل عليه الوحي الأول بواسطة جبريل (ع)",
+    mission: "دعا إلى التوحيد الخالص والعدالة والمساواة",
+    persecution: "بسبب الاضطهاد من قِبل أهل مكة، هاجر إلى المدينة",
+    return: "بعد سنوات، عاد وحرر مكة سلمياً",
+    kaaba: "حطم الأصنام في الكعبة وأعاد فريضة الحج",
+    quran: "أجرى معجزات كثيرة، وأعظمها القرآن الكريم",
+  },
+  titles: {
+    mustafa: "المصطفى",
+    mercy: "رحمة للعالمين",
+    perfect: "الإنسان الكامل",
+    perfectDesc: "الإنسان الكامل",
   },
 } as const;
 

@@ -335,9 +335,7 @@ function VerseCard({
       style={[
         styles.card,
         {
-          backgroundColor: isBookmarked
-            ? Colors.universal.primary
-            : Colors[colorScheme].contrast,
+          backgroundColor: isBookmarked ? colorScheme === "dark" ? "#1B4332"  :"#A5D6A7" : Colors[colorScheme].contrast,
           marginHorizontal: 10,
           marginTop: 10,
         },
@@ -378,7 +376,7 @@ function VerseCard({
             <Ionicons
               name={isBookmarked ? "bookmark" : "bookmark-outline"}
               size={21}
-              color={isBookmarked ? "#8B5CF6" : Colors[colorScheme].defaultIcon}
+              color={isBookmarked ? Colors.universal.primary : Colors[colorScheme].defaultIcon}
             />
           </TouchableOpacity>
 
@@ -463,7 +461,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#8B5CF6",
+    backgroundColor: Colors.universal.primary,
     alignItems: "center",
     justifyContent: "center",
   },

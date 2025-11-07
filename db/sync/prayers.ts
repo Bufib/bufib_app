@@ -340,7 +340,7 @@ export default async function syncPrayers(): Promise<void> {
         // A) FULL REPLACE — wipe local tables (ALL languages)
         await txn.runAsync(`DELETE FROM prayer_translations;`);
         await txn.runAsync(`DELETE FROM prayers;`);
-        // (Categories are NOT deleted, mirroring your questions behavior.)
+        await txn.runAsync(`DELETE FROM prayer_categories;`);
 
         // B) Upsert categories (insert-if-missing)
         for (const c of (categories ?? []) as PrayerCategoryType[]) {

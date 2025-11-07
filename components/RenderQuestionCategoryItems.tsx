@@ -60,11 +60,10 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
     };
   }, [category, lang, questionsVersion]);
 
-
-   const listExtraData = React.useMemo(
-      () => `${questionsVersion}`,
-      [questionsVersion]
-    );
+  const listExtraData = React.useMemo(
+    () => `${questionsVersion}`,
+    [questionsVersion]
+  );
   //  Display error state
   if (error && !isLoading && subcategories.length === 0) {
     return (
@@ -90,7 +89,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
 
   // Main render
   return (
-    <View style={[styles.container, themeStyle.defaultBackgorundColor]}>
+    <ThemedView style={[styles.container]}>
       <Stack.Screen
         options={{
           headerTitle: t(category.toLowerCase()),
@@ -101,7 +100,6 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
         // extraData={listExtraData}
         keyExtractor={(item) => item.toString()}
         showsVerticalScrollIndicator={false}
-        style={themeStyle.defaultBackgorundColor}
         contentContainerStyle={styles.flatListStyle}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -137,7 +135,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
           </TouchableOpacity>
         )}
       />
-    </View>
+    </ThemedView>
   );
 }
 
@@ -152,7 +150,8 @@ const styles = StyleSheet.create({
   },
   error: {},
   flatListStyle: {
-    paddingTop: 10,
+    paddingTop: 15,
+    paddingBottom: 15,
     gap: 15,
   },
   item: {
