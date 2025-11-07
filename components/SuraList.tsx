@@ -1416,7 +1416,7 @@ import {
   getPageCoverageForSura,
 } from "@/utils/quranIndex";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, EvilIcons } from "@expo/vector-icons";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const { badgeSize } = returnSize(screenWidth, screenHeight);
@@ -2482,9 +2482,9 @@ const Tabs: React.FC<{
             {t("sura")} (114)
           </ThemedText>
           {viewMode === "sura" && (
-            <AntDesign
+            <EvilIcons
               name="redo"
-              size={18}
+              size={30}
               style={[
                 styles.tabButton,
                 {
@@ -2510,9 +2510,9 @@ const Tabs: React.FC<{
             {t("juz")} (30)
           </ThemedText>
           {viewMode === "juz" && (
-            <AntDesign
+            <EvilIcons
               name="redo"
-              size={18}
+              size={30}
               style={[
                 styles.tabButton,
                 {
@@ -2541,9 +2541,9 @@ const Tabs: React.FC<{
             {t("page")} ({pageCount})
           </ThemedText>
           {viewMode === "page" && (
-            <AntDesign
+            <EvilIcons
               name="redo"
-              size={18}
+              size={30}
               style={[
                 styles.tabButton,
                 {
