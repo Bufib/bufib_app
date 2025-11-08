@@ -25,20 +25,52 @@ const LatestQuestions: React.FC = () => {
   const colorScheme = useColorScheme();
   const questionsVersion = useDataVersionStore((s) => s.questionsVersion);
 
+  // useEffect(() => {
+  //   const loadLatestQuestions = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const questions = await getLatestQuestions(lang);
+  //       setLatestQuestions(questions);
+  //     } catch (error) {
+  //       console.error("Error loading latest questions:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   loadLatestQuestions();
+  // }, [lang, questionsVersion]);
+
   useEffect(() => {
+    let cancelled = false;
+
     const loadLatestQuestions = async () => {
-      setIsLoading(true);
+      if (cancelled) return;
+
+      // Only show loading if we're still mounted
+      if (!cancelled) setIsLoading(true);
+
       try {
         const questions = await getLatestQuestions(lang);
-        setLatestQuestions(questions);
+        if (!cancelled) {
+          setLatestQuestions(questions);
+        }
       } catch (error) {
-        console.error("Error loading latest questions:", error);
+        if (!cancelled) {
+          console.error("Error loading latest questions:", error);
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
 
     loadLatestQuestions();
+
+    return () => {
+      cancelled = true;
+    };
   }, [lang, questionsVersion]);
 
   // loading

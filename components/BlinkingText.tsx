@@ -41,9 +41,10 @@ const BlinkingText = ({
     animation.start();
 
     return () => {
-      opacityAnim.stopAnimation();
+      // opacityAnim.stopAnimation();
+      animation.stop();
     };
-  }, [blinkDuration, startDelay]);
+  }, [blinkDuration, startDelay, opacityAnim]);
 
   const getThemeColor = () => {
     if (!useTheming) return style?.color;

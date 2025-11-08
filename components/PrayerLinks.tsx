@@ -62,13 +62,19 @@ const PrayerLinks = () => {
 
   // animate opacity on mount
   useEffect(() => {
-    Animated.timing(fadeAnim, {
+    const anim = Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
-    }).start();
-  }, []);
+    });
+
+    anim.start();
+
+    return () => {
+      anim.stop();
+    };
+  }, [fadeAnim]);
 
   // --- Handlers ---
   const handleAddTodoConfirmed = useCallback(
@@ -260,7 +266,7 @@ const styles = StyleSheet.create({
     gap: 20,
     paddingHorizontal: 10,
     paddingTop: 10,
-    paddingBottom: 4
+    paddingBottom: 4,
   },
   categoriesContainer: {
     flexDirection: "row",

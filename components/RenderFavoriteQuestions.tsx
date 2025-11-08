@@ -36,44 +36,81 @@ function RenderFavoriteQuestions() {
   const { lang } = useLanguage();
   const questionVersion = useDataVersionStore((s) => s.questionsVersion);
 
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   const loadQuestions = async () => {
+  //     try {
+  //       setIsLoading(true);
+  //       const favs = await getFavoriteQuestions();
+  //       if (isMounted) {
+  //         if (favs) {
+  //           setQuestions(favs);
+  //           setError(null);
+  //         } else {
+  //           setQuestions([]);
+  //           setError(t("errorLoadingData"));
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.error("Error loading favorite questions:", err);
+  //       if (isMounted) {
+  //         setQuestions([]);
+  //         setError(t("errorLoadingData"));
+  //       }
+  //     } finally {
+  //       if (isMounted) {
+  //         setIsLoading(false);
+  //       }
+  //     }
+  //   };
+
+  //   loadQuestions();
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, [favoritesRefreshed, lang, questionVersion]);
+
   useEffect(() => {
-    let isMounted = true;
+    let cancelled = false;
+
     const loadQuestions = async () => {
       try {
         setIsLoading(true);
         const favs = await getFavoriteQuestions();
-        if (isMounted) {
-          if (favs) {
-            setQuestions(favs);
-            setError(null);
-          } else {
-            setQuestions([]);
-            setError(t("errorLoadingData"));
-          }
+
+        if (cancelled) return;
+
+        if (favs) {
+          setQuestions(favs);
+          setError(null);
+        } else {
+          setQuestions([]);
+          setError(t("errorLoadingData"));
         }
       } catch (err) {
         console.error("Error loading favorite questions:", err);
-        if (isMounted) {
+        if (!cancelled) {
           setQuestions([]);
           setError(t("errorLoadingData"));
         }
       } finally {
-        if (isMounted) {
+        if (!cancelled) {
           setIsLoading(false);
         }
       }
     };
 
     loadQuestions();
-    return () => {
-      isMounted = false;
-    };
-  }, [favoritesRefreshed, lang, questionVersion]);
 
-    const listExtraData = React.useMemo(
-      () => `${favoritesRefreshed}|${questionVersion}`,
-      [favoritesRefreshed, questionVersion]
-    );
+    return () => {
+      cancelled = true;
+    };
+  }, [favoritesRefreshed, lang, questionVersion, t]);
+
+  const listExtraData = React.useMemo(
+    () => `${favoritesRefreshed}|${questionVersion}`,
+    [favoritesRefreshed, questionVersion]
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: QuestionType }) => (

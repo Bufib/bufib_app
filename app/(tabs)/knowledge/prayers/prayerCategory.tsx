@@ -580,7 +580,7 @@ export default function CategoryScreen() {
     };
 
     fetchData();
-  }, [prayerCategory, lang, prayersVersion]);
+  }, [prayerCategory, lang, prayersVersion, fadeAnim]);
 
   // Handle subcategory selection
   const handleSubcategoryPress = async (cat: PrayerCategoryType) => {

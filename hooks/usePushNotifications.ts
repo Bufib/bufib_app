@@ -414,6 +414,13 @@ export function usePushNotifications() {
     null
   );
   const responseListener = useRef<Notifications.EventSubscription | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Register / upsert token in Supabase with current language_code
   const registerOrUpdateToken = useCallback(async () => {
@@ -434,13 +441,15 @@ export function usePushNotifications() {
 
       const token = (await Notifications.getExpoPushTokenAsync({ projectId }))
         .data;
-      setExpoPushToken(token);
+      if (isMountedRef.current) {
+        setExpoPushToken(token);
+      }
 
       const payload: {
         expo_push_token: string;
         app_version?: string;
         platform: string;
-        language_code: string; 
+        language_code: string;
         user_id?: string;
         guest_id?: string;
       } = {
@@ -524,9 +533,3 @@ export function usePushNotifications() {
 
   return { expoPushToken };
 }
-
-
-
-
-
-

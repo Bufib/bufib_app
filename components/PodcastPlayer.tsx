@@ -983,12 +983,19 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
     if (!shouldShowInitial) {
       loadedPodcastIdRef.current = null;
     }
-  }, [shouldShowInitial, cachedUri, podcast.id]); // Only the essentials
+  }, [
+    shouldShowInitial,
+    cachedUri,
+    podcast.id,
+    podcast.filename,
+    podcast.title,
+    rate,
+  ]); // Only the essentials
   // Metadata like title, artwork, rate are captured in closure—fine for this use case
 
   // Entrance animation
   useEffect(() => {
-    Animated.parallel([
+    const anim = Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 800,
@@ -1000,7 +1007,13 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
         easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
-    ]).start();
+    ]);
+
+    anim.start();
+
+    return () => {
+      anim.stop();
+    };
   }, [fadeAnim, slideAnim]);
 
   // Actions

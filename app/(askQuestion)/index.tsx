@@ -29,7 +29,6 @@ import { LoadingIndicator } from "@/components/LoadingIndicator";
 export default function Index() {
   // 1. Check auth state from the store
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const session = useAuthStore.getState().session;
   const colorScheme = useColorScheme();
   const themeStyles = CoustomTheme();
   const { t } = useTranslation();
@@ -41,7 +40,7 @@ export default function Index() {
     if (!isLoggedIn) {
       router.replace("/(auth)/login");
     }
-  }, [isLoggedIn, session]);
+  }, [isLoggedIn]);
 
   // 3. Use our hook to fetch data
   const {

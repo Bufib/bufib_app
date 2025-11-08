@@ -52,7 +52,7 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
         setAttemptCount(0);
       }
     }
-  }, [isVisible]);
+  }, [attemptCount, lastAttemptTime]);
 
   const fetchWithTimeout = useCallback(
     async (url: string, options: RequestInit) => {
@@ -95,9 +95,9 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
         (ATTEMPT_RESET_TIME - (Date.now() - lastAttemptTime)) / 1000
       );
       setError(
-        `${t("deleteUserToOftenText")} ${Math.ceil(
-          timeRemaining / 60
-        )} ${t("deleteUserToOftenMinutesAgain")}`
+        `${t("deleteUserToOftenText")} ${Math.ceil(timeRemaining / 60)} ${t(
+          "deleteUserToOftenMinutesAgain"
+        )}`
       );
       return;
     }
@@ -187,7 +187,7 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
                 {t("deleteAccountConfirmation1")}
               </ThemedText>
               <ThemedText style={styles.warningSubText}>
-               {t("deleteAccountConfirmation2")}
+                {t("deleteAccountConfirmation2")}
               </ThemedText>
               <View style={styles.buttonRow}>
                 <Pressable
@@ -220,7 +220,7 @@ const DeleteUserModal: React.FC<DeleteUserModalPropsType> = ({
                   {t("confirmPassowrdTitle")}
                 </ThemedText>
                 <ThemedText style={styles.subtitle}>
-                 {t("confirmPasswordText")}
+                  {t("confirmPasswordText")}
                 </ThemedText>
 
                 <View style={styles.passwordContainer}>

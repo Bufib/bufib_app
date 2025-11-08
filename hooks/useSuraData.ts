@@ -208,9 +208,6 @@
 //   };
 // }
 
-
-
-
 //! Imporved
 
 import { useState, useEffect } from "react";
@@ -445,6 +442,7 @@ export function useSuraData({
     setTotalVersesForPage,
     // ✅ force refetch when the Quran dataset was updated
     quranDataVersion,
+    t,
   ]);
 
   return {

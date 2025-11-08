@@ -2958,7 +2958,6 @@ const SuraScreen: React.FC = () => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
-  const translitContentWidth = Math.max(0, width - 64);
   const [selectedVerse, setSelectedVerse] = useState<QuranVerseType | null>(
     null
   );
@@ -3249,7 +3248,6 @@ const SuraScreen: React.FC = () => {
             arabicVerse={arabicVerse}
             isBookmarked={isVerseBookmarked}
             isJuzMode={isJuzMode || isPageMode}
-            translitContentWidth={translitContentWidth}
             translitBaseStyle={translitBaseStyle}
             hasTafsir={hasTafsir}
             onBookmark={(v) => handleBookmarkVerse(v, index)}
@@ -3267,7 +3265,6 @@ const SuraScreen: React.FC = () => {
       bookmarksBySura,
       isJuzMode,
       isPageMode,
-      translitContentWidth,
       translitBaseStyle,
       hasTafsir,
       handleBookmarkVerse,
@@ -3325,6 +3322,7 @@ const SuraScreen: React.FC = () => {
           ListHeaderComponentStyle={{}}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
+          
           ListEmptyComponent={
             <ThemedText style={[styles.emptyText, { fontSize: fontSize }]}>
               {t("noData")}

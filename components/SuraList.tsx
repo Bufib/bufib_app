@@ -1710,22 +1710,30 @@ const SuraList: React.FC = () => {
   // Warm coverage for the last-read surah after interactions
   const lastSuraNumber = useLastSuraStore((s) => s.lastSura);
   const setLastSura = useLastSuraStore((s) => s.setLastSura);
+
   useEffect(() => {
     if (!lastSuraNumber) return;
-    setTimeout(() => {
+    const id = setTimeout(() => {
       getJuzCoverageForSura(lastSuraNumber).catch(() => {});
       getPageCoverageForSura(lastSuraNumber).catch(() => {});
     }, 0);
+    return () => clearTimeout(id);
   }, [lastSuraNumber, lang, quranDataVersion]);
 
   useEffect(() => {
-    Animated.spring(slideAnim, {
-      toValue: viewMode === "sura" ? 0 : viewMode === "juz" ? 1 : 2,
+    const toValue = viewMode === "sura" ? 0 : viewMode === "juz" ? 1 : 2;
+    const anim = Animated.spring(slideAnim, {
+      toValue,
       useNativeDriver: true,
       tension: 50,
       friction: 8,
-    }).start();
-  }, [viewMode]);
+    });
+
+    anim.start();
+    return () => {
+      anim.stop(); // cancel running animation on tab change/unmount
+    };
+  }, [viewMode, slideAnim]);
 
   const getSuraName = (s: SuraRowType) => {
     if (lang === "ar") return s.label ?? s.label_en ?? "";
@@ -2484,7 +2492,7 @@ const Tabs: React.FC<{
           {viewMode === "sura" && (
             <EvilIcons
               name="redo"
-              size={30}
+              size={25}
               style={[
                 styles.tabButton,
                 {

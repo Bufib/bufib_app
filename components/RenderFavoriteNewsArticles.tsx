@@ -10,7 +10,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
 import { NewsArticlesType } from "@/constants/Types";
-import { getFavoriteNewsArticle } from "@/utils/favorites"; 
+import { getFavoriteNewsArticle } from "@/utils/favorites";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { ThemedView } from "@/components/ThemedView";
@@ -33,12 +33,33 @@ export default function RenderFavoriteNewsArticles() {
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const favKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
   console.log(newsArticleVersion);
-  // Load favorite IDs from storage (scoped by language)
+
+  // // Load favorite IDs from storage (scoped by language)
+  // useEffect(() => {
+  //   (async () => {
+  //     const ids = await getFavoriteNewsArticle(lang);
+  //     setFavoriteIds(ids);
+  //   })();
+  // }, [lang, favoritesRefreshed, newsArticleVersion]);
+
   useEffect(() => {
+    let cancelled = false;
+
     (async () => {
-      const ids = await getFavoriteNewsArticle(lang);
-      setFavoriteIds(ids);
+      try {
+        const ids = await getFavoriteNewsArticle(lang);
+        if (!cancelled) setFavoriteIds(ids);
+      } catch (e) {
+        if (!cancelled) {
+          console.warn("Failed to load favorite news IDs:", e);
+          setFavoriteIds([]);
+        }
+      }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [lang, favoritesRefreshed, newsArticleVersion]);
 
   // Fetch favorite news in one query

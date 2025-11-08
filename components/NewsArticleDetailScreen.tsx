@@ -1021,18 +1021,37 @@ export default function NewsArticleDetailScreen({
     };
   }, [articleId, lang]);
 
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
+  //       if (!raw) return;
+  //       const saved: SavedBookmark = JSON.parse(raw);
+  //       if (typeof saved?.offsetY === "number")
+  //         setBookmarkOffsetY(saved.offsetY);
+  //     } catch (e) {
+  //       console.log("Failed to load bookmark", e);
+  //     }
+  //   })();
+  // }, [articleId, lang]);
+
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
         const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
-        if (!raw) return;
+        if (!raw || cancelled) return;
         const saved: SavedBookmark = JSON.parse(raw);
-        if (typeof saved?.offsetY === "number")
+        if (typeof saved?.offsetY === "number" && !cancelled) {
           setBookmarkOffsetY(saved.offsetY);
+        }
       } catch (e) {
-        console.log("Failed to load bookmark", e);
+        if (!cancelled) console.log("Failed to load bookmark", e);
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [articleId, lang]);
 
   const saveBookmark = useCallback(
@@ -1089,6 +1108,21 @@ export default function NewsArticleDetailScreen({
         console.log("error");
       }
     })();
+  }, [articleId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const fav = await isNewsArticleFavorited(articleId);
+        if (!cancelled) setIsFavorite(fav);
+      } catch {
+        if (!cancelled) console.log("error");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [articleId]);
 
   // Long press to set bookmark

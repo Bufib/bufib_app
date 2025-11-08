@@ -24,16 +24,23 @@ export const NoInternet = ({
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { lang } = useLanguage();
+
   useEffect(() => {
-    if (showToast && prevConnected.current !== hasInternet) {
-      Toast.show({
-        type: hasInternet ? "success" : "error",
-        text1: hasInternet ? t("internetBackTitle") : t("noInternetTitle"),
-        text2: hasInternet ? "" : t("noInternetMessage"),
-      });
+    // Only react when the connectivity value actually changes
+    if (prevConnected.current !== hasInternet) {
+      // If we're supposed to show toasts, do it
+      if (showToast) {
+        Toast.show({
+          type: hasInternet ? "success" : "error",
+          text1: hasInternet ? t("internetBackTitle") : t("noInternetTitle"),
+          text2: hasInternet ? "" : t("noInternetMessage"),
+        });
+      }
+
+      // Always update the previous state, regardless of showToast
       prevConnected.current = hasInternet;
     }
-  }, [hasInternet, showToast, lang]);
+  }, [hasInternet, showToast, lang, t]);
 
   if (!showUI || hasInternet) return null;
 

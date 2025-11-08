@@ -56,23 +56,42 @@ const FavoritePrayersScreen: React.FC = () => {
     };
   }, []);
 
+  // const reloadFolders = useCallback(async () => {
+  //   setIsLoadingFolders(true);
+  //   try {
+  //     const arr = await getFavoritePrayerFolders();
+  //     setFolders(arr);
+
+  //     // Keep current selection if it still exists; otherwise pick first or null
+  //     setSelectedFolder((prev) =>
+  //       prev && arr.some((f) => f.name === prev) ? prev : arr[0]?.name ?? null
+  //     );
+  //   } catch (err) {
+  //     console.error("Failed to load favorite folders:", err);
+  //     Alert.alert(t("error"), t("noData"));
+  //   } finally {
+  //     setIsLoadingFolders(false);
+  //   }
+  // }, [lang, favoritesRefreshed, prayersVersion]);
+
   const reloadFolders = useCallback(async () => {
     setIsLoadingFolders(true);
     try {
       const arr = await getFavoritePrayerFolders();
-      setFolders(arr);
+      if (!mountedRef.current) return;
 
-      // Keep current selection if it still exists; otherwise pick first or null
+      setFolders(arr);
       setSelectedFolder((prev) =>
         prev && arr.some((f) => f.name === prev) ? prev : arr[0]?.name ?? null
       );
     } catch (err) {
+      if (!mountedRef.current) return;
       console.error("Failed to load favorite folders:", err);
       Alert.alert(t("error"), t("noData"));
     } finally {
-      setIsLoadingFolders(false);
+      if (mountedRef.current) setIsLoadingFolders(false);
     }
-  }, [lang, favoritesRefreshed, prayersVersion]);
+  }, [t]);
 
   const reloadPrayers = useCallback(
     async (folder: string | null) => {

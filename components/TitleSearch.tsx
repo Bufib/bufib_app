@@ -331,19 +331,39 @@ export const TitleSearchInput = ({
   const [modalVisible, setModalVisible] = useState(false);
   const colorScheme = useColorScheme();
 
+  // useEffect(() => {
+  //   if (value) {
+  //     const titles = value
+  //       .split(",")
+  //       .map((t) => t.trim())
+  //       .filter(Boolean);
+  //     const initialItems = titles.map((title) => ({
+  //       title,
+  //       category_name: "",
+  //       subcategory_name: "",
+  //     }));
+  //     setSelectedItems(initialItems);
+  //   }
+  // }, [value]);
+
   useEffect(() => {
-    if (value) {
-      const titles = value
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean);
-      const initialItems = titles.map((title) => ({
+    if (!value) {
+      setSelectedItems([]);
+      return;
+    }
+
+    const titles = value
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    setSelectedItems(
+      titles.map((title) => ({
         title,
         category_name: "",
         subcategory_name: "",
-      }));
-      setSelectedItems(initialItems);
-    }
+      }))
+    );
   }, [value]);
 
   const searchTitles = useCallback(async (query: string) => {

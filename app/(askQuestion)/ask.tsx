@@ -177,20 +177,39 @@ export default function AskQuestionScreen() {
   const titleValue = watch("title");
   const debouncedTitle = useDebounce(titleValue, 500);
 
-  // When the debounced title changes, perform a search.
-  // (This is optional—you might use this to, for example, display a warning below the title input.)
+  //!here
+  // // When the debounced title changes, perform a search.
+  // // (This is optional—you might use this to, for example, display a warning below the title input.)
+  // useEffect(() => {
+  //   if (debouncedTitle && debouncedTitle.length >= 3) {
+  //     searchQuestions(debouncedTitle)
+  //       .then((results) => {
+  //         setSimilarQuestions(results);
+  //       })
+  //       .catch((err) => {
+  //         console.error("Debounced search error:", err);
+  //       });
+  //   } else {
+  //     setSimilarQuestions([]);
+  //   }
+  // }, [debouncedTitle]);
+
   useEffect(() => {
+    let isActive = true;
+
     if (debouncedTitle && debouncedTitle.length >= 3) {
       searchQuestions(debouncedTitle)
         .then((results) => {
-          setSimilarQuestions(results);
+          if (isActive) setSimilarQuestions(results);
         })
-        .catch((err) => {
-          console.error("Debounced search error:", err);
-        });
+        .catch((err) => console.error("Debounced search error:", err));
     } else {
       setSimilarQuestions([]);
     }
+
+    return () => {
+      isActive = false;
+    };
   }, [debouncedTitle]);
 
   /** The actual DB insert logic  */
@@ -220,13 +239,22 @@ export default function AskQuestionScreen() {
         selectedGender = "Weiblich";
       }
 
-      console.log( "user_id:" + session.user.id +
-       " username:" + username + 
-        "title: " + data.title +
-       " marja:" + selectedMarja +
-        "question:" + data.question +
-       " age:" + data.age +
-        "gender:" + selectedGender)
+      console.log(
+        "user_id:" +
+          session.user.id +
+          " username:" +
+          username +
+          "title: " +
+          data.title +
+          " marja:" +
+          selectedMarja +
+          "question:" +
+          data.question +
+          " age:" +
+          data.age +
+          "gender:" +
+          selectedGender
+      );
       // Insert into DB
       const { error: submissionError } = await supabase
         .from("user_questions")

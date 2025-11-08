@@ -1,5 +1,5 @@
 import { StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useRef } from "react";
 import { Collapsible } from "@/components/Collapsible";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -43,6 +43,7 @@ const RenderQuestion = ({
   const [hasCopiedSistani, setHasCopiedSistani] = useState(false);
   const { t } = useTranslation();
   const { lang } = useLanguage();
+  const timeoutsRef = useRef<number[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -69,7 +70,7 @@ const RenderQuestion = ({
     return () => {
       cancelled = true;
     };
-  }, [category, subcategory, questionId, lang,]);
+  }, [category, subcategory, questionId, lang]);
 
   // 2) Load related questions
   useEffect(() => {
@@ -120,26 +121,59 @@ const RenderQuestion = ({
     }
   };
 
+  // const copyIconChangeMarja = (marja: string) => {
+  //   if (marja === "khamenei") {
+  //     setHasCopiedKhamenei(true);
+  //     setTimeout(() => {
+  //       setHasCopiedKhamenei(false);
+  //     }, 1000);
+  //   } else {
+  //     setHasCopiedSistani(true);
+  //     setTimeout(() => {
+  //       setHasCopiedSistani(false);
+  //     }, 1000);
+  //   }
+  // };
+
   const copyIconChangeMarja = (marja: string) => {
     if (marja === "khamenei") {
       setHasCopiedKhamenei(true);
-      setTimeout(() => {
+      const id = setTimeout(() => {
         setHasCopiedKhamenei(false);
-      }, 1000);
+      }, 1000) as unknown as number;
+      timeoutsRef.current.push(id);
     } else {
       setHasCopiedSistani(true);
-      setTimeout(() => {
+      const id = setTimeout(() => {
         setHasCopiedSistani(false);
-      }, 1000);
+      }, 1000) as unknown as number;
+      timeoutsRef.current.push(id);
     }
   };
 
+  // const copyIconChangeSingleAnswer = () => {
+  //   setHasCopiedSingleAnswer(true);
+  //   setTimeout(() => {
+  //     setHasCopiedSingleAnswer(false);
+  //   }, 1000);
+  // };
+
   const copyIconChangeSingleAnswer = () => {
     setHasCopiedSingleAnswer(true);
-    setTimeout(() => {
+    const id = setTimeout(() => {
       setHasCopiedSingleAnswer(false);
-    }, 1000);
+    }, 1000) as unknown as number;
+    timeoutsRef.current.push(id);
   };
+
+  useEffect(() => {
+    return () => {
+      // clear pending timeouts on unmount
+      timeoutsRef.current.forEach(clearTimeout);
+      timeoutsRef.current = [];
+    };
+  }, []);
+  
   return (
     <View
       style={[

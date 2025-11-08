@@ -68,7 +68,7 @@ const Settings = () => {
 
   const handleDeleteSuccess = () => {
     clearSession(); // SignOut and remove session
-    router.replace("/(tabs)/home/");
+    router.replace("./(tabs)/home/");
     Toast.show({
       type: "success",
       text1: t("successDeletion"),
@@ -76,19 +76,6 @@ const Settings = () => {
       topOffset: 60,
     });
   };
-
-  //! Maybe not needed
-  // // 1) Load saved dark mode preference
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const savedColorSetting = await AsyncStorage.getItem("isDarkMode");
-  //       Appearance.setColorScheme(
-  //         savedColorSetting === "true" ? "dark" : "light"
-  //       );
-  //     } catch {}
-  //   })();
-  // }, []);
 
   // 2) Get version, PayPal and question count
   useEffect(() => {
@@ -289,7 +276,11 @@ const Settings = () => {
           </View>
 
           <View
-            style={[styles.footer, rtl && { flexDirection: "row-reverse" }, {borderTopColor: Colors[colorScheme].border}]}
+            style={[
+              styles.footer,
+              rtl && { flexDirection: "row-reverse" },
+              { borderTopColor: Colors[colorScheme].border },
+            ]}
           >
             <Pressable
               onPress={() =>
@@ -434,7 +425,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     borderTopWidth: 0.5,
     marginBottom: 40,
-    paddingTop: 15
+    paddingTop: 15,
   },
   footerLink: {
     color: Colors.universal.link,

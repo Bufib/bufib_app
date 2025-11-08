@@ -973,8 +973,27 @@ function AppContent() {
   //   hydrateStores();
   // }, []);
 
+  //! Here
+  // useEffect(() => {
+  //   const checkHydration = () => {
+  //     const allHydrated =
+  //       useFontSizeStore.persist.hasHydrated() &&
+  //       useNotificationStore.persist.hasHydrated();
+
+  //     if (allHydrated) {
+  //       setStoresHydrated(true);
+  //       useNotificationStore.getState().checkPermissions();
+  //     }
+  //   };
+
+  //   checkHydration();
+  //   const interval = setInterval(checkHydration, 50);
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
   useEffect(() => {
-    const checkHydration = () => {
+    const intervalId = setInterval(() => {
       const allHydrated =
         useFontSizeStore.persist.hasHydrated() &&
         useNotificationStore.persist.hasHydrated();
@@ -982,13 +1001,21 @@ function AppContent() {
       if (allHydrated) {
         setStoresHydrated(true);
         useNotificationStore.getState().checkPermissions();
+        clearInterval(intervalId);
       }
-    };
+    }, 50);
 
-    checkHydration();
-    const interval = setInterval(checkHydration, 50);
+    // Optional: immediate check so you don't always wait 50ms
+    const allHydratedNow =
+      useFontSizeStore.persist.hasHydrated() &&
+      useNotificationStore.persist.hasHydrated();
+    if (allHydratedNow) {
+      setStoresHydrated(true);
+      useNotificationStore.getState().checkPermissions();
+      clearInterval(intervalId);
+    }
 
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {

@@ -41,7 +41,7 @@ export default function QuestionDetailScreen() {
     if (!isLoggedIn) {
       router.push("/(auth)/login");
     }
-  }, [isLoggedIn, session]);
+  }, [isLoggedIn]);
 
   const cachedQuestions = queryClient.getQueryData<QuestionsFromUserType[]>([
     "questionsFromUser",
@@ -103,7 +103,7 @@ export default function QuestionDetailScreen() {
     if (question) {
       checkIfHasRead();
     }
-  }, [questionId, question, userId, queryClient, lang]);
+  }, [questionId, question]);
 
   // Helper function to format the read time as a countdown
   const formatReadTime = (timestamp: any) => {

@@ -37,13 +37,19 @@ export default function QuestionLinks() {
 
   // animate opacity on mount
   useEffect(() => {
-    Animated.timing(fadeAnim, {
+    const anim = Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
-    }).start();
-  }, []);
+    });
+
+    anim.start();
+
+    return () => {
+      anim.stop();
+    };
+  }, [fadeAnim]);
 
   return (
     <Animated.View
@@ -158,7 +164,7 @@ export default function QuestionLinks() {
       {lang === "de" && (
         <TouchableOpacity
           style={styles.askQuestionButton}
-          onPress={() => router.push("/(askQuestion)/")}
+          onPress={() => router.push("./(askQuestion)/")}
         >
           <MaterialCommunityIcons
             name="chat-question-outline"

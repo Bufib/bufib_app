@@ -99,6 +99,7 @@
 // }
 
 import * as React from "react";
+import { useEffect } from "react";
 import {
   useWindowDimensions,
   useColorScheme,
@@ -167,14 +168,20 @@ export default function TopNavigationKnowledge() {
   );
 
   // animate opacity on mount
-  React.useEffect(() => {
-    Animated.timing(fadeAnim, {
+  useEffect(() => {
+    const animation = Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
-    }).start();
-  }, []);
+    });
+
+    animation.start();
+
+    return () => {
+      animation.stop(); // prevent updates after unmount
+    };
+  }, [fadeAnim]);
 
   return (
     <Animated.View

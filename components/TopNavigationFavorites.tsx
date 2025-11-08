@@ -66,13 +66,20 @@ export default function TopNavigationFavorites() {
 
   // animate opacity on mount
   useEffect(() => {
-    Animated.timing(fadeAnim, {
+    const animation = Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
-    }).start();
-  }, []);
+    });
+
+    animation.start();
+
+    return () => {
+      animation.stop(); // prevent updates after unmount
+    };
+  }, [fadeAnim]);
+
   return (
     <>
       <Animated.View

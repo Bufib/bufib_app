@@ -15,13 +15,9 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select images.",
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": [
-          "de",
-          "en",
-          "ar"
-        ],
+        "CFBundleLocalizations": ["de", "en", "ar"],
         "CFBundleDevelopmentRegion": "de",
-        "NSUserNotificationsUsageDescription": "Wir senden Push-Benachrichtigungen, u"
+        "NSUserNotificationsUsageDescription": "Wir senden Push-Benachrichtigungen"
       }
     },
     "android": {
@@ -30,6 +26,7 @@
         "backgroundColor": "#2ea853"
       },
       "edgeToEdgeEnabled": true,
+      "googleServicesFile": "./android/app/google-services.json",
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
@@ -55,6 +52,7 @@
       "expo-localization",
       "expo-sqlite",
       "expo-audio",
+      "expo-notifications",
       "expo-web-browser",
       [
         "expo-video",

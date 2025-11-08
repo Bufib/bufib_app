@@ -33,12 +33,34 @@ export default function RenderFavoritePodcasts() {
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const favKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
 
-  // Load favorite IDs from storage (scoped per language)
+  // // Load favorite IDs from storage (scoped per language)
+  // useEffect(() => {
+  //   (async () => {
+  //     const ids = await getFavoritePodcasts(lang);
+  //     setFavoriteIds(ids);
+  //   })();
+  // }, [lang, favoritesRefreshed, podcastVersion]);
+
   useEffect(() => {
+    let cancelled = false;
+
     (async () => {
-      const ids = await getFavoritePodcasts(lang);
-      setFavoriteIds(ids);
+      try {
+        const ids = await getFavoritePodcasts(lang);
+        if (!cancelled) {
+          setFavoriteIds(ids);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          console.warn("Failed to load favorite podcasts:", e);
+          setFavoriteIds([]);
+        }
+      }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [lang, favoritesRefreshed, podcastVersion]);
 
   // Fetch favorite episodes by ID directly (no pagination dance)

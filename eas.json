@@ -3,10 +3,16 @@
     "version": ">= 16.2.1",
     "appVersionSource": "remote"
   },
+  // "build": {
+  //   "development": {
+  //     "developmentClient": true,
+  //     "distribution": "internal"
+  //   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
+    "apk-local": {
+      "android": {
+        "buildType": "apk"
+      }
     },
     "preview": {
       "distribution": "internal"

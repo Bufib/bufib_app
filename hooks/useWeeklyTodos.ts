@@ -10,11 +10,10 @@ import {
 } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const STORAGE_KEY = "prayer_app_weekly_todos";
-
 export function useWeeklyTodos(): UseWeeklyTodosResult {
-
   const { lang } = useLanguage();
+  
+  const STORAGE_KEY = `prayer_app_weekly_todos_${lang}`;
 
   const [todosByDay, setTodosByDay] = useState<WeeklyTodosType>(
     () => defaultWeeklyTodos[lang] ?? defaultWeeklyTodos.de
