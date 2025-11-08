@@ -25,6 +25,7 @@ import { Image } from "expo-image";
 import { ThemedText } from "./ThemedText";
 import { AntDesign } from "@expo/vector-icons";
 import { PrayerQuestionLinksType, TodoToDeleteType } from "@/constants/Types";
+import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 
 const PrayerLinks = () => {
   const colorScheme: ColorSchemeName = useColorScheme() || "light";
@@ -47,8 +48,10 @@ const PrayerLinks = () => {
     dayIndex: null,
     todoId: null,
   });
+    const { fadeAnim, onLayout } = useScreenFadeIn(800);
+  
   // fade-in animation value
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+
 
   // --- Effects ---
   const getCurrentDayIndex = useCallback((): number => {
@@ -60,21 +63,7 @@ const PrayerLinks = () => {
     setSelectedDay(getCurrentDayIndex());
   }, [getCurrentDayIndex]);
 
-  // animate opacity on mount
-  useEffect(() => {
-    const anim = Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    });
 
-    anim.start();
-
-    return () => {
-      anim.stop();
-    };
-  }, [fadeAnim]);
 
   // --- Handlers ---
   const handleAddTodoConfirmed = useCallback(
@@ -143,6 +132,7 @@ const PrayerLinks = () => {
 
   return (
     <Animated.View
+    onLayout={onLayout}
       style={[
         styles.container,
         { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background },

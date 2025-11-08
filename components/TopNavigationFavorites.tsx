@@ -11,16 +11,11 @@ import FavoriteNewsArticles from "@/app/(tabs)/favorites/favoriteNewsArticles";
 import FavoritePrayers from "@/app/(tabs)/favorites/favoritePrayers";
 import FavoriteQuestions from "@/app/(tabs)/favorites/favoriteQuestions";
 import FavoritePodcasts from "@/app/(tabs)/favorites/favoritePodcasts";
-import i18n from "@/utils/i18n";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
-import { useTranslation } from "react-i18next";
 import { Image } from "expo-image";
-import favoritePodcasts from "@/app/(tabs)/favorites/favoritePodcasts";
-import favoritePrayers from "@/app/(tabs)/favorites/favoritePrayers";
-import favoriteQuestions from "@/app/(tabs)/favorites/favoriteQuestions";
-import { LanguageCode } from "@/constants/Types";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+
 const renderScene = SceneMap({
   favoriteNewsArticles: FavoriteNewsArticles,
   favoritePrayers: FavoritePrayers,
@@ -32,8 +27,8 @@ export default function TopNavigationFavorites() {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
   const colorScheme = useColorScheme() || "light";
-  const { lang } = useLanguage();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const { fadeAnim, onLayout } = useScreenFadeIn(800);
+
   const routes = React.useMemo(
     () => [
       {
@@ -61,28 +56,13 @@ export default function TopNavigationFavorites() {
         icon: require("@/assets/images/qAndAHeaderLogo.png"),
       },
     ],
-    [lang]
+    []
   );
-
-  // animate opacity on mount
-  useEffect(() => {
-    const animation = Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    });
-
-    animation.start();
-
-    return () => {
-      animation.stop(); // prevent updates after unmount
-    };
-  }, [fadeAnim]);
 
   return (
     <>
       <Animated.View
+        onLayout={onLayout}
         style={[
           {
             flex: 1,

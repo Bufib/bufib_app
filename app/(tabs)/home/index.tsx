@@ -419,14 +419,18 @@ import {
   TouchableOpacity,
   useColorScheme,
   View,
+  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system";
+import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+import { opacity } from "@cloudinary/url-gen/actions/adjust";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const { t } = useTranslation();
   const { lang } = useLanguage();
+  const { fadeAnim, onLayout } = useScreenFadeIn(800);
 
   const isAdmin = useAuthStore((state) => state.isAdmin);
 
@@ -495,10 +499,14 @@ export default function HomeScreen() {
       ]}
       edges={["top"]}
     >
-      <ScrollView
+      <Animated.ScrollView
+        onLayout={onLayout}
         style={[
           styles.scrollStyles,
-          { backgroundColor: Colors[colorScheme].background },
+          {
+            backgroundColor: Colors[colorScheme].background,
+            opacity: fadeAnim,
+          },
         ]}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -692,7 +700,7 @@ export default function HomeScreen() {
                 size={35}
                 color={colorScheme === "dark" ? "#fff" : "#000"}
                 style={{ color: Colors[colorScheme].defaultIcon }}
-                onPress={() => router.push("/(addNews)/")}
+                onPress={() => router.push("/addNews")}
               />
             )}
           </View>
@@ -791,7 +799,7 @@ export default function HomeScreen() {
             </View>
           )}
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }

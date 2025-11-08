@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 
 export default function QuestionLinks() {
   const { width, height } = useWindowDimensions();
@@ -32,27 +33,15 @@ export default function QuestionLinks() {
   );
 
   // fade-in animation value
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+
   const colorScheme = useColorScheme() || "light";
+  const { fadeAnim, onLayout } = useScreenFadeIn(800);
 
   // animate opacity on mount
-  useEffect(() => {
-    const anim = Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    });
-
-    anim.start();
-
-    return () => {
-      anim.stop();
-    };
-  }, [fadeAnim]);
 
   return (
     <Animated.View
+      onLayout={onLayout}
       style={[
         styles.container,
         { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background },

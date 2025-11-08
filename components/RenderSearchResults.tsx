@@ -8,6 +8,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Animated,
   TextInput,
   TouchableOpacity,
   View,
@@ -40,6 +41,8 @@ import { ThemedView } from "./ThemedView";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import HtmlRenderer from "./RenderHTML";
+import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+
 
 type TabType = "quran" | "questions" | "prayers" | "podcasts" | "news";
 
@@ -79,6 +82,7 @@ export default function RenderSearchResults({
   const { lang } = useLanguage();
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
+  const { fadeAnim, onLayout } = useScreenFadeIn(800);
 
   // ---- i18n key maps ----
   const TAB_LABEL_KEY: Record<TabType, string> = {
@@ -626,7 +630,16 @@ export default function RenderSearchResults({
       style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}
       edges={["top", "left", "right"]}
     >
-      <ThemedView style={styles.container}>
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            opacity: fadeAnim,
+            backgroundColor: Colors[colorScheme].background,
+          },
+        ]}
+        onLayout={onLayout}
+      >
         <FlatList
           key={tab} // remount per tab to avoid stale keys
           data={activeRows}
@@ -657,7 +670,7 @@ export default function RenderSearchResults({
               <ActivityIndicator />
             </View>
           )}
-      </ThemedView>
+      </Animated.View>
     </SafeAreaView>
   );
 }

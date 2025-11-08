@@ -35,6 +35,7 @@ import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { HardResetButton } from "@/components/HardResetButton";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
+import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
@@ -51,20 +52,13 @@ const Settings = () => {
   const hasInternet = useConnectionStatus();
   const logout = useLogout();
   const effectiveEnabled = getNotifications && permissionStatus === "granted";
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+
   const { t } = useTranslation();
 
   const paypallinkVersion = useDataVersionStore((s) => s.paypalVersion);
+  const { fadeAnim, onLayout } = useScreenFadeIn(800);
 
-  // animate opacity on mount
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
-  }, []);
+ 
 
   const handleDeleteSuccess = () => {
     clearSession(); // SignOut and remove session
@@ -105,6 +99,7 @@ const Settings = () => {
 
   return (
     <Animated.View
+    onLayout={onLayout}
       style={[
         styles.container,
         { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background },
