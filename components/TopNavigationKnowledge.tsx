@@ -164,24 +164,24 @@ export default function TopNavigationKnowledge() {
         icon: require("@/assets/images/historyHeaderLogo.png"),
       },
     ],
-    [lang]
+    []
   );
 
-  // animate opacity on mount
-  useEffect(() => {
-    const animation = Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    });
+  // // animate opacity on mount
+  // useEffect(() => {
+  //   const animation = Animated.timing(fadeAnim, {
+  //     toValue: 1,
+  //     duration: 600,
+  //     easing: Easing.out(Easing.cubic),
+  //     useNativeDriver: true,
+  //   });
 
-    animation.start();
+  //   animation.start();
 
-    return () => {
-      animation.stop(); // prevent updates after unmount
-    };
-  }, [fadeAnim]);
+  //   return () => {
+  //     animation.stop(); // prevent updates after unmount
+  //   };
+  // }, [fadeAnim]);
 
   return (
     <Animated.View

@@ -2520,7 +2520,7 @@ const Tabs: React.FC<{
           {viewMode === "juz" && (
             <EvilIcons
               name="redo"
-              size={30}
+              size={25}
               style={[
                 styles.tabButton,
                 {
@@ -2551,7 +2551,7 @@ const Tabs: React.FC<{
           {viewMode === "page" && (
             <EvilIcons
               name="redo"
-              size={30}
+              size={25}
               style={[
                 styles.tabButton,
                 {
@@ -2660,7 +2660,7 @@ const styles = StyleSheet.create({
     top: 1,
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 2,
+    zIndex: 99,
   },
 
   /* Clear All row */

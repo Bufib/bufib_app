@@ -114,15 +114,34 @@ const useNotificationStore = create<NotificationState>()(
       permissionStatus: "undetermined",
 
       // Sync store with OS permission status
+      // checkPermissions: async () => {
+      //   try {
+      //     const { status } = await Notifications.getPermissionsAsync();
+      //     set({ permissionStatus: status });
+      //   } catch (error) {
+      //     console.error("Error checking notification permissions:", error);
+      //   }
+      // },
+      
       checkPermissions: async () => {
         try {
           const { status } = await Notifications.getPermissionsAsync();
+          const previousStatus = get().permissionStatus;
+
           set({ permissionStatus: status });
+
+          // Auto-enable in-app notifications if user just granted OS permission
+          if (
+            status === "granted" &&
+            previousStatus !== "granted" &&
+            !get().getNotifications
+          ) {
+            set({ getNotifications: true });
+          }
         } catch (error) {
           console.error("Error checking notification permissions:", error);
         }
       },
-
       // Flip opt-in flag (hook will handle token insert/delete)
       toggleGetNotifications: async () => {
         const currentlyOn = get().getNotifications;

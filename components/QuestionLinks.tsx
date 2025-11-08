@@ -164,7 +164,7 @@ export default function QuestionLinks() {
       {lang === "de" && (
         <TouchableOpacity
           style={styles.askQuestionButton}
-          onPress={() => router.push("./(askQuestion)/")}
+          onPress={() => router.push("/(askQuestion)")}
         >
           <MaterialCommunityIcons
             name="chat-question-outline"
