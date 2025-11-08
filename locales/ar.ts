@@ -98,6 +98,16 @@ export const ar = {
   categories: "فئات",
   latestQuestions: "أسئلة جديدة",
   relatedQuestions: "الأسئلة ذات الصلة",
+  errorLoadingSubcategories: "فشل تحميل الفئات!",
+  subcategoriesLoading: "جارٍ تحميل الفئات الفرعية...",
+  errorLoadingQuestions: "فشل تحميل الأسئلة!",
+  noQuestionsFound: "لا توجد أسئلة في هذه الفئة!",
+
+  // Title search
+  titleSearchSelectQuestions: "اختر الأسئلة",
+  titleSearchPlaceholder: "ابحث عن عنوان",
+  titleSearchNoResults: "لا توجد عناوين مطابقة",
+  close: "إغلاق",
 
   // Questionslinks
   rechtsfragen: "مسائل قانونية",
@@ -277,6 +287,23 @@ export const ar = {
     "لقد وصلت إلى الحد الأقصى من المحاولات. يرجى المحاولة مرة أخرى لاحقاً.",
   resetPasswordResendButton: "طلب رمز جديد",
   noAnswereToQuestion: "رسالة جديدة متاحة",
+
+  // Auth / Login
+  adminLoginTitle: "تسجيل دخول المشرف",
+  emailPlaceholder: "البريد الإلكتروني",
+  passwordPlaceholder: "كلمة المرور",
+  forgotPassword: "هل نسيت كلمة المرور؟",
+  loginButton: "تسجيل الدخول",
+  loadingButton: "جارٍ التحميل...",
+  signupNow: "سجّل مجانًا الآن!",
+  noInternetConnection: "لا يوجد اتصال بالإنترنت",
+  checkInternet: "يرجى التحقق من اتصالك بالإنترنت.",
+  loginFailed: "فشل تسجيل الدخول",
+  invalidCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+  userNotFound: "المستخدم غير موجود.",
+  emailNotConfirmed: "لم يتم تأكيد البريد الإلكتروني بعد.",
+  loginErrorGeneric: "حدث خطأ أثناء تسجيل الدخول.",
+  loginSuccess: "تم تسجيل الدخول بنجاح!",
 
   // Settings
   logout: "تسجيل الخروج",

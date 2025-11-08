@@ -95,8 +95,6 @@ export const getQuestionInternalURL = async (
   }
 };
 
-
-
 export const getLatestQuestions = async (
   language: string
 ): Promise<QuestionType[]> => {
@@ -174,8 +172,7 @@ export const toggleQuestionFavorite = async (
 };
 
 export const getRelatedQuestions = async (
-  questionId: number,
-  language: string
+  questionId: number
 ): Promise<QuestionType[]> => {
   const db = getDatabase();
 
@@ -183,9 +180,9 @@ export const getRelatedQuestions = async (
   const row = await db.getFirstAsync<{ related_question: string | null }>(
     `SELECT related_question
        FROM questions
-      WHERE id = ? AND language_code = ?
+      WHERE id = ?
       LIMIT 1;`,
-    [questionId, language]
+    [questionId]
   );
   if (!row?.related_question) return [];
 
@@ -196,9 +193,48 @@ export const getRelatedQuestions = async (
       FROM json_each(?) AS j
       JOIN questions AS q
         ON q.id = CAST(j.value AS INTEGER)
-       AND q.language_code = ?
      ORDER BY CAST(j.key AS INTEGER);  -- preserves input array order
     `,
-    [row.related_question, language]
+    [row.related_question]
   );
+};
+// Helper to escape special characters for a LIKE query
+const escapeLikePattern = (value: string): string => {
+  return value.replace(/([%_\\])/g, "\\$1");
+};
+
+/**
+ * Search questions by title (case-insensitive), filtered by language.
+ *
+ * Uses idx_questions_title_lang_nocase:
+ *   ON questions(title COLLATE NOCASE, language_code);
+ */
+export const searchQuestionsByTitle = async (
+  searchTerm: string,
+  language: string,
+  limit = 50
+): Promise<QuestionType[]> => {
+  try {
+    const db = getDatabase();
+
+    const trimmed = searchTerm.trim();
+    if (!trimmed) return [];
+
+    const pattern = `%${escapeLikePattern(trimmed)}%`;
+
+    return await db.getAllAsync<QuestionType>(
+      `
+      SELECT *
+      FROM questions
+      WHERE language_code = ?
+        AND title COLLATE NOCASE LIKE ? ESCAPE '\\'
+      ORDER BY datetime(created_at) DESC
+      LIMIT ?;
+      `,
+      [language, pattern, limit]
+    );
+  } catch (error) {
+    console.error("Error searching questions by title:", error);
+    throw error;
+  }
 };

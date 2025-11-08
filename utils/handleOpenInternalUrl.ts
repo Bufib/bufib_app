@@ -2,9 +2,9 @@ import { getQuestionInternalURL } from "@/db/queries/questions";
 import { router } from "expo-router";
 
 // Internal urls are the title (unique!) of the questions
-const handleOpenInternallUrl = async (title: string) => {
+const handleOpenInternallUrl = async (title: string, language: string) => {
   try {
-    const question = await getQuestionInternalURL(title);
+    const question = await getQuestionInternalURL(title, language);
     if (!question) {
       console.log("Question not found for title:", title);
       return;

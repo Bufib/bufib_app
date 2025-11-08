@@ -98,6 +98,15 @@ export const de = {
   categories: "Kategorien",
   latestQuestions: "Neueste Fragen",
   relatedQuestions: "Verwandte Fragen",
+  errorLoadingSubcategories: "Kategorien konnten nicht geladen werden!",
+  subcategoriesLoading: "Unterkategorien werden geladen...",
+  errorLoadingQuestions: "Fragen konnten nicht geladen werden!",
+  noQuestionsFound: "Keine Fragen in dieser Kategorie gefunden!",
+
+  titleSearchSelectQuestions: "Wähle die Fragen aus",
+  titleSearchPlaceholder: "Suche nach einem Titel",
+  titleSearchNoResults: "Keine passenden Titel gefunden",
+  close: "Schließen",
   // Questionslinks
   rechtsfragen: "Rechtsfragen",
   quran: "Quran",
@@ -287,6 +296,24 @@ export const de = {
     "Maximale Versuche erreicht. Bitte versuche es später erneut.",
   resetPasswordResendButton: "Neuen Code anfordern",
   noAnswereToQuestion: "Neue Nachricht verfügbar",
+
+  // Auth / Login
+  adminLoginTitle: "Admin Login",
+  emailPlaceholder: "E-Mail",
+  passwordPlaceholder: "Passwort",
+  forgotPassword: "Passwort vergessen?",
+  loginButton: "Anmelden",
+  loadingButton: "Wird geladen...",
+  signupNow: "Jetzt kostenlos registrieren!",
+  noInternetConnection: "Keine Internetverbindung",
+  checkInternet: "Bitte überprüfe dein Internet.",
+  loginFailed: "Login fehlgeschlagen",
+  invalidCredentials: "E-Mail oder Passwort ist falsch.",
+  userNotFound: "Benutzer existiert nicht.",
+  emailNotConfirmed: "E-Mail ist noch nicht bestätigt.",
+  loginErrorGeneric: "Es gab einen Fehler beim Login.",
+  loginSuccess: "Du wurdest erfolgreich angemeldet!",
+
   // Settings
   logout: "Abmelden",
   login: "Anmelden",

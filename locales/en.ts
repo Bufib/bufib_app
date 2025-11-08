@@ -114,6 +114,16 @@ export const en = {
   categories: "Categories",
   latestQuestions: "Latest questions",
   relatedQuestions: "Related questions",
+  errorLoadingSubcategories: "Failed to load categories!",
+  subcategoriesLoading: "Loading subcategories...",
+  errorLoadingQuestions: "Failed to load questions!",
+  noQuestionsFound: "No questions found in this category!",
+
+  // Title search
+  titleSearchSelectQuestions: "Select questions",
+  titleSearchPlaceholder: "Search by title",
+  titleSearchNoResults: "No matching titles found",
+  close: "Close",
 
   // Questionslinks
   rechtsfragen: "Legal questions",
@@ -293,6 +303,23 @@ export const en = {
     "Maximum attempts reached. Please try again later.",
   resetPasswordResendButton: "Request new code",
   noAnswereToQuestion: "New message available",
+
+  // Auth / Login
+  adminLoginTitle: "Admin Login",
+  emailPlaceholder: "Email",
+  passwordPlaceholder: "Password",
+  forgotPassword: "Forgot password?",
+  loginButton: "Login",
+  loadingButton: "Loading...",
+  signupNow: "Register for free now!",
+  noInternetConnection: "No internet connection",
+  checkInternet: "Please check your internet connection.",
+  loginFailed: "Login failed",
+  invalidCredentials: "Email or password is incorrect.",
+  userNotFound: "User does not exist.",
+  emailNotConfirmed: "Email has not been confirmed yet.",
+  loginErrorGeneric: "An error occurred during login.",
+  loginSuccess: "You have successfully logged in!",
 
   // Settings
   logout: "Log out",

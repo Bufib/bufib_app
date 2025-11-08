@@ -20,6 +20,7 @@ const RenderLinkNewsItem = ({
 }: RenderLinkNewsItemProps) => {
   const colorScheme = useColorScheme();
   const { rtl } = useLanguage();
+  const { lang } = useLanguage();
   return (
     <Pressable
       key={index}
@@ -28,7 +29,9 @@ const RenderLinkNewsItem = ({
         pressed && styles.linkButtonPressed,
       ]}
       onPress={() =>
-        isExternal ? handleOpenExternalUrl(url) : handleOpenInternallUrl(url)
+        isExternal
+          ? handleOpenExternalUrl(url)
+          : handleOpenInternallUrl(url, lang)
       }
     >
       <Feather
