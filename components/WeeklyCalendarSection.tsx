@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   useColorScheme,
   useWindowDimensions,
+  Alert,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
@@ -40,12 +41,24 @@ export const WeeklyCalendarSection: React.FC<
   const colorScheme = useColorScheme() || "light";
   const { width, height } = useWindowDimensions();
   const { isLarge, isMedium } = returnSize(width, height);
-  const handleUndo = () => {
-    if (selectedDay !== null) {
-      onUndoAll(selectedDay);
-    }
-  };
 
+  const handleUndo = () => {
+    if (selectedDay === null) return;
+
+    Alert.alert(t("undo"), t("undoProgressText"), [
+      {
+        text: t("cancel"),
+        style: "cancel",
+      },
+      {
+        text: t("yes"),
+        style: "destructive",
+        onPress: () => {
+          onUndoAll(selectedDay);
+        },
+      },
+    ]);
+  };
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -95,7 +108,7 @@ export const WeeklyCalendarSection: React.FC<
       </View>
 
       {/* Day Selector */}
-      <View style={{ flex: 0 }}>
+      <View style={{ flex: 0, marginBottom: 5,  }}>
         <DaySelector
           selectedDay={selectedDay}
           currentDayIndex={currentDayIndex}
@@ -119,7 +132,11 @@ export const WeeklyCalendarSection: React.FC<
             </ThemedText>
             <TouchableOpacity onPress={handleUndo}>
               <View style={{ flexDirection: "row", gap: 5 }}>
-                <ThemedText style={{ fontSize: 12, color: Colors.universal.primary }}>{t("undo")}</ThemedText>
+                <ThemedText
+                  style={{ fontSize: 12, color: Colors.universal.primary }}
+                >
+                  {t("undo")}
+                </ThemedText>
               </View>
             </TouchableOpacity>
           </ThemedView>
@@ -142,6 +159,7 @@ export const WeeklyCalendarSection: React.FC<
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
   },
 
   calendarHeader: {
@@ -149,7 +167,8 @@ const styles = StyleSheet.create({
     gap: 10,
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 5,
+    marginBottom: 15,
+    marginHorizontal: 2
   },
   calendarHeaderContainer: {
     flexDirection: "row",
@@ -176,9 +195,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 10,
+    paddingLeft: 15,
+    paddingRight: 18,
     marginTop: 3,
     marginBottom: 5,
+    
   },
   selectedDayTitle: {
     fontSize: 16,
@@ -189,11 +210,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 30,
+    
   },
   todoListContainer: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-start",
     marginTop: -10,
+    
   },
 });

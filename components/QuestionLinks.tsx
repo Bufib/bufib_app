@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     paddingHorizontal: 10,
-    paddingVertical: 3,
-    gap: 40,
+    paddingTop: 3,
+    gap: 30,
   },
 
   categoriesContainer: {

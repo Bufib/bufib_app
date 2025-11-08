@@ -8,7 +8,7 @@ export const returnSize = (width: number, height: number): Sizes => {
     elementSize: isLarge ? 125 : isMedium ? 105 : 100,
     fontSize: isLarge ? 13 : isMedium ? 11 : 11,
     badgeSize: isLarge ? 12 : isMedium ? 9 : 9,
-    iconSize: isLarge ? 65 : isMedium ? 50 : 50,
+    iconSize: isLarge ? 65 : isMedium ? 60 : 50,
     imageSize: isLarge ? 300 : isMedium ? 260 : 240,
     gap: isLarge ? 30 : isMedium ? 20 : 15,
     emptyIconSize: isLarge ? 60 : isMedium ? 40 : 30,

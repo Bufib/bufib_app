@@ -181,6 +181,7 @@ export const en = {
   cancel: "Cancel",
   noPlansForToday: "There are no plans for this day!",
   undo: "Undo all",
+  undoProgressText:  "Are you sure you want to reset all progress for this day?",
 
   // Days of week
   days: {

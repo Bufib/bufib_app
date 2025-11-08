@@ -71,9 +71,10 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingVertical: 5,
     flexDirection: "row",
     gap: 10,
+    paddingHorizontal: 10,
+
   },
   scrollStyle: {
     flexGrow: 0,

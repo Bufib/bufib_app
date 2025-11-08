@@ -177,7 +177,8 @@ export const de = {
   cancel: "Abbrechen",
   noPlansForToday: "Es sind noch keine Pläne für diesen Tag vorhanden!",
   undo: "Alle zurücksetzen",
-
+  undoProgressText:
+    "Bist du sicher, dass du alle Einträge für diesen Tag zurücksetzen möchtest?",
   // Days of week
   days: {
     short: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],

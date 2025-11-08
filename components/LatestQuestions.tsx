@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
   listContent: {
     marginTop: 15,
     gap: 12,
+    paddingBottom: 8
   },
   questionItem: {
     borderRadius: 7,

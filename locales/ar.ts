@@ -113,7 +113,7 @@ export const ar = {
   rechtsfragen: "مسائل قانونية",
   quran: "قرآن",
   geschichte: "تاريخ",
-  glaubensfragen: "مسائل دينية / أسئلة إيمانية",
+  glaubensfragen: "مسائل دينية",
   ethik: "أخلاق",
   ratschlaege: "نصائح",
   videos: "أشرطة الفيديو",
@@ -164,6 +164,9 @@ export const ar = {
   cancel: "إلغاء",
   noPlansForToday: "لا توجد خطط لهذا اليوم",
   undo: "الغاء الكل",
+  undoProgressText:
+    "هل أنت متأكد أنك تريد إعادة تعيين جميع العناصر لهذا اليوم؟",
+
   replace: "استبدال",
   // Days of week
   days: {

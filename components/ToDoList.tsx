@@ -25,7 +25,7 @@ export const TodoList = ({
 }: TodoListType) => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const {  rtl } = useLanguage();
+  const { rtl } = useLanguage();
   const { width, height } = useWindowDimensions();
   const { emptyIconSize, emptyTextSize, emptyGap } = returnSize(width, height);
 
@@ -81,6 +81,13 @@ export const TodoList = ({
         <View
           key={todo.id}
           style={[
+            rtl
+              ? {
+                  flexDirection: "row-reverse",
+                }
+              : {
+                  flexDirection: "row",
+                },
             styles.todoItem,
             {
               backgroundColor: Colors[colorScheme].contrast,
@@ -90,7 +97,7 @@ export const TodoList = ({
           <TouchableOpacity
             style={[
               styles.checkboxContainer,
-              rtl ? { marginLeft: 12 } : { marginRight: 12 },
+              rtl ? { marginLeft: 12 } : { marginRight: 10 },
             ]}
             onPress={() => onToggleTodo(dayIndex, todo.id)}
           >
@@ -113,6 +120,13 @@ export const TodoList = ({
           <ThemedText
             style={[
               styles.todoText,
+              rtl
+                ? {
+                    textAlign: "right",
+                  }
+                : {
+                    textAlign: "left",
+                  },
               todo.completed && styles.todoTextCompleted,
             ]}
           >
@@ -137,12 +151,12 @@ export const TodoList = ({
 const styles = StyleSheet.create({
   scrollStyle: {
     flex: 1,
+    marginHorizontal: 10,
   },
   scrollContent: {
     gap: 5,
   },
   todoItem: {
-    flexDirection: "row",
     alignItems: "center",
     padding: 14,
     borderRadius: 12,
@@ -158,8 +172,6 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 4,
     borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
   },
   checkboxCompleted: {},
   todoText: {

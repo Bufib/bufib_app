@@ -48,10 +48,9 @@ const PrayerLinks = () => {
     dayIndex: null,
     todoId: null,
   });
-    const { fadeAnim, onLayout } = useScreenFadeIn(800);
-  
-  // fade-in animation value
+  const { fadeAnim, onLayout } = useScreenFadeIn(800);
 
+  // fade-in animation value
 
   // --- Effects ---
   const getCurrentDayIndex = useCallback((): number => {
@@ -62,8 +61,6 @@ const PrayerLinks = () => {
   useEffect(() => {
     setSelectedDay(getCurrentDayIndex());
   }, [getCurrentDayIndex]);
-
-
 
   // --- Handlers ---
   const handleAddTodoConfirmed = useCallback(
@@ -132,7 +129,7 @@ const PrayerLinks = () => {
 
   return (
     <Animated.View
-    onLayout={onLayout}
+      onLayout={onLayout}
       style={[
         styles.container,
         { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background },
@@ -254,7 +251,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     gap: 20,
-    paddingHorizontal: 10,
     paddingTop: 10,
     paddingBottom: 4,
   },
@@ -267,6 +263,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center",
     gap: 15,
+    paddingHorizontal: 10,
   },
 
   element: {

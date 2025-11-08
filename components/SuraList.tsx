@@ -1362,6 +1362,7 @@
 
 // export default SuraList;
 
+//! Last worked
 import type React from "react";
 import {
   View,
@@ -1639,15 +1640,16 @@ const SuraList: React.FC = () => {
 
   const [suras, setSuras] = useState<SuraRowType[]>([]);
   const [juzList, setJuzList] = useState<
-    Array<{ juz: number; label: string; sura: number; aya: number }>
+    { juz: number; label: string; sura: number; aya: number }[]
   >([]);
   const [pageList, setPageList] = useState<
-    Array<{ page: number; label: string; sura: number; aya: number }>
+    { page: number; label: string; sura: number; aya: number }[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"sura" | "juz" | "page">("sura");
   const colorScheme = useColorScheme() || "light";
   const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
+
   const listExtraData = useMemo(
     () => ({ quranDataVersion }),
     [quranDataVersion]
