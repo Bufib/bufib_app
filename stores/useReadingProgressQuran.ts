@@ -1,5 +1,5 @@
 //! Without juz and pages
- // stores/useReadingProgressQuran.ts
+// stores/useReadingProgressQuran.ts
 // import { create } from "zustand";
 // import { persist, createJSONStorage } from "zustand/middleware";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,7 +17,7 @@
 //   progressBySura: Record<number, SuraProgress | undefined>;
 
 //   setTotalVerses: (suraNumber: number, total: number) => void;
-//   updateBookmark: (
+//   updateSuraBookmark: (
 //     suraNumber: number,
 //     verseNumber: number,
 //     index: number,
@@ -48,7 +48,7 @@
 //         });
 //       },
 
-//       updateBookmark: (suraNumber, verseNumber, index, language) => {
+//       updateSuraBookmark: (suraNumber, verseNumber, index, language) => {
 //         const prev = get().progressBySura[suraNumber];
 //         set({
 //           progressBySura: {
@@ -122,9 +122,12 @@ type State = {
   progressByJuz: Record<number, UnitProgress | undefined>;
   progressByPage: Record<number, UnitProgress | undefined>;
 
+  isChangingBookmark: boolean;
+  setIsChangingBookmark: (value: boolean) => void;
+
   // SURAH API (existing names kept for compatibility)
   setTotalVerses: (suraNumber: number, total: number) => void;
-  updateBookmark: (
+  updateSuraBookmark: (
     suraNumber: number,
     verseNumber: number,
     index: number,
@@ -163,6 +166,8 @@ export const useReadingProgressQuran = create<State>()(
       progressByJuz: {},
       progressByPage: {},
 
+      isChangingBookmark: false,
+      setIsChangingBookmark: (value) => set({ isChangingBookmark: value }),
       // ---------- SURAH ----------
       setTotalVerses: (suraNumber, total) => {
         const prev = get().progressBySura[suraNumber];
@@ -180,7 +185,7 @@ export const useReadingProgressQuran = create<State>()(
         });
       },
 
-      updateBookmark: (suraNumber, verseNumber, index, language) => {
+      updateSuraBookmark: (suraNumber, verseNumber, index, language) => {
         const prev = get().progressBySura[suraNumber];
         set({
           progressBySura: {

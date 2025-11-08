@@ -296,7 +296,7 @@
 
 //   // store actions
 //   const setTotalVerses = useReadingProgressQuran((s) => s.setTotalVerses);
-//   const updateBookmarkProgress = useReadingProgressQuran(
+//   const updateSuraBookmark = useReadingProgressQuran(
 //     (s) => s.updateBookmark
 //   );
 //   const setTotalVersesForJuz = useReadingProgressQuran(
@@ -1648,7 +1648,6 @@ const SuraList: React.FC = () => {
   const [viewMode, setViewMode] = useState<"sura" | "juz" | "page">("sura");
   const colorScheme = useColorScheme() || "light";
   const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
-
   const listExtraData = useMemo(
     () => ({ quranDataVersion }),
     [quranDataVersion]
@@ -1659,8 +1658,15 @@ const SuraList: React.FC = () => {
 
   // store actions
   const setTotalVerses = useReadingProgressQuran((s) => s.setTotalVerses);
-  const updateBookmarkProgress = useReadingProgressQuran(
-    (s) => s.updateBookmark
+  const updateSuraBookmark = useReadingProgressQuran(
+    (s) => s.updateSuraBookmark
+  );
+
+  const isChangingBookmark = useReadingProgressQuran(
+    (s) => s.isChangingBookmark
+  );
+  const setIsChangingBookmark = useReadingProgressQuran(
+    (s) => s.setIsChangingBookmark
   );
   const setTotalVersesForJuz = useReadingProgressQuran(
     (s) => s.setTotalVersesForJuz
@@ -1759,7 +1765,7 @@ const SuraList: React.FC = () => {
       const state = useReadingProgressQuran.getState();
       const prev = state.progressBySura[suraId];
       if ((prev?.lastVerseNumber ?? 0) < verseNumber) {
-        updateBookmarkProgress(
+        updateSuraBookmark(
           suraId,
           verseNumber,
           Math.max(verseNumber - 1, -1),
@@ -1767,7 +1773,7 @@ const SuraList: React.FC = () => {
         );
       }
     },
-    [lang, updateBookmarkProgress]
+    [lang, updateSuraBookmark]
   );
 
   const bumpJuzIfHigher = useCallback(
@@ -1852,7 +1858,7 @@ const SuraList: React.FC = () => {
   const markSuraDone = useCallback(
     async (suraId: number, totalVerses: number) => {
       setTotalVerses(suraId, totalVerses);
-      updateBookmarkProgress(
+      updateSuraBookmark(
         suraId,
         totalVerses,
         Math.max(0, totalVerses - 1),
@@ -1860,12 +1866,7 @@ const SuraList: React.FC = () => {
       );
       await propagateSuraDoneToJuzAndPages(suraId, totalVerses);
     },
-    [
-      lang,
-      setTotalVerses,
-      updateBookmarkProgress,
-      propagateSuraDoneToJuzAndPages,
-    ]
+    [lang, setTotalVerses, updateSuraBookmark, propagateSuraDoneToJuzAndPages]
   );
 
   const DoneToggleButton: React.FC<{
@@ -1905,7 +1906,7 @@ const SuraList: React.FC = () => {
           {
             text: t("reset"),
             style: "destructive",
-            onPress: () => updateBookmarkProgress(suraId, 0, -1, lang), // no down-propagation on reset
+            onPress: () => updateSuraBookmark(suraId, 0, -1, lang), // no down-propagation on reset
           },
         ]);
       } else {
@@ -1918,7 +1919,7 @@ const SuraList: React.FC = () => {
         ]);
       }
     },
-    [markSuraDone, updateBookmarkProgress, lang]
+    [markSuraDone, updateSuraBookmark, lang]
   );
 
   /* ----------------- JUZ: Done/Reset + propagate to Suras ----------------- */
@@ -2050,15 +2051,17 @@ const SuraList: React.FC = () => {
         text: t("reset"),
         style: "destructive",
         onPress: () => {
+          setIsChangingBookmark(true);
           setTimeout(() => {
             for (const s of suras) {
-              updateBookmarkProgress(s.id, 0, -1, lang);
+              updateSuraBookmark(s.id, 0, -1, lang);
             }
+            setIsChangingBookmark(false);
           }, 0);
         },
       },
     ]);
-  }, [suras, lang, updateBookmarkProgress]);
+  }, [suras, lang, t, updateSuraBookmark, setIsChangingBookmark]);
 
   const clearAllJuz = useCallback(() => {
     Alert.alert(t("confirm"), t("removeProgress"), [
@@ -2067,15 +2070,17 @@ const SuraList: React.FC = () => {
         text: t("reset"),
         style: "destructive",
         onPress: () => {
+          setIsChangingBookmark(true);
           setTimeout(() => {
             for (let j = 1; j <= 30; j++) {
               updateJuzBookmark(j, 0, -1, lang);
             }
+            setIsChangingBookmark(false);
           }, 0);
         },
       },
     ]);
-  }, [lang, updateJuzBookmark]);
+  }, [lang, updateJuzBookmark, setIsChangingBookmark, t]);
 
   const clearAllPages = useCallback(() => {
     Alert.alert(t("confirm"), t("removeProgress"), [
@@ -2085,15 +2090,17 @@ const SuraList: React.FC = () => {
         style: "destructive",
         onPress: () => {
           const totalPages = pageList.length > 0 ? pageList.length : 604;
+          setIsChangingBookmark(true);
           setTimeout(() => {
             for (let p = 1; p <= totalPages; p++) {
               updatePageBookmark(p, 0, -1, lang);
             }
+            setIsChangingBookmark(false);
           }, 0);
         },
       },
     ]);
-  }, [pageList.length, lang, updatePageBookmark]);
+  }, [pageList.length, lang, updatePageBookmark, t, setIsChangingBookmark]);
 
   /* ----------------- Item renderers ----------------- */
 
@@ -2323,6 +2330,7 @@ const SuraList: React.FC = () => {
         onClearSura={clearAllSuras}
         onClearJuz={clearAllJuz}
         onClearPage={clearAllPages}
+        isChangingBookmark={isChangingBookmark}
       />
 
       {/* Content */}
@@ -2436,6 +2444,7 @@ const Tabs: React.FC<{
   onClearSura: () => void;
   onClearJuz: () => void;
   onClearPage: () => void;
+  isChangingBookmark: boolean;
 }> = ({
   t,
   pageCount,
@@ -2446,6 +2455,7 @@ const Tabs: React.FC<{
   onClearSura,
   onClearJuz,
   onClearPage,
+  isChangingBookmark,
 }) => {
   return (
     <View style={styles.tabContainer}>
@@ -2489,23 +2499,24 @@ const Tabs: React.FC<{
           >
             {t("sura")} (114)
           </ThemedText>
-          {viewMode === "sura" && (
-            <EvilIcons
-              name="redo"
-              size={25}
-              style={[
-                styles.tabButton,
-                {
-                  right: 7,
-                },
-              ]}
-              color={Colors[colorScheme].error}
-              onPress={(e) => {
-                e.stopPropagation();
-                onClearSura();
-              }}
-            />
-          )}
+          {viewMode === "sura" &&
+            (isChangingBookmark ? (
+              <LoadingIndicator
+                size="small"
+                style={[styles.tabButton, { right: 0 }]}
+              />
+            ) : (
+              <EvilIcons
+                name="redo"
+                size={33}
+                style={[styles.tabButton, { right: 0 }]}
+                color={Colors[colorScheme].error}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onClearSura();
+                }}
+              />
+            ))}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.tab}
@@ -2517,23 +2528,24 @@ const Tabs: React.FC<{
           >
             {t("juz")} (30)
           </ThemedText>
-          {viewMode === "juz" && (
-            <EvilIcons
-              name="redo"
-              size={25}
-              style={[
-                styles.tabButton,
-                {
-                  right: 5,
-                },
-              ]}
-              onPress={(e) => {
-                e.stopPropagation();
-                onClearJuz();
-              }}
-              color={Colors[colorScheme].error}
-            />
-          )}
+          {viewMode === "juz" &&
+            (isChangingBookmark ? (
+              <LoadingIndicator
+                size="small"
+                style={[styles.tabButton, { right: 0 }]}
+              />
+            ) : (
+              <EvilIcons
+                name="redo"
+                size={33}
+                style={[styles.tabButton, { right: 0 }]}
+                color={Colors[colorScheme].error}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onClearJuz();
+                }}
+              />
+            ))}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.tab}
@@ -2548,23 +2560,24 @@ const Tabs: React.FC<{
           >
             {t("page")} ({pageCount})
           </ThemedText>
-          {viewMode === "page" && (
-            <EvilIcons
-              name="redo"
-              size={25}
-              style={[
-                styles.tabButton,
-                {
-                  right: 2,
-                },
-              ]}
-              onPress={(e) => {
-                e.stopPropagation();
-                onClearPage();
-              }}
-              color={Colors[colorScheme].error}
-            />
-          )}
+          {viewMode === "page" &&
+            (isChangingBookmark ? (
+              <LoadingIndicator
+                size="small"
+                style={[styles.tabButton, { right: 0 }]}
+              />
+            ) : (
+              <EvilIcons
+                name="redo"
+                size={33}
+                style={[styles.tabButton, { right: 0 }]}
+                color={Colors[colorScheme].error}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onClearPage();
+                }}
+              />
+            ))}
         </TouchableOpacity>
       </View>
     </View>
@@ -2657,7 +2670,7 @@ const styles = StyleSheet.create({
 
   tabButton: {
     position: "absolute",
-    top: 1,
+    top: -10,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 99,

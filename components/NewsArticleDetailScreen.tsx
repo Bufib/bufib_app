@@ -1734,7 +1734,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   actionBtnText: {
-    fontSize: 26,
+    fontSize: 25.7,
     fontWeight: "600",
   },
 

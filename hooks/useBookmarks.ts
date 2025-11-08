@@ -23,7 +23,7 @@ export function useBookmarks({
 }: UseBookmarksParams) {
   const { t } = useTranslation();
   const updateBookmarkProgress = useReadingProgressQuran(
-    (s) => s.updateBookmark
+    (s) => s.updateSuraBookmark
   );
   const setTotalVersesForJuz = useReadingProgressQuran(
     (s) => s.setTotalVersesForJuz
