@@ -51,10 +51,7 @@ const NewsArticlePreviewCard = ({
         {/* Content */}
         <View style={styles.content}>
           <Text
-            style={[
-              styles.newsTitle,
-              { textAlign: rtl ? "right" : "left" },
-            ]}
+            style={[styles.newsTitle, { textAlign: rtl ? "right" : "left" }]}
             numberOfLines={3}
             ellipsizeMode="tail"
           >
@@ -65,10 +62,7 @@ const NewsArticlePreviewCard = ({
         {/* Footer with date */}
         <View style={styles.footer}>
           <Text
-            style={[
-              styles.createdAt,
-              { textAlign: rtl ? "left" : "right" },
-            ]}
+            style={[styles.createdAt, { textAlign: rtl ? "left" : "right" }]}
           >
             {formatedDate}
           </Text>

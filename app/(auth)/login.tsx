@@ -785,7 +785,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
   const themeStyles = CoustomTheme();
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
 
   const {
@@ -887,7 +887,7 @@ export default function LoginScreen() {
                 name="email"
                 render={({ field: { onChange, value } }) => (
                   <TextInput
-                    style={[styles.input, themeStyles.text]}
+                    style={[styles.input, { color: Colors[colorScheme].text }]}
                     placeholder={t("emailPlaceholder")}
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -910,7 +910,10 @@ export default function LoginScreen() {
                 render={({ field: { onChange, value } }) => (
                   <View style={styles.passwordContainer}>
                     <TextInput
-                      style={[styles.passwordInput, themeStyles.text]}
+                      style={[
+                        styles.passwordInput,
+                        { color: Colors[colorScheme].text },
+                      ]}
                       placeholder={t("passwordPlaceholder")}
                       secureTextEntry={!showPassword}
                       onChangeText={onChange}

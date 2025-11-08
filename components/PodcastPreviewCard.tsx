@@ -146,13 +146,13 @@ const styles = StyleSheet.create({
     shadowRadius: 1.41,
     elevation: 2,
     overflow: "visible",
+
   },
   cardWrapper: {
     height: 280,
     width: 220,
     borderRadius: 32,
     position: "relative",
-
     overflow: "hidden",
   },
 
