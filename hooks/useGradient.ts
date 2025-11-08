@@ -1,5 +1,5 @@
 // src/hooks/useGradient.ts
-import { newsArticleGradients } from "@/constants/Gradients";
+import { gradientColorPalette } from "@/constants/Gradients";
 import { UseGradientOptionsType } from "@/constants/Types";
 import { useEffect, useState } from "react";
 
@@ -7,7 +7,7 @@ export function useGradient(options: UseGradientOptionsType = {}) {
   const { customGradients, defaultIndex = 0 } = options;
 
   // Use custom gradients or defaults
-  const gradients = customGradients || newsArticleGradients;
+  const gradients = customGradients || gradientColorPalette;
 
   // Set initial gradient
   const initialIndex = defaultIndex < gradients.length ? defaultIndex : 0;
