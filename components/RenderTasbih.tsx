@@ -404,7 +404,7 @@
 //                     {preset.sequence.map((item, index) => (
 //                       <ThemedText
 //                         key={index}
-//                         style={styles.prayerCardSequenceItem}
+//                         style={styles.prayerCardSequenceItemText}
 //                         numberOfLines={1}
 //                       >
 //                         {item.limit}x{" "}
@@ -727,7 +727,7 @@
 //     overflow: "hidden",
 //     maxHeight: 100,
 //   },
-//   prayerCardSequenceItem: {
+//   prayerCardSequenceItemText: {
 //     fontSize: 11,
 //     marginVertical: 1,
 //   },
@@ -1407,6 +1407,7 @@ export default function RenderTasbih() {
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={{ flexGrow: 1, gap: 10, paddingBottom: 20 }}
+        showsVerticalScrollIndicator={false}
       >
         {/* Header */}
         <View style={styles.headerContainer}>
@@ -1422,6 +1423,7 @@ export default function RenderTasbih() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           style={styles.cardsContainer}
           contentContainerStyle={styles.cardsContent}
           decelerationRate="fast"
@@ -1456,7 +1458,7 @@ export default function RenderTasbih() {
                     {preset.sequence.map((item, index) => (
                       <ThemedText
                         key={index}
-                        style={styles.prayerCardSequenceItem}
+                        style={styles.prayerCardSequenceItemText}
                         numberOfLines={1}
                       >
                         {item.limit}x{" "}
@@ -1765,15 +1767,24 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     lineHeight: 25,
   },
-  prayerCardDescription: { fontSize: 12, marginBottom: 1, flexShrink: 1 },
+  prayerCardDescription: {
+    fontSize: 12,
+    marginBottom: 1,
+    flexShrink: 1,
+  },
   prayerCardSequence: {
     backgroundColor: "rgba(0,0,0,0.15)",
     padding: 6,
     borderRadius: 6,
     overflow: "hidden",
     maxHeight: 100,
+    gap: 5,
   },
-  prayerCardSequenceItem: { fontSize: 11, marginVertical: 1 },
+  prayerCardSequenceItemText: {
+    fontSize: 11,
+    marginVertical: 1,
+    fontWeight: "500",
+  },
   presetProgressContainer: {},
   presetProgressItem: {
     flexShrink: 1,

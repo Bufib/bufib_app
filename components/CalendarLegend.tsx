@@ -23,13 +23,11 @@ const CalendarLegend = ({ style }: { style?: ViewStyle }) => {
   const { t } = useTranslation();
   const calendarVersion = useDataVersionStore((s) => s.calendarVersion);
 
-  const localDate = new Date()
-    .toLocaleDateString(lang, {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })
-    .toLowerCase();
+  const localDate = new Date().toLocaleDateString(lang, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
   useEffect(() => {
     let cancelled = false;

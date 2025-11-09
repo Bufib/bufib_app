@@ -208,6 +208,14 @@ export type SearchResultQAType = {
   question: string;
 };
 
+export type SearchResultType = {
+  id: string;
+  type: "quran" | "prayer";
+  title: string;
+  subtitle?: string;
+  preview: string;
+  content: string; // The full content to insert
+}
 
 // Account
 export type SignUpFormValues = {

@@ -133,7 +133,7 @@ export const WeeklyCalendarSection: React.FC<
             <TouchableOpacity onPress={handleUndo}>
               <View style={{ flexDirection: "row", gap: 5 }}>
                 <ThemedText
-                  style={{ fontSize: 12, color: Colors.universal.primary }}
+                  style={{ fontSize: 14, color: Colors.universal.primary }}
                 >
                   {t("undo")}
                 </ThemedText>
@@ -197,8 +197,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingLeft: 15,
     paddingRight: 18,
-    marginTop: 3,
-    marginBottom: 5,
+    marginTop: 5,
+    marginBottom: 10,
     
   },
   selectedDayTitle: {

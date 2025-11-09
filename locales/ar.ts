@@ -199,6 +199,15 @@ export const ar = {
   podcast: "بودكاست",
   newsArticle: "مقالات",
 
+  searchContent: "البحث في المحتوى",
+  searchQuranPrayers: "ابحث في القرآن والأدعية...",
+  searching: "جاري البحث...",
+  searchMinimumChars: "اكتب حرفين على الأقل للبحث",
+  noResultsFound: "لم يتم العثور على نتائج",
+  surah: "سورة",
+  ayah: "آية",
+  ayahs: "آيات",
+  
   // Tabs (short labels)
   tab_quran: "القرآن",
   tab_questions: "الأسئلة",

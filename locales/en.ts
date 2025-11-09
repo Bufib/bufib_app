@@ -181,7 +181,7 @@ export const en = {
   cancel: "Cancel",
   noPlansForToday: "There are no plans for this day!",
   undo: "Undo all",
-  undoProgressText:  "Are you sure you want to reset all progress for this day?",
+  undoProgressText: "Are you sure you want to reset all progress for this day?",
 
   // Days of week
   days: {
@@ -211,6 +211,15 @@ export const en = {
   prayer: "Prayer",
   podcast: "Podcast",
   newsArticle: "Articles",
+
+  searchContent: "Search Content",
+  searchQuranPrayers: "Search Quran & Prayers...",
+  searching: "Searching...",
+  searchMinimumChars: "Type at least 2 characters to search",
+  noResultsFound: "No results found",
+  surah: "Surah",
+  ayah: "Ayah",
+  ayahs: "Ayahs",
 
   // Tabs (short labels)
   tab_quran: "Qur’an",

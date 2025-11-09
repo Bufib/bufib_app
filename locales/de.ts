@@ -206,6 +206,14 @@ export const de = {
   prayer: "Gebet",
   podcast: "Podcast",
   newsArticle: "Neuigkeiten",
+  searchContent: "Inhalt suchen",
+  searchQuranPrayers: "Quran & Gebete suchen...",
+  searching: "Suche läuft...",
+  searchMinimumChars: "Geben Sie mindestens 2 Zeichen ein",
+  noResultsFound: "Keine Ergebnisse gefunden",
+  surah: "Sure",
+  ayah: "Vers",
+  ayahs: "Verse",
 
   // Tabs (short labels)
   tab_quran: "Qur’an",
