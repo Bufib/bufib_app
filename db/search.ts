@@ -634,3 +634,86 @@ export async function searchPrayers(
 
   return pageMeta(rows, total, limit, offset);
 }
+
+/* -------------------------- QUR’AN LABELS ONLY -------------------------- */
+
+export type QuranLabelRow = {
+  sura: number;
+  label: string;      // what we show to the user
+  identifier: string; // "sura:1" for quranLink
+};
+
+/**
+ * Search only surah labels (not ayat).
+ *
+ * Matches if term is in:
+ *  - s.label      (Arabic)
+ *  - s.label_en
+ *  - s.label_de
+ *
+ * Display:
+ *  - lang === "ar"  -> use Arabic label
+ *  - lang === "de"  -> prefer label_en (fallback: label_de, label)
+ *  - lang === "en"  -> prefer label_en (fallback: label, label_de)
+ */
+export async function searchQuranLabels(
+  lang: Language,
+  term: string,
+  opts?: { limit?: number; offset?: number }
+): Promise<PagedResult<QuranLabelRow>> {
+  const limit = clampLimit(opts?.limit);
+  const offset = opts?.offset ?? 0;
+  if (!term.trim()) return emptyResult(limit, offset);
+
+  const db = getDatabase();
+  const pat = likePattern(term);
+
+  // Count: search across all label fields
+  const totalRow = await db.getFirstAsync<{ total: number }>(
+    `
+    SELECT COUNT(*) AS total
+    FROM sura s
+    WHERE
+      LOWER(COALESCE(s.label,''))    LIKE LOWER(?) ESCAPE '\\'
+      OR LOWER(COALESCE(s.label_en,'')) LIKE LOWER(?) ESCAPE '\\'
+      OR LOWER(COALESCE(s.label_de,'')) LIKE LOWER(?) ESCAPE '\\'
+    `,
+    [pat, pat, pat]
+  );
+  const total = totalRow?.total ?? 0;
+  if (!total) return emptyResult(limit, offset);
+
+  // Choose what to show based on lang
+  let labelExpr: string;
+  if (lang === "ar") {
+    // Prefer Arabic, fallback to anything
+    labelExpr = `COALESCE(s.label, s.label_en, s.label_de, '')`;
+  } else {
+    // For "de" and "en" (and others) always prefer English label
+    labelExpr = `COALESCE(s.label_en, s.label_de, s.label, '')`;
+  }
+
+  const rows = await db.getAllAsync<{ sura: number; label: string }>(
+    `
+    SELECT
+      s.id        AS sura,
+      ${labelExpr} AS label
+    FROM sura s
+    WHERE
+      LOWER(COALESCE(s.label,''))    LIKE LOWER(?) ESCAPE '\\'
+      OR LOWER(COALESCE(s.label_en,'')) LIKE LOWER(?) ESCAPE '\\'
+      OR LOWER(COALESCE(s.label_de,'')) LIKE LOWER(?) ESCAPE '\\'
+    ORDER BY s.id
+    LIMIT ? OFFSET ?;
+    `,
+    [pat, pat, pat, limit, offset]
+  );
+
+  const mapped: QuranLabelRow[] = rows.map((r) => ({
+    sura: r.sura,
+    label: r.label || String(r.sura),
+    identifier: `${r.sura}:1`, // internal quranLink anchor
+  }));
+
+  return pageMeta(mapped, total, limit, offset);
+}

@@ -498,7 +498,7 @@
 //   },
 // });
 
-import RenderLinkNewsItem from "@/components/RenderLinkNewsItem";
+import RenderLink from "@/components/RenderLink";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
@@ -616,7 +616,7 @@ export const NewsItem = ({
       {external_urls && external_urls.length > 0 && (
         <ThemedView style={styles.linksContainer}>
           {external_urls.map((url, index) => (
-            <RenderLinkNewsItem
+            <RenderLink
               key={`external-url-${index}-${url}`}
               url={url}
               index={index}
@@ -629,7 +629,7 @@ export const NewsItem = ({
       {internal_urls && internal_urls.length > 0 && (
         <ThemedView style={styles.linksContainer}>
           {internal_urls.map((url, index) => (
-            <RenderLinkNewsItem
+            <RenderLink
               key={`internal-url-${index}-${url}`}
               url={url}
               index={index}

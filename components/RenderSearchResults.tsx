@@ -42,7 +42,7 @@ import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import HtmlRenderer from "./RenderHTML";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
-
+import { LoadingIndicator } from "./LoadingIndicator";
 
 type TabType = "quran" | "questions" | "prayers" | "podcasts" | "news";
 
@@ -603,7 +603,7 @@ export default function RenderSearchResults({
             <ThemedText style={{ fontSize: 18 }}>×</ThemedText>
           </TouchableOpacity>
         )}
-        {activeLoading && <ActivityIndicator style={{ marginLeft: 8 }} />}
+        {activeLoading && <LoadingIndicator style={{ marginLeft: 8 }} />}
       </View>
 
       {/* META LINE */}
@@ -620,7 +620,11 @@ export default function RenderSearchResults({
       {activeLoading ? null : activeError ? (
         <ThemedText style={styles.emptyText}>{activeError}</ThemedText>
       ) : (
-        <ThemedText style={styles.emptyText}>{t("noSearchResults")}</ThemedText>
+        query.length > 0 && (
+          <ThemedText style={styles.emptyText}>
+            {t("noSearchResults")}
+          </ThemedText>
+        )
       )}
     </View>
   );

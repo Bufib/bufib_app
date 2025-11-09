@@ -2,6 +2,7 @@ import { getDatabase } from "../index";
 import {
   FavoritePrayerFolderType,
   FullPrayer,
+  LanguageCode,
   PrayerCategoryType,
   PrayerRow,
   PrayerType,
@@ -369,3 +370,54 @@ export async function getAllPrayersForArabicTree(
     [rootCategoryId]
   );
 }
+
+/**
+ * Resolve a prayer for internal links.
+ *
+ * Canonical:
+ * - internal URL: `prayerLink:<id>`
+ * - <id> is the numeric primary key from `prayers.id`
+ *
+ * `identifier` can be string or number; we normalize to number.
+ * `lang` is accepted for symmetry / future localization, not used yet.
+ */
+export const getPrayerInternalURL = async (
+  identifier: string | number,
+  lang: LanguageCode
+): Promise<PrayerType | null> => {
+  try {
+    const id =
+      typeof identifier === "number"
+        ? identifier
+        : Number(String(identifier).trim());
+
+    if (!Number.isFinite(id)) {
+      console.warn(
+        "getPrayerInternalURL: Invalid prayer id identifier",
+        identifier
+      );
+      return null;
+    }
+
+    const db = getDatabase();
+
+    const row = await db.getFirstAsync<PrayerType>(
+      `
+      SELECT *
+      FROM prayers
+      WHERE id = ?
+      LIMIT 1;
+      `,
+      [id]
+    );
+
+    return row ?? null;
+  } catch (error) {
+    console.error("getPrayerInternalURL: Error fetching prayer:", {
+      identifier,
+      lang,
+      error,
+    });
+    return null;
+  }
+};

@@ -976,6 +976,7 @@ import {
   JuzRow,
   JuzStartType,
   JuzBoundsType,
+  LanguageCode,
 } from "@/constants/Types";
 
 // --- helpers ---------------------------------------------------------------
@@ -1706,3 +1707,77 @@ export async function getPageButtonLabels(
     return [];
   }
 }
+
+type QuranInternalResult = {
+  sura: number;
+  aya: number;
+  text: string | null;
+  sura_label_ar?: string | null;
+  sura_label_en?: string | null;
+  sura_label_de?: string | null;
+};
+
+function quranTableFor(lang: LanguageCode) {
+  if (lang === "ar") {
+    return { table: "aya_ar", col: "quran_arabic_text" as const };
+  }
+  if (lang === "de") {
+    return { table: "aya_de", col: "quran_german_text" as const };
+  }
+  return { table: "aya_en", col: "quran_english_text" as const };
+}
+
+/**
+ * Resolve a Qur'an internal link.
+ *
+ * identifier: "sura:aya" (e.g. "1:1", "2:255")
+ * lang:
+ *  - "ar": use aya_ar + s.label
+ *  - "de": use aya_de + s.label_en/label_de
+ *  - "en": use aya_en + s.label_en
+ */
+export const getQuranInternalURL = async (
+  identifier: string,
+  lang: LanguageCode
+): Promise<QuranInternalResult | null> => {
+  try {
+    const [suraStr, ayaStr] = identifier.split(":");
+    const sura = Number(suraStr);
+    const aya = Number(ayaStr);
+
+    if (!Number.isFinite(sura) || !Number.isFinite(aya)) {
+      console.warn("getQuranInternalURL: invalid identifier", identifier);
+      return null;
+    }
+
+    const db = getDatabase();
+    const { table, col } = quranTableFor(lang);
+
+    const row = await db.getFirstAsync<QuranInternalResult>(
+      `
+      SELECT
+        v.sura,
+        v.aya,
+        v.${col} AS text,
+        s.label    AS sura_label_ar,
+        s.label_en AS sura_label_en,
+        s.label_de AS sura_label_de
+      FROM ${table} v
+      JOIN sura s
+        ON s.id = v.sura
+      WHERE v.sura = ? AND v.aya = ?
+      LIMIT 1;
+      `,
+      [sura, aya]
+    );
+
+    return row ?? null;
+  } catch (error) {
+    console.error("getQuranInternalURL: Error fetching verse:", {
+      identifier,
+      lang,
+      error,
+    });
+    return null;
+  }
+};

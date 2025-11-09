@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { returnSize } from "@/utils/sizes";
+import RenderLink from "./RenderLink";
 
 export const TodoList = ({
   todos,
@@ -118,6 +119,7 @@ export const TodoList = ({
             </View>
           </TouchableOpacity>
           <ThemedText
+          
             style={[
               styles.todoText,
               rtl
@@ -132,6 +134,19 @@ export const TodoList = ({
           >
             {todo.text}
           </ThemedText>
+          {todo.internal_urls && todo.internal_urls.length > 0 && (
+            <View style={{ marginTop: 6, width: "100%" }}>
+              {todo.internal_urls.map((url, index) => (
+                <RenderLink
+                  key={`todo-${todo.id}-link-${index}-${url}`}
+                  url={url}
+                  index={index}
+                  isExternal={false}
+                />
+              ))}
+            </View>
+          )}
+
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => onShowDeleteModal(dayIndex, todo.id)}

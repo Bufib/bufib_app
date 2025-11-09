@@ -1,5 +1,5 @@
 import { NoInternet } from "@/components/NoInternet";
-import RenderLinkNewsItem from "@/components/RenderLinkNewsItem";
+import RenderLink from "@/components/RenderLink";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
@@ -249,7 +249,7 @@ export default function QuestionDetailScreen() {
               {question.internal_url &&
                 question.internal_url.length > 0 &&
                 question.internal_url.map((url, index) => (
-                  <RenderLinkNewsItem
+                  <RenderLink
                     key={`internal-url-${index}-${url}`}
                     url={url}
                     index={index}
@@ -259,7 +259,7 @@ export default function QuestionDetailScreen() {
               {question.external_url &&
                 question.external_url.length > 0 &&
                 question.external_url.map((url, index) => (
-                  <RenderLinkNewsItem
+                  <RenderLink
                     key={`external-url-${index}-${url}`}
                     url={url}
                     index={index}

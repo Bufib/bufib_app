@@ -215,7 +215,7 @@ export type SearchResultType = {
   subtitle?: string;
   preview: string;
   content: string; // The full content to insert
-}
+};
 
 // Account
 export type SignUpFormValues = {
@@ -438,6 +438,7 @@ export type TodoItemType = {
   id: number;
   text: string;
   completed: boolean;
+  internal_urls?: string[];
 };
 
 export type TodoListType = {
@@ -456,10 +457,11 @@ export type UseWeeklyTodosResult = {
   todosByDay: WeeklyTodosType;
   loading: boolean;
   toggleTodo: (day: number, id: number) => void;
-  addTodo: (day: number, text: string) => void;
+  addTodo: (day: number, text: string, internalUrls?: string[]) => void; // ⬅️
   deleteTodo: (day: number, id: number) => void;
   undoAllForDay: (day: number) => void;
 };
+
 
 export type WeeklyCalendarSectionType = {
   todosByDay: WeeklyTodosType;
@@ -476,7 +478,7 @@ export type WeeklyCalendarSectionType = {
 export type AddTodoModalType = {
   visible: boolean;
   onClose: () => void;
-  onAdd: (text: string) => void;
+  onAdd: (text: string, internalUrls: string[]) => void; // ⬅️ important
   selectedDayName: string;
 };
 

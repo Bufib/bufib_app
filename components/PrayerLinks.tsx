@@ -63,12 +63,22 @@ const PrayerLinks = () => {
   }, [getCurrentDayIndex]);
 
   // --- Handlers ---
+  // const handleAddTodoConfirmed = useCallback(
+  //   (text: string): void => {
+  //     if (selectedDay !== null) {
+  //       addTodo(selectedDay, text);
+  //     }
+  //     setAddModalVisible(false); // Close modal after adding
+  //   },
+  //   [addTodo, selectedDay]
+  // );
+
   const handleAddTodoConfirmed = useCallback(
-    (text: string): void => {
+    (text: string, internalUrls: string[]): void => {
       if (selectedDay !== null) {
-        addTodo(selectedDay, text);
+        addTodo(selectedDay, text, internalUrls); // ⬅️ now uses links
       }
-      setAddModalVisible(false); // Close modal after adding
+      setAddModalVisible(false);
     },
     [addTodo, selectedDay]
   );
@@ -230,6 +240,12 @@ const PrayerLinks = () => {
 
       {selectedDay !== null && (
         <>
+          {/* <AddTodoModal
+            visible={addModalVisible}
+            onClose={() => setAddModalVisible(false)}
+            onAdd={handleAddTodoConfirmed}
+            selectedDayName={getFullDayName(selectedDay)}
+          /> */}
           <AddTodoModal
             visible={addModalVisible}
             onClose={() => setAddModalVisible(false)}

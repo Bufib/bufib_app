@@ -73,27 +73,51 @@ export const getQuestion = async (
   }
 };
 
+// export const getQuestionInternalURL = async (
+//   questionTitle: string,
+//   language: string
+// ): Promise<QuestionType> => {
+//   try {
+//     const db = getDatabase();
+//     const rows = await db.getAllAsync<QuestionType>(
+//       `
+//       SELECT * FROM questions
+//       WHERE title = ?
+//       AND language_code = ?;
+      
+//     `,
+//       [questionTitle, language]
+//     );
+//     return rows[0];
+//   } catch (error) {
+//     console.error("Error fetching question:", error);
+//     throw error;
+//   }
+// };
 export const getQuestionInternalURL = async (
-  questionTitle: string,
+  id: number,
   language: string
-): Promise<QuestionType> => {
+): Promise<QuestionType | null> => {
   try {
     const db = getDatabase();
-    const rows = await db.getAllAsync<QuestionType>(
+    const row = await db.getFirstAsync<QuestionType>(
       `
-      SELECT * FROM questions
-      WHERE title = ?
-      AND language_code = ?;
-      
-    `,
-      [questionTitle, language]
+      SELECT *
+      FROM questions
+      WHERE id = ?
+        AND language_code = ?
+      LIMIT 1;
+      `,
+      [id, language]
     );
-    return rows[0];
+    return row ?? null;
   } catch (error) {
-    console.error("Error fetching question:", error);
-    throw error;
+    console.error("Error fetching question by id:", error);
+    return null;
   }
 };
+
+
 
 export const getLatestQuestions = async (
   language: string
