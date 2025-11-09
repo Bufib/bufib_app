@@ -11,6 +11,7 @@ const _layout = () => {
       />
       <Stack.Screen name="favoritePodcasts" options={{ headerShown: false }} />
       <Stack.Screen name="favoritePrayers" options={{ headerShown: false }} />
+      <Stack.Screen name="favoriteQuran" options={{ headerShown: false }} />
     </Stack>
   );
 };

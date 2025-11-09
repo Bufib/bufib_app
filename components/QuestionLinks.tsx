@@ -98,7 +98,7 @@ export default function QuestionLinks() {
               </View>
             </TouchableOpacity>
           ))}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               router.push({
                 pathname:
@@ -134,7 +134,7 @@ export default function QuestionLinks() {
                 </ThemedText>
               </View>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 

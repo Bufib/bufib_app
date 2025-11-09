@@ -1,9 +1,5 @@
 import * as React from "react";
-import {
-  useWindowDimensions,
-  useColorScheme,
-  Animated,
-} from "react-native";
+import { useWindowDimensions, useColorScheme, Animated } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import FavoriteNewsArticles from "@/app/(tabs)/favorites/favoriteNewsArticles";
 import FavoritePrayers from "@/app/(tabs)/favorites/favoritePrayers";
@@ -13,12 +9,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { Image } from "expo-image";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+import FavoriteQuran from "@/app/(tabs)/favorites/favoriteQuran";
 
 const renderScene = SceneMap({
   favoriteNewsArticles: FavoriteNewsArticles,
   favoritePrayers: FavoritePrayers,
   favoriteQuestions: FavoriteQuestions,
   favoritePodcasts: FavoritePodcasts,
+  favoriteQuran: FavoriteQuran,
 });
 
 export default function TopNavigationFavorites() {
@@ -41,6 +39,13 @@ export default function TopNavigationFavorites() {
         title: "",
         icon: require("@/assets/images/podcastHeaderLogo2.png"),
       },
+
+      {
+        key: "favoriteQuestions",
+        // title: t("questionScreenTitle"),
+        title: "",
+        icon: require("@/assets/images/qAndAHeaderLogo.png"),
+      },
       {
         key: "favoritePrayers",
         // title: t("prayerScreenTitle"),
@@ -48,10 +53,10 @@ export default function TopNavigationFavorites() {
         icon: require("@/assets/images/prayersHeaderLogo.png"),
       },
       {
-        key: "favoriteQuestions",
-        // title: t("questionScreenTitle"),
+        key: "favoriteQuran",
+        // title: t("prayerScreenTitle"),
         title: "",
-        icon: require("@/assets/images/qAndAHeaderLogo.png"),
+        icon: require("@/assets/images/quranImage.png"),
       },
     ],
     []
@@ -105,6 +110,20 @@ export default function TopNavigationFavorites() {
                 />
               ),
             },
+
+            favoritePrayers: {
+              icon: ({ route, focused, color }) => (
+                <Image
+                  source={route.icon}
+                  contentFit="contain"
+                  style={{
+                    width: 35,
+                    height: 35,
+                    opacity: focused ? 1 : 0.6,
+                  }}
+                />
+              ),
+            },
             favoriteQuestions: {
               icon: ({ route, focused, color }) => (
                 <Image
@@ -118,7 +137,7 @@ export default function TopNavigationFavorites() {
                 />
               ),
             },
-            favoritePrayers: {
+            favoriteQuran: {
               icon: ({ route, focused, color }) => (
                 <Image
                   source={route.icon}

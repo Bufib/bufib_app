@@ -594,9 +594,9 @@ const renderScene = SceneMap({
   questionsScreen: indexQuestion,
   prayerScreen: indexPrayer,
   calendarScreen: indexCalandar,
+  videoScreen: indexVideos,
   quranScreen: indexQuran,
   historyScreen: indexHistory,
-  videoScreen: indexVideos,
 });
 
 export default function TopNavigationKnowledge() {
@@ -623,6 +623,11 @@ export default function TopNavigationKnowledge() {
         icon: require("@/assets/images/calendarHeaderLogo.png"),
       },
       {
+        key: "videoScreen",
+        title: "",
+        icon: require("@/assets/images/videos.png"),
+      },
+      {
         key: "quranScreen",
         title: "",
         icon: require("@/assets/images/quranHeaderLogo.png"),
@@ -631,11 +636,6 @@ export default function TopNavigationKnowledge() {
         key: "historyScreen",
         title: "",
         icon: require("@/assets/images/historyHeaderLogo.png"),
-      },
-      {
-        key: "videoScreen",
-        title: "",
-        icon: require("@/assets/images/videos.png"),
       },
     ],
     []
@@ -701,6 +701,19 @@ export default function TopNavigationKnowledge() {
               />
             ),
           },
+          videoScreen: {
+            icon: ({ route, focused }) => (
+              <Image
+                source={route.icon}
+                contentFit="contain"
+                style={{
+                  width: 35,
+                  height: 35,
+                  opacity: focused ? 1 : 0.6,
+                }}
+              />
+            ),
+          },
           quranScreen: {
             icon: ({ route, focused }) => (
               <Image
@@ -715,19 +728,6 @@ export default function TopNavigationKnowledge() {
             ),
           },
           historyScreen: {
-            icon: ({ route, focused }) => (
-              <Image
-                source={route.icon}
-                contentFit="contain"
-                style={{
-                  width: 35,
-                  height: 35,
-                  opacity: focused ? 1 : 0.6,
-                }}
-              />
-            ),
-          },
-          videoScreen: {
             icon: ({ route, focused }) => (
               <Image
                 source={route.icon}

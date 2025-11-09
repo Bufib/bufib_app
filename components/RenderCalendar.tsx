@@ -604,7 +604,7 @@ const RenderCalendar: React.FC = () => {
         <View style={styles.sectionHeaderRow}>
           <Entypo 
             name={isCollapsed ? "chevron-right" : "chevron-down"} 
-            size={24} 
+            size={26} 
             color={Colors[colorScheme].text}
             style={styles.chevronIcon}
           />
@@ -800,6 +800,7 @@ const styles = StyleSheet.create({
   sectionHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     marginBottom: 20,
     marginTop: 12,
   },
