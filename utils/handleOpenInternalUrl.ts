@@ -2,7 +2,7 @@
 // import { router } from "expo-router";
 
 // // Internal urls are the title (unique!) of the questions
-// const handleOpenInternallUrl = async (
+// const handleOpenInternalUrl = async (
 //   title: string,
 //   language: string,
 //   type: string
@@ -29,16 +29,11 @@
 //     }
 //   }
 // };
-
-// export default handleOpenInternallUrl;
-// src/utils/handleOpenInternalUrl.ts
 import { router } from "expo-router";
-import { LanguageCode } from "@/constants/Types";
+import { LanguageCode, InternalLinkType } from "@/constants/Types";
 import { getQuestionInternalURL } from "@/db/queries/questions";
 import { getPrayerInternalURL } from "@/db/queries/prayers";
 import { getQuranInternalURL } from "@/db/queries/quran";
-
-type InternalLinkType = "questionLink" | "prayerLink" | "quranLink";
 
 const ROUTES = {
   question: "/(displayQuestion)",
@@ -46,25 +41,24 @@ const ROUTES = {
   quran: "/(displaySura)",
 } as const;
 
-const handleOpenInternallUrl = async (
+const handleOpenInternalUrl = async (
   identifier: string,
   lang: LanguageCode,
   type: InternalLinkType
 ): Promise<void> => {
   const value = identifier.trim();
   if (!value) {
-    console.warn("handleOpenInternallUrl: empty identifier.");
+    console.warn("handleOpenInternalUrl: empty identifier.");
     return;
   }
 
   try {
     switch (type) {
-      // AFTER
       case "questionLink": {
         const id = Number(value);
         if (Number.isNaN(id)) {
           console.warn(
-            "handleOpenInternallUrl: invalid questionLink identifier (expected numeric id):",
+            "handleOpenInternalUrl: invalid questionLink identifier (expected numeric id):",
             value
           );
           return;
@@ -72,10 +66,7 @@ const handleOpenInternallUrl = async (
 
         const question = await getQuestionInternalURL(id, lang);
         if (!question) {
-          console.warn(
-            "handleOpenInternallUrl: Question not found for id:",
-            id
-          );
+          console.warn("handleOpenInternalUrl: Question not found for id:", id);
           return;
         }
 
@@ -85,7 +76,6 @@ const handleOpenInternallUrl = async (
             category: question.question_category_name,
             subcategory: question.question_subcategory_name,
             questionId: String(question.id),
-            // drop questionTitle if you no longer use it
           },
         });
         return;
@@ -95,7 +85,7 @@ const handleOpenInternallUrl = async (
         const prayer = await getPrayerInternalURL(value, lang);
         if (!prayer) {
           console.warn(
-            "handleOpenInternallUrl: Prayer not found for identifier:",
+            "handleOpenInternalUrl: Prayer not found for identifier:",
             value
           );
           return;
@@ -109,10 +99,11 @@ const handleOpenInternallUrl = async (
       }
 
       case "quranLink": {
+        // value = "sura:aya"
         const verse = await getQuranInternalURL(value, lang);
         if (!verse) {
           console.warn(
-            "handleOpenInternallUrl: Quran reference not resolved:",
+            "handleOpenInternalUrl: Quran reference not resolved:",
             value
           );
           return;
@@ -130,7 +121,7 @@ const handleOpenInternallUrl = async (
 
       default: {
         console.warn(
-          "handleOpenInternallUrl: Unsupported type:",
+          "handleOpenInternalUrl: Unsupported type:",
           type,
           "for identifier:",
           value
@@ -139,10 +130,10 @@ const handleOpenInternallUrl = async (
     }
   } catch (error) {
     console.error(
-      "handleOpenInternallUrl: Unexpected error while handling internal link:",
+      "handleOpenInternalUrl: Unexpected error while handling internal link:",
       { identifier: value, type, lang, error }
     );
   }
 };
 
-export default handleOpenInternallUrl;
+export default handleOpenInternalUrl;

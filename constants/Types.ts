@@ -1,6 +1,9 @@
 // Language
 export type LanguageCode = "de" | "ar" | "en";
 
+export type InternalLinkType = "questionLink" | "prayerLink" | "quranLink";
+
+
 export type LanguageContextType = {
   lang: LanguageCode; // <— always defined
   setAppLanguage: (lng: LanguageCode) => Promise<void>;
@@ -216,6 +219,14 @@ export type SearchResultType = {
   preview: string;
   content: string; // The full content to insert
 };
+
+export type SearchResult = {
+  id: string;
+  label: string;
+  type: InternalLinkType;
+  identifier: string; // used to build internal URL identifier
+  meta?: string;
+}
 
 // Account
 export type SignUpFormValues = {
@@ -582,6 +593,15 @@ export type SuraType = {
   startPage: number;
   endPage: number;
   ruku?: number;
+};
+
+export type QuranInternalResultType = {
+  sura: number;
+  aya: number;
+  text: string | null;
+  sura_label_ar?: string | null;
+  sura_label_en?: string | null;
+  sura_label_de?: string | null;
 };
 export type UseSuraDataParams = {
   lang: LanguageCode;

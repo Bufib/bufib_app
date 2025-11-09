@@ -176,7 +176,7 @@ export const en = {
 
   addWeekly: "Add",
   addForDay: "Add for",
-  enterPrayer: "Enter your Todo...",
+  enterTodo: "Enter your Todo...",
   add: "Add",
   cancel: "Cancel",
   noPlansForToday: "There are no plans for this day!",

@@ -171,7 +171,7 @@ export const de = {
   weeklyToDoSubtitle: "Plane deine Woche",
   addWeekly: "Hinzufügen",
   addForDay: "Hinzufügen für",
-  enterPrayer: "Gib dein Todo ein...",
+  enterTodo: "Gib dein Todo ein...",
   add: "Hinzufügen",
   cancel: "Abbrechen",
   noPlansForToday: "Es sind noch keine Pläne für diesen Tag vorhanden!",

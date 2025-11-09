@@ -5,7 +5,7 @@
 // import Feather from "@expo/vector-icons/Feather";
 // import React from "react";
 // import { Pressable, StyleSheet, useColorScheme } from "react-native";
-// import handleOpenInternallUrl from "../utils/handleOpenInternalUrl";
+// import handleOpenInternalUrl from "../utils/handleOpenInternalUrl";
 
 // type RenderLinkPropsType = {
 //   url: string;
@@ -31,7 +31,7 @@
 //       onPress={() =>
 //         isExternal
 //           ? handleOpenExternalUrl(url)
-//           : handleOpenInternallUrl(url, lang, "questionLink")
+//           : handleOpenInternalUrl(url, lang, "questionLink")
 //       }
 //     >
 //       <Feather
@@ -69,10 +69,6 @@
 
 // export default RenderLink;
 
-// RenderLink.tsx
-// RenderLink.tsx
-// RenderLink.tsx
-
 import React, { useEffect, useState, useCallback } from "react";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
@@ -82,13 +78,15 @@ import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
-import handleOpenInternallUrl from "@/utils/handleOpenInternalUrl";
-
+import handleOpenInternalUrl from "@/utils/handleOpenInternalUrl";
 import { getQuestionInternalURL } from "@/db/queries/questions";
 import { getPrayerInternalURL } from "@/db/queries/prayers";
+import {
+  InternalLinkType,
+  LanguageCode,
+  QuranInternalResultType,
+} from "@/constants/Types";
 import { getQuranInternalURL } from "@/db/queries/quran";
-
-type InternalLinkType = "questionLink" | "prayerLink" | "quranLink";
 
 type RenderLinkProps = {
   url: string;
@@ -129,7 +127,7 @@ const parseInternalUrl = (raw: string): ParsedInternal => {
   }
 
   if (maybeType === "quranLink") {
-    // Expect "sura:aya" as remainder; validation happens downstream
+    // remainder should be "sura:aya"
     return { type: "quranLink", identifier: remainder };
   }
 
@@ -146,8 +144,12 @@ const getExternalLabel = (url: string): string => {
   }
 };
 
-const buildQuranLabel = (identifier: string, q: any, lang: string): string => {
-  const [suraStr] = identifier.split(":"); // we don't care about aya for label
+const buildQuranLabel = (
+  identifier: string,
+  q: Partial<QuranInternalResultType> | null | undefined,
+  lang: LanguageCode
+): string => {
+  const [suraStr] = identifier.split(":");
   const sura = q?.sura ?? Number(suraStr);
 
   let suraName: string | undefined;
@@ -155,33 +157,22 @@ const buildQuranLabel = (identifier: string, q: any, lang: string): string => {
   if (lang === "ar") {
     suraName =
       q?.sura_label_ar ||
-      q?.label_ar ||
-      q?.label || // generic
-      q?.sura_name_ar;
-  } else {
-    // de + en (and others): prefer English label, then DE, then generic
-    suraName =
-      q?.sura_label_en ||
-      q?.label_en ||
+      q?.sura_label_en || // optional fallback if you like
       q?.sura_label_de ||
-      q?.label_de ||
-      q?.label;
+      undefined;
+  } else {
+    // de + en: prefer EN, then DE, then AR
+    suraName =
+      q?.sura_label_en || q?.sura_label_de || q?.sura_label_ar || undefined;
   }
 
   if (suraName && Number.isFinite(sura)) {
-    // ✅ "Al-Fatiha (1)"
     return `${suraName} (${sura})`;
   }
 
-  if (suraName) {
-    return suraName;
-  }
+  if (suraName) return suraName;
+  if (Number.isFinite(sura)) return `Sura ${sura}`;
 
-  if (Number.isFinite(sura)) {
-    return `Sura ${sura}`;
-  }
-
-  // Last fallback
   return identifier;
 };
 
@@ -205,8 +196,7 @@ const RenderLink = ({ url, index, isExternal }: RenderLinkProps) => {
     if (!parsed) return;
 
     const { type, identifier } = parsed;
-    // handleOpenInternallUrl expects identifier as string
-    handleOpenInternallUrl(String(identifier), lang, type);
+    handleOpenInternalUrl(String(identifier), lang, type as InternalLinkType);
   }, [url, isExternal, lang]);
 
   /* ---------------------- external label hydrate ---------------------- */
@@ -224,8 +214,7 @@ const RenderLink = ({ url, index, isExternal }: RenderLinkProps) => {
 
     const parsed = parseInternalUrl(url);
     if (!parsed) {
-      // If malformed, show raw for debugging
-      setLabel(url);
+      setLabel(url); // show raw if malformed for debugging
       return;
     }
 
@@ -245,19 +234,22 @@ const RenderLink = ({ url, index, isExternal }: RenderLinkProps) => {
         if (type === "prayerLink") {
           const p = await getPrayerInternalURL(identifier, lang);
           if (!cancelled) {
-            setLabel(lang==="ar" &&p?.arabic_title || p?.name || `Gebet ${identifier}`);
+            setLabel(
+              (lang === "ar" && p?.arabic_title) ||
+                p?.name ||
+                `Gebet ${identifier}`
+            );
           }
           return;
         }
 
         if (type === "quranLink") {
-          // identifier = "sura:aya"
-          const q = await getQuranInternalURL(identifier, lang);
+          const q = await getQuranInternalURL(String(identifier), lang);
           if (!cancelled) {
             if (q) {
-              setLabel(buildQuranLabel(identifier, q, lang));
+              setLabel(buildQuranLabel(String(identifier), q, lang));
             } else {
-              setLabel(buildQuranLabel(identifier, {}, lang));
+              setLabel(buildQuranLabel(String(identifier), {}, lang));
             }
           }
           return;

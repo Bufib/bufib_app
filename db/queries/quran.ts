@@ -977,6 +977,7 @@ import {
   JuzStartType,
   JuzBoundsType,
   LanguageCode,
+  QuranInternalResultType,
 } from "@/constants/Types";
 
 // --- helpers ---------------------------------------------------------------
@@ -1708,14 +1709,7 @@ export async function getPageButtonLabels(
   }
 }
 
-type QuranInternalResult = {
-  sura: number;
-  aya: number;
-  text: string | null;
-  sura_label_ar?: string | null;
-  sura_label_en?: string | null;
-  sura_label_de?: string | null;
-};
+
 
 function quranTableFor(lang: LanguageCode) {
   if (lang === "ar") {
@@ -1739,7 +1733,7 @@ function quranTableFor(lang: LanguageCode) {
 export const getQuranInternalURL = async (
   identifier: string,
   lang: LanguageCode
-): Promise<QuranInternalResult | null> => {
+): Promise<QuranInternalResultType | null> => {
   try {
     const [suraStr, ayaStr] = identifier.split(":");
     const sura = Number(suraStr);
@@ -1753,7 +1747,7 @@ export const getQuranInternalURL = async (
     const db = getDatabase();
     const { table, col } = quranTableFor(lang);
 
-    const row = await db.getFirstAsync<QuranInternalResult>(
+    const row = await db.getFirstAsync<QuranInternalResultType>(
       `
       SELECT
         v.sura,

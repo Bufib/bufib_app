@@ -470,8 +470,8 @@
 //     paddingVertical: 4,
 //   },
 // });
+// src/components/AddTodoModal.tsx
 
-// AddTodoModal.tsx
 import React, {
   useEffect,
   useState,
@@ -503,28 +503,14 @@ import {
   AddTodoModalType,
   QuestionType,
   PrayerWithCategory,
-  QuranVerseType,
   Language,
+  InternalLinkType,
+  SearchResult,
 } from "@/constants/Types";
 import { Colors } from "@/constants/Colors";
-import {
-  searchQuestions,
-  searchPrayers,
-  searchQuran,
-  searchQuranLabels,
-} from "@/db/search";
+import { searchQuestions, searchPrayers, searchQuranLabels } from "@/db/search";
 import RenderLink from "./RenderLink";
-
-type InternalLinkType = "questionLink" | "prayerLink" | "quranLink";
 type SearchFilter = "prayers" | "quran" | "questions";
-
-interface SearchResult {
-  id: string;
-  label: string;
-  type: InternalLinkType;
-  identifier: string; // passed into handleOpenInternallUrl
-  meta?: string;
-}
 
 /** Encode as "type:identifier" for internal URLs. */
 const encodeInternalUrl = (
@@ -532,15 +518,33 @@ const encodeInternalUrl = (
   identifier: string
 ): string => `${type}:${identifier}`;
 
+/* ------------ debounce helper with cleanup ------------ */
+
+type Debounced<F extends (...args: any[]) => void> = ((
+  ...args: Parameters<F>
+) => void) & { cancel: () => void };
+
 const debounceFn = <F extends (...args: any[]) => void>(
   fn: F,
   delay: number
-): ((...args: Parameters<F>) => void) => {
+): Debounced<F> => {
   let timeout: ReturnType<typeof setTimeout> | null = null;
-  return (...args: Parameters<F>) => {
+
+  const debounced = (...args: Parameters<F>) => {
     if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(() => fn(...args), delay);
+    timeout = setTimeout(() => {
+      fn(...args);
+    }, delay);
   };
+
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return debounced as Debounced<F>;
 };
 
 export const AddTodoModal: React.FC<AddTodoModalType> = ({
@@ -561,6 +565,7 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
   const { t } = useTranslation();
   const { rtl, lang } = useLanguage();
 
+  // used to ignore stale async responses
   const requestIdRef = useRef(0);
 
   /* ------------ helpers ------------ */
@@ -617,8 +622,10 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
       const currentId = ++requestIdRef.current;
 
       if (q.length < 2) {
-        setResults([]);
-        setLoading(false);
+        if (currentId === requestIdRef.current) {
+          setResults([]);
+          setLoading(false);
+        }
         return;
       }
 
@@ -635,7 +642,7 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
             id: `question-${qItem.id}`,
             label: qItem.title,
             type: "questionLink",
-            identifier: String(qItem.id), // ✅ use numeric id (as string) for internal URL
+            identifier: String(qItem.id),
             meta: t("question") || "Question",
           }));
         } else if (filter === "prayers") {
@@ -646,19 +653,20 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
             id: `prayer-${p.id}`,
             label: p.name,
             type: "prayerLink",
-            identifier: String(p.id), // ✅ ID-based, matches prayerLink:<id>
+            identifier: String(p.id),
             meta: t("prayer") || "Prayer",
           }));
         } else if (filter === "quran") {
-          const res = await searchQuranLabels(lang, q, { limit: 20 });
+          const res = await searchQuranLabels(lang as Language, q, {
+            limit: 20,
+          });
           if (currentId !== requestIdRef.current) return;
 
           merged = res.rows.map((sura) => ({
             id: `quran-${sura.sura}`,
-            // e.g. "Al-Fātiha" or fallback "Qur'an 1"
             label: sura.label || `${t("quran") || "Qur'an"} ${sura.sura}`,
             type: "quranLink",
-            identifier: sura.identifier, // ✅ already "<sura>:1" from searchQuranLabels
+            identifier: sura.identifier, // "<sura>:1"
             meta: `${t("quran") || "Qur'an"} ${sura.sura}`,
           }));
         }
@@ -679,18 +687,22 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
   );
 
   const debouncedSearch = useMemo(
-    () =>
-      debounceFn((q: string) => {
-        runSearch(q);
-      }, 250),
+    () => debounceFn((q: string) => runSearch(q), 250),
     [runSearch]
   );
 
-  // Re-run search when query or filter changes (while overlay is open)
+  // Re-run search when query, filter, or expanded state changes
   useEffect(() => {
     if (!searchExpanded) return;
     debouncedSearch(searchQuery);
-  }, [searchQuery, searchExpanded, debouncedSearch, filter]);
+  }, [searchQuery, searchExpanded, filter, debouncedSearch]);
+
+  // Cleanup pending timeout on unmount / re-create
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   /* ------------ add/remove link from search result ------------ */
 
@@ -752,8 +764,16 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
 
               {/* Search overlay */}
               {searchExpanded && (
-                <ThemedView style={styles.searchOverlay}>
-                  <View style={styles.searchOverlayHeader}>
+                <View
+                  style={[
+                    styles.searchOverlay,
+                    { borderColor: Colors[colorScheme].border },
+                  ]}
+                >
+                  <View style={styles.searchOverlayHeader}></View>
+
+                  {/* Filter chips */}
+                  <View style={[styles.filterRow]}>
                     <TouchableOpacity
                       onPress={handleCloseSearch}
                       style={styles.backBtn}
@@ -764,13 +784,6 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                         color={Colors[colorScheme].defaultIcon}
                       />
                     </TouchableOpacity>
-                    <ThemedText style={styles.searchTitle}>
-                      {t("search")}
-                    </ThemedText>
-                  </View>
-
-                  {/* Filter chips */}
-                  <View style={styles.filterRow}>
                     {(
                       [
                         { key: "prayers", label: t("tab_prayers") },
@@ -803,16 +816,10 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
 
                   {/* Search input */}
                   <View style={styles.searchOverlayInputWrapper}>
-                    <Ionicons
-                      name="search"
-                      size={18}
-                      color={Colors[colorScheme].defaultIcon}
-                      style={{ marginRight: 6 }}
-                    />
                     <TextInput
                       placeholder={t("search")}
                       placeholderTextColor={
-                        colorScheme === "dark" ? "#888" : "#888"
+                        colorScheme === "dark" ? "#999" : "#999"
                       }
                       autoCapitalize="none"
                       autoCorrect={false}
@@ -822,7 +829,9 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                       style={[
                         styles.searchOverlayInput,
                         {
-                          color: colorScheme === "dark" ? "#fff" : "#000",
+                          backgroundColor: Colors[colorScheme].contrast,
+                          padding: 8,
+                          borderRadius: 8,
                           textAlign: rtl ? "right" : "left",
                         },
                       ]}
@@ -872,7 +881,7 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                       ) : null
                     }
                   />
-                </ThemedView>
+                </View>
               )}
 
               {/* Text input */}
@@ -883,11 +892,12 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                     {
                       color: colorScheme === "dark" ? "#fff" : "#000",
                       textAlign: rtl ? "right" : "left",
+                      backgroundColor: Colors[colorScheme].contrast,
                     },
                   ]}
                   value={newTodo}
                   onChangeText={setNewTodo}
-                  placeholder={t("enterPrayer")}
+                  placeholder={t("enterTodo")}
                   placeholderTextColor={
                     colorScheme === "dark" ? "#999" : "#999"
                   }
@@ -990,8 +1000,8 @@ const styles = StyleSheet.create({
 
   searchOverlay: {
     marginBottom: 12,
-    padding: 10,
     borderRadius: 14,
+    borderBottomWidth: 0.5,
   },
   searchOverlayHeader: {
     flexDirection: "row",
@@ -1010,6 +1020,7 @@ const styles = StyleSheet.create({
 
   filterRow: {
     flexDirection: "row",
+    alignItems: "center",
     marginBottom: 6,
     gap: 6,
     flexWrap: "wrap",
@@ -1036,7 +1047,6 @@ const styles = StyleSheet.create({
   searchOverlayInputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: 10,
     marginBottom: 6,
@@ -1081,6 +1091,7 @@ const styles = StyleSheet.create({
     minHeight: 80,
     maxHeight: 200,
     fontSize: 16,
+    marginBottom: 10,
   },
 
   linksContainer: {
