@@ -1646,7 +1646,7 @@ export default function RenderTasbih() {
               )}
             {!isPresetMode && isLimitReached && (
               <Text style={styles.completionText}>
-                {activeCounter.name} {t("completedText")}
+                {t("completedText").toUpperCase()}
               </Text>
             )}
           </View>
