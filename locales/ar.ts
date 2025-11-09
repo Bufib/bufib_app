@@ -159,7 +159,7 @@ export const ar = {
   weeklyToDoSubtitle: "أضف صلواتك اليومية",
   addWeekly: "إضافة",
   addForDay: "إضافة ل",
-  enterToDo: "أدخل الصلاة...",
+  enterTodo: "أدخل الصلاة...",
   add: "إضافة",
   cancel: "إلغاء",
   noPlansForToday: "لا توجد خطط لهذا اليوم",

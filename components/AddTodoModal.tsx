@@ -709,6 +709,7 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
   const handleSelectResult = (item: SearchResult) => {
     const url = encodeInternalUrl(item.type, item.identifier);
     setInternalUrls((prev) => (prev.includes(url) ? prev : [...prev, url]));
+    handleCloseSearch();
   };
 
   const handleRemoveLink = (urlToRemove: string) => {
@@ -762,76 +763,93 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                 </View>
               </View>
 
-              {/* Search overlay */}
+              {/* Minimal Search Overlay */}
               {searchExpanded && (
-                <View
-                  style={[
-                    styles.searchOverlay,
-                    { borderColor: Colors[colorScheme].border },
-                  ]}
-                >
-                  <View style={styles.searchOverlayHeader}></View>
-
-                  {/* Filter chips */}
-                  <View style={[styles.filterRow]}>
+                <View style={styles.searchOverlay}>
+                  {/* Simple Header */}
+                  <View style={styles.searchHeader}>
                     <TouchableOpacity
                       onPress={handleCloseSearch}
-                      style={styles.backBtn}
+                      style={styles.backButton}
                     >
                       <Ionicons
-                        name="chevron-back"
+                        name="arrow-back"
                         size={22}
                         color={Colors[colorScheme].defaultIcon}
                       />
                     </TouchableOpacity>
-                    {(
-                      [
-                        { key: "prayers", label: t("tab_prayers") },
-                        { key: "quran", label: t("tab_quran") },
-                        { key: "questions", label: t("tab_questions") },
-                      ] as { key: SearchFilter; label: string }[]
-                    ).map((f) => {
-                      const active = f.key === filter;
-                      return (
-                        <TouchableOpacity
-                          key={f.key}
-                          onPress={() => setFilter(f.key)}
-                          style={[
-                            styles.filterChip,
-                            active && styles.filterChipActive,
-                          ]}
-                        >
-                          <ThemedText
+                    
+                    {/* Clean Filter Tabs */}
+                    <View style={styles.filterTabs}>
+                      {(
+                        [
+                          { key: "prayers", label: t("tab_prayers") },
+                          { key: "quran", label: t("tab_quran") },
+                          { key: "questions", label: t("tab_questions") },
+                        ] as { key: SearchFilter; label: string }[]
+                      ).map((f) => {
+                        const active = f.key === filter;
+                        return (
+                          <TouchableOpacity
+                            key={f.key}
+                            onPress={() => setFilter(f.key)}
                             style={[
-                              styles.filterChipText,
-                              active && styles.filterChipTextActive,
+                              styles.filterTab,
+                              active && {
+                                borderBottomColor: Colors.universal.primary,
+                              },
                             ]}
                           >
-                            {f.label}
-                          </ThemedText>
-                        </TouchableOpacity>
-                      );
-                    })}
+                            <ThemedText
+                              style={[
+                                styles.filterTabText,
+                                {
+                                  color: active 
+                                    ? Colors.universal.primary 
+                                    : Colors[colorScheme].defaultIcon,
+                                  opacity: active ? 1 : 0.6,
+                                },
+                              ]}
+                            >
+                              {f.label}
+                            </ThemedText>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
                   </View>
 
-                  {/* Search input */}
-                  <View style={styles.searchOverlayInputWrapper}>
+                  {/* Clean Search Input */}
+                  <View
+                    style={[
+                      styles.searchInputWrapper,
+                      {
+                        borderBottomColor: searchQuery.length > 0
+                          ? Colors.universal.primary
+                          : colorScheme === "dark"
+                          ? "rgba(255,255,255,0.1)"
+                          : "rgba(0,0,0,0.1)",
+                      },
+                    ]}
+                  >
+                    <Feather
+                      name="search"
+                      size={18}
+                      color={Colors[colorScheme].defaultIcon}
+                      style={{ opacity: 0.4 }}
+                    />
                     <TextInput
                       placeholder={t("search")}
-                      placeholderTextColor={
-                        colorScheme === "dark" ? "#999" : "#999"
-                      }
+                      placeholderTextColor={colorScheme === "dark" ? "#666" : "#999"}
                       autoCapitalize="none"
                       autoCorrect={false}
                       returnKeyType="search"
                       value={searchQuery}
                       onChangeText={setSearchQuery}
                       style={[
-                        styles.searchOverlayInput,
+                        styles.searchInput,
                         {
-                          backgroundColor: Colors[colorScheme].contrast,
-                          padding: 8,
-                          borderRadius: 8,
+                          color: Colors[colorScheme].defaultIcon,
                           textAlign: rtl ? "right" : "left",
                         },
                       ]}
@@ -842,42 +860,58 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                           name="close-circle"
                           size={18}
                           color={Colors[colorScheme].defaultIcon}
+                          style={{ opacity: 0.4 }}
                         />
                       </TouchableOpacity>
                     )}
                   </View>
 
                   {loading && (
-                    <View style={styles.loadingRow}>
-                      <ActivityIndicator />
+                    <View style={styles.loadingWrapper}>
+                      <ActivityIndicator size="small" color={Colors.universal.primary} />
                     </View>
                   )}
 
+                  {/* Clean Results List */}
                   <FlatList
                     data={results}
                     keyExtractor={(item) => item.id}
                     keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={styles.resultsContainer}
+                    contentContainerStyle={styles.resultsWrapper}
                     renderItem={({ item }) => (
                       <TouchableOpacity
                         style={styles.resultItem}
                         onPress={() => handleSelectResult(item)}
                       >
-                        <ThemedText style={styles.resultLabel}>
-                          {item.label}
-                        </ThemedText>
-                        {item.meta && (
-                          <ThemedText style={styles.resultMeta}>
-                            {item.meta}
+                        <View style={styles.resultText}>
+                          <ThemedText style={styles.resultLabel}>
+                            {item.label}
                           </ThemedText>
-                        )}
+                          {item.meta && (
+                            <ThemedText
+                              style={[
+                                styles.resultMeta,
+                                { color: Colors.universal.primary },
+                              ]}
+                            >
+                              {item.meta}
+                            </ThemedText>
+                          )}
+                        </View>
+                        <Feather
+                          name="plus"
+                          size={18}
+                          color={Colors.universal.primary}
+                        />
                       </TouchableOpacity>
                     )}
                     ListEmptyComponent={
                       !loading && searchQuery.length >= 2 ? (
-                        <ThemedText style={styles.noResultText}>
-                          {t("noSearchResults")}
-                        </ThemedText>
+                        <View style={styles.emptyState}>
+                          <ThemedText style={styles.emptyText}>
+                            {t("noSearchResults")}
+                          </ThemedText>
+                        </View>
                       ) : null
                     }
                   />
@@ -998,87 +1032,91 @@ const styles = StyleSheet.create({
     padding: 4,
   },
 
+  // Minimal Search Overlay
   searchOverlay: {
     marginBottom: 12,
-    borderRadius: 14,
-    borderBottomWidth: 0.5,
   },
-  searchOverlayHeader: {
+  searchHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: 16,
+    gap: 12,
   },
-  backBtn: {
-    paddingRight: 4,
-    paddingVertical: 2,
-    marginRight: 4,
+  backButton: {
+    padding: 4,
   },
-  searchTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-
-  filterRow: {
+  filterTabs: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-    gap: 6,
-    flexWrap: "wrap",
-  },
-  filterChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(150,150,150,0.6)",
-  },
-  filterChipActive: {
-    backgroundColor: Colors.universal.primary,
-    borderColor: Colors.universal.primary,
-  },
-  filterChipText: {
-    fontSize: 12,
-  },
-  filterChipTextActive: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-
-  searchOverlayInputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 6,
-    borderRadius: 10,
-    marginBottom: 6,
+    flex: 1,
     gap: 4,
   },
-  searchOverlayInput: {
+  filterTab: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
+  },
+  filterTabText: {
+    fontSize: 13,
+    fontWeight: "500",
+  },
+
+  // Clean Search Input
+  searchInputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    marginBottom: 12,
+    gap: 10,
+    borderBottomWidth: 1,
+  },
+  searchInput: {
     flex: 1,
     fontSize: 15,
+    padding: 0,
   },
-  loadingRow: {
-    paddingVertical: 4,
+
+  // Loading
+  loadingWrapper: {
+    paddingVertical: 12,
+    alignItems: "center",
   },
-  resultsContainer: {
+
+  // Results
+  resultsWrapper: {
     paddingVertical: 4,
   },
   resultItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    gap: 12,
+  },
+  resultText: {
+    flex: 1,
+    gap: 4,
   },
   resultLabel: {
     fontSize: 15,
+    lineHeight: 20,
   },
   resultMeta: {
     fontSize: 12,
-    opacity: 0.6,
+    opacity: 0.8,
   },
-  noResultText: {
-    textAlign: "center",
-    paddingVertical: 10,
+
+  // Empty State
+  emptyState: {
+    paddingVertical: 32,
+    alignItems: "center",
+  },
+  emptyText: {
     fontSize: 14,
-    opacity: 0.7,
+    opacity: 0.5,
   },
 
   inputWrapper: {
@@ -1132,3 +1170,425 @@ const styles = StyleSheet.create({
 });
 
 export default AddTodoModal;
+
+
+
+//! Alt
+
+//   return (
+//     <Modal
+//       visible={visible}
+//       transparent
+//       animationType="slide"
+//       onRequestClose={handleClose}
+//     >
+//       <KeyboardAvoidingView
+//         style={{ flex: 1 }}
+//         behavior={Platform.OS === "ios" ? "padding" : "height"}
+//       >
+//         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+//           <View style={styles.modalOverlay}>
+//             <ThemedView style={styles.modalContent}>
+//               {/* Header */}
+//               <View style={styles.modalHeader}>
+//                 <ThemedText style={styles.modalTitle}>
+//                   {t("addForDay")} {selectedDayName}
+//                 </ThemedText>
+
+//                 <View style={styles.headerRight}>
+//                   {!searchExpanded ? (
+//                     <TouchableOpacity
+//                       onPress={handleOpenSearch}
+//                       style={styles.iconButton}
+//                     >
+//                       <Feather
+//                         name="search"
+//                         size={22}
+//                         color={Colors[colorScheme].defaultIcon}
+//                       />
+//                     </TouchableOpacity>
+//                   ) : null}
+
+//                   <TouchableOpacity
+//                     style={styles.closeButton}
+//                     onPress={handleClose}
+//                   >
+//                     <Ionicons
+//                       name="close"
+//                       size={24}
+//                       color={Colors[colorScheme].defaultIcon}
+//                     />
+//                   </TouchableOpacity>
+//                 </View>
+//               </View>
+
+//               {/* Search overlay */}
+//               {searchExpanded && (
+//                 <View
+//                   style={[
+//                     styles.searchOverlay,
+//                     { borderColor: Colors[colorScheme].border },
+//                   ]}
+//                 >
+//                   <View style={styles.searchOverlayHeader}></View>
+
+//                   {/* Filter chips */}
+//                   <View style={[styles.filterRow]}>
+//                     <TouchableOpacity
+//                       onPress={handleCloseSearch}
+//                       style={styles.backBtn}
+//                     >
+//                       <Ionicons
+//                         name="chevron-back"
+//                         size={22}
+//                         color={Colors[colorScheme].defaultIcon}
+//                       />
+//                     </TouchableOpacity>
+//                     {(
+//                       [
+//                         { key: "prayers", label: t("tab_prayers") },
+//                         { key: "quran", label: t("tab_quran") },
+//                         { key: "questions", label: t("tab_questions") },
+//                       ] as { key: SearchFilter; label: string }[]
+//                     ).map((f) => {
+//                       const active = f.key === filter;
+//                       return (
+//                         <TouchableOpacity
+//                           key={f.key}
+//                           onPress={() => setFilter(f.key)}
+//                           style={[
+//                             styles.filterChip,
+//                             active && styles.filterChipActive,
+//                           ]}
+//                         >
+//                           <ThemedText
+//                             style={[
+//                               styles.filterChipText,
+//                               active && styles.filterChipTextActive,
+//                             ]}
+//                           >
+//                             {f.label}
+//                           </ThemedText>
+//                         </TouchableOpacity>
+//                       );
+//                     })}
+//                   </View>
+
+//                   {/* Search input */}
+//                   <View style={styles.searchOverlayInputWrapper}>
+//                     <TextInput
+//                       placeholder={t("search")}
+//                       placeholderTextColor={
+//                         colorScheme === "dark" ? "#999" : "#999"
+//                       }
+//                       autoCapitalize="none"
+//                       autoCorrect={false}
+//                       returnKeyType="search"
+//                       value={searchQuery}
+//                       onChangeText={setSearchQuery}
+//                       style={[
+//                         styles.searchOverlayInput,
+//                         {
+//                           backgroundColor: Colors[colorScheme].contrast,
+//                           padding: 8,
+//                           borderRadius: 8,
+//                           textAlign: rtl ? "right" : "left",
+//                         },
+//                       ]}
+//                     />
+//                     {searchQuery.length > 0 && (
+//                       <TouchableOpacity onPress={() => setSearchQuery("")}>
+//                         <Ionicons
+//                           name="close-circle"
+//                           size={18}
+//                           color={Colors[colorScheme].defaultIcon}
+//                         />
+//                       </TouchableOpacity>
+//                     )}
+//                   </View>
+
+//                   {loading && (
+//                     <View style={styles.loadingRow}>
+//                       <ActivityIndicator />
+//                     </View>
+//                   )}
+
+//                   <FlatList
+//                     data={results}
+//                     keyExtractor={(item) => item.id}
+//                     keyboardShouldPersistTaps="handled"
+//                     contentContainerStyle={styles.resultsContainer}
+//                     renderItem={({ item }) => (
+//                       <TouchableOpacity
+//                         style={styles.resultItem}
+//                         onPress={() => handleSelectResult(item)}
+//                       >
+//                         <ThemedText style={styles.resultLabel}>
+//                           {item.label}
+//                         </ThemedText>
+//                         {item.meta && (
+//                           <ThemedText style={styles.resultMeta}>
+//                             {item.meta}
+//                           </ThemedText>
+//                         )}
+//                       </TouchableOpacity>
+//                     )}
+//                     ListEmptyComponent={
+//                       !loading && searchQuery.length >= 2 ? (
+//                         <ThemedText style={styles.noResultText}>
+//                           {t("noSearchResults")}
+//                         </ThemedText>
+//                       ) : null
+//                     }
+//                   />
+//                 </View>
+//               )}
+
+//               {/* Text input */}
+//               <ThemedView style={styles.inputWrapper}>
+//                 <TextInput
+//                   style={[
+//                     styles.modalInput,
+//                     {
+//                       color: colorScheme === "dark" ? "#fff" : "#000",
+//                       textAlign: rtl ? "right" : "left",
+//                       backgroundColor: Colors[colorScheme].contrast,
+//                     },
+//                   ]}
+//                   value={newTodo}
+//                   onChangeText={setNewTodo}
+//                   placeholder={t("enterTodo")}
+//                   placeholderTextColor={
+//                     colorScheme === "dark" ? "#999" : "#999"
+//                   }
+//                   multiline
+//                 />
+//               </ThemedView>
+
+//               {/* Selected links */}
+//               {internalUrls.length > 0 && (
+//                 <ThemedView style={styles.linksContainer}>
+//                   {internalUrls.map((url, index) => (
+//                     <View
+//                       key={`internal-url-${index}-${url}`}
+//                       style={styles.linkRow}
+//                     >
+//                       <RenderLink url={url} index={index} isExternal={false} />
+//                       <TouchableOpacity
+//                         onPress={() => handleRemoveLink(url)}
+//                         style={styles.removeLinkButton}
+//                       >
+//                         <Ionicons
+//                           name="close"
+//                           size={14}
+//                           color={colorScheme === "dark" ? "#fff" : "#000"}
+//                         />
+//                       </TouchableOpacity>
+//                     </View>
+//                   ))}
+//                 </ThemedView>
+//               )}
+
+//               {/* Buttons */}
+//               <View style={styles.modalButtonsContainer}>
+//                 <TouchableOpacity
+//                   style={[styles.modalButton, styles.cancelButton]}
+//                   onPress={handleClose}
+//                 >
+//                   <ThemedText style={styles.modalButtonText}>
+//                     {t("cancel")}
+//                   </ThemedText>
+//                 </TouchableOpacity>
+
+//                 <TouchableOpacity
+//                   style={[styles.modalButton, styles.addModalButton]}
+//                   onPress={handleAddPress}
+//                 >
+//                   <ThemedText
+//                     style={[styles.modalButtonText, { color: "#fff" }]}
+//                   >
+//                     {t("add")}
+//                   </ThemedText>
+//                 </TouchableOpacity>
+//               </View>
+//             </ThemedView>
+//           </View>
+//         </TouchableWithoutFeedback>
+//       </KeyboardAvoidingView>
+//     </Modal>
+//   );
+// };
+
+// /* ------------ styles ------------ */
+
+// const styles = StyleSheet.create({
+//   modalOverlay: {
+//     flex: 1,
+//     backgroundColor: "rgba(0,0,0,0.5)",
+//     justifyContent: "flex-end",
+//   },
+//   modalContent: {
+//     maxHeight: "85%",
+//     borderTopLeftRadius: 20,
+//     borderTopRightRadius: 20,
+//     padding: 20,
+//     overflow: "hidden",
+//   },
+//   modalHeader: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     marginBottom: 12,
+//   },
+//   modalTitle: {
+//     fontSize: 18,
+//     fontWeight: "600",
+//   },
+//   headerRight: {
+//     flex: 1,
+//     flexDirection: "row",
+//     justifyContent: "flex-end",
+//     alignItems: "center",
+//     marginLeft: 10,
+//     gap: 8,
+//   },
+//   iconButton: {
+//     padding: 4,
+//   },
+//   closeButton: {
+//     padding: 4,
+//   },
+
+//   searchOverlay: {
+//     marginBottom: 12,
+//     borderRadius: 14,
+//     borderBottomWidth: 0.5,
+//   },
+//   searchOverlayHeader: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     marginBottom: 6,
+//   },
+//   backBtn: {
+//     paddingRight: 4,
+//     paddingVertical: 2,
+//     marginRight: 4,
+//   },
+//   searchTitle: {
+//     fontSize: 16,
+//     fontWeight: "600",
+//   },
+
+//   filterRow: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     marginBottom: 6,
+//     gap: 6,
+//     flexWrap: "wrap",
+//   },
+//   filterChip: {
+//     paddingHorizontal: 10,
+//     paddingVertical: 4,
+//     borderRadius: 999,
+//     borderWidth: StyleSheet.hairlineWidth,
+//     borderColor: "rgba(150,150,150,0.6)",
+//   },
+//   filterChipActive: {
+//     backgroundColor: Colors.universal.primary,
+//     borderColor: Colors.universal.primary,
+//   },
+//   filterChipText: {
+//     fontSize: 12,
+//   },
+//   filterChipTextActive: {
+//     color: "#fff",
+//     fontWeight: "600",
+//   },
+
+//   searchOverlayInputWrapper: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     paddingVertical: 6,
+//     borderRadius: 10,
+//     marginBottom: 6,
+//     gap: 4,
+//   },
+//   searchOverlayInput: {
+//     flex: 1,
+//     fontSize: 15,
+//   },
+//   loadingRow: {
+//     paddingVertical: 4,
+//   },
+//   resultsContainer: {
+//     paddingVertical: 4,
+//   },
+//   resultItem: {
+//     paddingVertical: 8,
+//     paddingHorizontal: 6,
+//     borderRadius: 8,
+//   },
+//   resultLabel: {
+//     fontSize: 15,
+//   },
+//   resultMeta: {
+//     fontSize: 12,
+//     opacity: 0.6,
+//   },
+//   noResultText: {
+//     textAlign: "center",
+//     paddingVertical: 10,
+//     fontSize: 14,
+//     opacity: 0.7,
+//   },
+
+//   inputWrapper: {
+//     borderRadius: 10,
+//     marginBottom: 10,
+//   },
+//   modalInput: {
+//     borderRadius: 10,
+//     padding: 12,
+//     minHeight: 80,
+//     maxHeight: 200,
+//     fontSize: 16,
+//     marginBottom: 10,
+//   },
+
+//   linksContainer: {
+//     marginBottom: 14,
+//     gap: 6,
+//   },
+//   linkRow: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//   },
+//   removeLinkButton: {
+//     padding: 4,
+//     marginLeft: 4,
+//   },
+
+//   modalButtonsContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     gap: 10,
+//   },
+//   modalButton: {
+//     flex: 1,
+//     borderRadius: 10,
+//     paddingVertical: 12,
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+//   cancelButton: {
+//     backgroundColor: "rgba(160,160,160,0.15)",
+//   },
+//   addModalButton: {
+//     backgroundColor: "#4CAF50",
+//   },
+//   modalButtonText: {
+//     fontSize: 16,
+//     fontWeight: "600",
+//   },
+// });
+
+// export default AddTodoModal;

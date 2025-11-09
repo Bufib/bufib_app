@@ -113,7 +113,6 @@ const handleOpenInternalUrl = async (
           pathname: ROUTES.quran,
           params: {
             suraId: String(verse.sura),
-            verseId: String(verse.aya),
           },
         });
         return;
