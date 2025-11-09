@@ -622,6 +622,7 @@ export const TodoList = ({
             <InlineTodoText
               text={todo.text}
               internalUrls={todo.internal_urls}
+              isDone={todo.completed}
               style={[
                 styles.todoText,
                 rtl
@@ -685,7 +686,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   todoTextCompleted: {
-    textDecorationLine: "line-through",
     opacity: 0.6,
   },
   deleteButton: {

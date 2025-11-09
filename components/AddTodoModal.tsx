@@ -3558,17 +3558,6 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                 />
               </ThemedView>
 
-              {/* Hint text when links are added */}
-              {internalUrls.length > 0 && (
-                <ThemedText style={styles.hintText}>
-                  {internalUrls.length}{" "}
-                  {internalUrls.length === 1
-                    ? t("link") || "link"
-                    : t("links") || "links"}{" "}
-                  {t("added") || "added"}
-                </ThemedText>
-              )}
-
               {/* Buttons */}
               <View style={styles.modalButtonsContainer}>
                 <TouchableOpacity
@@ -3640,8 +3629,8 @@ const styles = StyleSheet.create({
 
   // Minimal Search Overlay
   searchOverlay: {
-     marginBottom: 12,
-  maxHeight: 500, // Fi
+    marginBottom: 12,
+    maxHeight: 500, // Fi
   },
   searchHeader: {
     flexDirection: "row",

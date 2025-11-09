@@ -239,6 +239,8 @@ interface InlineTodoTextProps {
   text: string;
   internalUrls?: string[];
   style?: StyleProp<TextStyle>;
+  isDone?: boolean
+
 }
 
 /**
@@ -251,6 +253,7 @@ export const InlineTodoText: React.FC<InlineTodoTextProps> = ({
   text,
   internalUrls = [],
   style,
+  isDone = false
 }) => {
   const { rtl } = useLanguage();
 
@@ -302,6 +305,7 @@ export const InlineTodoText: React.FC<InlineTodoTextProps> = ({
           url={url}
           index={linkIndex}
           isExternal={false}
+          isDone={isDone}
         />
       );
     } else {

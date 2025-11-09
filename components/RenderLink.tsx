@@ -93,6 +93,7 @@ type RenderLinkProps = {
   url: string;
   index: number;
   isExternal: boolean;
+  isDone?: boolean;
 };
 
 type ParsedInternal =
@@ -177,7 +178,12 @@ const buildQuranLabel = (
   return identifier;
 };
 
-const RenderLink = ({ url, index, isExternal }: RenderLinkProps) => {
+const RenderLink = ({
+  url,
+  index,
+  isExternal,
+  isDone = false,
+}: RenderLinkProps) => {
   const colorScheme = useColorScheme() || "light";
   const { rtl, lang } = useLanguage();
 
@@ -284,10 +290,18 @@ const RenderLink = ({ url, index, isExternal }: RenderLinkProps) => {
         name={isExternal ? "external-link" : "link"}
         size={14}
         color={colorScheme === "dark" ? "#fff" : "#000"}
-        style={{ paddingRight: 5 }}
+        style={[
+          { paddingRight: 5 },
+          isDone && { textDecorationLine: "line-through", opacity: 0.6 },
+        ]}
       />
       <ThemedText
-        style={[styles.linkText, { textAlign: rtl ? "right" : "left" }]}
+        style={[
+          styles.linkText,
+          { textAlign: rtl ? "right" : "left" },
+
+          isDone && { opacity: 0.6 },
+        ]}
         numberOfLines={1}
         ellipsizeMode="tail"
       >
