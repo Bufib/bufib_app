@@ -69,6 +69,7 @@
 
 // export default RenderLink;
 
+//! Last that worked
 import React, { useEffect, useState, useCallback } from "react";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
 import Feather from "@expo/vector-icons/Feather";

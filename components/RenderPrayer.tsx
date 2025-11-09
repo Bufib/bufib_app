@@ -710,6 +710,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
   Keyboard,
+  Animated,
 } from "react-native";
 import { getPrayerWithTranslations } from "@/db/queries/prayers";
 import {
@@ -744,6 +745,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import PrayerInformationModal from "./PrayerInformationModal";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { StatusBar } from "expo-status-bar";
+import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
@@ -814,6 +816,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const [showScrollUp, setShowScrollUp] = useState(false);
   const showUpRef = useRef(false);
   const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
+  const { fadeAnim, onLayout } = useScreenFadeIn(600);
 
   // 2) memoize rules once per font/theme
   const mdRules = useMemo(
@@ -1040,7 +1043,13 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   }
 
   return (
-    <ThemedView style={[styles.container]}>
+    <Animated.View
+      onLayout={onLayout}
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background, opacity: fadeAnim },
+      ]}
+    >
       {/* Content */}
       <FlatList
         ref={flashListRef}
@@ -1287,7 +1296,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         onClose={() => setPickerVisible(false)}
       />
       <StatusBar style="light" />
-    </ThemedView>
+    </Animated.View>
   );
 };
 

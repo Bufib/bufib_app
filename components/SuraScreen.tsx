@@ -2861,6 +2861,7 @@ import {
   FlatList,
   Alert,
   Modal,
+  Animated,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -2893,6 +2894,7 @@ import { useQuranAudio } from "@/hooks/useQuranAudio";
 import { RECITERS, type ReciterId } from "@/hooks/useQuranAudio";
 import { Color } from "@cloudinary/url-gen/qualifiers";
 import { Text } from "react-native";
+import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 
 const SuraScreen: React.FC = () => {
   const colorScheme = useColorScheme() || "light";
@@ -2936,6 +2938,7 @@ const SuraScreen: React.FC = () => {
   const flatListRef = useRef<FlatList<QuranVerseType>>(null);
   const [showArrow, setShowArrow] = useState(false);
   const showArrowRef = useRef(false);
+  const { fadeAnim, onLayout } = useScreenFadeIn(600);
 
   const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
 
@@ -3282,7 +3285,13 @@ const SuraScreen: React.FC = () => {
   );
 
   return (
-    <ThemedView style={styles.container}>
+    <Animated.View
+      onLayout={onLayout}
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background, opacity: fadeAnim },
+      ]}
+    >
       {loading ? (
         <View style={styles.loadingWrap}>
           <LoadingIndicator size="large" />
@@ -3322,7 +3331,6 @@ const SuraScreen: React.FC = () => {
           ListHeaderComponentStyle={{}}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
-          
           ListEmptyComponent={
             <ThemedText style={[styles.emptyText, { fontSize: fontSize }]}>
               {t("noData")}
@@ -3564,7 +3572,7 @@ const SuraScreen: React.FC = () => {
           </ThemedView>
         </ThemedView>
       </Modal>
-    </ThemedView>
+    </Animated.View>
   );
 };
 
