@@ -588,6 +588,7 @@ import { Colors } from "@/constants/Colors";
 import { Image } from "expo-image";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+import indexVideos from "@/app/(tabs)/knowledge/videos/indexVideos";
 
 const renderScene = SceneMap({
   questionsScreen: indexQuestion,
@@ -595,6 +596,7 @@ const renderScene = SceneMap({
   calendarScreen: indexCalandar,
   quranScreen: indexQuran,
   historyScreen: indexHistory,
+  videoScreen: indexVideos,
 });
 
 export default function TopNavigationKnowledge() {
@@ -629,6 +631,11 @@ export default function TopNavigationKnowledge() {
         key: "historyScreen",
         title: "",
         icon: require("@/assets/images/historyHeaderLogo.png"),
+      },
+      {
+        key: "videoScreen",
+        title: "",
+        icon: require("@/assets/images/videos.png"),
       },
     ],
     []
@@ -708,6 +715,19 @@ export default function TopNavigationKnowledge() {
             ),
           },
           historyScreen: {
+            icon: ({ route, focused }) => (
+              <Image
+                source={route.icon}
+                contentFit="contain"
+                style={{
+                  width: 35,
+                  height: 35,
+                  opacity: focused ? 1 : 0.6,
+                }}
+              />
+            ),
+          },
+          videoScreen: {
             icon: ({ route, focused }) => (
               <Image
                 source={route.icon}
