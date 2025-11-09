@@ -1,10 +1,8 @@
 import * as React from "react";
-import { useRef, useEffect } from "react";
 import {
   useWindowDimensions,
   useColorScheme,
   Animated,
-  Easing,
 } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import FavoriteNewsArticles from "@/app/(tabs)/favorites/favoriteNewsArticles";

@@ -459,12 +459,14 @@ const styles = StyleSheet.create({
   emptyPrayerForDay: {
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: 10,
+    marginTop: 10,
+    marginHorizontal: 15,
   },
   emptyDayText: {
+    flex: 1,
     opacity: 0.8,
-    flexWrap: "wrap",
     lineHeight: 25,
   },
   addButton: {
