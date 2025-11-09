@@ -3169,13 +3169,29 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
     onClose();
   };
 
+  //! One fix für empty
+  // const handleAddPress = () => {
+  //   const text = newTodo.trim();
+  //   if (!text && internalUrls.length === 0) return;
+  //   onAdd(text, internalUrls);
+  //   handleClose();
+  // };
+
   const handleAddPress = () => {
     const text = newTodo.trim();
-    if (!text && internalUrls.length === 0) return;
-    onAdd(text, internalUrls);
+
+    // Count placeholders in text
+    const placeholderCount = (text.match(/\{\{[^}]+\}\}/g) || []).length;
+
+    // Only keep URLs that have corresponding placeholders
+    const validUrlCount = Math.min(internalUrls.length, placeholderCount);
+    const validUrls = internalUrls.slice(0, validUrlCount);
+
+    if (!text && validUrls.length === 0) return;
+
+    onAdd(text, validUrls);
     handleClose();
   };
-
   const handleOpenSearch = () => {
     setSearchExpanded(true);
     setSearchQuery("");
