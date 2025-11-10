@@ -713,7 +713,7 @@ const styles = StyleSheet.create({
   pinIconStyle: {
     flex: 1,
     alignSelf: "flex-end",
-    transform: [{ rotateY: "180deg" }],
+    // transform: [{ rotateY: "180deg" }],
   },
   newsMenu: {
     backgroundColor: "transparent",

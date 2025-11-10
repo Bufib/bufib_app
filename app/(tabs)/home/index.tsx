@@ -13,7 +13,7 @@ import { useNewsArticles } from "@/hooks/useNewsArticles";
 import { usePodcasts } from "@/hooks/usePodcasts";
 import { useAuthStore } from "@/stores/authStore";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
-import { Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -127,19 +127,30 @@ export default function HomeScreen() {
         {/* News Articles Section */}
         {articles.length > 0 && (
           <View style={styles.newsArticleContainer}>
-            <ThemedText
-              type="titleBiggerLessBold"
-              style={[
-                styles.titleShadow,
-                {
-                  shadowColor: Colors[colorScheme].shadow,
-                  lineHeight: 40,
-                  marginHorizontal: 16,
-                },
-              ]}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
             >
-              {t("newsArticlesTitle")}
-            </ThemedText>
+              <ThemedText
+                type="titleBiggerLessBold"
+                style={[
+                  styles.titleShadow,
+                  {
+                    shadowColor: Colors[colorScheme].shadow,
+                    lineHeight: 40,
+                    marginHorizontal: 16,
+                  },
+                ]}
+              >
+                {t("newsArticlesTitle")}
+              </ThemedText>
+              <ThemedText style={{ marginRight: 15 }}>
+                {t("showAll")}
+              </ThemedText>
+            </View>
 
             {newsArticlesIsLoading && (
               <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
@@ -208,20 +219,30 @@ export default function HomeScreen() {
         {/* Podcasts Section */}
         {podcasts.length > 0 && (
           <View style={styles.podcastContainer}>
-            <ThemedText
-              type="titleBiggerLessBold"
-              style={[
-                styles.titleShadow,
-                {
-                  shadowColor: Colors[colorScheme].shadow,
-                  lineHeight: 40,
-                  marginHorizontal: 16,
-                },
-              ]}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
             >
-              {t("podcastsTitle")}
-            </ThemedText>
-
+              <ThemedText
+                type="titleBiggerLessBold"
+                style={[
+                  styles.titleShadow,
+                  {
+                    shadowColor: Colors[colorScheme].shadow,
+                    lineHeight: 40,
+                    marginHorizontal: 16,
+                  },
+                ]}
+              >
+                {t("podcastsTitle")}
+              </ThemedText>
+              <ThemedText style={{ marginRight: 15 }} >
+                {t("showAll")}
+              </ThemedText>
+            </View>
             {podcastsLoading && (
               <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
             )}
@@ -461,7 +482,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginRight: 15
+    marginRight: 15,
   },
   titleShadow: {
     shadowOffset: {

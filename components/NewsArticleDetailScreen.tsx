@@ -1,5 +1,3 @@
-// //! Better performance withput fontsize and favorites
-
 // import { Colors } from "@/constants/Colors";
 // import { NewsArticlesType } from "@/constants/Types";
 // import { useLanguage } from "@/contexts/LanguageContext";
@@ -57,10 +55,27 @@
 //   const { lang, rtl } = useLanguage();
 //   const { fetchNewsArticleById } = useNewsArticles(lang);
 //   const { triggerRefreshFavorites } = useRefreshFavorites();
+
 //   const [article, setArticle] = useState<NewsArticlesType | null>(null);
 //   const [isLoading, setIsLoading] = useState(true);
 //   const [error, setError] = useState<string | null>(null);
+
+//   // Favorite state + toggle
 //   const [isFavorite, setIsFavorite] = useState(false);
+
+//   const onPressToggle = useCallback(async () => {
+//     if (!articleId) return;
+//     try {
+//       const newFavStatus = await toggleNewsArticleFavorite(articleId, lang);
+//       setIsFavorite(newFavStatus);
+//       triggerRefreshFavorites();
+//     } catch (e) {
+//       console.log("Failed to toggle favorite", e);
+//     }
+//   }, [articleId, lang, triggerRefreshFavorites]);
+
+//   // Font-size modal visibility
+//   const [fontModalVisible, setFontModalVisible] = useState(false);
 
 //   // Absolute bookmark offset (content coords)
 //   const [bookmarkOffsetY, setBookmarkOffsetY] = useState<number | null>(null);
@@ -132,18 +147,37 @@
 //     };
 //   }, [articleId, lang]);
 
+//   // useEffect(() => {
+//   //   (async () => {
+//   //     try {
+//   //       const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
+//   //       if (!raw) return;
+//   //       const saved: SavedBookmark = JSON.parse(raw);
+//   //       if (typeof saved?.offsetY === "number")
+//   //         setBookmarkOffsetY(saved.offsetY);
+//   //     } catch (e) {
+//   //       console.log("Failed to load bookmark", e);
+//   //     }
+//   //   })();
+//   // }, [articleId, lang]);
+
 //   useEffect(() => {
+//     let cancelled = false;
 //     (async () => {
 //       try {
 //         const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
-//         if (!raw) return;
+//         if (!raw || cancelled) return;
 //         const saved: SavedBookmark = JSON.parse(raw);
-//         if (typeof saved?.offsetY === "number")
+//         if (typeof saved?.offsetY === "number" && !cancelled) {
 //           setBookmarkOffsetY(saved.offsetY);
+//         }
 //       } catch (e) {
-//         console.log("Failed to load bookmark", e);
+//         if (!cancelled) console.log("Failed to load bookmark", e);
 //       }
 //     })();
+//     return () => {
+//       cancelled = true;
+//     };
 //   }, [articleId, lang]);
 
 //   const saveBookmark = useCallback(
@@ -183,7 +217,7 @@
 //       ],
 //       { cancelable: true }
 //     );
-//   }, [articleId, lang]);
+//   }, [articleId, lang, t]);
 
 //   const jumpToBookmark = useCallback(() => {
 //     if (bookmarkOffsetY == null) return;
@@ -191,6 +225,31 @@
 //     flatListRef.current?.scrollToOffset({ offset: target, animated: true });
 //   }, [bookmarkOffsetY]);
 
+//   // Initialize favorite status on mount/article change
+
+//   useEffect(() => {
+//     let cancelled = false;
+
+//     (async () => {
+//       try {
+//         if (!articleId) return;
+//         const fav = await isNewsArticleFavorited(articleId, lang);
+//         if (!cancelled) {
+//           setIsFavorite(fav);
+//         }
+//       } catch (e) {
+//         if (!cancelled) {
+//           console.log("Failed to load favorite state", e);
+//         }
+//       }
+//     })();
+
+//     return () => {
+//       cancelled = true;
+//     };
+//   }, [articleId, lang]);
+
+//   // Long press to set bookmark
 //   const handleLongPress = useCallback(
 //     (e: GestureResponderEvent) => {
 //       const { pageY } = e.nativeEvent as any;
@@ -217,28 +276,6 @@
 //     [bookmarkOffsetY, containerTop, saveBookmark, t]
 //   );
 
-//   useEffect(() => {
-//     (async () => {
-//       try {
-//         setIsFavorite(await isNewsArticleFavorited(articleId));
-//       } catch {
-//         console.log("error");
-//       }
-//     })();
-//   }, [articleId]);
-
-//   const onPressToggle = useCallback(async () => {
-//     if (!articleId) return;
-
-//     try {
-//       const newFavStatus = await toggleNewsArticleFavorite(articleId);
-//       setIsFavorite(newFavStatus);
-//       triggerRefreshFavorites();
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }, [articleId, triggerRefreshFavorites]);
-
 //   const mdRules = useMemo(() => {
 //     return {
 //       paragraph: (node: any, children: any) => (
@@ -247,9 +284,10 @@
 //           style={{
 //             color: Colors[colorScheme].text,
 //             fontSize,
-//             lineHeight: lineHeight * 1.6,
+//             lineHeight: lineHeight * 1.3,
 //             marginBottom: 20,
 //             fontFamily: "System",
+//             textAlign:"left"
 //           }}
 //         >
 //           {children}
@@ -439,7 +477,7 @@
 //         </Pressable>
 //       );
 //     },
-//     [article, colorScheme, fontSize, handleLongPress, mdRules, rtl, t]
+//     [article, colorScheme, fontSize, mdRules, handleLongPress, t, rtl]
 //   );
 
 //   if (isLoading) {
@@ -461,10 +499,13 @@
 
 //   if (error || !article) {
 //     return (
-//       <View
+//       <ThemedView
 //         style={[
-//           styles.container,
-//           { backgroundColor: Colors[colorScheme].background },
+//           {
+//             flex: 1,
+//             backgroundColor: Colors[colorScheme].background,
+//             justifyContent: "center",
+//           },
 //         ]}
 //       >
 //         <View style={styles.errorContainer}>
@@ -495,7 +536,7 @@
 //             {error}
 //           </Text>
 //         )}
-//       </View>
+//       </ThemedView>
 //     );
 //   }
 
@@ -516,6 +557,7 @@
 //       <Text style={[styles.heroTitle, { color: Colors[colorScheme].text }]}>
 //         {article.title}
 //       </Text>
+
 //       <View style={styles.articleMetaContainer}>
 //         <View style={styles.articleMetaSupcontainer}>
 //           <View
@@ -545,6 +587,7 @@
 //               />
 //             ) : null}
 //           </View>
+
 //           <View style={styles.nameDateTime}>
 //             <Text
 //               style={[styles.authorName, { color: Colors[colorScheme].text }]}
@@ -576,10 +619,38 @@
 //                 </Text>
 //               </View>
 //             </View>
+
+//             {/* ACTIONS: Favorite + Font size */}
+//             <View style={[styles.actionsRow]}>
+//               <Ionicons
+//                 name="text"
+//                 size={28}
+//                 color={Colors[colorScheme].defaultIcon}
+//                 onPress={() => setFontModalVisible(true)}
+//                 accessibilityRole="button"
+//                 accessibilityLabel={t("changeFontSize")}
+//               />
+
+//               <Ionicons
+//                 name={isFavorite ? "star" : "star-outline"}
+//                 size={25}
+//                 color={
+//                   isFavorite
+//                     ? Colors.universal.favorite
+//                     : Colors[colorScheme].defaultIcon
+//                 }
+//                 onPress={onPressToggle}
+//                 accessibilityRole="button"
+//                 accessibilityLabel={
+//                   isFavorite ? t("removeFromFavorites") : t("addToFavorites")
+//                 }
+//                 style={[styles.actionBtn, {}]}
+//               />
+//             </View>
 //           </View>
 //         </View>
-
 //       </View>
+
 //       <View
 //         style={[styles.border, { backgroundColor: Colors[colorScheme].border }]}
 //       >
@@ -590,7 +661,6 @@
 //           ]}
 //         />
 //       </View>
-
 //     </View>
 //   );
 
@@ -621,9 +691,7 @@
 //         ListHeaderComponent={header}
 //         onScroll={Animated.event(
 //           [{ nativeEvent: { contentOffset: { y: scrollYAV } } }],
-//           {
-//             useNativeDriver: true,
-//           }
+//           { useNativeDriver: true }
 //         )}
 //         scrollEventThrottle={16}
 //         showsVerticalScrollIndicator
@@ -632,7 +700,7 @@
 //         windowSize={3}
 //       />
 
-//       {/* Overlay (native-thread transform; no re-renders on scroll) */}
+//       {/* Bookmark overlay (no re-renders on scroll) */}
 //       {bookmarkOffsetY !== null && (
 //         <View pointerEvents="box-none" style={StyleSheet.absoluteFillObject}>
 //           <Animated.View
@@ -671,7 +739,11 @@
 //         </View>
 //       )}
 
-//       <FontSizePickerModal visible={false} onClose={() => {}} />
+//       {/* Font-size picker modal */}
+//       <FontSizePickerModal
+//         visible={fontModalVisible}
+//         onClose={() => setFontModalVisible(false)}
+//       />
 
 //       {bookmarkOffsetY != null && (
 //         <TouchableOpacity style={styles.jumpBtn} onPress={jumpToBookmark}>
@@ -732,6 +804,7 @@
 //   nameDateTime: {
 //     flexDirection: "column",
 //     gap: 2,
+//     flex: 1,
 //   },
 //   nameDateTimeSubcontainer: {
 //     flexDirection: "row",
@@ -752,7 +825,6 @@
 //     fontSize: 14,
 //     marginTop: 5,
 //   },
-//   metaRight: {},
 //   readTime: {
 //     flexDirection: "row",
 //     alignItems: "center",
@@ -763,6 +835,26 @@
 //   readTimeText: {
 //     fontSize: 14,
 //     fontWeight: "500",
+//   },
+
+//   // NEW: actions
+//   actionsRow: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     alignSelf: "flex-start",
+//     borderRadius: 10,
+//     marginTop: 8,
+//     gap: 10,
+//   },
+//   actionBtn: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+//   actionBtnText: {
+//     fontSize: 25.7,
+//     fontWeight: "600",
 //   },
 
 //   contentSection: { flex: 1 },
@@ -776,7 +868,8 @@
 //   },
 //   borderFill: { height: "100%", borderRadius: 2 },
 
-//   articleContent: { paddingHorizontal: 30 },
+//   //! Here
+//   articleContent: { paddingHorizontal: 15 },
 
 //   loadingContainer: {
 //     flex: 1,
@@ -816,7 +909,7 @@
 //     paddingHorizontal: 24,
 //   },
 
-//   // Bookmark overlay (absolute, top=0 then animated translateY)
+//   // Bookmark overlay
 //   bookmarkLine: {
 //     position: "absolute",
 //     left: 0,
@@ -872,7 +965,6 @@
 //     elevation: 4,
 //   },
 // });
-
 import { Colors } from "@/constants/Colors";
 import { NewsArticlesType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -1150,18 +1242,25 @@ export default function NewsArticleDetailScreen({
     },
     [bookmarkOffsetY, containerTop, saveBookmark, t]
   );
-
   const mdRules = useMemo(() => {
+    const baseText = {
+      color: Colors[colorScheme].text,
+      width: "100%",
+      alignSelf: "stretch",
+    } as const;
+
     return {
       paragraph: (node: any, children: any) => (
         <Text
           key={node?.key}
           style={{
-            color: Colors[colorScheme].text,
+            ...baseText,
             fontSize,
             lineHeight: lineHeight * 1.3,
             marginBottom: 20,
             fontFamily: "System",
+            textAlign: rtl ? "right" : "left",
+            flexShrink: 1,
           }}
         >
           {children}
@@ -1171,12 +1270,13 @@ export default function NewsArticleDetailScreen({
         <Text
           key={node?.key}
           style={{
-            color: Colors[colorScheme].text,
+            ...baseText,
             fontSize: fontSize * 1.8,
             fontWeight: "800",
             marginBottom: 20,
             marginTop: 32,
             letterSpacing: -0.5,
+            flexShrink: 1,
           }}
         >
           {children}
@@ -1186,12 +1286,13 @@ export default function NewsArticleDetailScreen({
         <Text
           key={node?.key}
           style={{
-            color: Colors[colorScheme].text,
+            ...baseText,
             fontSize: fontSize * 1.5,
             fontWeight: "700",
             marginBottom: 16,
             marginTop: 28,
             letterSpacing: -0.3,
+            flexShrink: 1,
           }}
         >
           {children}
@@ -1351,7 +1452,7 @@ export default function NewsArticleDetailScreen({
         </Pressable>
       );
     },
-    [article, colorScheme, fontSize, mdRules, lang]
+    [article, colorScheme, fontSize, mdRules, handleLongPress, t, rtl]
   );
 
   if (isLoading) {
@@ -1742,7 +1843,12 @@ const styles = StyleSheet.create({
   },
   borderFill: { height: "100%", borderRadius: 2 },
 
-  articleContent: { paddingHorizontal: 30 },
+  //! Here
+  articleContent: {
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+    alignSelf: "stretch",
+  },
 
   loadingContainer: {
     flex: 1,

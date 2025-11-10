@@ -849,6 +849,7 @@ import { setDatabase } from "../db";
 import { migrateDbIfNeeded, DB_NAME } from "@/db/migrates";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { ThemedText } from "@/components/ThemedText";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 // If removeEventListener doesn’t exist, patch it on-the-fly:
 if (typeof (BackHandler as any).removeEventListener !== "function") {
