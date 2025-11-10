@@ -90,6 +90,8 @@ const Muhammad = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         bounces={false}
+        overScrollMode="never"
+        alwaysBounceVertical={false}
       >
         {/* Hero Header */}
         <LinearGradient

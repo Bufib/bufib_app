@@ -849,7 +849,7 @@ export default function LoginScreen() {
         topOffset: 60,
       });
 
-      router.replace("./(askQuestion)/");
+      router.replace("/(askQuestion)");
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(t("loginFailed"), error.message);
@@ -872,12 +872,14 @@ export default function LoginScreen() {
         contentContainerStyle={styles.scrollViewContent}
         keyboardShouldPersistTaps="handled"
         bounces={false}
+        overScrollMode="never"
+        alwaysBounceVertical={false}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.formWrapper}>
           <View style={[styles.contentContainer, themeStyles.contrast]}>
             <ThemedText style={styles.title} type="title">
-              {t("adminLoginTitle")}
+              {t("login")}
             </ThemedText>
 
             {/* EMAIL FIELD */}

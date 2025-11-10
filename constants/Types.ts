@@ -570,8 +570,9 @@ export type CalendarType = {
 };
 export type calendarLegendType = {
   id: number;
-  type: string;
+  legend_type: string;
   created_at: string;
+  color: string
 };
 
 export type CalendarSectionType = { title: string; data: CalendarType[] };

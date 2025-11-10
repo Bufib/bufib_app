@@ -415,7 +415,7 @@ function VerseCard({
             style={[
               styles.arabic,
               rtl
-                ? { fontSize: fontSize * 1.8, lineHeight: lineHeight * 2.3 }
+                ? { fontSize: fontSize * 1.8, lineHeight: lineHeight * 2.3,  }
                 : { fontSize: fontSize * 1.5, lineHeight: lineHeight * 2 },
             ]}
           >
@@ -425,7 +425,7 @@ function VerseCard({
 
         {!!transliterationText && (
           <View
-            style={{ width: "100%" }}
+            style={{ width: "90%" }}
             onLayout={(e) => {
               const w = e.nativeEvent.layout.width;
               if (w > 0 && w !== htmlWidth) setHtmlWidth(w);

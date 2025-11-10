@@ -465,9 +465,14 @@
 //   },
 // });
 
-
 import React, { useEffect, useState } from "react";
-import { StyleSheet, useColorScheme, View, SectionList, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  useColorScheme,
+  View,
+  SectionList,
+  TouchableOpacity,
+} from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import CalendarLegend from "./CalendarLegend";
@@ -492,7 +497,9 @@ const RenderCalendar: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState<CalendarSectionType[]>([]);
   const [nextUpcomingDiff, setNextUpcomingDiff] = useState<number | null>(null);
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
+    new Set()
+  );
   const calendarVersion = useDataVersionStore((s) => s.calendarVersion);
 
   // Fetch calendar data and legend names
@@ -595,16 +602,16 @@ const RenderCalendar: React.FC = () => {
     section: CalendarSectionType;
   }) => {
     const isCollapsed = collapsedSections.has(section.title);
-    
+
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={() => toggleSection(section.title)}
         activeOpacity={0.7}
       >
         <View style={styles.sectionHeaderRow}>
-          <Entypo 
-            name={isCollapsed ? "chevron-right" : "chevron-down"} 
-            size={26} 
+          <Entypo
+            name={isCollapsed ? "chevron-right" : "chevron-down"}
+            size={26}
             color={Colors[colorScheme].text}
             style={styles.chevronIcon}
           />
@@ -628,7 +635,13 @@ const RenderCalendar: React.FC = () => {
   };
 
   // Render individual calendar event card
-  const renderItem = ({ item, section }: { item: CalendarType; section: CalendarSectionType }) => {
+  const renderItem = ({
+    item,
+    section,
+  }: {
+    item: CalendarType;
+    section: CalendarSectionType;
+  }) => {
     // Don't render if section is collapsed
     if (collapsedSections.has(section.title)) {
       return null;
@@ -675,8 +688,11 @@ const RenderCalendar: React.FC = () => {
           borderLeftWidth: 4,
           borderLeftColor: colorScheme === "dark" ? "#505456ff" : "#9CA3AF", // Darker gray for light mode
         }
-      : {};
+      : {
+          borderLeftWidth: 4,
 
+          borderLeftColor: badgeColor,
+        };
     return (
       <View
         style={[

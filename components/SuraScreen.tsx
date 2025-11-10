@@ -3304,6 +3304,8 @@ const SuraScreen: React.FC = () => {
           // extraData={listExtraData}
           keyExtractor={(v) => `${v.sura}-${v.aya}`}
           bounces={false}
+          overScrollMode="never"
+          alwaysBounceVertical={false}
           renderItem={renderVerse}
           onViewableItemsChanged={onViewableItemsChanged}
           onScrollToIndexFailed={(info) => {
@@ -3417,7 +3419,6 @@ const SuraScreen: React.FC = () => {
                     size={28}
                     color={Colors[colorScheme].defaultIcon}
                   />
-                  
                 </TouchableOpacity>
               </View>
 

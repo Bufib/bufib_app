@@ -1,15 +1,18 @@
-//! Without sync all languages
+// //! Last worked
+
+// // export default syncCalendar;
+
 // import { supabase } from "@/utils/supabase";
 // import { getDatabase } from "..";
+// import { useDataVersionStore } from "@/stores/dataVersionStore";
 
-// async function syncCalendar(language: string): Promise<void> {
+// export default async function syncCalendar(): Promise<void> {
 //   try {
-//     // 1) Fetch remote data in parallel (scope both to the same language)
+//     // 1) Fetch ALL languages
 //     const [legendRes, calRes] = await Promise.all([
 //       supabase
 //         .from("calendarLegend")
 //         .select("id, legend_type, created_at, language_code")
-//         .eq("language_code", language)
 //         .order("id", { ascending: true }),
 //       supabase
 //         .from("calendar")
@@ -19,7 +22,6 @@
 //           description, legend_type, created_at, language_code
 //         `
 //         )
-//         .eq("language_code", language)
 //         .order("id", { ascending: true }),
 //     ]);
 
@@ -40,20 +42,16 @@
 //       (db as any).withExclusiveTransactionAsync?.bind(db) ??
 //       db.withTransactionAsync.bind(db);
 
-//     // 2) Single transaction: prune then upsert
+//     // 2) Single transaction: full replace (all languages)
 //     await runTx(async (txn: any) => {
-//       // a) prune old data (delete children first for future FK-safety)
-//       await txn.runAsync(`DELETE FROM calendar WHERE language_code = ?;`, [
-//         language,
-//       ]);
-//       await txn.runAsync(
-//         `DELETE FROM calendarLegend WHERE language_code = ?;`,
-//         [language]
-//       );
+//       // a) wipe local data
+//       await txn.runAsync(`DELETE FROM calendar;`);
+//       await txn.runAsync(`DELETE FROM calendarLegend;`);
 
-//       // b) upsert calendarLegend
+//       // b) upsert legends
 //       const typeStmt = await txn.prepareAsync(
-//         `INSERT OR REPLACE INTO calendarLegend (id, created_at, legend_type, language_code)
+//         `INSERT OR REPLACE INTO calendarLegend
+//            (id, created_at, legend_type, language_code)
 //          VALUES (?, ?, ?, ?);`
 //       );
 //       for (const t of legends) {
@@ -78,7 +76,7 @@
 //           r.id,
 //           r.title,
 //           r.islamic_date,
-//           r.gregorian_date, // ISO "YYYY-MM-DD" recommended in SQLite
+//           r.gregorian_date, // ISO "YYYY-MM-DD" recommended
 //           r.description ?? null,
 //           r.legend_type,
 //           r.created_at,
@@ -88,13 +86,16 @@
 //       await calStmt.finalizeAsync();
 //     });
 
-//     console.log(`Calendar + calendarLegend synced for '${language}'.`);
+//     console.log(
+//       `Calendar & calendarLegend synced (FULL replace, ALL languages).`
+//     );
+//     // Increment the calendar version after successful sync
+//     const { incrementCalendarVersion } = useDataVersionStore.getState();
+//     incrementCalendarVersion();
 //   } catch (err) {
 //     console.error("Critical error in syncCalendar:", err);
 //   }
 // }
-
-// export default syncCalendar;
 
 import { supabase } from "@/utils/supabase";
 import { getDatabase } from "..";
@@ -102,11 +103,10 @@ import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default async function syncCalendar(): Promise<void> {
   try {
-    // 1) Fetch ALL languages
     const [legendRes, calRes] = await Promise.all([
       supabase
         .from("calendarLegend")
-        .select("id, legend_type, created_at, language_code")
+        .select("id, legend_type, created_at, language_code, color")
         .order("id", { ascending: true }),
       supabase
         .from("calendar")
@@ -136,17 +136,16 @@ export default async function syncCalendar(): Promise<void> {
       (db as any).withExclusiveTransactionAsync?.bind(db) ??
       db.withTransactionAsync.bind(db);
 
-    // 2) Single transaction: full replace (all languages)
     await runTx(async (txn: any) => {
-      // a) wipe local data
+      // wipe
       await txn.runAsync(`DELETE FROM calendar;`);
       await txn.runAsync(`DELETE FROM calendarLegend;`);
 
-      // b) upsert legends
+      // legends
       const typeStmt = await txn.prepareAsync(
         `INSERT OR REPLACE INTO calendarLegend
-           (id, created_at, legend_type, language_code)
-         VALUES (?, ?, ?, ?);`
+           (id, created_at, legend_type, language_code, color)  -- ⬅️ add color
+         VALUES (?, ?, ?, ?, ?);` // ⬅️ 5 values
       );
       for (const t of legends) {
         await typeStmt.executeAsync([
@@ -154,11 +153,12 @@ export default async function syncCalendar(): Promise<void> {
           t.created_at,
           t.legend_type,
           t.language_code,
+          t.color, // ⬅️ make sure Supabase has this; NOT NULL in schema
         ]);
       }
       await typeStmt.finalizeAsync();
 
-      // c) upsert calendar rows
+      // calendar rows (unchanged)
       const calStmt = await txn.prepareAsync(
         `INSERT OR REPLACE INTO calendar
            (id, title, islamic_date, gregorian_date, description,
@@ -170,7 +170,7 @@ export default async function syncCalendar(): Promise<void> {
           r.id,
           r.title,
           r.islamic_date,
-          r.gregorian_date, // ISO "YYYY-MM-DD" recommended
+          r.gregorian_date,
           r.description ?? null,
           r.legend_type,
           r.created_at,
@@ -183,7 +183,7 @@ export default async function syncCalendar(): Promise<void> {
     console.log(
       `Calendar & calendarLegend synced (FULL replace, ALL languages).`
     );
-    // Increment the calendar version after successful sync
+
     const { incrementCalendarVersion } = useDataVersionStore.getState();
     incrementCalendarVersion();
   } catch (err) {

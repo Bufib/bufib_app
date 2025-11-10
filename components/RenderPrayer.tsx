@@ -819,6 +819,12 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
   const { fadeAnim, onLayout } = useScreenFadeIn(600);
 
+  const baseText = {
+    color: Colors[colorScheme].text,
+    width: "90%",
+    alignSelf: "center",
+  } as const;
+
   // 2) memoize rules once per font/theme
   const mdRules = useMemo(
     () => makeMarkdownRules(fontSize, Colors[colorScheme].text),
@@ -829,6 +835,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const mdStyleArabic = useMemo(
     () => ({
       body: {
+        ...baseText,
         fontSize: fontSize * 1.3,
         lineHeight,
         color: Colors[colorScheme].prayerArabicText,
@@ -842,6 +849,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const mdStyleTranslit = useMemo(
     () => ({
       body: {
+        ...baseText,
         fontSize,
         lineHeight,
         color: Colors[colorScheme].prayerTransliterationText,
@@ -856,6 +864,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const mdStyleTranslation = useMemo(
     () => ({
       body: {
+        ...baseText,
         fontSize,
         lineHeight,
         marginTop: 4,
@@ -868,6 +877,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const mdStyleNotes = useMemo(
     () => ({
       body: {
+        ...baseText,
         fontSize,
         lineHeight,
         color: Colors[colorScheme].text,
@@ -1061,6 +1071,8 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         stickyHeaderIndices={[0]}
         stickyHeaderHiddenOnScroll
         bounces={false}
+        overScrollMode="never"
+        alwaysBounceVertical={false}
         extraData={listExtraData}
         ListHeaderComponent={
           <View

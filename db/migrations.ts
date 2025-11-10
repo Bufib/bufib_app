@@ -285,11 +285,13 @@ export const migrationSQL = `
   );
 
   -- CALENDAR
+  
   CREATE TABLE IF NOT EXISTS calendarLegend (
   id            INTEGER PRIMARY KEY,
   created_at    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   legend_type   TEXT NOT NULL,
-  language_code TEXT NOT NULL
+  language_code TEXT NOT NULL,
+  color TEXT NOT NULL
 );
   CREATE TABLE IF NOT EXISTS calendar (
     id INTEGER PRIMARY KEY,
