@@ -84,7 +84,7 @@ export const getQuestion = async (
 //       SELECT * FROM questions
 //       WHERE title = ?
 //       AND language_code = ?;
-      
+
 //     `,
 //       [questionTitle, language]
 //     );
@@ -116,8 +116,6 @@ export const getQuestionInternalURL = async (
     return null;
   }
 };
-
-
 
 export const getLatestQuestions = async (
   language: string
@@ -196,32 +194,38 @@ export const toggleQuestionFavorite = async (
 };
 
 export const getRelatedQuestions = async (
-  questionId: number
+  questionId: number,
+  language: string
 ): Promise<QuestionType[]> => {
   const db = getDatabase();
 
-  // 1) Read the JSON array from the source question
+  // 1) Read the JSON array from the source question (language-specific)
   const row = await db.getFirstAsync<{ related_question: string | null }>(
-    `SELECT related_question
-       FROM questions
-      WHERE id = ?
-      LIMIT 1;`,
-    [questionId]
+    `
+    SELECT related_question
+    FROM questions
+    WHERE id = ? AND language_code = ?
+    LIMIT 1;
+    `,
+    [questionId, language]
   );
+
   if (!row?.related_question) return [];
 
-  // 2) Expand JSON and join back to questions
-  return await db.getAllAsync<QuestionType>(
+  // 2) Expand JSON and fetch related questions in the same language
+  return db.getAllAsync<QuestionType>(
     `
     SELECT q.*
-      FROM json_each(?) AS j
-      JOIN questions AS q
-        ON q.id = CAST(j.value AS INTEGER)
-     ORDER BY CAST(j.key AS INTEGER);  -- preserves input array order
+    FROM json_each(?) AS j
+    JOIN questions AS q
+      ON q.id = CAST(j.value AS INTEGER)
+    WHERE q.language_code = ?
+    ORDER BY CAST(j.key AS INTEGER); -- preserve JSON array order
     `,
-    [row.related_question]
+    [row.related_question, language]
   );
 };
+
 // Helper to escape special characters for a LIKE query
 const escapeLikePattern = (value: string): string => {
   return value.replace(/([%_\\])/g, "\\$1");

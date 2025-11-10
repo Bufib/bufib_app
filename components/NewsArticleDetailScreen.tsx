@@ -937,6 +937,7 @@ export default function NewsArticleDetailScreen({
 
   // Favorite state + toggle
   const [isFavorite, setIsFavorite] = useState(false);
+
   const onPressToggle = useCallback(async () => {
     if (!articleId) return;
     try {
@@ -944,9 +945,9 @@ export default function NewsArticleDetailScreen({
       setIsFavorite(newFavStatus);
       triggerRefreshFavorites();
     } catch (e) {
-      console.log(e);
+      console.log("Failed to toggle favorite", e);
     }
-  }, [articleId, triggerRefreshFavorites]);
+  }, [articleId, lang, triggerRefreshFavorites]);
 
   // Font-size modal visibility
   const [fontModalVisible, setFontModalVisible] = useState(false);
@@ -1100,30 +1101,28 @@ export default function NewsArticleDetailScreen({
   }, [bookmarkOffsetY]);
 
   // Initialize favorite status on mount/article change
-  useEffect(() => {
-    (async () => {
-      try {
-        setIsFavorite(await isNewsArticleFavorited(articleId));
-      } catch {
-        console.log("error");
-      }
-    })();
-  }, [articleId]);
 
   useEffect(() => {
     let cancelled = false;
+
     (async () => {
       try {
-        const fav = await isNewsArticleFavorited(articleId);
-        if (!cancelled) setIsFavorite(fav);
-      } catch {
-        if (!cancelled) console.log("error");
+        if (!articleId) return;
+        const fav = await isNewsArticleFavorited(articleId, lang);
+        if (!cancelled) {
+          setIsFavorite(fav);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          console.log("Failed to load favorite state", e);
+        }
       }
     })();
+
     return () => {
       cancelled = true;
     };
-  }, [articleId]);
+  }, [articleId, lang]);
 
   // Long press to set bookmark
   const handleLongPress = useCallback(
@@ -1160,7 +1159,7 @@ export default function NewsArticleDetailScreen({
           style={{
             color: Colors[colorScheme].text,
             fontSize,
-            lineHeight: lineHeight * 1.6,
+            lineHeight: lineHeight * 1.3,
             marginBottom: 20,
             fontFamily: "System",
           }}
@@ -1497,35 +1496,30 @@ export default function NewsArticleDetailScreen({
 
             {/* ACTIONS: Favorite + Font size */}
             <View style={[styles.actionsRow]}>
-              <TouchableOpacity
+              <Ionicons
+                name="text"
+                size={28}
+                color={Colors[colorScheme].defaultIcon}
                 onPress={() => setFontModalVisible(true)}
                 accessibilityRole="button"
                 accessibilityLabel={t("changeFontSize")}
-                style={[styles.actionBtn, {}]}
-              >
-                <ThemedText type="subtitle" style={[styles.actionBtnText, {}]}>
-                  Aa
-                </ThemedText>
-              </TouchableOpacity>
+              />
 
-              <TouchableOpacity
+              <Ionicons
+                name={isFavorite ? "star" : "star-outline"}
+                size={25}
+                color={
+                  isFavorite
+                    ? Colors.universal.favorite
+                    : Colors[colorScheme].defaultIcon
+                }
                 onPress={onPressToggle}
                 accessibilityRole="button"
                 accessibilityLabel={
                   isFavorite ? t("removeFromFavorites") : t("addToFavorites")
                 }
                 style={[styles.actionBtn, {}]}
-              >
-                <Ionicons
-                  name={isFavorite ? "star" : "star-outline"}
-                  size={25}
-                  color={
-                    isFavorite
-                      ? Colors.universal.favorite
-                      : Colors[colorScheme].defaultIcon
-                  }
-                />
-              </TouchableOpacity>
+              />
             </View>
           </View>
         </View>
@@ -1724,7 +1718,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "flex-start",
     borderRadius: 10,
-    overflow: "hidden",
     marginTop: 8,
     gap: 10,
   },

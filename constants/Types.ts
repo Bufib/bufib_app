@@ -3,7 +3,6 @@ export type LanguageCode = "de" | "ar" | "en";
 
 export type InternalLinkType = "questionLink" | "prayerLink" | "quranLink";
 
-
 export type LanguageContextType = {
   lang: LanguageCode; // <— always defined
   setAppLanguage: (lng: LanguageCode) => Promise<void>;
@@ -226,7 +225,7 @@ export type SearchResult = {
   type: InternalLinkType;
   identifier: string; // used to build internal URL identifier
   meta?: string;
-}
+};
 
 // Account
 export type SignUpFormValues = {
@@ -473,7 +472,6 @@ export type UseWeeklyTodosResult = {
   undoAllForDay: (day: number) => void;
 };
 
-
 export type WeeklyCalendarSectionType = {
   todosByDay: WeeklyTodosType;
   loading: boolean;
@@ -595,6 +593,35 @@ export type SuraType = {
   ruku?: number;
 };
 
+export type FavoriteSuraType = {
+  id: number;
+  sura: number;
+  created_at: string;
+};
+export type FavoriteQuranItemType = {
+  type: "verse" | "sura" | "juz" | "page";
+  id: string;
+  title: string;
+  subtitle?: string;
+  sura?: number;
+  aya?: number;
+  juz?: number;
+  page?: number;
+  created_at: string;
+};
+
+export type FavoriteJuzType = {
+  id: number;
+  juz: number;
+  created_at: string;
+};
+
+export type FavoritePageType = {
+  id: number;
+  page: number;
+  created_at: string;
+};
+
 export type QuranInternalResultType = {
   sura: number;
   aya: number;
@@ -619,8 +646,10 @@ export type UseSuraDataParams = {
 export type StickyHeaderQuranPropsType = {
   suraNumber: number;
   suraInfo: SuraRowType | null;
-  displayName: string;
-  juzHeader: { title: string; subtitle?: string } | null;
+  displayName: string | null;
+  juzHeader?: { title: string; subtitle?: string } | null;
+  juzNumber?: number | null; // Add this
+  pageNumber?: number | null; // Add this
 };
 export interface AyahType {
   id: number;

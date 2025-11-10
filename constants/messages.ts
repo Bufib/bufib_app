@@ -49,7 +49,7 @@ export const logoutSuccess = () => {
 export const removeFavoriteToast = () => {
   return Toast.show({
     type: "error",
-    text1: "Die Frage wurde aus deinen Favoriten entfernt!",
+    text1: i18n.t("removedFromFavorites"),
     text1Style: { fontWeight: "500" },
     topOffset: 60,
   });
@@ -58,7 +58,7 @@ export const removeFavoriteToast = () => {
 export const addFavoriteToast = () => {
   return Toast.show({
     type: "success",
-    text1: "Die Frage wurde deinen Favoriten hinzugefügt!",
+    text1: i18n.t("addedToFavorites"),
     text1Style: { fontWeight: "500" },
     topOffset: 60,
   });
@@ -93,7 +93,7 @@ export const userQuestionsNewAnswerForQuestions = () => {
     text1Style: { fontWeight: "500" },
     topOffset: 60,
     onPress() {
-      router.push("/(askQuestion)/");
+      router.push("/(askQuestion)");
     },
   });
 };

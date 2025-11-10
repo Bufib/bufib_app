@@ -284,15 +284,13 @@ export const migrationSQL = `
     language_code TEXT NOT NULL UNIQUE
   );
 
-
-
+  -- CALENDAR
   CREATE TABLE IF NOT EXISTS calendarLegend (
   id            INTEGER PRIMARY KEY,
   created_at    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   legend_type   TEXT NOT NULL,
   language_code TEXT NOT NULL
 );
-  -- CALENDAR
   CREATE TABLE IF NOT EXISTS calendar (
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
@@ -395,6 +393,33 @@ export const migrationSQL = `
     endPage INTEGER NOT NULL,
     ruku INTEGER
   );
+
+  CREATE TABLE IF NOT EXISTS favorite_quran (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    sura       INTEGER NOT NULL,
+    aya        INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    UNIQUE(sura, aya)
+  );
+
+  CREATE TABLE IF NOT EXISTS favorite_sura (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sura INTEGER NOT NULL UNIQUE,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS favorite_juz (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    juz INTEGER NOT NULL UNIQUE,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS favorite_page (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    page INTEGER NOT NULL UNIQUE,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+  );
+
   -- order-based navigation
   CREATE INDEX IF NOT EXISTS idx_sura_order ON sura(orderId);
   -- (moved here) page → sura lookups if you use them
@@ -408,7 +433,10 @@ export const migrationSQL = `
   CREATE UNIQUE INDEX IF NOT EXISTS uq_ruku_sura_aya     ON ruku(sura, aya);
   CREATE UNIQUE INDEX IF NOT EXISTS uq_sajda_sura_aya    ON sajda(sura, aya);
   CREATE UNIQUE INDEX IF NOT EXISTS uq_juz_page_sura_aya ON juz(page, sura, aya);
-
+  CREATE INDEX IF NOT EXISTS idx_favorite_quran_sura_aya ON favorite_quran(sura, aya);
+  CREATE INDEX IF NOT EXISTS idx_favorite_sura_created ON favorite_sura(created_at);
+  CREATE INDEX IF NOT EXISTS idx_favorite_juz_created ON favorite_juz(created_at);
+  CREATE INDEX IF NOT EXISTS idx_favorite_page_created ON favorite_page(created_at);
 
   -- QUESTIONS
   CREATE TABLE IF NOT EXISTS question_categories (

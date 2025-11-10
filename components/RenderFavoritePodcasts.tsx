@@ -78,7 +78,6 @@ export default function RenderFavoritePodcasts() {
       const { data, error } = await supabase
         .from("podcasts")
         .select("*")
-        .eq("language_code", lang)
         .in("id", ids)
         .order("created_at", { ascending: false });
       if (error) throw error;

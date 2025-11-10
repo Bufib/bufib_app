@@ -25,6 +25,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
+import { Ionicons } from "@expo/vector-icons";
 
 function RenderFavoriteQuestions() {
   const [questions, setQuestions] = useState<QuestionType[]>([]);
@@ -139,15 +140,15 @@ function RenderFavoriteQuestions() {
               {item.question}
             </ThemedText>
           </View>
-          <Entypo
-            name="chevron-thin-right"
+          <Ionicons
+            name="chevron-forward"
             size={24}
-            color={colorScheme === "dark" ? "#fff" : "#000"}
+            color={Colors[colorScheme].defaultIcon}
           />
         </ThemedView>
       </Pressable>
     ),
-    [colorScheme, lang]
+    [colorScheme]
   );
 
   if (error && !isLoading && questions.length === 0) {
@@ -236,7 +237,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   questionText: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: "left",
     color: "#666",
   },

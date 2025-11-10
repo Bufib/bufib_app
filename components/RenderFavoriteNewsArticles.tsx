@@ -75,7 +75,6 @@ export default function RenderFavoriteNewsArticles() {
       const { data, error } = await supabase
         .from("news_articles")
         .select("*")
-        .eq("language_code", lang) // keep language scope consistent
         .in("id", ids)
         .order("created_at", { ascending: false });
       if (error) throw error;

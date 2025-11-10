@@ -98,6 +98,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import i18n from "./i18n";
+import { addFavoriteToast, removeFavoriteToast } from "@/constants/messages";
 
 /**
  * Per-language favorites storage for news & podcasts.
@@ -154,12 +155,10 @@ async function toggleGeneric(
   const exists = ids.includes(nId);
   const next = exists ? ids.filter((x) => x !== nId) : [...ids, nId];
   await writeIds(prefix, lang, next);
-
-  Toast.show({
-    type: exists ? "error" : "success",
-    text1: exists ? i18n.t("removedFromFavorites") : i18n.t("addedToFavorites"),
-  });
-
+  const existsToast = () => {
+    return exists ? removeFavoriteToast() : addFavoriteToast();
+  };
+  existsToast();
   return !exists; // new favorited state
 }
 

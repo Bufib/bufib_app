@@ -2938,7 +2938,7 @@ const SuraScreen: React.FC = () => {
   const flatListRef = useRef<FlatList<QuranVerseType>>(null);
   const [showArrow, setShowArrow] = useState(false);
   const showArrowRef = useRef(false);
-  const { fadeAnim, onLayout } = useScreenFadeIn(600);
+  const { fadeAnim, onLayout } = useScreenFadeIn(800);
 
   const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
 
@@ -3323,6 +3323,8 @@ const SuraScreen: React.FC = () => {
               suraInfo={suraInfo}
               displayName={displayName}
               juzHeader={juzHeader}
+              juzNumber={juzNumber} // Add this
+              pageNumber={pageNumber}
             />
           }
           stickyHeaderIndices={[0]}
