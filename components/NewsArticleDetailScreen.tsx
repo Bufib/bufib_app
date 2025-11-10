@@ -965,6 +965,9 @@
 //     elevation: 4,
 //   },
 // });
+
+//! Last worked
+
 import { Colors } from "@/constants/Colors";
 import { NewsArticlesType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -1245,8 +1248,8 @@ export default function NewsArticleDetailScreen({
   const mdRules = useMemo(() => {
     const baseText = {
       color: Colors[colorScheme].text,
-      width: "100%",
-      alignSelf: "stretch",
+      width: "90%",
+      alignSelf: "center",
     } as const;
 
     return {
@@ -1257,9 +1260,8 @@ export default function NewsArticleDetailScreen({
             ...baseText,
             fontSize,
             lineHeight: lineHeight * 1.3,
-            marginBottom: 20,
+            paddingBottom: 20,
             fontFamily: "System",
-            textAlign: rtl ? "right" : "left",
             flexShrink: 1,
           }}
         >
@@ -1420,7 +1422,6 @@ export default function NewsArticleDetailScreen({
                       style={{
                         color: Colors[colorScheme].text,
                         fontSize: 14,
-                        textAlign: "justify",
                       }}
                     >
                       {children}
@@ -1845,9 +1846,7 @@ const styles = StyleSheet.create({
 
   //! Here
   articleContent: {
-    paddingHorizontal: 24,
     paddingBottom: 40,
-    alignSelf: "stretch",
   },
 
   loadingContainer: {

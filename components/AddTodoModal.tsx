@@ -3486,7 +3486,7 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                     {searchQuery.length > 0 && (
                       <TouchableOpacity onPress={() => setSearchQuery("")}>
                         <Ionicons
-                          name="close-circle"
+                          name="close-circle-outline"
                           size={18}
                           color={Colors[colorScheme].defaultIcon}
                           style={{ opacity: 0.4 }}

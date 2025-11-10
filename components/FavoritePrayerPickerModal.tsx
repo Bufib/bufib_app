@@ -388,7 +388,7 @@ import {
 } from "@/constants/Types";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { Colors } from "@/constants/Colors";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "./ThemedText";
 
 type Props = {
@@ -599,8 +599,8 @@ export default function FavoritePrayerPickerModal({
           <ThemedText style={styles.sectionTitle}>
             {t("selectFolder")}
           </ThemedText>
-          <AntDesign
-            name="close-circle"
+          <Ionicons
+            name="close-circle-outline"
             size={24}
             color={Colors[colorScheme].defaultIcon}
             onPress={() => closeSheet()}

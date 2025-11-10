@@ -11,6 +11,7 @@ import Toast from "react-native-toast-message";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageCode } from "@/constants/Types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 type DonationAlertProps = {
   isVisible: boolean;
   onClose: () => void;
@@ -60,8 +61,8 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
         >
           {/* Close Button */}
           <Pressable style={styles.closeButton} onPress={onClose}>
-            <AntDesign
-              name="close-circle"
+            <Ionicons
+              name="close-circle-outline"
               size={22}
               color={colorScheme === "dark" ? "#fff" : "#333"}
             />

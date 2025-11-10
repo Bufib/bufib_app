@@ -45,6 +45,12 @@ const RenderQuestion = ({
   const { lang } = useLanguage();
   const timeoutsRef = useRef<number[]>([]);
 
+  const baseText = {
+    color: Colors[colorScheme].text,
+    width: "90%",
+    alignSelf: "center",
+  } as const;
+
   useEffect(() => {
     let cancelled = false;
 
@@ -173,7 +179,7 @@ const RenderQuestion = ({
       timeoutsRef.current = [];
     };
   }, []);
-  
+
   return (
     <View
       style={[
@@ -220,7 +226,7 @@ const RenderQuestion = ({
                 <Markdown
                   style={{
                     body: {
-                      ...themeStyles.text,
+                      ...baseText,
                       fontSize: fontSize,
                       lineHeight: lineHeight,
                     },
@@ -261,7 +267,7 @@ const RenderQuestion = ({
                   <Markdown
                     style={{
                       body: {
-                        ...themeStyles.text,
+                        ...baseText,
                         fontSize: fontSize,
                         lineHeight: lineHeight,
                       },
@@ -301,7 +307,7 @@ const RenderQuestion = ({
                   <Markdown
                     style={{
                       body: {
-                        ...themeStyles.text,
+                        ...baseText,
                         fontSize: fontSize,
                         lineHeight: lineHeight,
                       },

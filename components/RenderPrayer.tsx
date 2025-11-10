@@ -746,6 +746,7 @@ import PrayerInformationModal from "./PrayerInformationModal";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { StatusBar } from "expo-status-bar";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 type PrayerWithTranslations = PrayerType & {
   translations: PrayerWithTranslationType[];
@@ -807,7 +808,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const { t } = useTranslation();
   const { lang, rtl } = useLanguage();
   const flashListRef = useRef<any>(null);
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
   const snapPoints = useMemo(() => ["70%"], []);
   const { fontSize, lineHeight } = useFontSizeStore();
   const [fontSizeModalVisible, setFontSizeModalVisible] = useState(false);

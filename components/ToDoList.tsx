@@ -643,7 +643,7 @@ export const TodoList = ({
               <Ionicons
                 name="close-circle-outline"
                 size={22}
-                color={colorScheme === "dark" ? "#999" : "#777"}
+                color={Colors[colorScheme].defaultIcon}
               />
             </TouchableOpacity>
           </View>

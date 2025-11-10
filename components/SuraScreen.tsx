@@ -3413,10 +3413,11 @@ const SuraScreen: React.FC = () => {
                   style={styles.closeButton}
                 >
                   <Ionicons
-                    name="close-circle"
+                    name="close-circle-outline"
                     size={28}
                     color={Colors[colorScheme].defaultIcon}
                   />
+                  
                 </TouchableOpacity>
               </View>
 
