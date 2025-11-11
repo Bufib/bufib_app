@@ -61,10 +61,11 @@
 //   };
 // };
 
-import { useState } from "react";
+// useFetchUserQuestion
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
-import { useSupabaseRealtime } from "@/components/SupabaseRealtimeProvider";
+import { useAuthStore } from "@/stores/authStore";
 
 export type AskQuestionFormData = {
   title: string;
@@ -74,8 +75,8 @@ export type AskQuestionFormData = {
 
 export const useFetchUserQuestions = () => {
   const queryClient = useQueryClient();
-  const { userId } = useSupabaseRealtime(); // Get userId from context
-  const [hasUpdate, setHasUpdate] = useState(false);
+  const session = useAuthStore((state) => state.session);
+  const userId = session?.user?.id ?? null;
 
   /**
    * Fetch all questions using useQuery (no pagination)
@@ -107,13 +108,11 @@ export const useFetchUserQuestions = () => {
     await queryClient.invalidateQueries({
       queryKey: ["questionsFromUser", userId],
     });
-    setHasUpdate(false);
   };
 
   return {
     ...queryResult,
-    isInitializing: false, // No longer needed as auth state is managed by context
-    hasUpdate,
+    isInitializing: false,
     handleRefresh,
   };
 };

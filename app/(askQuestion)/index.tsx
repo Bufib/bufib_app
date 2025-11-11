@@ -24,14 +24,21 @@ import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
+import { useQueryClient } from "@tanstack/react-query";
+
 export default function Index() {
   // 1. Check auth state from the store
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const themeStyles = CoustomTheme();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const session = useAuthStore.getState().session;
+  const userId = session?.user?.id ?? null;
   // Track connection status
   const hasInternet = useConnectionStatus();
-
+  const userQuestionVersion = useDataVersionStore((s) => s.userQuestionVersion);
+  console.log(userQuestionVersion);
   // 2. If not logged in, redirect to login
   useEffect(() => {
     if (!isLoggedIn) {
@@ -43,7 +50,6 @@ export default function Index() {
   const {
     data: questions,
     isLoading,
-    isRefetching,
     refetch,
     isError,
   } = useFetchUserQuestions();
@@ -119,9 +125,7 @@ export default function Index() {
             ]}
             onPress={() => refetch()}
           >
-            <ThemedText style={styles.retryButtonText}>
-              Versuch es nochmal
-            </ThemedText>
+            <ThemedText style={styles.retryButtonText}>{t("retry")}</ThemedText>
           </Pressable>
         </View>
         <Toast />
@@ -152,20 +156,26 @@ export default function Index() {
         renderItem={renderQuestion}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
+        extraData={userQuestionVersion}
         contentContainerStyle={[
           styles.listContainer,
           questions?.length === 0 && !isLoading && styles.emptyListContainer,
         ]}
         refreshControl={
           <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={() => {
-              // If user is offline, skip or show a message
+            refreshing={false}
+            onRefresh={async () => {
               if (!hasInternet) {
-                // e.g. Alert.alert("Offline", "Kein Internet. Bitte später erneut versuchen.");
+                Toast.show({
+                  type: "error",
+                  text1: t("noInternetTitle"),
+                });
                 return;
               }
-              refetch();
+
+              await queryClient.invalidateQueries({
+                queryKey: ["questionsFromUser", userId],
+              });
             }}
           />
         }

@@ -24,6 +24,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 export default function QuestionDetailScreen() {
   const { questionId } = useLocalSearchParams();
   const queryClient = useQueryClient();
@@ -35,6 +36,7 @@ export default function QuestionDetailScreen() {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { rtl } = useLanguage();
+  const userQuestionVersion = useDataVersionStore((s) => s.userQuestionVersion);
 
   // 4. If user is not logged in, redirect to login
   useEffect(() => {
@@ -55,55 +57,52 @@ export default function QuestionDetailScreen() {
 
   // Check if user has already read this question and update Supabase
   useEffect(() => {
+    // ✅ Create a flag to prevent updates after unmount
+    let isMounted = true;
+
     const checkIfHasRead = async () => {
-      if (!questionId || !question || !question.answer) {
-        console.log(!!question?.answer);
+      if (!questionId || !question?.answer) {
         return;
       }
 
       try {
-        // Load the stored list (or empty array) of already read answer IDs
         const stored = await AsyncStorage.getItem("hasReadAnswers");
         const ids = stored ? JSON.parse(stored) : [];
-        // Check if the current questionId is already in the list
+
+        // ✅ Check if still mounted before state updates
+        if (!isMounted) return;
+
         if (!ids.includes(questionId)) {
-          // If not in the list, add it and update local storage
           const updated = [...ids, questionId];
           await AsyncStorage.setItem("hasReadAnswers", JSON.stringify(updated));
 
-          // Now, update the Supabase row to mark it as read
-          try {
-            const { error } = await supabase
-              .from("user_questions")
-              .update({
-                has_read_answer: true,
-                has_read_at: new Date().toISOString(),
-              }) // Use .update() instead of .insert()
-              .eq("id", questionId); // Specify the row to update by its ID
+          if (!isMounted) return; // Check again before Supabase call
 
-            if (error) {
-              console.error(
-                "Error updating has_read_answer in Supabase:",
-                error.message
-              );
-            } else {
-              console.log(`Question ${questionId} marked as read in Supabase.`);
-            }
-          } catch (error) {
-            console.error("Supabase update failed:", error);
+          const { error } = await supabase
+            .from("user_questions")
+            .update({
+              has_read_answer: true,
+              has_read_at: new Date().toISOString(),
+            })
+            .eq("id", questionId);
+
+          if (error) {
+            console.error("Error updating has_read_answer:", error.message);
+          } else {
+            console.log(`Question ${questionId} marked as read.`);
           }
-        } else {
-          console.log(`Question ${questionId} already marked as read.`);
         }
       } catch (err) {
         console.error("Error accessing read-answers storage:", err);
       }
     };
 
-    if (question) {
-      checkIfHasRead();
-    }
-  }, [questionId, question]);
+    checkIfHasRead();
+
+    return () => {
+      isMounted = false; // ✅ Cleanup flag
+    };
+  }, [questionId, question?.id, question?.answer]);
 
   // Helper function to format the read time as a countdown
   const formatReadTime = (timestamp: any) => {

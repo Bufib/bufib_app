@@ -1459,7 +1459,7 @@ const styles = StyleSheet.create({
   },
   modalQuestionText: {
     fontSize: 14,
-    color: "#ccc",
+    color: "#666"
   },
   modalButtonContainer: {
     flexDirection: "row",

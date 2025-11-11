@@ -1011,6 +1011,7 @@ import React, {
   useEffect,
   useState,
   ReactNode,
+  useCallback,
 } from "react";
 import { supabase } from "@/utils/supabase";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
@@ -1020,6 +1021,7 @@ import {
   NewsArticlesType,
   NewsType,
   PodcastType,
+  QuestionsFromUserType,
   SupabaseRealtimeContextType,
   VideoCategoryType,
   VideoType,
@@ -1029,6 +1031,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 import { useDataVersionStore } from "@/stores/dataVersionStore"; // NEW
 import { userQuestionsNewAnswerForQuestions } from "@/constants/messages";
+import { router } from "expo-router";
 
 const SupabaseRealtimeContext = createContext<SupabaseRealtimeContextType>({
   userId: null,
@@ -1041,16 +1044,13 @@ export const SupabaseRealtimeProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [userId, setUserId] = useState<string | null>(null);
   const [hasNewNewsData, setHasNewNewsData] = useState(false);
-
   const { lang } = useLanguage();
-
   const queryClient = useQueryClient();
   const isAdmin = useAuthStore((s) => s.isAdmin);
   const session = useAuthStore((state) => state.session);
   const { t } = useTranslation();
-
+  const userId = session?.user?.id ?? null;
   // NEW: stable references to incrementers (no effect deps needed)
   const incrementNewsArticleVersion =
     useDataVersionStore.getState().incrementNewsArticleVersion;
@@ -1058,6 +1058,8 @@ export const SupabaseRealtimeProvider = ({
     useDataVersionStore.getState().incrementPodcastVersion;
   const incrementVideoVersion =
     useDataVersionStore.getState().incrementVideoVersion;
+  const incrementUserQuestionVersion =
+    useDataVersionStore.getState().incrementUserQuestionVersion;
 
   // ---------- Helpers ----------
 
@@ -1072,126 +1074,228 @@ export const SupabaseRealtimeProvider = ({
     return (next?.language_code ?? prev?.language_code) || undefined;
   };
 
-  const invalidateByLang = (baseKey: string, lang?: string) => {
-    if (lang) {
+  // const invalidateByLang = (baseKey: string, lang?: string) => {
+  //   if (lang) {
+  //     return queryClient.invalidateQueries({
+  //       queryKey: [baseKey, lang],
+  //       refetchType: "all",
+  //     });
+  //   }
+  //   return queryClient.invalidateQueries({
+  //     queryKey: [baseKey],
+  //     refetchType: "all",
+  //   });
+  // };
+
+  const invalidateByLang = useCallback(
+    (baseKey: string, lang?: string) => {
+      if (lang) {
+        return queryClient.invalidateQueries({
+          queryKey: [baseKey, lang],
+          refetchType: "all",
+        });
+      }
       return queryClient.invalidateQueries({
-        queryKey: [baseKey, lang],
+        queryKey: [baseKey],
         refetchType: "all",
       });
-    }
-    return queryClient.invalidateQueries({
-      queryKey: [baseKey],
-      refetchType: "all",
-    });
-  };
+    },
+    [queryClient]
+  );
 
   const idsEqual = (a: unknown, b: unknown) =>
     a != null && b != null && String(a) === String(b);
 
   // Patch UPDATE for InfiniteData<T[]>; if cache missing OR item not in cached pages, invalidate
-  const patchInfiniteUpdateWithFallback = async <
-    T extends { id: number | string }
-  >(
-    key: [string, string],
-    updated: T
-  ) => {
-    const cached = queryClient.getQueryData<InfiniteData<T[]>>(key);
-    if (!cached) {
-      await queryClient.invalidateQueries({
-        queryKey: key,
-        refetchType: "all",
-      });
-      return;
-    }
-    let found = false;
-    const pages = cached.pages.map((pg) =>
-      pg.map((row: any) => {
-        if (idsEqual(row?.id, (updated as any).id)) {
-          found = true;
-          return updated;
-        }
-        return row;
-      })
-    );
-    if (found) {
-      queryClient.setQueryData<InfiniteData<T[]>>(key, { ...cached, pages });
-    } else {
-      await queryClient.invalidateQueries({
-        queryKey: key,
-        refetchType: "all",
-      });
-    }
-  };
+  // const patchInfiniteUpdateWithFallback = async <
+  //   T extends { id: number | string }
+  // >(
+  //   key: [string, string],
+  //   updated: T
+  // ) => {
+  //   const cached = queryClient.getQueryData<InfiniteData<T[]>>(key);
+  //   if (!cached) {
+  //     await queryClient.invalidateQueries({
+  //       queryKey: key,
+  //       refetchType: "all",
+  //     });
+  //     return;
+  //   }
+  //   let found = false;
+  //   const pages = cached.pages.map((pg) =>
+  //     pg.map((row: any) => {
+  //       if (idsEqual(row?.id, (updated as any).id)) {
+  //         found = true;
+  //         return updated;
+  //       }
+  //       return row;
+  //     })
+  //   );
+  //   if (found) {
+  //     queryClient.setQueryData<InfiniteData<T[]>>(key, { ...cached, pages });
+  //   } else {
+  //     await queryClient.invalidateQueries({
+  //       queryKey: key,
+  //       refetchType: "all",
+  //     });
+  //   }
+  // };
+
+  const patchInfiniteUpdateWithFallback = useCallback(
+    async <T extends { id: number | string }>(
+      key: [string, string],
+      updated: T
+    ) => {
+      const cached = queryClient.getQueryData<InfiniteData<T[]>>(key);
+      if (!cached) {
+        await queryClient.invalidateQueries({
+          queryKey: key,
+          refetchType: "all",
+        });
+        return;
+      }
+      let found = false;
+      const pages = cached.pages.map((pg) =>
+        pg.map((row: any) => {
+          if (idsEqual(row?.id, (updated as any).id)) {
+            found = true;
+            return updated;
+          }
+          return row;
+        })
+      );
+      if (found) {
+        queryClient.setQueryData<InfiniteData<T[]>>(key, { ...cached, pages });
+      } else {
+        await queryClient.invalidateQueries({
+          queryKey: key,
+          refetchType: "all",
+        });
+      }
+    },
+    [queryClient]
+  );
 
   // Patch UPDATE for simple array lists; if cache missing or item not present, invalidate
-  const upsertListUpdateWithFallback = async <
-    T extends { id: number | string }
-  >(
-    key: [string, string],
-    updated: T
-  ) => {
-    const cached = queryClient.getQueryData<T[]>(key);
-    if (!cached) {
-      await queryClient.invalidateQueries({
-        queryKey: key,
-        refetchType: "all",
-      });
-      return;
-    }
-    const idx = cached.findIndex((x) => idsEqual(x.id, updated.id));
+  // const upsertListUpdateWithFallback = async <
+  //   T extends { id: number | string }
+  // >(
+  //   key: [string, string],
+  //   updated: T
+  // ) => {
+  //   const cached = queryClient.getQueryData<T[]>(key);
+  //   if (!cached) {
+  //     await queryClient.invalidateQueries({
+  //       queryKey: key,
+  //       refetchType: "all",
+  //     });
+  //     return;
+  //   }
+  //   const idx = cached.findIndex((x) => idsEqual(x.id, updated.id));
 
-    if (idx === -1) {
-      await queryClient.invalidateQueries({
-        queryKey: key,
-        refetchType: "all",
-      });
-      return;
-    }
-    const next = cached.slice();
-    next[idx] = updated;
-    queryClient.setQueryData<T[]>(key, next);
-  };
+  //   if (idx === -1) {
+  //     await queryClient.invalidateQueries({
+  //       queryKey: key,
+  //       refetchType: "all",
+  //     });
+  //     return;
+  //   }
+  //   const next = cached.slice();
+  //   next[idx] = updated;
+  //   queryClient.setQueryData<T[]>(key, next);
+  // };
 
-  // INSERT helpers (only patch if cache exists; do NOT create new caches)
-  const prependToInfiniteIfCached = <T,>(key: [string, string], item: T) => {
-    const existing = queryClient.getQueryData<InfiniteData<T[]>>(key);
-    if (!existing) return;
-    queryClient.setQueryData<InfiniteData<T[]>>(key, {
-      ...existing,
-      pages: [[item, ...(existing.pages[0] ?? [])], ...existing.pages.slice(1)],
-    });
-  };
-
-  const upsertListIfCached = <T extends { id: number | string }>(
-    key: [string, string],
-    item: T
-  ) => {
-    const existing = queryClient.getQueryData<T[]>(key);
-    if (!existing) return;
-    const idx = existing.findIndex((x) => idsEqual(x.id, item.id));
-    if (idx === -1) {
-      queryClient.setQueryData<T[]>(key, [item, ...existing]);
-    } else {
-      const next = existing.slice();
-      next[idx] = item;
+  const upsertListUpdateWithFallback = useCallback(
+    async <T extends { id: number | string }>(
+      key: [string, string],
+      updated: T
+    ) => {
+      const cached = queryClient.getQueryData<T[]>(key);
+      if (!cached) {
+        await queryClient.invalidateQueries({
+          queryKey: key,
+          refetchType: "all",
+        });
+        return;
+      }
+      const idx = cached.findIndex((x) => idsEqual(x.id, updated.id));
+      if (idx === -1) {
+        await queryClient.invalidateQueries({
+          queryKey: key,
+          refetchType: "all",
+        });
+        return;
+      }
+      const next = cached.slice();
+      next[idx] = updated;
       queryClient.setQueryData<T[]>(key, next);
-    }
-  };
+    },
+    [queryClient]
+  );
 
-  // ---------- Auth ----------
-  useEffect(() => {
-    if (session?.user?.id) {
-      setUserId(session.user.id);
-    } else {
-      setUserId(null);
-      // Clean up user-specific queries when signed out
-      queryClient.removeQueries({ queryKey: ["questionsFromUser"] });
-    }
-  }, [session, queryClient]);
+  // // INSERT helpers (only patch if cache exists; do NOT create new caches)
+  // const prependToInfiniteIfCached = <T,>(key: [string, string], item: T) => {
+  //   const existing = queryClient.getQueryData<InfiniteData<T[]>>(key);
+  //   if (!existing) return;
+  //   queryClient.setQueryData<InfiniteData<T[]>>(key, {
+  //     ...existing,
+  //     pages: [[item, ...(existing.pages[0] ?? [])], ...existing.pages.slice(1)],
+  //   });
+  // };
+
+  const prependToInfiniteIfCached = useCallback(
+    <T,>(key: [string, string], item: T) => {
+      const existing = queryClient.getQueryData<InfiniteData<T[]>>(key);
+      if (!existing) return;
+
+      queryClient.setQueryData<InfiniteData<T[]>>(key, {
+        ...existing,
+        pages: [
+          [item, ...(existing.pages[0] ?? [])],
+          ...existing.pages.slice(1),
+        ],
+      });
+    },
+    [queryClient]
+  );
+
+  // const upsertListIfCached = <T extends { id: number | string }>(
+  //   key: [string, string],
+  //   item: T
+  // ) => {
+  //   const existing = queryClient.getQueryData<T[]>(key);
+  //   if (!existing) return;
+  //   const idx = existing.findIndex((x) => idsEqual(x.id, item.id));
+  //   if (idx === -1) {
+  //     queryClient.setQueryData<T[]>(key, [item, ...existing]);
+  //   } else {
+  //     const next = existing.slice();
+  //     next[idx] = item;
+  //     queryClient.setQueryData<T[]>(key, next);
+  //   }
+  // };
+
+  // ✅ Wrap in useCallback with queryClient dependency
+  const upsertListIfCached = useCallback(
+    <T extends { id: number | string }>(key: [string, string], item: T) => {
+      const existing = queryClient.getQueryData<T[]>(key);
+      if (!existing) return;
+      const idx = existing.findIndex((x) => idsEqual(x.id, item.id));
+      if (idx === -1) {
+        queryClient.setQueryData<T[]>(key, [item, ...existing]);
+      } else {
+        const next = existing.slice();
+        next[idx] = item;
+        queryClient.setQueryData<T[]>(key, next);
+      }
+    },
+    [queryClient]
+  );
 
   // ---------- User Questions ----------
   useEffect(() => {
     if (!userId) return;
+
     const user_question_chanel = supabase
       .channel("user_questions")
       .on(
@@ -1203,22 +1307,47 @@ export const SupabaseRealtimeProvider = ({
           filter: `user_id=eq.${userId}`,
         },
         async (payload) => {
+          console.log(payload);
+
+          const key: [string, string] = ["questionsFromUser", userId];
+
           if (payload.eventType === "INSERT") {
+            upsertListIfCached(key, payload.new as QuestionsFromUserType);
+
             Toast.show({
               type: "success",
               text1: t("askQuestionQuestionSendSuccess"),
             });
-          } else if (
-            payload.eventType === "UPDATE" &&
-            (payload.new as any)?.status &&
-            ["Beantwortet", "Abgelehnt"].includes((payload.new as any).status)
-          ) {
-            userQuestionsNewAnswerForQuestions();
+            incrementUserQuestionVersion();
+            return;
           }
-          await queryClient.invalidateQueries({
-            queryKey: ["questionsFromUser", userId],
-            refetchType: "all",
-          });
+
+          if (payload.eventType === "UPDATE") {
+            // ✅ Same as Videos - patch or fallback invalidate
+            await upsertListUpdateWithFallback(
+              key,
+              payload.new as QuestionsFromUserType
+            );
+
+            if (
+              (payload.new as any)?.status &&
+              ["Beantwortet", "Abgelehnt"].includes((payload.new as any).status)
+            ) {
+              userQuestionsNewAnswerForQuestions();
+            }
+            incrementUserQuestionVersion();
+            return;
+          }
+
+          if (payload.eventType === "DELETE") {
+            await queryClient.invalidateQueries({
+              queryKey: ["questionsFromUser", userId],
+              refetchType: "all",
+            });
+            incrementUserQuestionVersion();
+            router.push("/home")
+            return;
+          }
         }
       )
       .subscribe();
@@ -1226,8 +1355,14 @@ export const SupabaseRealtimeProvider = ({
     return () => {
       supabase.removeChannel(user_question_chanel).catch(console.error);
     };
-  }, [userId, queryClient, lang]);
-
+  }, [
+    userId,
+    incrementUserQuestionVersion,
+    queryClient,
+    upsertListIfCached,
+    t,
+    upsertListUpdateWithFallback,
+  ]);
   // ---------- News (INSERT -> banner; UPDATE patch-with-fallback; DELETE invalidate) ----------
   useEffect(() => {
     const newsChannel = supabase
@@ -1282,7 +1417,13 @@ export const SupabaseRealtimeProvider = ({
     return () => {
       void supabase.removeChannel(newsChannel);
     };
-  }, [queryClient, isAdmin, lang]);
+  }, [
+    queryClient,
+    isAdmin,
+    lang,
+    invalidateByLang,
+    patchInfiniteUpdateWithFallback,
+  ]);
 
   // ---------- News Articles (InfiniteData) ----------
   useEffect(() => {
@@ -1333,7 +1474,13 @@ export const SupabaseRealtimeProvider = ({
     return () => {
       supabase.removeChannel(ch).catch(console.error);
     };
-  }, [queryClient]);
+  }, [
+    queryClient,
+    incrementNewsArticleVersion,
+    invalidateByLang,
+    patchInfiniteUpdateWithFallback,
+    prependToInfiniteIfCached,
+  ]);
 
   // ---------- Podcasts (InfiniteData) ----------
   useEffect(() => {
@@ -1384,7 +1531,13 @@ export const SupabaseRealtimeProvider = ({
     return () => {
       supabase.removeChannel(ch).catch(console.error);
     };
-  }, [queryClient]);
+  }, [
+    queryClient,
+    incrementPodcastVersion,
+    invalidateByLang,
+    patchInfiniteUpdateWithFallback,
+    prependToInfiniteIfCached,
+  ]);
 
   // ---------- Videos (simple array) ----------
   useEffect(() => {
@@ -1430,7 +1583,13 @@ export const SupabaseRealtimeProvider = ({
     return () => {
       supabase.removeChannel(ch).catch(console.error);
     };
-  }, [queryClient]);
+  }, [
+    queryClient,
+    incrementVideoVersion,
+    invalidateByLang,
+    upsertListIfCached,
+    upsertListUpdateWithFallback,
+  ]);
 
   // ---------- Video Categories (simple array) ----------
   useEffect(() => {
@@ -1481,7 +1640,13 @@ export const SupabaseRealtimeProvider = ({
     return () => {
       supabase.removeChannel(ch).catch(console.error);
     };
-  }, [queryClient]);
+  }, [
+    queryClient,
+    incrementVideoVersion,
+    invalidateByLang,
+    upsertListIfCached,
+    upsertListUpdateWithFallback,
+  ]);
 
   const clearNewNewsFlag = () => setHasNewNewsData(false);
 
