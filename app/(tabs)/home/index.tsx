@@ -1299,6 +1299,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import { LinearGradient } from "expo-linear-gradient";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+import { returnSize } from "@/utils/sizes";
 
 type ActiveSheet = "articles" | "podcasts" | null;
 
@@ -1319,8 +1320,8 @@ export default function HomeScreen() {
   const { lang } = useLanguage();
   const { fadeAnim, onLayout } = useScreenFadeIn(800);
   const isAdmin = useAuthStore((state) => state.isAdmin);
-  const { width } = useWindowDimensions();
-
+  const { width, height } = useWindowDimensions();
+  const { previewSizes } = returnSize(width, height);
   // Grid layout constants
   // const GRID_HORIZONTAL_PADDING = 10;
   // const GRID_GAP = 20;
@@ -1403,7 +1404,12 @@ export default function HomeScreen() {
   const renderArticleTile = useCallback(
     ({ item }: { item: NewsArticlesType }) => (
       <TouchableOpacity
-        style={styles.tileWrapper}
+        style={[
+          styles.tileWrapper,
+          {
+           
+          },
+        ]}
         onPress={() => {
           if (item.is_external_link) {
             handleOpenExternalUrl(item.external_link_url || "");
@@ -1421,7 +1427,7 @@ export default function HomeScreen() {
           style={[
             styles.modernTile,
             {
-              width: 200,
+              width: previewSizes,
               height: 200,
               backgroundColor: Colors[colorScheme].contrast,
               borderColor: Colors[colorScheme].border,
@@ -1502,7 +1508,7 @@ export default function HomeScreen() {
           style={[
             styles.modernTile,
             {
-              width: 200,
+              width: previewSizes,
               height: 200,
               backgroundColor: Colors[colorScheme].contrast,
               borderColor: Colors[colorScheme].border,
@@ -1887,9 +1893,10 @@ export default function HomeScreen() {
         >
           <View style={styles.sheetHeader}>
             <ThemedText type="subtitle" style={[styles.sheetTitle]}>
-              {sheetTitle} ({activeSheet === "articles" ? articles.length : podcasts.length})
+              {sheetTitle} (
+              {activeSheet === "articles" ? articles.length : podcasts.length})
             </ThemedText>
-            
+
             <TouchableOpacity onPress={closeSheet}>
               <Ionicons
                 name="close-circle-outline"
@@ -1907,7 +1914,6 @@ export default function HomeScreen() {
               columnWrapperStyle={styles.columnWrapper}
               contentContainerStyle={{
                 paddingBottom: 24,
-                paddingHorizontal: 10,
               }}
               renderItem={renderArticleTile}
               onEndReached={() => {
@@ -1937,7 +1943,6 @@ export default function HomeScreen() {
               columnWrapperStyle={styles.columnWrapper}
               contentContainerStyle={{
                 paddingBottom: 24,
-                paddingHorizontal: 10,
               }}
               renderItem={renderPodcastTile}
               onEndReached={() => {
@@ -2078,7 +2083,8 @@ const styles = StyleSheet.create({
   },
   tileWrapper: {
     flex: 1,
-    alignItems: "center",
+    alignItems: "flex-start",
+     paddingHorizontal: 10,
   },
   modernTile: {
     borderRadius: 16,
@@ -2099,7 +2105,7 @@ const styles = StyleSheet.create({
   },
   tileContent: {
     flex: 1,
-    padding: 14,
+    padding: 10,
     justifyContent: "space-between",
   },
   tileIconContainer: {

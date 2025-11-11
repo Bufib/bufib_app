@@ -71,6 +71,7 @@ export type Sizes = {
   emptyTextSize: number;
   emptyIconSize: number;
   emptyGap: number;
+  previewSizes: number;
   isLarge: boolean;
   isMedium: boolean;
 };
@@ -572,7 +573,7 @@ export type calendarLegendType = {
   id: number;
   legend_type: string;
   created_at: string;
-  color: string
+  color: string;
 };
 
 export type CalendarSectionType = { title: string; data: CalendarType[] };

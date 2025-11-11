@@ -14,6 +14,7 @@ export const returnSize = (width: number, height: number): Sizes => {
     emptyIconSize: isLarge ? 60 : isMedium ? 40 : 30,
     emptyTextSize: isLarge ? 18 : isMedium ? 16 : 14,
     emptyGap: isLarge ? 10 : isMedium ? 5 : 5,
+    previewSizes: isLarge ? 200 : isMedium ? 170 : 160,
     isLarge,
     isMedium,
   };
