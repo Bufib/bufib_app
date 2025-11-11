@@ -236,6 +236,13 @@ export type SignUpFormValues = {
   confirmPassword: string;
 };
 
+export type askQuestionSuggestionsType = {
+  id: number;
+  category_name: string;
+  subcategory_name: string;
+  question: string;
+  title: string;
+};
 // constants/Types.ts (or wherever CombinedResult lives)
 export type CombinedResult =
   | {

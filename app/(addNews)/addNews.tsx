@@ -1,4 +1,3 @@
-import { NoInternet } from "@/components/NoInternet";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { TitleSearchInput } from "@/components/TitleSearch";

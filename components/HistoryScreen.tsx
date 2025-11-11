@@ -90,7 +90,7 @@ const HistoryScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("@/assets/images/ahlulBayt2.png")} // You can add an appropriate background
+        source={require("@/assets/images/ahlulBayt.png")} // You can add an appropriate background
         style={styles.backgroundImage}
         imageStyle={{ opacity: 1 }}
       >

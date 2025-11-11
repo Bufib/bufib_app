@@ -175,7 +175,7 @@ export const SECTIONS_DATA: SectionType[] = [
   {
     id: "ahlulbayt",
     titleKey: "sections.ahlulbayt",
-    backgroundImage: require("@/assets/images/ahlulBayt.jpeg"),
+    backgroundImage: require("@/assets/images/ahlulBayt.png"),
     levels: AHLULBAYT_DATA,
   },
 ];

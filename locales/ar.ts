@@ -207,7 +207,7 @@ export const ar = {
   surah: "سورة",
   ayah: "آية",
   ayahs: "آيات",
-  
+
   // Tabs (short labels)
   tab_quran: "القرآن",
   tab_questions: "الأسئلة",
@@ -491,6 +491,35 @@ export const ar = {
     mercy: "رحمة للعالمين",
     perfect: "الإنسان الكامل",
     perfectDesc: "الإنسان الكامل",
+  },
+  askQuestion: {
+    titleLabel: "العنوان *",
+    titlePlaceholder: "عنوان سؤالك",
+    marjaLabel: "المرجع الديني *",
+    marjaSistani: "السيد السيستاني",
+    marjaKhamenei: "السيد الخامنئي",
+    marjaNoFiqh: "ليست مسألة فقهية",
+    questionLabel: "السؤال *",
+    questionPlaceholder: "ما هو سؤالك؟",
+    ageLabel: "العمر *",
+    agePlaceholder: "عمرك",
+    genderLabel: "الجنس *",
+    genderMale: "ذكر",
+    genderFemale: "أنثى",
+    submitButton: "إرسال السؤال",
+    similarModalTitle: "تم العثور على أسئلة مشابهة",
+    modalCancel: "إلغاء",
+    modalSubmitAnyway: "إرسال على أي حال",
+    noInternetTitle: "لا يوجد اتصال بالإنترنت",
+    noInternetMessage: "يرجى التحقق من اتصالك بالإنترنت.",
+    mustBeLoggedIn: "يجب تسجيل الدخول لإرسال سؤال.",
+    errors: {
+      titleRequired: "يرجى إدخال العنوان.",
+      marjaRequired: "يرجى اختيار المرجع.",
+      questionRequired: "يرجى إدخال سؤالك.",
+      ageRequired: "يرجى إدخال عمرك.",
+      genderRequired: "يرجى اختيار الجنس.",
+    },
   },
 } as const;
 

@@ -479,6 +479,36 @@ export const de = {
     perfect: "Al-Insan al-Kamil",
     perfectDesc: "Der vollkommene Mensch",
   },
+
+  askQuestion: {
+    titleLabel: "Titel *",
+    titlePlaceholder: "Titel deiner Frage",
+    marjaLabel: "Marja *",
+    marjaSistani: "Sayid as-Sistani",
+    marjaKhamenei: "Sayid al-Khamenei",
+    marjaNoFiqh: "Keine Rechtsfrage",
+    questionLabel: "Frage *",
+    questionPlaceholder: "Wie lautet deine Frage?",
+    ageLabel: "Alter *",
+    agePlaceholder: "Dein Alter",
+    genderLabel: "Geschlecht *",
+    genderMale: "Männlich",
+    genderFemale: "Weiblich",
+    submitButton: "Frage absenden",
+    similarModalTitle: "Ähnliche Fragen gefunden",
+    modalCancel: "Abbrechen",
+    modalSubmitAnyway: "Trotzdem absenden",
+    noInternetTitle: "Keine Internetverbindung",
+    noInternetMessage: "Bitte überprüfe dein Internet.",
+    mustBeLoggedIn: "Du musst eingeloggt sein, um eine Frage zu stellen.",
+    errors: {
+      titleRequired: "Bitte gib einen Titel ein!",
+      marjaRequired: "Bitte wähle einen Marja aus!",
+      questionRequired: "Bitte gib deine Frage ein!",
+      ageRequired: "Bitte gib dein Alter ein!",
+      genderRequired: "Bitte wähle dein Geschlecht aus!",
+    },
+  },
 } as const;
 
 export default de;

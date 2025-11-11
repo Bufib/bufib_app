@@ -6,15 +6,13 @@ import {
   RefreshControl,
   Pressable,
   StyleSheet,
-  ActivityIndicator,
 } from "react-native";
-import { router, Stack, useFocusEffect } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useFetchUserQuestions } from "@/hooks/useFetchUserQuestions";
 import { useAuthStore } from "@/stores/authStore";
 import { formatDate } from "@/utils/formatDate";
 import { Colors } from "@/constants/Colors";
 import getStatusColor from "@/utils/getStatusColor";
-import { useColorScheme } from "react-native";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -29,7 +27,6 @@ import { LoadingIndicator } from "@/components/LoadingIndicator";
 export default function Index() {
   // 1. Check auth state from the store
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const colorScheme = useColorScheme();
   const themeStyles = CoustomTheme();
   const { t } = useTranslation();
   // Track connection status
