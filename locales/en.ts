@@ -383,7 +383,7 @@ export const en = {
   countdownDaysToGo: "{{count}} days to go",
 
   // Quran
-  basmala: "In the name of God, the Most Gracious, the Most Merciful!", //! Anpassen an Quran text in Datanbank
+  basmala: "In the name of Allah, most benevolent, ever-merciful.", 
   quranTitle: "Holy Quran",
   quranSubtitle: "Chapter List (Suras)",
   selectLanguage: "Select Language",
