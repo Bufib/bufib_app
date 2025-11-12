@@ -1,5 +1,12 @@
-// import React, { useEffect, useState } from "react";
-// import { StyleSheet, useColorScheme, View, SectionList } from "react-native";
+// //! last worked
+// import React, { useCallback, useEffect, useState } from "react";
+// import {
+//   StyleSheet,
+//   useColorScheme,
+//   View,
+//   SectionList,
+//   TouchableOpacity,
+// } from "react-native";
 // import { ThemedView } from "@/components/ThemedView";
 // import { ThemedText } from "@/components/ThemedText";
 // import CalendarLegend from "./CalendarLegend";
@@ -24,6 +31,9 @@
 //   const [loading, setLoading] = useState(false);
 //   const [sections, setSections] = useState<CalendarSectionType[]>([]);
 //   const [nextUpcomingDiff, setNextUpcomingDiff] = useState<number | null>(null);
+//   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
+//     new Set()
+//   );
 //   const calendarVersion = useDataVersionStore((s) => s.calendarVersion);
 
 //   // Fetch calendar data and legend names
@@ -69,13 +79,17 @@
 //     x.setHours(0, 0, 0, 0);
 //     return x;
 //   };
-//   const parseItemDate = (s: string) => startOfDay(new Date(s));
+//   const parseItemDate = useCallback((s: string) => startOfDay(new Date(s)), []);
+
 //   const todayStart = startOfDay(new Date());
 
-//   const dayDiffFromToday = (dateStr: string) =>
-//     Math.round(
-//       (parseItemDate(dateStr).getTime() - todayStart.getTime()) / 86400000
-//     );
+//   const dayDiffFromToday = useCallback(
+//     (dateStr: string) =>
+//       Math.round(
+//         (parseItemDate(dateStr).getTime() - todayStart.getTime()) / 86400000
+//       ),
+//     [parseItemDate, todayStart]
+//   );
 
 //   // Calculate the next upcoming event (smallest positive diff)
 //   useEffect(() => {
@@ -85,7 +99,7 @@
 //       if (d > 0 && (minPos === null || d < minPos)) minPos = d;
 //     }
 //     setNextUpcomingDiff(minPos);
-//   }, [events]);
+//   }, [events, dayDiffFromToday]);
 
 //   // Group events by month/year
 //   useEffect(() => {
@@ -106,33 +120,71 @@
 //     setSections(grouped);
 //   }, [events, lang]);
 
+//   // Toggle collapse state for a section
+//   const toggleSection = (sectionTitle: string) => {
+//     setCollapsedSections((prev) => {
+//       const newSet = new Set(prev);
+//       if (newSet.has(sectionTitle)) {
+//         newSet.delete(sectionTitle);
+//       } else {
+//         newSet.add(sectionTitle);
+//       }
+//       return newSet;
+//     });
+//   };
+
 //   // Render section header with divider lines
 //   const renderSectionHeader = ({
 //     section,
 //   }: {
 //     section: CalendarSectionType;
-//   }) => (
-//     <View style={styles.sectionHeaderRow}>
-//       <Entypo name="chevron-down" size={24} color="black" />
+//   }) => {
+//     const isCollapsed = collapsedSections.has(section.title);
 
-//       <View
-//         style={[
-//           styles.sectionDivider,
-//           { backgroundColor: Colors[colorScheme].devider },
-//         ]}
-//       />
-//       <ThemedText style={styles.sectionTitle}>{section.title}</ThemedText>
-//       <View
-//         style={[
-//           styles.sectionDivider,
-//           { backgroundColor: Colors[colorScheme].devider },
-//         ]}
-//       />
-//     </View>
-//   );
+//     return (
+//       <TouchableOpacity
+//         onPress={() => toggleSection(section.title)}
+//         activeOpacity={0.7}
+//       >
+//         <View style={styles.sectionHeaderRow}>
+//           <Entypo
+//             name={isCollapsed ? "chevron-right" : "chevron-down"}
+//             size={26}
+//             color={Colors[colorScheme].text}
+//             style={styles.chevronIcon}
+//           />
+
+//           <View
+//             style={[
+//               styles.sectionDivider,
+//               { backgroundColor: Colors[colorScheme].devider },
+//             ]}
+//           />
+//           <ThemedText style={styles.sectionTitle}>{section.title}</ThemedText>
+//           <View
+//             style={[
+//               styles.sectionDivider,
+//               { backgroundColor: Colors[colorScheme].devider },
+//             ]}
+//           />
+//         </View>
+//       </TouchableOpacity>
+//     );
+//   };
 
 //   // Render individual calendar event card
-//   const renderItem = ({ item }: { item: CalendarType }) => {
+//   const renderItem = ({
+//     item,
+//     section,
+//   }: {
+//     item: CalendarType;
+//     section: CalendarSectionType;
+//   }) => {
+//     // Don't render if section is collapsed
+//     if (collapsedSections.has(section.title)) {
+//       return null;
+//     }
+
 //     const badgeColor = legendColorMap[item.legend_type] ?? "#999";
 //     const diff = dayDiffFromToday(item.gregorian_date);
 
@@ -174,8 +226,11 @@
 //           borderLeftWidth: 4,
 //           borderLeftColor: colorScheme === "dark" ? "#505456ff" : "#9CA3AF", // Darker gray for light mode
 //         }
-//       : {};
+//       : {
+//           borderLeftWidth: 4,
 
+//           borderLeftColor: badgeColor,
+//         };
 //     return (
 //       <View
 //         style={[
@@ -299,8 +354,12 @@
 //   sectionHeaderRow: {
 //     flexDirection: "row",
 //     alignItems: "center",
+//     justifyContent: "center",
 //     marginBottom: 20,
 //     marginTop: 12,
+//   },
+//   chevronIcon: {
+//     marginRight: 8,
 //   },
 //   sectionDivider: {
 //     flex: 1,
@@ -464,7 +523,6 @@
 //     opacity: 0.5,
 //   },
 // });
-
 import React, { useCallback, useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -567,23 +625,56 @@ const RenderCalendar: React.FC = () => {
     setNextUpcomingDiff(minPos);
   }, [events, dayDiffFromToday]);
 
-  // Group events by month/year
+  // Group events by month/year and auto-collapse all non-current months
   useEffect(() => {
-    const map = new Map<string, CalendarType[]>();
+    const now = new Date();
+    const currentMonthIndex = now.getFullYear() * 12 + now.getMonth();
+
+    const map = new Map<string, { data: CalendarType[]; monthIndex: number }>();
+
     for (const item of events) {
       const d = new Date(item.gregorian_date);
+      const monthIndex = d.getFullYear() * 12 + d.getMonth();
       const key = d.toLocaleDateString(lang, {
         month: "long",
         year: "numeric",
       });
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(item);
+
+      const existing = map.get(key);
+      if (existing) {
+        existing.data.push(item);
+      } else {
+        map.set(key, { data: [item], monthIndex });
+      }
     }
-    const grouped = Array.from(map.entries()).map(([title, data]) => ({
-      title,
-      data: data.sort((a, b) => (a.gregorian_date < b.gregorian_date ? -1 : 1)),
-    }));
+
+    const initialCollapsed = new Set<string>();
+
+    const grouped: CalendarSectionType[] = Array.from(map.entries()).map(
+      ([title, { data, monthIndex }]) => {
+        // ✅ collapse all months that are not the current month
+        if (monthIndex !== currentMonthIndex) {
+          initialCollapsed.add(title);
+        }
+        return {
+          title,
+          data: data.sort((a, b) =>
+            a.gregorian_date < b.gregorian_date ? -1 : 1
+          ),
+        };
+      }
+    );
+
     setSections(grouped);
+
+    setCollapsedSections((prev) => {
+      if (prev.size === 0) {
+        return initialCollapsed;
+      }
+      const merged = new Set(prev);
+      initialCollapsed.forEach((title) => merged.add(title));
+      return merged;
+    });
   }, [events, lang]);
 
   // Toggle collapse state for a section
@@ -690,11 +781,10 @@ const RenderCalendar: React.FC = () => {
           borderWidth: 1,
           borderColor: colorScheme === "dark" ? "#6f767aff" : "#bcc3cbff",
           borderLeftWidth: 4,
-          borderLeftColor: colorScheme === "dark" ? "#505456ff" : "#9CA3AF", // Darker gray for light mode
+          borderLeftColor: colorScheme === "dark" ? "#505456ff" : "#9CA3AF",
         }
       : {
           borderLeftWidth: 4,
-
           borderLeftColor: badgeColor,
         };
     return (
@@ -709,7 +799,6 @@ const RenderCalendar: React.FC = () => {
       >
         {/* Accent dot indicator */}
         <View style={[styles.accentDot, { backgroundColor: badgeColor }]} />
-
         {/* Header: dates side by side */}
         <View style={styles.cardHeader}>
           <View style={styles.dateContainer}>

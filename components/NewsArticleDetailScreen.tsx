@@ -1011,6 +1011,7 @@ import {
   toggleNewsArticleFavorite,
 } from "@/utils/favorites";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
+import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 
 type Row = { key: "content" };
 type SavedBookmark = { offsetY: number; addedAt: number };
@@ -1061,6 +1062,7 @@ export default function NewsArticleDetailScreen({
   const bookmarkOffsetAV = useRef(new Animated.Value(0)).current;
   const neg14AV = useRef(new Animated.Value(-14)).current;
   const lastScrollYRef = useRef(0);
+  const { fadeAnim, onLayout } = useScreenFadeIn(800);
 
   const [showArrowUp, setShowArrowUp] = useState(false);
   const showArrowUpRef = useRef(false);
@@ -1694,10 +1696,12 @@ export default function NewsArticleDetailScreen({
       <Animated.FlatList
         ref={flatListRef}
         data={data}
+        onLayout={onLayout}
         extraData={newsArticleVersion}
         keyExtractor={(item) => item.key}
         renderItem={renderItem}
         ListHeaderComponent={header}
+        style={{ opacity: fadeAnim }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollYAV } } }],
           { useNativeDriver: true }

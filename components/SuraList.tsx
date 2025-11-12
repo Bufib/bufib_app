@@ -16,11 +16,7 @@ import { useTranslation } from "react-i18next";
 import { Colors } from "../constants/Colors";
 import { whenDatabaseReady } from "@/db";
 import { useLanguage } from "@/contexts/LanguageContext";
-import {
-  Language,
-  SuraRowType,
-  QuranVerseType,
-} from "@/constants/Types";
+import { Language, SuraRowType, QuranVerseType } from "@/constants/Types";
 import {
   getSurahList,
   getJuzButtonLabels,
@@ -314,11 +310,51 @@ const SuraList: React.FC = () => {
     (s) => s.updatePageBookmark
   );
 
+  // useEffect(() => {
+  //   let cancelled = false;
+  //   (async () => {
+  //     try {
+  //       setIsLoading(true);
+  //       await whenDatabaseReady();
+
+  //       const [suraRows, juzLabels, pageLabels] = await Promise.all([
+  //         getSurahList(),
+  //         getJuzButtonLabels(lang as Language),
+  //         getPageButtonLabels(lang as Language),
+  //       ]);
+
+  //       if (!cancelled) {
+  //         setSuras(suraRows ?? []);
+  //         setJuzList(juzLabels ?? []);
+  //         setPageList(pageLabels ?? []);
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to load data:", error);
+  //       if (!cancelled) {
+  //         setSuras([]);
+  //         setJuzList([]);
+  //         setPageList([]);
+  //       }
+  //     } finally {
+  //       if (!cancelled) setIsLoading(false);
+  //     }
+  //   })();
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [lang, quranDataVersion]);
+
   useEffect(() => {
-    let cancelled = false;
+    let alive = true;
+    let loadingTimer: number | undefined;
+
     (async () => {
       try {
-        setIsLoading(true);
+        // Only show loading state if it takes longer than 300ms
+        loadingTimer = setTimeout(() => {
+          if (alive) setIsLoading(true);
+        }, 300);
+
         await whenDatabaseReady();
 
         const [suraRows, juzLabels, pageLabels] = await Promise.all([
@@ -327,24 +363,30 @@ const SuraList: React.FC = () => {
           getPageButtonLabels(lang as Language),
         ]);
 
-        if (!cancelled) {
+        if (alive) {
           setSuras(suraRows ?? []);
           setJuzList(juzLabels ?? []);
           setPageList(pageLabels ?? []);
         }
       } catch (error) {
         console.error("Failed to load data:", error);
-        if (!cancelled) {
+        if (alive) {
           setSuras([]);
           setJuzList([]);
           setPageList([]);
         }
       } finally {
-        if (!cancelled) setIsLoading(false);
+        if (loadingTimer !== undefined) clearTimeout(loadingTimer);
+        if (alive) {
+          // will only have shown if timer fired
+          setIsLoading(false);
+        }
       }
     })();
+
     return () => {
-      cancelled = true;
+      alive = false;
+      if (loadingTimer !== undefined) clearTimeout(loadingTimer);
     };
   }, [lang, quranDataVersion]);
 
