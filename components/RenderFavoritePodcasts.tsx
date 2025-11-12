@@ -102,10 +102,10 @@ export default function RenderFavoritePodcasts() {
     setRefreshing(false);
   };
 
-  const listExtraData = React.useMemo(
-    () => `${podcastVersion}`,
-    [podcastVersion]
-  );
+  // const listExtraData = React.useMemo(
+  //   () => `${podcastVersion}`,
+  //   [podcastVersion]
+  // );
 
   // Loading first data
   if (isLoading && favoriteIds.length > 0) {

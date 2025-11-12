@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -6,31 +6,26 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   Animated,
-  Easing,
+  useColorScheme,
 } from "react-native";
 import { router } from "expo-router";
-import { useColorScheme } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { prayerCategories, tasbihCategory } from "@/utils/categories";
 import { useWeeklyTodos } from "@/hooks/useWeeklyTodos";
 import { getFullDayName } from "@/utils/dayNames";
 import { WeeklyCalendarSection } from "@/components/WeeklyCalendarSection";
 import { AddTodoModal } from "@/components/AddTodoModal";
 import { DeleteTodoModal } from "@/components/DeleteTodoModal";
-import { ThemedView } from "./ThemedView";
 import { returnSize } from "@/utils/sizes";
 import { Colors } from "@/constants/Colors";
 import { Image } from "expo-image";
 import { ThemedText } from "./ThemedText";
-import { AntDesign } from "@expo/vector-icons";
 import { PrayerQuestionLinksType, TodoToDeleteType } from "@/constants/Types";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 
 const PrayerLinks = () => {
   const colorScheme: ColorSchemeName = useColorScheme() || "light";
   const { t } = useTranslation();
-  const { lang, rtl } = useLanguage();
 
   const {
     todosByDay,
@@ -132,10 +127,7 @@ const PrayerLinks = () => {
 
   const { width, height } = useWindowDimensions();
 
-  const { elementSize, fontSize, iconSize, imageSize, gap } = returnSize(
-    width,
-    height
-  );
+  const { elementSize, fontSize, iconSize } = returnSize(width, height);
 
   return (
     <Animated.View

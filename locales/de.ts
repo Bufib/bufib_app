@@ -1,4 +1,4 @@
-export const de = {
+const de = {
   //LanguageSelectionScreen
   chooseLanguage: "Wähle deine Sprache aus",
 

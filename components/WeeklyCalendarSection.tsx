@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
-import { EvilIcons } from "@expo/vector-icons";
 import { DaySelector } from "./DaySelector";
 import { TodoList } from "./ToDoList";
 import { WeeklyTodosType } from "@/constants/Types";

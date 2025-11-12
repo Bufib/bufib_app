@@ -8,6 +8,7 @@ import {
   Pressable,
   Platform,
   Keyboard,
+  TouchableWithoutFeedback
 } from "react-native";
 import { supabase } from "@/utils/supabase";
 import { router } from "expo-router";
@@ -18,8 +19,6 @@ import { Colors } from "@/constants/Colors";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "./ThemedText";
 import { useAuthStore } from "@/stores/authStore";
-import { TouchableWithoutFeedback } from "react-native";
-import { NoInternet } from "./NoInternet";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 
 // Define validation schema with Zod

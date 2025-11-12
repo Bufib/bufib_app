@@ -163,7 +163,6 @@ import {
   View,
   FlatList,
   StyleSheet,
-  Pressable,
   useColorScheme,
   TouchableOpacity,
 } from "react-native";
@@ -178,22 +177,19 @@ import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { useLanguage } from "@/contexts/LanguageContext";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { useTranslation } from "react-i18next";
-import { LanguageCode } from "@/constants/Types";
-import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function RenderQuestionVideosCategories() {
   const colorScheme = useColorScheme() || "light";
   const router = useRouter();
   const { lang } = useLanguage();
   const { t } = useTranslation();
-  const videoVersion = useDataVersionStore((s) => s.videoVersion);
 
   const { categories, isLoading, error } = useFetchVideoCategories(lang);
 
-  const listExtraData = React.useMemo(
-    () => `${videoVersion}`,
-    [videoVersion]
-  );
+  // const listExtraData = React.useMemo(
+  //   () => `${videoVersion}`,
+  //   [videoVersion]
+  // );
 
   // stable headerLeft renderer so options don't thrash
   const headerLeft = React.useCallback(() => <HeaderLeftBackButton />, []);

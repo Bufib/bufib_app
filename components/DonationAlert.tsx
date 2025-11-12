@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
-import { Pressable, StyleSheet, Alert, View } from "react-native";
-import { Modal } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Pressable,
+  StyleSheet,
+  Alert,
+  View,
+  useColorScheme,
+  Modal,
+} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useColorScheme } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { useState } from "react";
 import handleOpenExternalUrl from "@/utils/handleOpenExternalUrl";
 import Toast from "react-native-toast-message";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { LanguageCode } from "@/constants/Types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 type DonationAlertProps = {
@@ -22,7 +23,6 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
   onClose,
 }) => {
   const colorScheme = useColorScheme();
-  const { lang } = useLanguage();
   const [payPalLink, setPayPalLink] = useState<string | null>(null);
 
   // paypal
@@ -46,7 +46,7 @@ const DonationAlert: React.FC<DonationAlertProps> = ({
     <Modal
       visible={isVisible}
       transparent
-      animationType="slide" // replaces animationIn/Out
+      animationType="slide" 
       onRequestClose={onClose} // Android back button
       statusBarTranslucent={true} // nicer overlay on Android
     >

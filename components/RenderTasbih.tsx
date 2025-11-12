@@ -952,7 +952,6 @@ import {
   useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import i18n from "@/utils/i18n";
 import { ThemedText } from "@/components/ThemedText";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -1019,7 +1018,7 @@ const prayerPresets = Object.freeze([
     id: "free",
     name: "freeMode",
     description: "freeModeDescription",
-    sequence: [] as Array<{ dhikrId: number; limit: number }>,
+    sequence: [] as { dhikrId: number; limit: number }[],
   },
   {
     id: "1",
@@ -1534,7 +1533,7 @@ export default function RenderTasbih() {
             contentContainerStyle={styles.tabsContent}
           >
             {initialDhikrTypes.map((dhikr) => {
-              const counterData = state.counters.find((c) => c.id === dhikr.id);
+              // const counterData = state.counters.find((c) => c.id === dhikr.id);
               return (
                 <TouchableOpacity
                   key={dhikr.id}

@@ -148,13 +148,11 @@
 // });
 
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet, useColorScheme } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
-
-import { ThemedText } from "@/components/ThemedText";
 import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { Colors } from "@/constants/Colors";
@@ -179,7 +177,6 @@ export const StickyHeaderQuran: React.FC<StickyHeaderQuranPropsType> = ({
   pageNumber,
 }) => {
   const { t } = useTranslation();
-  const colorScheme = useColorScheme() || "light";
   const insets = useSafeAreaInsets();
   const { rtl } = useLanguage();
 

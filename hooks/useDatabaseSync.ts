@@ -492,7 +492,6 @@ import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import { Alert, Platform } from "react-native";
 import Constants from "expo-constants";
 import debounce from "lodash.debounce";
-import i18n from "@/utils/i18n";
 import {
   checkInternetConnection,
   setupConnectivityListener,
@@ -510,7 +509,7 @@ import {
   databaseUpdateQuestions,
   databaseUpdateQuran,
 } from "@/constants/messages";
-import { router, usePathname } from "expo-router";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 /** Robust version comparison helper (null/undefined/number-safe). */
@@ -540,14 +539,13 @@ export function useDatabaseSync(): boolean {
   const verChannelRef = useRef<any>(null);
 
   // Guarded navigation to home
-  const pathname = usePathname();
 
   const goHomeIfNeeded = useCallback(() => {
     if (!isMountedRef.current) return;
     // if (pathname !== "/home") {
       router.replace("/(tabs)/home");
     // }
-  }, [pathname]);
+  }, []);
 
   // Single-flight initialize wrapper
   const initializeSafely = useCallback(async () => {
@@ -706,7 +704,7 @@ export function useDatabaseSync(): boolean {
     } finally {
       isSyncingRef.current = false;
     }
-  }, [debouncedInit, initializeSafely, cleanupConnectivityListener]);
+  }, [debouncedInit, initializeSafely, cleanupConnectivityListener, t]);
 
   // Keep latest initializeDatabase in ref for safeInitializeDatabase
   useEffect(() => {

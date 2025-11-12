@@ -1,106 +1,3 @@
-// // Helps make verse-to-juz/page position lookups O(1) after initial seeding.
-// import type { QuranVerseType } from "@/constants/Types";
-// import { getJuzVerses, getPageVerses } from "@/db/queries/quran";
-
-// type UnitPos = { unit: number; idx: number; total: number };
-
-// const key = (s: number, a: number) => `${s}:${a}`;
-
-// // in-memory indexes (verse -> unit position)
-// const juzIndex = new Map<string, UnitPos>();
-// const pageIndex = new Map<string, UnitPos>();
-
-// // caches for raw verse lists (avoid refetch)
-// const juzCache = new Map<number, QuranVerseType[]>();
-// const pageCache = new Map<number, QuranVerseType[]>();
-
-// /** Seed all verse entries for a Juz. Pass verses to avoid re-query. */
-// export async function seedJuzIndex(juz: number, verses?: QuranVerseType[]) {
-//   let arr = verses;
-//   if (!arr) {
-//     if (!juzCache.has(juz)) {
-//       const res = await getJuzVerses("ar", juz);
-//       juzCache.set(juz, res ?? []);
-//     }
-//     arr = juzCache.get(juz)!;
-//   } else {
-//     // also keep a cache copy for future
-//     juzCache.set(juz, arr);
-//   }
-
-//   const total = arr.length;
-//   for (let i = 0; i < arr.length; i++) {
-//     const v = arr[i];
-//     const k = key(v.sura, v.aya);
-//     if (!juzIndex.has(k)) {
-//       juzIndex.set(k, { unit: juz, idx: i, total });
-//     }
-//   }
-// }
-
-// /** Seed all verse entries for a Page. Pass verses to avoid re-query. */
-// export async function seedPageIndex(page: number, verses?: QuranVerseType[]) {
-//   let arr = verses;
-//   if (!arr) {
-//     if (!pageCache.has(page)) {
-//       const res = await getPageVerses("ar", page);
-//       pageCache.set(page, res ?? []);
-//     }
-//     arr = pageCache.get(page)!;
-//   } else {
-//     pageCache.set(page, arr);
-//   }
-
-//   const total = arr.length;
-//   for (let i = 0; i < arr.length; i++) {
-//     const v = arr[i];
-//     const k = key(v.sura, v.aya);
-//     if (!pageIndex.has(k)) {
-//       pageIndex.set(k, { unit: page, idx: i, total });
-//     }
-//   }
-// }
-
-// /** O(1) if seeded; else lazily scan Juz 1..30, seeding whichever we touch. */
-// export async function getJuzPosForVerse(sura: number, aya: number): Promise<UnitPos | null> {
-//   const k = key(sura, aya);
-//   const hit = juzIndex.get(k);
-//   if (hit) return hit;
-
-//   // Seed lazily (worst-case once per app session).
-//   for (let j = 1; j <= 30; j++) {
-//     await seedJuzIndex(j);
-//     const found = juzIndex.get(k);
-//     if (found) return found;
-//   }
-//   return null;
-// }
-
-// /** O(1) if seeded; else lazily scan Page 1..604, seeding whichever we touch. */
-// export async function getPagePosForVerse(sura: number, aya: number): Promise<UnitPos | null> {
-//   const k = key(sura, aya);
-//   const hit = pageIndex.get(k);
-//   if (hit) return hit;
-
-//   for (let p = 1; p <= 604; p++) {
-//     await seedPageIndex(p);
-//     const found = pageIndex.get(k);
-//     if (found) return found;
-//   }
-//   return null;
-// }
-
-// /** Optional: clear everything (e.g., on logout) */
-// export function clearQuranIndex() {
-//   juzIndex.clear();
-//   pageIndex.clear();
-//   juzCache.clear();
-//   pageCache.clear();
-// }
-// utils/quranIndex.ts
-// Helps make verse-to-juz/page position lookups O(1) after initial seeding.
-// Also provides surah→unit coverage for fast propagation and shared caches.
-
 import type { QuranVerseType, SuraRowType } from "@/constants/Types";
 import {
   getJuzVerses,
@@ -265,8 +162,8 @@ export async function getPagePosForVerse(sura: number, aya: number) {
 
 export async function getJuzCoverageForSura(
   sura: number
-): Promise<Array<{ unit: number; idx: number; total: number }>> {
-  const out: Array<{ unit: number; idx: number; total: number }> = [];
+): Promise<{ unit: number; idx: number; total: number }[]> {
+  const out: { unit: number; idx: number; total: number }[] = [];
 
   for (let j = 1; j <= 30; j++) {
     const b = await getJuzBounds(j);
@@ -293,8 +190,8 @@ export async function getJuzCoverageForSura(
 
 export async function getPageCoverageForSura(
   sura: number
-): Promise<Array<{ unit: number; idx: number; total: number }>> {
-  const out: Array<{ unit: number; idx: number; total: number }> = [];
+): Promise<{ unit: number; idx: number; total: number }[]> {
+  const out: { unit: number; idx: number; total: number }[] = [];
 
   const info: SuraRowType | null = await getSurahInfoByNumber(sura);
   if (!info || !info.startPage || !info.endPage) return out;

@@ -5,7 +5,6 @@ import NetInfo from "@react-native-community/netinfo";
 import useNotificationStore from "@/stores/notificationStore";
 import { safeInitializeDatabase } from "@/db";
 import { runDatabaseSync } from "@/db/runDatabaseSync";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const REFETCH_THRESHOLD = 0.5 * 60 * 1000; // 30 sec
 const LAST_FETCH_KEY = "lastFetchTime";
@@ -19,7 +18,6 @@ const ReMountManager = ({ children, onInitialize }: ReMountManagerProps) => {
   const checkPermissions = useNotificationStore(
     (state) => state.checkPermissions
   );
-  const { lang } = useLanguage();
 
   const updateLastFetchTime = useCallback(async () => {
     await AsyncStorage.setItem(LAST_FETCH_KEY, Date.now().toString());
@@ -42,7 +40,7 @@ const ReMountManager = ({ children, onInitialize }: ReMountManagerProps) => {
     } catch (error) {
       console.error("Error reinitializing database:", error);
     }
-  }, [lang, updateLastFetchTime, onInitialize]);
+  }, [updateLastFetchTime, onInitialize]);
 
   const handleAppStateChange = useCallback(
     async (nextAppState: AppState["currentState"]) => {
@@ -81,4 +79,3 @@ const ReMountManager = ({ children, onInitialize }: ReMountManagerProps) => {
 };
 
 export default ReMountManager;
-

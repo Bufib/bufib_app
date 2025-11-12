@@ -1302,7 +1302,7 @@ export const SupabaseRealtimeProvider = ({
               refetchType: "all",
             });
             incrementUserQuestionVersion();
-            router.push("/home");
+            router.push("/(tabs)/home");
             return;
           }
         }

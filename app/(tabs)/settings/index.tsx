@@ -1,11 +1,9 @@
 import DeleteUserModal from "@/components/DeleteUserModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { NoInternet } from "@/components/NoInternet";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-
 import { useAuthStore } from "@/stores/authStore";
 import useNotificationStore from "@/stores/notificationStore";
 import { getQuestionCount } from "@/db/queries/questions";
@@ -14,7 +12,7 @@ import { useLogout } from "@/utils/useLogout";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useEffect, useRef, useState, useTransition } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -27,8 +25,6 @@ import {
   useColorScheme,
   View,
   Animated,
-  Easing,
-  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -48,7 +44,7 @@ const Settings = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const { getNotifications, toggleGetNotifications, permissionStatus } =
     useNotificationStore();
-  const { lang, rtl } = useLanguage();
+  const { rtl } = useLanguage();
   const hasInternet = useConnectionStatus();
   const logout = useLogout();
   const effectiveEnabled = getNotifications && permissionStatus === "granted";
@@ -57,8 +53,6 @@ const Settings = () => {
 
   const paypallinkVersion = useDataVersionStore((s) => s.paypalVersion);
   const { fadeAnim, onLayout } = useScreenFadeIn(800);
-
- 
 
   const handleDeleteSuccess = () => {
     clearSession(); // SignOut and remove session
@@ -99,7 +93,7 @@ const Settings = () => {
 
   return (
     <Animated.View
-    onLayout={onLayout}
+      onLayout={onLayout}
       style={[
         styles.container,
         { opacity: fadeAnim, backgroundColor: Colors[colorScheme].background },

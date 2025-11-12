@@ -465,7 +465,7 @@
 //   },
 // });
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   StyleSheet,
   useColorScheme,
@@ -545,13 +545,17 @@ const RenderCalendar: React.FC = () => {
     x.setHours(0, 0, 0, 0);
     return x;
   };
-  const parseItemDate = (s: string) => startOfDay(new Date(s));
+  const parseItemDate = useCallback((s: string) => startOfDay(new Date(s)), []);
+
   const todayStart = startOfDay(new Date());
 
-  const dayDiffFromToday = (dateStr: string) =>
-    Math.round(
-      (parseItemDate(dateStr).getTime() - todayStart.getTime()) / 86400000
-    );
+  const dayDiffFromToday = useCallback(
+    (dateStr: string) =>
+      Math.round(
+        (parseItemDate(dateStr).getTime() - todayStart.getTime()) / 86400000
+      ),
+    [parseItemDate, todayStart]
+  );
 
   // Calculate the next upcoming event (smallest positive diff)
   useEffect(() => {
@@ -561,7 +565,7 @@ const RenderCalendar: React.FC = () => {
       if (d > 0 && (minPos === null || d < minPos)) minPos = d;
     }
     setNextUpcomingDiff(minPos);
-  }, [events]);
+  }, [events, dayDiffFromToday]);
 
   // Group events by month/year
   useEffect(() => {

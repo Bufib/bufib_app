@@ -1,7 +1,6 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, useColorScheme } from "react-native";
 import { ThemedView } from "./ThemedView";
-import { useColorScheme } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -14,7 +13,7 @@ type Name = {
 const NameCard = ({ name }: { name: Name }) => {
   const colorScheme = useColorScheme() || "light";
   const { lang } = useLanguage();
-  
+
   return (
     <ThemedView
       style={[styles.card, { backgroundColor: Colors[colorScheme].contrast }]}
@@ -55,11 +54,11 @@ const styles = StyleSheet.create({
   },
   arabicName: {
     lineHeight: 40,
-    letterSpacing: 0
+    letterSpacing: 0,
   },
   transliteration: {
     fontStyle: "italic",
-    fontWeight: 500
+    fontWeight: 500,
   },
   meaning: {
     textAlign: "center",

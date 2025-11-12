@@ -1320,11 +1320,7 @@ export default function HomeScreen() {
   const { fadeAnim, onLayout } = useScreenFadeIn(800);
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const { width, height } = useWindowDimensions();
-  const { previewSizes, previewSizesPaddingHorizontal } = returnSize(width, height);
-  // Grid layout constants
-  // const GRID_HORIZONTAL_PADDING = 10;
-  // const GRID_GAP = 20;
-  // const tileSize = (width - GRID_HORIZONTAL_PADDING * 2 - GRID_GAP) / 2;
+  const { previewSizes } = returnSize(width, height);
 
   // Hooks
   const {
@@ -2036,7 +2032,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    marginHorizontal: 16
+    marginHorizontal: 16,
   },
   updateButtonContent: {
     flexDirection: "row",
@@ -2086,8 +2082,6 @@ const styles = StyleSheet.create({
   tileWrapper: {
     flex: 1,
     alignItems: "center",
-
-
   },
   modernTile: {
     borderRadius: 16,

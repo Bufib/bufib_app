@@ -1,4 +1,4 @@
-export const en = {
+const en = {
   //LanguageSelectionScreen
   chooseLanguage: "Choose a language",
 

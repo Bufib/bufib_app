@@ -1,7 +1,7 @@
 // src/hooks/useGradient.ts
 import { gradientColorPalette } from "@/constants/Gradients";
 import { UseGradientOptionsType } from "@/constants/Types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useGradient(options: UseGradientOptionsType = {}) {
   const { customGradients, defaultIndex = 0 } = options;
@@ -16,10 +16,10 @@ export function useGradient(options: UseGradientOptionsType = {}) {
   );
 
   // Function to select a random preset gradient
-  const selectRandomPreset = () => {
+  const selectRandomPreset = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * gradients.length);
     setGradientColors(gradients[randomIndex]);
-  };
+  }, [gradients, setGradientColors]);
 
   // Function to select a specific gradient by index
   const selectGradient = (index: number) => {
@@ -31,7 +31,7 @@ export function useGradient(options: UseGradientOptionsType = {}) {
   // Initialize with a random gradient on mount
   useEffect(() => {
     selectRandomPreset();
-  }, []);
+  }, [selectRandomPreset]);
 
   return {
     gradientColors,

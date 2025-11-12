@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Modal, StyleSheet, Pressable } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Modal, StyleSheet, Pressable, useColorScheme } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "react-native";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { useTranslation } from "react-i18next";
 
@@ -16,15 +15,17 @@ const FontSizePickerModal: React.FC<FontSizePickerModalProps> = ({
   onClose,
 }) => {
   const colorScheme = useColorScheme() || "light";
-  const { fontSize, lineHeight, setFontSize, setLineHeight } =
-    useFontSizeStore(); 
-    
+  const { fontSize, setFontSize, setLineHeight } = useFontSizeStore();
+
   const { t } = useTranslation();
-  const fontSizeOptions = [
-    { label: t("small"), fontSize: 16, lineHeight: 28 },
-    { label: t("medium"), fontSize: 18, lineHeight: 35 },
-    { label: t("large"), fontSize: 22, lineHeight: 40 },
-  ];
+  const fontSizeOptions = useMemo(
+    () => [
+      { label: t("small"), fontSize: 16, lineHeight: 28 },
+      { label: t("medium"), fontSize: 18, lineHeight: 35 },
+      { label: t("large"), fontSize: 22, lineHeight: 40 },
+    ],
+    [t]
+  );
 
   const [pickerValue, setPickerValue] = useState(
     fontSizeOptions.find((option) => option.fontSize === fontSize)?.label
@@ -38,7 +39,7 @@ const FontSizePickerModal: React.FC<FontSizePickerModalProps> = ({
       );
       setPickerValue(selectedOption?.label || "Mittel");
     }
-  }, [visible, fontSize]);
+  }, [visible, fontSize, fontSizeOptions]);
 
   return (
     <Modal

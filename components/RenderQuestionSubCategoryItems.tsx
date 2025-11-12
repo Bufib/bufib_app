@@ -183,12 +183,17 @@
 // export default RenderQuestionSubCategoryItems;
 
 import { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  useColorScheme,
+} from "react-native";
 import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useColorScheme } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { getQuestionsForSubcategory } from "@/db/queries/questions";
 import { QuestionType } from "@/constants/Types";

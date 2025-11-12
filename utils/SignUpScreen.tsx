@@ -47,6 +47,7 @@ const signUpUser = async (
     console.log("Signing up user:", { username, email, password });
     return null; // Return null if no errors
   } catch (error) {
+    console.log(error)
     return "Failed to sign up. Please try again."; // Return error message if any
   }
 };

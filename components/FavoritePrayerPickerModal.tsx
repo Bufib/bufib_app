@@ -361,11 +361,9 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
   Alert,
   StyleSheet,
   ActivityIndicator,
-  KeyboardAvoidingView,
   Platform,
   useColorScheme,
   Keyboard,
@@ -376,19 +374,18 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { createFolder } from "@/db/queries/prayers";
-import { getFoldersForPrayer } from "@/db/queries/prayers";
-import { getFavoritePrayerFolders } from "@/db/queries/prayers";
-import { removePrayerFromFolder } from "@/db/queries/prayers";
-import { addPrayerToFolder } from "@/db/queries/prayers";
 import {
-  FavoritePrayerFolderType,
-  PrayerCategoryType,
-  PrayerType,
-} from "@/constants/Types";
+  createFolder,
+  getFoldersForPrayer,
+  getFavoritePrayerFolders,
+  removePrayerFromFolder,
+  addPrayerToFolder,
+} from "@/db/queries/prayers";
+
+import { FavoritePrayerFolderType, PrayerType } from "@/constants/Types";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { Colors } from "@/constants/Colors";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "./ThemedText";
 
 type Props = {
@@ -474,8 +471,9 @@ export default function FavoritePrayerPickerModal({
       triggerRefresh(); // Then trigger parent
       onFavorited?.();
       closeSheet();
-    } catch (e) {
-      Alert.alert(t("error"));
+    } catch (error) {
+      console.log(error);
+      Alert.alert(t("error: " + error));
     } finally {
       setLoading(false);
     }

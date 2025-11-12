@@ -63,7 +63,7 @@ import { useGradient } from "@/hooks/useGradient";
 import { formatDate } from "@/utils/formatDate";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { FC, useMemo } from "react";
+import React, { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -72,14 +72,14 @@ const PodcastPreviewCard: FC<PodcastProps> = ({ podcast }) => {
   const { rtl, lang } = useLanguage();
   const formattedDate = formatDate(podcast.created_at);
   const { t } = useTranslation();
-  const soundBars = useMemo(
-    () =>
-      Array.from({ length: 8 }).map(() => ({
-        height: Math.random() * 20 + 10,
-        opacity: 0.1 + Math.random() * 0.1,
-      })),
-    []
-  );
+  // const soundBars = useMemo(
+  //   () =>
+  //     Array.from({ length: 8 }).map(() => ({
+  //       height: Math.random() * 20 + 10,
+  //       opacity: 0.1 + Math.random() * 0.1,
+  //     })),
+  //   []
+  // );
 
   return (
     <View style={styles.container}>
@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
     shadowRadius: 1.41,
     elevation: 2,
     overflow: "visible",
-
   },
   cardWrapper: {
     height: 280,

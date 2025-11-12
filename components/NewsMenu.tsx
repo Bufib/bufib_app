@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, useColorScheme } from "react-native";
 import {
   Menu,
   MenuOptions,
@@ -7,8 +7,6 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useColorScheme } from "react-native";
-import { CoustomTheme } from "../utils/coustomTheme";
 import { deleteNewsItem } from "../utils/deleteNewsItem";
 import { toggleIsPinnedStatus } from "../utils/toggleIsPinnedStatus";
 import { newsDeletedSuccessToast } from "@/constants/messages";

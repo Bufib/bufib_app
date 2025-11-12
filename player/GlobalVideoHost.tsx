@@ -69,7 +69,7 @@ import { globalPlayer, useGlobalPlayer } from "./useGlobalPlayer";
 import GlobalAutoAdvance from "@/components/GlobalAutoAdvance";
 export { globalPlayer } from "./useGlobalPlayer";
 
-export default function GlobalVideoHost({ children }: PropsWithChildren<{}>) {
+export default function GlobalVideoHost({ children }: PropsWithChildren) {
   const setPlaying = useGlobalPlayer((s) => s._setPlaying);
   const setTime = useGlobalPlayer((s) => s._setTime);
   const setStatus = useGlobalPlayer((s) => s._setStatus);
@@ -117,7 +117,6 @@ export default function GlobalVideoHost({ children }: PropsWithChildren<{}>) {
           player={globalPlayer}
           allowsPictureInPicture
           nativeControls={false}
-          
         />
       </View>
     </>

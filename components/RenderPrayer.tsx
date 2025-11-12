@@ -690,7 +690,6 @@
 //! Funktioniert
 import React, {
   useState,
-  useLayoutEffect,
   useEffect,
   useMemo,
   useRef,
@@ -700,9 +699,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
   StyleSheet,
-  Platform,
   ScrollView,
   useColorScheme,
   Alert,
@@ -713,11 +710,7 @@ import {
   Animated,
 } from "react-native";
 import { getPrayerWithTranslations } from "@/db/queries/prayers";
-import {
-  LanguageCode,
-  PrayerType,
-  PrayerWithTranslationType,
-} from "@/constants/Types";
+import { PrayerType, PrayerWithTranslationType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
@@ -726,17 +719,11 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
 import Markdown, { RenderRules } from "react-native-markdown-display";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { FlashList } from "@shopify/flash-list";
-import { Stack } from "expo-router";
 import FontSizePickerModal from "./FontSizePickerModal";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import FavoritePrayerPickerModal from "./FavoritePrayerPickerModal";
 import { LoadingIndicator } from "./LoadingIndicator";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { useTranslation } from "react-i18next";
 import ArrowUp from "./ArrowUp";
@@ -819,11 +806,15 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
   const { fadeAnim, onLayout } = useScreenFadeIn(600);
 
-  const baseText = {
-    color: Colors[colorScheme].text,
-    width: "90%",
-    alignSelf: "center",
-  } as const;
+  const baseText = useMemo(
+    () =>
+      ({
+        color: Colors[colorScheme].text,
+        width: "90%",
+        alignSelf: "center",
+      } as const),
+    [colorScheme]
+  );
 
   // 2) memoize rules once per font/theme
   const mdRules = useMemo(
@@ -831,20 +822,20 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     [fontSize, colorScheme]
   );
 
-  // 3) also memoize the style objects you pass to <Markdown>
-  const mdStyleArabic = useMemo(
-    () => ({
-      body: {
-        ...baseText,
-        fontSize: fontSize * 1.3,
-        lineHeight,
-        color: Colors[colorScheme].prayerArabicText,
-        alignSelf: "flex-end",
-        marginBottom: 16,
-      },
-    }),
-    [fontSize, lineHeight, colorScheme]
-  );
+  // // 3) also memoize the style objects you pass to <Markdown>
+  // const mdStyleArabic = useMemo(
+  //   () => ({
+  //     body: {
+  //       ...baseText,
+  //       fontSize: fontSize * 1.3,
+  //       lineHeight,
+  //       color: Colors[colorScheme].prayerArabicText,
+  //       alignSelf: "flex-end",
+  //       marginBottom: 16,
+  //     },
+  //   }),
+  //   [fontSize, lineHeight, colorScheme]
+  // );
 
   const mdStyleTranslit = useMemo(
     () => ({
@@ -858,7 +849,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         paddingBottom: 16,
       },
     }),
-    [fontSize, lineHeight, colorScheme]
+    [fontSize, lineHeight, colorScheme, baseText]
   );
 
   const mdStyleTranslation = useMemo(
@@ -871,7 +862,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         color: Colors[colorScheme].text,
       },
     }),
-    [fontSize, lineHeight, colorScheme]
+    [fontSize, lineHeight, colorScheme, baseText]
   );
 
   const mdStyleNotes = useMemo(
@@ -883,7 +874,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         color: Colors[colorScheme].text,
       },
     }),
-    [fontSize, lineHeight, colorScheme]
+    [fontSize, lineHeight, colorScheme, baseText]
   );
 
   const listExtraData = useMemo(
@@ -936,7 +927,8 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
         const n = raw != null ? Number.parseInt(raw, 10) : NaN;
         setBookmark(Number.isFinite(n) ? n : null);
-      } catch (e) {
+      } catch (error) {
+        console.log(error);
         if (!canceled) setBookmark(null);
       }
     })();
@@ -981,7 +973,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
 
   const notesForLang = useMemo(() => {
     if (!prayer) return "";
-    if (lang == "ar") return prayer.arabic_notes || "";
+    if (lang === "ar") return prayer.arabic_notes || "";
     const tr = prayer.translations.find((t) => t.language_code === lang);
     return tr?.translated_notes || "";
   }, [prayer, lang]);
@@ -1011,7 +1003,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         setBookmark(index);
       }
     },
-    [bookmark, prayerID, lang]
+    [bookmark, prayerID, t]
   );
 
   const handleSheetChanges = useCallback((index: number) => {

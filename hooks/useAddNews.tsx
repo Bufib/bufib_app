@@ -6,7 +6,6 @@ import { supabase } from "@/utils/supabase";
 import { decode } from "base64-arraybuffer";
 import { router } from "expo-router";
 import { newsAddedSuccessToast } from "@/constants/messages";
-import { NewsType } from "@/constants/Types";
 
 // Define form values separately from the full NewsType
 type FormValues = {
@@ -82,7 +81,7 @@ export function useAddNews() {
         .slice(2)}.${ext}`;
       const contentType = `image/${ext}`;
       const arrayBuffer = decode(base64);
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("news")
         .upload(`images/${fileName}`, arrayBuffer, {
           contentType,
@@ -159,7 +158,7 @@ export function useAddNews() {
       reset();
       setSelectedImages([]);
       newsAddedSuccessToast();
-      router.push("/(tabs)/home/");
+      router.push("/(tabs)/home");
     } catch (err: any) {
       console.error("Error submitting news:", err.message);
       Alert.alert("Error", "An error occurred. Please try again.");

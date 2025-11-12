@@ -1,12 +1,16 @@
-import { StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
-import React, { useRef } from "react";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  useColorScheme,
+} from "react-native";
+import React, { useRef, useState, useEffect } from "react";
 import { Collapsible } from "@/components/Collapsible";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { CoustomTheme } from "@/utils/coustomTheme";
-import { useColorScheme } from "react-native";
 import { getQuestion, getRelatedQuestions } from "@/db/queries/questions";
-import { useState, useEffect } from "react";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import * as Clipboard from "expo-clipboard";
 import Feather from "@expo/vector-icons/Feather";
@@ -15,7 +19,6 @@ import { QuestionType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
-import i18n from "@/utils/i18n";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 type RenderQuestionProps = {
@@ -30,8 +33,8 @@ const RenderQuestion = ({
   questionId,
 }: RenderQuestionProps) => {
   const themeStyles = CoustomTheme();
-  const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
-  const [isLoadingRelated, setIsLoadingRelated] = useState(true);
+  // const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
+  // const [isLoadingRelated, setIsLoadingRelated] = useState(true);
   const [question, setQuestion] = useState<QuestionType | null>(null);
   const [relatedQuestions, setRelatedQuestions] = useState<
     QuestionType[] | null
@@ -60,7 +63,7 @@ const RenderQuestion = ({
         return;
       }
       try {
-        setIsLoadingQuestions(true);
+        // setIsLoadingQuestions(true);
         console.log(category, subcategory, questionId);
 
         const q = await getQuestion(category, subcategory, questionId, lang);
@@ -69,7 +72,7 @@ const RenderQuestion = ({
         console.error("Error loading question:", err);
         if (!cancelled) setQuestion(null);
       } finally {
-        if (!cancelled) setIsLoadingQuestions(false);
+        // if (!cancelled) setIsLoadingQuestions(false);
       }
     })();
 
@@ -84,14 +87,14 @@ const RenderQuestion = ({
 
     (async () => {
       try {
-        setIsLoadingRelated(true);
+        // setIsLoadingRelated(true);
         const rel = await getRelatedQuestions(questionId, lang);
         if (!cancelled) setRelatedQuestions(rel ?? null);
       } catch (err) {
         console.error("Error loading related questions:", err);
         if (!cancelled) setRelatedQuestions(null);
       } finally {
-        if (!cancelled) setIsLoadingRelated(false);
+        // if (!cancelled) setIsLoadingRelated(false);
       }
     })();
 

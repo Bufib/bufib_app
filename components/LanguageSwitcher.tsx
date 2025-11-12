@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 export function LanguageSwitcher() {
   const { lang, rtl, setAppLanguage, ready: langReady } = useLanguage();
   const { width, height } = useWindowDimensions();
-  const { isLarge, isMedium } = returnSize(width, height);
+  const { isLarge } = returnSize(width, height);
   const { t } = useTranslation();
   const selectDeutsch = () => {
     if (langReady && lang !== "de") {

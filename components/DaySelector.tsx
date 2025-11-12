@@ -8,8 +8,6 @@ import {
 } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { getDayNames } from "@/utils/dayNames";
-import i18n from "@/utils/i18n";
-import { useTranslation } from "react-i18next";
 import { returnSize } from "@/utils/sizes";
 
 interface DaySelectorProps {
@@ -27,7 +25,6 @@ export const DaySelector: React.FC<DaySelectorProps> = ({
   const { width, height } = useWindowDimensions();
   const { isLarge, isMedium } = returnSize(width, height);
   const colorScheme = useColorScheme() || "light";
-  const { t } = useTranslation();
 
   return (
     <ScrollView

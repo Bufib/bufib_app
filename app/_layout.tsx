@@ -799,7 +799,7 @@
 //   );
 // }
 
-import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import AppReviewPrompt from "@/components/AppReviewPrompt";
 import LanguageSelection from "@/components/LanguageSelectionScreen";
@@ -838,7 +838,6 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MenuProvider } from "react-native-popup-menu";
 import Toast from "react-native-toast-message";
 import MiniPlayerBar from "@/components/MiniPlayerBar";

@@ -1,4 +1,4 @@
-export const ar = {
+const ar = {
   //LanguageSelectionScreen
   chooseLanguage: "اختر لغتك",
 

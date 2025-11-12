@@ -1,5 +1,4 @@
 import {
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,7 +7,6 @@ import {
   View,
 } from "react-native";
 import React from "react";
-import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
@@ -17,9 +15,7 @@ import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { useLevelProgressStore } from "@/stores/levelProgressStore";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { LanguageCode } from "@/constants/Types";
 import { router } from "expo-router";
-import { right } from "@cloudinary/url-gen/qualifiers/textAlignment";
 
 const HistoryText = ({
   titleDE,

@@ -1,7 +1,6 @@
 import { View, StyleSheet } from "react-native";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
-import { Stack } from "expo-router";
+import { useLocalSearchParams, Stack } from "expo-router";
 import RenderQuestionSubCategoryItems from "@/components/RenderQuestionSubCategoryItems";
 
 type params = {

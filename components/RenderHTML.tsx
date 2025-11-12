@@ -1,8 +1,6 @@
 import React, { useMemo } from "react";
-import { useColorScheme } from "react-native";
 import RenderHTML from "react-native-render-html";
 import { Colors } from "@/constants/Colors";
-import { useFontSizeStore } from "@/stores/fontSizeStore";
 import type { MixedStyleDeclaration } from "react-native-render-html";
 
 const TAGS_STYLES = Object.freeze({
@@ -24,8 +22,6 @@ export default function HtmlRenderer({
   html,
   contentWidth,
 }: HtmlRendererProps) {
-  const colorScheme = useColorScheme() || "light";
-  const { fontSize: storeFontSize } = useFontSizeStore();
   const fontSize = 16;
 
   const source = useMemo(() => ({ html: `<div>${html}</div>` }), [html]);
@@ -38,9 +34,9 @@ export default function HtmlRenderer({
       color: Colors.universal.grayedOut,
       fontSize: fontSize,
       marginTop: 5,
-      marginBottom: 5
+      marginBottom: 5,
     }),
-    [fontSize, colorScheme]
+    [fontSize]
   );
 
   return (

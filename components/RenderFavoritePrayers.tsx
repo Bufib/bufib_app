@@ -23,16 +23,14 @@ import { ThemedText } from "./ThemedText";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { AntDesign, Entypo } from "@expo/vector-icons";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 const FavoritePrayersScreen: React.FC = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
 
   // Zustand trigger (useful if other screens must refresh too)
-  const { favoritesRefreshed, triggerRefreshFavorites } = useRefreshFavorites();
-  const { lang } = useLanguage();
+  const { triggerRefreshFavorites } = useRefreshFavorites();
+  // const { lang } = useLanguage();
   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [prayers, setPrayers] = useState<PrayerType[]>([]);
@@ -42,7 +40,7 @@ const FavoritePrayersScreen: React.FC = () => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedRef = useRef(true);
   const requestIdRef = useRef(0);
-  const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
+  // const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
 
   // track mount/unmount
   useEffect(() => {
@@ -93,53 +91,51 @@ const FavoritePrayersScreen: React.FC = () => {
     }
   }, [t]);
 
-  const reloadPrayers = useCallback(
-    async (folder: string | null) => {
-      // new logical request id
-      const reqId = ++requestIdRef.current;
+  const reloadPrayers = useCallback(async (folder: string | null) => {
+    // new logical request id
+    const reqId = ++requestIdRef.current;
 
-      // cancel any previous timeout
+    // cancel any previous timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
+    if (!folder) {
+      if (mountedRef.current && reqId === requestIdRef.current) {
+        setPrayers([]);
+        setIsLoadingPrayers(false);
+      }
+      return;
+    }
+
+    try {
+      timeoutRef.current = setTimeout(() => {
+        if (mountedRef.current && reqId === requestIdRef.current) {
+          setIsLoadingPrayers(true);
+        }
+      }, 300);
+
+      const ps = await getFavoritePrayersForFolder(folder);
+
+      // bail if unmounted or superseded by a newer call
+      if (!mountedRef.current || reqId !== requestIdRef.current) return;
+
+      setPrayers(ps);
+    } catch (error) {
+      console.log(error);
+      if (!mountedRef.current || reqId !== requestIdRef.current) return;
+      // show alert/toast if you want
+    } finally {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
-
-      if (!folder) {
-        if (mountedRef.current && reqId === requestIdRef.current) {
-          setPrayers([]);
-          setIsLoadingPrayers(false);
-        }
-        return;
+      if (mountedRef.current && reqId === requestIdRef.current) {
+        setIsLoadingPrayers(false);
       }
-
-      try {
-        timeoutRef.current = setTimeout(() => {
-          if (mountedRef.current && reqId === requestIdRef.current) {
-            setIsLoadingPrayers(true);
-          }
-        }, 300);
-
-        const ps = await getFavoritePrayersForFolder(folder);
-
-        // bail if unmounted or superseded by a newer call
-        if (!mountedRef.current || reqId !== requestIdRef.current) return;
-
-        setPrayers(ps);
-      } catch (err) {
-        if (!mountedRef.current || reqId !== requestIdRef.current) return;
-        // show alert/toast if you want
-      } finally {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-          timeoutRef.current = null;
-        }
-        if (mountedRef.current && reqId === requestIdRef.current) {
-          setIsLoadingPrayers(false);
-        }
-      }
-    },
-    [lang, favoritesRefreshed, prayersVersion]
-  );
+    }
+  }, []);
 
   const onDeleteFolder = useCallback(
     async (name: string) => {
@@ -184,10 +180,11 @@ const FavoritePrayersScreen: React.FC = () => {
     }, [])
   );
 
-  const listExtraData = React.useMemo(
-    () => `${favoritesRefreshed}|${prayersVersion}`,
-    [favoritesRefreshed, prayersVersion]
-  );
+  // const listExtraData = React.useMemo(
+  //   () => `${favoritesRefreshed}|${prayersVersion}`,
+  //   [favoritesRefreshed, prayersVersion]
+  // );
+
   const renderFolderPill = (folder: FavoritePrayerFolderType) => {
     const isActive = folder.name === selectedFolder;
     return (

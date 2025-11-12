@@ -2,7 +2,6 @@ import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
-import { StyleSheet, useColorScheme } from "react-native";
 
 const HeaderLeftBackButton = ({
   color,
@@ -13,7 +12,6 @@ const HeaderLeftBackButton = ({
   size?: number | null;
   style?: any;
 }) => {
-  const colorScheme = useColorScheme() || "light";
   return (
     <Ionicons
       name="chevron-back-outline"
@@ -29,4 +27,3 @@ const HeaderLeftBackButton = ({
 
 export default HeaderLeftBackButton;
 
-const styles = StyleSheet.create({});

@@ -1,5 +1,4 @@
 //! Last that worked
-
 // import React, { useRef, useEffect, useState } from "react";
 // import {
 //   View,
@@ -180,19 +179,16 @@
 
 // export default RenderQuestionCategoryItems;
 
-
 import React, { useEffect, useState } from "react";
 import {
-  View,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  useColorScheme,
 } from "react-native";
-import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useColorScheme } from "react-native";
 import { router, Stack } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { getSubcategoriesForCategory } from "@/db/queries/questions";
@@ -204,7 +200,6 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
   const [subcategories, setSubcategories] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const themeStyle = CoustomTheme();
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { lang, rtl } = useLanguage();

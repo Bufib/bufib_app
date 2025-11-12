@@ -7,7 +7,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   Animated,
   TextInput,
   TouchableOpacity,
@@ -16,7 +15,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import debounce from "lodash.debounce";
 
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -37,7 +35,6 @@ import {
 import { useSearchPodcasts } from "@/hooks/useSearchPodcasts";
 import { useSearchNewsArticles } from "@/hooks/useSearchNewsArticles";
 import { ThemedText } from "./ThemedText";
-import { ThemedView } from "./ThemedView";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import HtmlRenderer from "./RenderHTML";
@@ -301,8 +298,6 @@ export default function RenderSearchResults({
       : tab === "news"
       ? (newsData.slice(0, visibleCount) as ResultRow[])
       : rows;
-
-  const placeholder = t(PLACEHOLDER_KEY[tab]);
 
   const renderItem = useCallback(
     ({ item }: { item: ResultRow }) => {

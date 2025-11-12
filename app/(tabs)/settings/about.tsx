@@ -1,13 +1,6 @@
-import { Link, router, Stack } from "expo-router";
-import {
-  StyleSheet,
-  View,
-  Platform,
-  ScrollView,
-  useColorScheme,
-} from "react-native";
+import { Stack } from "expo-router";
+import { StyleSheet, View, ScrollView, useColorScheme } from "react-native";
 import { Image } from "expo-image";
-import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
@@ -45,7 +38,7 @@ export default function About() {
             wird von einer Gruppe deutschsprachiger islamischer Theologen
             geleitet. Die Antworten basieren auf vertrauenswürdigen Quellen. Die
             Rechtsurteile stammen entweder aus den Regelwerken (risalah
-            'amaliyyah) der Rechtsgelehrten oder ihren Büros.
+            &apos;amaliyyah) der Rechtsgelehrten oder ihren Büros.
             {"\n"}
             {"\n"}
             Wir erhoffen uns, mit Gottes Erlaubnis, mit dieser App dem großen

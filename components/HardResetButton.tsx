@@ -1,6 +1,6 @@
 import { hardResetAllData } from "@/db/hardReset";
 import { useState, useCallback } from "react";
-import { Alert, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Alert, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import { ThemedText } from "./ThemedText";
 import { Colors } from "@/constants/Colors";

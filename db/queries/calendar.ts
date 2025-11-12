@@ -226,7 +226,7 @@ export async function getCalendarLegendTypeNames(
 /** Count how many events each legend_type has (for a language). Includes color for convenience. */
 export async function getCalendarEventsCount(
   language: string
-): Promise<Array<{ legend_type: string; count: number; color: string }>> {
+): Promise<{ legend_type: string; count: number; color: string }[]> {
   try {
     const db = getDatabase();
     return db.getAllAsync<{

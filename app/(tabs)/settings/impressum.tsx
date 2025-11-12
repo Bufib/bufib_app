@@ -1,14 +1,13 @@
-import { ScrollView, useColorScheme, View } from "react-native";
+import { ScrollView, useColorScheme, View, StyleSheet } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import React from "react";
-import { StyleSheet } from "react-native";
 import Markdown from "react-native-markdown-display";
 import { Colors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function impressum() {
+export default function Impressum() {
   const impressum = `
  # **Impressum** 
 

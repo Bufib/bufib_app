@@ -3,7 +3,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { formatDate } from "@/utils/formatDate";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 import { useGradient } from "../hooks/useGradient";
 
@@ -13,7 +12,6 @@ const NewsArticlePreviewCard = ({
   created_at,
 }: NewsArticlesPreviewType) => {
   const { gradientColors } = useGradient();
-  const { t } = useTranslation();
   const { rtl } = useLanguage();
   const formatedDate = formatDate(created_at);
 

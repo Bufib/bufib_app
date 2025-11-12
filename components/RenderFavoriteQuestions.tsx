@@ -1,6 +1,5 @@
 import React, {
   useState,
-  useLayoutEffect,
   useEffect,
   useCallback,
 } from "react";
@@ -12,10 +11,8 @@ import {
   useColorScheme,
   Platform,
 } from "react-native";
-import { CoustomTheme } from "@/utils/coustomTheme";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import { getFavoriteQuestions } from "@/db/queries/questions";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
@@ -108,10 +105,10 @@ function RenderFavoriteQuestions() {
     };
   }, [favoritesRefreshed, lang, questionVersion, t]);
 
-  const listExtraData = React.useMemo(
-    () => `${favoritesRefreshed}|${questionVersion}`,
-    [favoritesRefreshed, questionVersion]
-  );
+  // const listExtraData = React.useMemo(
+  //   () => `${favoritesRefreshed}|${questionVersion}`,
+  //   [favoritesRefreshed, questionVersion]
+  // );
 
   const renderItem = useCallback(
     ({ item }: { item: QuestionType }) => (

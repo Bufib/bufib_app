@@ -382,15 +382,15 @@ export async function getAllJuzStarts(): Promise<JuzStartType[]> {
 /** Optional: labels like "Juz 1 — Al-Fātiḥa 1" in UI language. */
 export async function getJuzButtonLabels(
   lang: Language
-): Promise<Array<{ juz: number; label: string; sura: number; aya: number }>> {
+): Promise<{ juz: number; label: string; sura: number; aya: number }[]> {
   try {
     const starts = await getAllJuzStarts();
-    const out: Array<{
+    const out: {
       juz: number;
       label: string;
       sura: number;
       aya: number;
-    }> = [];
+    }[] = [];
     for (const s of starts) {
       const surahName =
         (await getSurahDisplayName(s.sura, lang)) ?? `Sura ${s.sura}`;
@@ -454,7 +454,7 @@ export async function getJuzBounds(juz: number): Promise<JuzBoundsType | null> {
 /** Return only (sura, aya) pairs belonging to a juz. */
 export async function getJuzAyahRefs(
   juz: number
-): Promise<Array<{ sura: number; aya: number }>> {
+): Promise<{ sura: number; aya: number }[]> {
   try {
     const db = getDatabase();
     const bounds = await getJuzBounds(juz);
@@ -714,7 +714,7 @@ export async function getPageOfAyah(
 /** Page buttons like: "Page 1 — Al-Fātiḥa 1" */
 export async function getPageButtonLabels(
   lang: Language
-): Promise<Array<{ page: number; label: string; sura: number; aya: number }>> {
+): Promise<{ page: number; label: string; sura: number; aya: number }[]> {
   try {
     const db = getDatabase();
     const rows = await db.getAllAsync<{
@@ -723,12 +723,12 @@ export async function getPageButtonLabels(
       aya: number;
     }>(`SELECT id, sura, aya FROM page ORDER BY id;`);
 
-    const out: Array<{
+    const out: {
       page: number;
       label: string;
       sura: number;
       aya: number;
-    }> = [];
+    }[] = [];
     for (const r of rows) {
       const surahName =
         (await getSurahDisplayName(r.sura, lang)) ?? `Sura ${r.sura}`;

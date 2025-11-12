@@ -255,7 +255,6 @@ import {
   StyleSheet,
   useColorScheme,
 } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { Ionicons } from "@expo/vector-icons";
 import RenderHTML from "react-native-render-html";
 import { ThemedText } from "@/components/ThemedText";

@@ -1,23 +1,20 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
   useWindowDimensions,
   TouchableOpacity,
-  Text,
   Animated,
-  Easing,
+  useColorScheme,
 } from "react-native";
 import { router } from "expo-router";
 import { Image } from "expo-image";
-import { useColorScheme } from "react-native";
 import LatestQuestions from "@/components/LatestQuestions";
 import { ThemedText } from "@/components/ThemedText";
 import { questionCategories } from "@/utils/categories";
 import { Colors } from "@/constants/Colors";
 import { returnSize } from "@/utils/sizes";
 import { useTranslation } from "react-i18next";
-import Entypo from "@expo/vector-icons/Entypo";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
@@ -27,10 +24,7 @@ export default function QuestionLinks() {
   const { t } = useTranslation();
   const { lang } = useLanguage();
   // Dynamically calculate the size of each element based on screen width
-  const { elementSize, fontSize, iconSize, imageSize, gap } = returnSize(
-    width,
-    height
-  );
+  const { elementSize, fontSize, iconSize } = returnSize(width, height);
 
   // fade-in animation value
 

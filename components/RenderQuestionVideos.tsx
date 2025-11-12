@@ -171,7 +171,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTranslation } from "react-i18next";
 import { useVideos } from "@/hooks/useVideos";
 import { hlsUrl } from "@/utils/cloudinary";
-import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function RenderQuestionVideos() {
   const { categoryName } = useLocalSearchParams<{ categoryName: string }>();
@@ -179,7 +178,6 @@ export default function RenderQuestionVideos() {
   const theme = Colors[colorScheme];
   const { lang } = useLanguage();
   const { t } = useTranslation();
-  const videoVersion = useDataVersionStore((s) => s.videoVersion);
 
   const { data, isLoading, error } = useVideos(lang);
   const videosForCategory =

@@ -34,14 +34,6 @@ export default function RenderFavoriteNewsArticles() {
   const favKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
   console.log(newsArticleVersion);
 
-  // // Load favorite IDs from storage (scoped by language)
-  // useEffect(() => {
-  //   (async () => {
-  //     const ids = await getFavoriteNewsArticle(lang);
-  //     setFavoriteIds(ids);
-  //   })();
-  // }, [lang, favoritesRefreshed, newsArticleVersion]);
-
   useEffect(() => {
     let cancelled = false;
 
@@ -88,10 +80,10 @@ export default function RenderFavoriteNewsArticles() {
     refetchOnReconnect: true,
   });
 
-  const listExtraData = React.useMemo(
-    () => `${newsArticleVersion}`,
-    [newsArticleVersion]
-  );
+  // const listExtraData = React.useMemo(
+  //   () => `${newsArticleVersion}`,
+  //   [newsArticleVersion]
+  // );
 
   if (isLoading && favoriteIds.length > 0) {
     return (

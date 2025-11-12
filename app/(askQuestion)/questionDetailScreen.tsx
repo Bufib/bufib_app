@@ -24,7 +24,6 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import { useDataVersionStore } from "@/stores/dataVersionStore";
 export default function QuestionDetailScreen() {
   const { questionId } = useLocalSearchParams();
   const queryClient = useQueryClient();
@@ -36,7 +35,6 @@ export default function QuestionDetailScreen() {
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { rtl } = useLanguage();
-  const userQuestionVersion = useDataVersionStore((s) => s.userQuestionVersion);
 
   // 4. If user is not logged in, redirect to login
   useEffect(() => {

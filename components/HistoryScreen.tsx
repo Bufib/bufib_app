@@ -3,24 +3,20 @@ import {
   StyleSheet,
   FlatList,
   View,
-  useColorScheme,
   TouchableOpacity,
   Dimensions,
   ImageBackground,
   Text,
 } from "react-native";
-import { ThemedView } from "./ThemedView";
-import { ThemedText } from "./ThemedText";
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
-import { HistoryDataType, LanguageCode } from "@/constants/Types";
+import { HistoryDataType, } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { AHLULBAYT_DATA } from "@/data/historyData";
 
 const HistoryScreen: React.FC = () => {
-  const scheme = (useColorScheme() ?? "light") as "light" | "dark";
   const { t } = useTranslation();
   const { lang } = useLanguage();
 
@@ -35,7 +31,6 @@ const HistoryScreen: React.FC = () => {
     });
   };
 
-  // Get gradient colors based on theme
 
   // Render each person card
   const renderPersonCard = ({

@@ -1,11 +1,9 @@
 import { StyleSheet, useColorScheme } from "react-native";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
-import { useEffect } from "react";
 import Toast from "react-native-toast-message";
-import { useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";

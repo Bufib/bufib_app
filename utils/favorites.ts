@@ -96,8 +96,6 @@
 
 // utils/favorites.ts
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
-import i18n from "./i18n";
 import { addFavoriteToast, removeFavoriteToast } from "@/constants/messages";
 
 /**

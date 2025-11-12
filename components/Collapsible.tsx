@@ -5,7 +5,6 @@ import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Image } from "expo-image";
-import { CoustomTheme } from "../utils/coustomTheme";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { Colors } from "@/constants/Colors";
 
@@ -15,7 +14,6 @@ export function Collapsible({
   marja,
 }: PropsWithChildren & { title: string; marja?: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const themeStyles = CoustomTheme();
   const { fontSize } = useFontSizeStore();
   const colorScheme = useColorScheme() || "light";
 

@@ -781,7 +781,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Slider from "@react-native-community/slider";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons, AntDesign, Entypo } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Asset } from "expo-asset";
 import type { VideoSource } from "expo-video";
@@ -796,7 +796,6 @@ import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { isPodcastFavorited, togglePodcastFavorite } from "@/utils/favorites";
 import { ThemedText } from "./ThemedText";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { StatusBar } from "expo-status-bar";
 import { useLanguage } from "@/contexts/LanguageContext";
 export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const { t } = useTranslation();
@@ -990,6 +989,8 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
     podcast.filename,
     podcast.title,
     rate,
+    artworkUri,
+    load,
   ]); // Only the essentials
   // Metadata like title, artwork, rate are captured in closure—fine for this use case
 
@@ -1101,19 +1102,20 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   // Scrub: pause → seek (seekBy for tiny nudges) → resume if needed
   const wasPlayingRef = useRef(false);
   const startPosRef = useRef(0);
-  const onScrubStart = () => {
-    wasPlayingRef.current = isPlaying;
-    pause();
-    startPosRef.current = position || 0;
-    setIsSeeking(true);
-  };
-  const handleSeek = (value: number) => {
-    setIsSeeking(false);
-    const delta = value - startPosRef.current;
-    if (Math.abs(delta) < 1) seekBy(delta);
-    else setPosition(value);
-    if (wasPlayingRef.current) play();
-  };
+
+  // const onScrubStart = () => {
+  //   wasPlayingRef.current = isPlaying;
+  //   pause();
+  //   startPosRef.current = position || 0;
+  //   setIsSeeking(true);
+  // };
+  // const handleSeek = (value: number) => {
+  //   setIsSeeking(false);
+  //   const delta = value - startPosRef.current;
+  //   if (Math.abs(delta) < 1) seekBy(delta);
+  //   else setPosition(value);
+  //   if (wasPlayingRef.current) play();
+  // };
 
   const stopPlayback = async () => {
     if (!isThisEpisodeLoaded) return;

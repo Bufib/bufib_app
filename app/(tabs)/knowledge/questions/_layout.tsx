@@ -1,12 +1,9 @@
-import { StyleSheet, Text, useColorScheme, View } from "react-native";
+import { useColorScheme, Platform } from "react-native";
 import React from "react";
-import { Stack } from "expo-router";
-import i18n from "@/utils/i18n";
+import { Stack, router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
-import { Platform } from "react-native";
 import { Colors } from "@/constants/Colors";
-const _layout = () => {
+const Layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
     <Stack>
@@ -50,6 +47,4 @@ const _layout = () => {
   );
 };
 
-export default _layout;
-
-const styles = StyleSheet.create({});
+export default Layout;
