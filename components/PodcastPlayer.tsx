@@ -1351,7 +1351,10 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
           {showInitialButtons && (
             <View style={{ gap: 10, marginHorizontal: 10 }}>
               <TouchableOpacity
-                style={styles.downloadButton}
+                style={[
+                  styles.downloadButton,
+                  { borderColor: Colors[colorScheme].border },
+                ]}
                 onPress={handleStream}
                 disabled={isLoading}
               >
@@ -1368,7 +1371,10 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.downloadButton}
+                style={[
+                  styles.downloadButton,
+                  { borderColor: Colors[colorScheme].border },
+                ]}
                 onPress={handleDownload}
                 disabled={isLoading}
               >

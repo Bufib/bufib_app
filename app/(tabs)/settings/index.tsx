@@ -69,9 +69,6 @@ const Settings = () => {
   useEffect(() => {
     (async () => {
       try {
-        const version = await AsyncStorage.getItem("database_version");
-        setVersion(version);
-
         const paypal = await AsyncStorage.getItem("paypal");
         setPayPalLink(paypal);
 
@@ -241,20 +238,14 @@ const Settings = () => {
           </Pressable>
 
           <View style={styles.infoSection}>
-            <ThemedText
+            {/* <ThemedText
               style={[styles.questionCount, rtl && { textAlign: "right" }]}
             >
               {t("questionsInDatabase", { count: questionCount })}
-            </ThemedText>
+            </ThemedText> */}
 
             {isAdmin && isLoggedIn && (
               <>
-                <ThemedText
-                  style={[styles.versionText, rtl && { textAlign: "right" }]}
-                >
-                  {t("databaseVersion", { version: version })}
-                </ThemedText>
-
                 <ThemedText
                   style={[styles.versionText, rtl && { textAlign: "right" }]}
                 >
@@ -393,7 +384,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   paypalImage: {
-    height: 70,
+    height: 80,
     aspectRatio: 2,
   },
   infoSection: {

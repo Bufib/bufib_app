@@ -562,9 +562,10 @@ export default function RenderSearchResults({
               style={[
                 styles.tabBtn,
                 {
+                  borderColor: Colors[colorScheme].border,
                   backgroundColor: active
                     ? Colors.universal.primary
-                    : "transparent",
+                    : Colors[colorScheme].contrast,
                 },
               ]}
             >
@@ -684,7 +685,6 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: "row",
     paddingVertical: 4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
     marginBottom: 10,
     alignItems: "center",
   },
