@@ -1,4 +1,6 @@
-// //! Best
+
+
+// //! Best with differen alert before sajda
 // import React, {
 //   useEffect,
 //   useMemo,
@@ -14,12 +16,13 @@
 //   NativeSyntheticEvent,
 //   NativeScrollEvent,
 //   FlatList,
-//   Alert,
+//   Modal,
+//   Animated,
+//   Text,
 // } from "react-native";
 // import { router, useLocalSearchParams } from "expo-router";
 // import { useTranslation } from "react-i18next";
-// import { AntDesign, Ionicons } from "@expo/vector-icons";
-// import { useWindowDimensions } from "react-native";
+// import { Ionicons } from "@expo/vector-icons";
 // import BottomSheet, {
 //   BottomSheetBackdrop,
 //   BottomSheetScrollView,
@@ -31,7 +34,7 @@
 // import { useLastSuraStore } from "@/stores/useLastSura";
 // import { Colors } from "@/constants/Colors";
 // import { useLanguage } from "@/contexts/LanguageContext";
-// import { QuranVerseType, LanguageCode, SuraRowType } from "@/constants/Types";
+// import { QuranVerseType } from "@/constants/Types";
 // import { getPageStart } from "@/db/queries/quran";
 // import { useReadingProgressQuran } from "@/stores/useReadingProgressQuran";
 // import { useFontSizeStore } from "@/stores/fontSizeStore";
@@ -45,12 +48,12 @@
 // import { useDataVersionStore } from "@/stores/dataVersionStore";
 // import { useQuranAudio } from "@/hooks/useQuranAudio";
 // import { RECITERS, type ReciterId } from "@/hooks/useQuranAudio";
+// import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 
 // const SuraScreen: React.FC = () => {
 //   const colorScheme = useColorScheme() || "light";
 //   const { lang, rtl } = useLanguage();
 
-//   const { width } = useWindowDimensions();
 //   const { t } = useTranslation();
 //   const { suraId, juzId, pageId, verseId } = useLocalSearchParams<{
 //     suraId?: string;
@@ -59,7 +62,7 @@
 //     verseId?: string;
 //   }>();
 
-//   const [hasTafsir, setHasTafsir] = useState(true);
+//   const hasTafsir = true;
 //   const { fontSize, lineHeight } = useFontSizeStore();
 //   const [nextPage, setNextPage] = useState<number | null>(null);
 //   const [prevPage, setPrevPage] = useState<number | null>(null);
@@ -70,15 +73,24 @@
 //     i: number;
 //   } | null>(null);
 
+//   const [reciterPicker, setReciterPicker] = useState<{
+//     visible: boolean;
+//     verse: QuranVerseType | null;
+//     index: number;
+//   }>({
+//     visible: false,
+//     verse: null,
+//     index: -1,
+//   });
 //   const isPageMode = !!pageId;
 //   const isJuzMode = !!juzId && !isPageMode;
 //   const juzNumber = isJuzMode ? Number(juzId) : null;
 //   const pageNumber = isPageMode ? Number(pageId) : null;
 //   const suraNumber = useMemo(() => Number(suraId ?? 1), [suraId]);
-//   const [scrollY, setScrollY] = useState(0);
 //   const flatListRef = useRef<FlatList<QuranVerseType>>(null);
 //   const [showArrow, setShowArrow] = useState(false);
 //   const showArrowRef = useRef(false);
+//   const { fadeAnim, onLayout } = useScreenFadeIn(800);
 
 //   const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
 
@@ -101,7 +113,6 @@
 //     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
 //   };
 
-//   const translitContentWidth = Math.max(0, width - 64);
 //   const [selectedVerse, setSelectedVerse] = useState<QuranVerseType | null>(
 //     null
 //   );
@@ -151,39 +162,39 @@
 //     reciter,
 //   });
 
-//   const openReciterPicker = useCallback(
-//     (v: QuranVerseType, i: number) => {
-//       const reciterOptions = (Object.keys(RECITERS) as ReciterId[]).map(
-//         (id) => ({
-//           text: `${RECITERS[id].label}${id === reciter ? " ✓" : ""}`,
-//           onPress: () => {
-//             if (id !== reciter) {
-//               setReciter(id);
-//               // Schedule play AFTER state update
-//               setPendingPlay({ v, i });
-//             } else {
-//               // Same reciter, just play immediately
-//               toggleVerse(v, i);
-//             }
-//           },
-//         })
-//       );
+//   const openReciterPicker = useCallback((v: QuranVerseType, i: number) => {
+//     setReciterPicker({
+//       visible: true,
+//       verse: v,
+//       index: i,
+//     });
+//   }, []);
 
-//       Alert.alert(
-//         t("chooseReciter"),
-//         undefined,
-//         [
-//           ...reciterOptions,
-//           {
-//             text: t?.("cancel") ?? "Cancel",
-//             style: "cancel",
-//           },
-//         ],
-//         { cancelable: true }
-//       );
+//   const handleSelectReciter = useCallback(
+//     (id: ReciterId) => {
+//       if (!reciterPicker.verse) {
+//         setReciterPicker({ visible: false, verse: null, index: -1 });
+//         return;
+//       }
+
+//       const verse = reciterPicker.verse;
+//       const index = reciterPicker.index;
+
+//       if (id !== reciter) {
+//         setReciter(id);
+//         setPendingPlay({ v: verse, i: index });
+//       } else {
+//         toggleVerse(verse, index);
+//       }
+
+//       setReciterPicker({ visible: false, verse: null, index: -1 });
 //     },
-//     [reciter, toggleVerse, t]
+//     [reciterPicker, reciter, toggleVerse]
 //   );
+
+//   const handleCloseReciterPicker = useCallback(() => {
+//     setReciterPicker({ visible: false, verse: null, index: -1 });
+//   }, []);
 
 //   const setLastSura = useLastSuraStore((s) => s.setLastSura);
 //   const firstSura = verses?.[0]?.sura;
@@ -195,7 +206,7 @@
 //   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
 
 //   const onViewableItemsChanged = useRef(
-//     ({ viewableItems }: { viewableItems: Array<{ item: QuranVerseType }> }) => {
+//     ({ viewableItems }: { viewableItems: { item: QuranVerseType }[] }) => {
 //       const top = viewableItems?.[0]?.item;
 //       if (top) {
 //         // avoid redundant writes
@@ -229,16 +240,16 @@
 //     setPendingPlay(null);
 //   }, [pendingPlay, toggleVerse]);
 
-//   const bmSig = useMemo(() => {
-//     let acc = bookmarksBySura.size;
-//     for (const set of bookmarksBySura.values()) acc += set.size;
-//     return acc;
-//   }, [bookmarksBySura]);
+//   // const bmSig = useMemo(() => {
+//   //   let acc = bookmarksBySura.size;
+//   //   for (const set of bookmarksBySura.values()) acc += set.size;
+//   //   return acc;
+//   // }, [bookmarksBySura]);
 
-//   const listExtraData = useMemo(
-//     () => ({ quranDataVersion, bmSig }),
-//     [quranDataVersion, bmSig]
-//   );
+//   // const listExtraData = useMemo(
+//   //   () => ({ quranDataVersion, bmSig }),
+//   //   [quranDataVersion, bmSig]
+//   // );
 
 //   const { handleBookmarkVerse } = useBookmarks({
 //     lang,
@@ -392,7 +403,6 @@
 //             arabicVerse={arabicVerse}
 //             isBookmarked={isVerseBookmarked}
 //             isJuzMode={isJuzMode || isPageMode}
-//             translitContentWidth={translitContentWidth}
 //             translitBaseStyle={translitBaseStyle}
 //             hasTafsir={hasTafsir}
 //             onBookmark={(v) => handleBookmarkVerse(v, index)}
@@ -410,7 +420,6 @@
 //       bookmarksBySura,
 //       isJuzMode,
 //       isPageMode,
-//       translitContentWidth,
 //       translitBaseStyle,
 //       hasTafsir,
 //       handleBookmarkVerse,
@@ -428,7 +437,13 @@
 //   );
 
 //   return (
-//     <ThemedView style={styles.container}>
+//     <Animated.View
+//       onLayout={onLayout}
+//       style={[
+//         styles.container,
+//         { backgroundColor: Colors[colorScheme].background, opacity: fadeAnim },
+//       ]}
+//     >
 //       {loading ? (
 //         <View style={styles.loadingWrap}>
 //           <LoadingIndicator size="large" />
@@ -441,6 +456,8 @@
 //           // extraData={listExtraData}
 //           keyExtractor={(v) => `${v.sura}-${v.aya}`}
 //           bounces={false}
+//           overScrollMode="never"
+//           alwaysBounceVertical={false}
 //           renderItem={renderVerse}
 //           onViewableItemsChanged={onViewableItemsChanged}
 //           onScrollToIndexFailed={(info) => {
@@ -460,11 +477,13 @@
 //               suraInfo={suraInfo}
 //               displayName={displayName}
 //               juzHeader={juzHeader}
+//               juzNumber={juzNumber} // Add this
+//               pageNumber={pageNumber}
 //             />
 //           }
 //           stickyHeaderIndices={[0]}
 //           stickyHeaderHiddenOnScroll
-//           contentContainerStyle={{paddingBottom: 30}}
+//           contentContainerStyle={{ paddingBottom: 30 }}
 //           ListHeaderComponentStyle={{}}
 //           showsVerticalScrollIndicator={false}
 //           scrollEventThrottle={16}
@@ -548,7 +567,7 @@
 //                   style={styles.closeButton}
 //                 >
 //                   <Ionicons
-//                     name="close-circle"
+//                     name="close-circle-outline"
 //                     size={28}
 //                     color={Colors[colorScheme].defaultIcon}
 //                   />
@@ -648,7 +667,68 @@
 //           )}
 //         </BottomSheetScrollView>
 //       </BottomSheet>
-//     </ThemedView>
+
+//       {/* Reciter Picker - Custom iOS-like dialog */}
+//       <Modal
+//         visible={reciterPicker.visible}
+//         transparent
+//         animationType="fade"
+//         onRequestClose={handleCloseReciterPicker}
+//       >
+//         <ThemedView style={styles.reciterBackdrop}>
+//           <TouchableOpacity
+//             style={styles.reciterBackdropTouchable}
+//             activeOpacity={1}
+//             onPress={handleCloseReciterPicker}
+//           />
+//           <ThemedView
+//             style={[
+//               styles.reciterCard,
+//               { borderColor: Colors[colorScheme].border },
+//             ]}
+//           >
+//             <ThemedText style={styles.reciterTitle}>
+//               {t("chooseReciter")}
+//             </ThemedText>
+
+//             <View style={styles.reciterList}>
+//               {(Object.keys(RECITERS) as ReciterId[]).map((id) => (
+//                 <TouchableOpacity
+//                   key={id}
+//                   style={[
+//                     styles.reciterOption,
+//                     { borderColor: Colors[colorScheme].border },
+//                   ]}
+//                   onPress={() => handleSelectReciter(id)}
+//                 >
+//                   <Text
+//                     style={[
+//                       styles.reciterOptionText,
+//                       id === reciter && styles.reciterOptionTextActive,
+//                     ]}
+//                   >
+//                     {RECITERS[id].label}
+//                     {id === reciter ? " ✓" : ""}
+//                   </Text>
+//                 </TouchableOpacity>
+//               ))}
+//             </View>
+
+//             <TouchableOpacity
+//               style={[
+//                 styles.reciterCancelButton,
+//                 { backgroundColor: Colors[colorScheme].contrast },
+//               ]}
+//               onPress={handleCloseReciterPicker}
+//             >
+//               <ThemedText style={styles.reciterCancelText}>
+//                 {t("cancel")}
+//               </ThemedText>
+//             </TouchableOpacity>
+//           </ThemedView>
+//         </ThemedView>
+//       </Modal>
+//     </Animated.View>
 //   );
 // };
 
@@ -761,9 +841,63 @@
 //     backgroundColor: Colors.universal.primary,
 //     borderColor: Colors.universal.primary,
 //   },
+//   reciterBackdrop: {
+//     flex: 1,
+//     backgroundColor: "rgba(0,0,0,0.35)",
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   reciterBackdropTouchable: {
+//     ...StyleSheet.absoluteFillObject,
+//   },
+//   reciterCard: {
+//     width: "82%",
+//     borderRadius: 18,
+//     paddingTop: 14,
+//     paddingBottom: 8,
+//     paddingHorizontal: 14,
+//     alignItems: "stretch",
+//     borderWidth: 1,
+//   },
+//   reciterTitle: {
+//     fontSize: 17,
+//     fontWeight: "600",
+//     textAlign: "center",
+//     marginBottom: 10,
+//   },
+//   reciterList: {
+//     borderRadius: 14,
+//     overflow: "hidden",
+//     marginBottom: 8,
+//   },
+//   reciterOption: {
+//     paddingVertical: 10,
+//     paddingHorizontal: 10,
+//     borderBottomWidth: 0.2,
+//   },
+//   reciterOptionText: {
+//     fontSize: 16,
+//     lineHeight: 35,
+//     textAlign: "center",
+//     color: Colors.universal.link,
+//   },
+//   reciterOptionTextActive: {
+//     fontWeight: "600",
+//   },
+//   reciterCancelButton: {
+//     marginTop: 4,
+//     paddingVertical: 10,
+//     borderRadius: 14,
+//     backgroundColor: "rgba(0,0,0,0.06)",
+//     marginBottom: 5,
+//   },
+//   reciterCancelText: {
+//     fontSize: 16,
+//     textAlign: "center",
+//   },
 // });
 
-//! Best with differen alert
+
 import React, {
   useEffect,
   useMemo,
@@ -798,7 +932,7 @@ import { useLastSuraStore } from "@/stores/useLastSura";
 import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { QuranVerseType } from "@/constants/Types";
-import { getPageStart } from "@/db/queries/quran";
+import { getPageStart, getSajdaForSurah } from "@/db/queries/quran";
 import { useReadingProgressQuran } from "@/stores/useReadingProgressQuran";
 import { useFontSizeStore } from "@/stores/fontSizeStore";
 import { seedPageIndex } from "@/utils/quranIndex";
@@ -845,6 +979,10 @@ const SuraScreen: React.FC = () => {
     verse: null,
     index: -1,
   });
+
+  // Sajda verses state
+  const [sajdaVerses, setSajdaVerses] = useState<Set<number>>(new Set());
+
   const isPageMode = !!pageId;
   const isJuzMode = !!juzId && !isPageMode;
   const juzNumber = isJuzMode ? Number(juzId) : null;
@@ -981,20 +1119,6 @@ const SuraScreen: React.FC = () => {
   ).current;
 
   // Handle pending play after reciter state update
-  // useEffect(() => {
-  //   if (!pendingPlay) return;
-
-  //! Here
-  //   // Now the component has re-rendered with the new reciter value
-  //   // The toggleVerse callback will use the updated reciter
-  //   const timer = setTimeout(() => {
-  //     toggleVerse(pendingPlay.v, pendingPlay.i);
-  //     setPendingPlay(null);
-  //   }, 50);
-
-  //   return () => clearTimeout(timer);
-  // }, [pendingPlay, toggleVerse]);
-
   useEffect(() => {
     if (!pendingPlay) return;
 
@@ -1003,22 +1127,49 @@ const SuraScreen: React.FC = () => {
     setPendingPlay(null);
   }, [pendingPlay, toggleVerse]);
 
-  // const bmSig = useMemo(() => {
-  //   let acc = bookmarksBySura.size;
-  //   for (const set of bookmarksBySura.values()) acc += set.size;
-  //   return acc;
-  // }, [bookmarksBySura]);
-
-  // const listExtraData = useMemo(
-  //   () => ({ quranDataVersion, bmSig }),
-  //   [quranDataVersion, bmSig]
-  // );
-
   const { handleBookmarkVerse } = useBookmarks({
     lang,
     bookmarksBySura,
     setBookmarksBySura,
   });
+
+  // Fetch sajda verses
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      if (!verses.length) {
+        if (!cancelled) setSajdaVerses(new Set());
+        return;
+      }
+
+      try {
+        // Get unique sura numbers from current verses
+        const suraNumbers = [...new Set(verses.map((v) => v.sura))];
+
+        // Fetch sajda for all suras in view
+        const sajdaPromises = suraNumbers.map((sura) => getSajdaForSurah(sura));
+        const sajdaResults = await Promise.all(sajdaPromises);
+
+        // Build a set of verse keys that have sajda (type === 1)
+        const sajdaSet = new Set<number>();
+        sajdaResults.flat().forEach((sajda) => {
+          if (sajda.type === 1) {
+            // Store as "sura * 10000 + aya" for unique key
+            sajdaSet.add(sajda.sura * 10000 + sajda.aya);
+          }
+        });
+        if (!cancelled) setSajdaVerses(sajdaSet);
+      } catch (error) {
+        console.error("Error fetching sajda:", error);
+        if (!cancelled) setSajdaVerses(new Set());
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [verses, quranDataVersion]);
 
   // Page navigation logic (kept in main component)
   useEffect(() => {
@@ -1149,6 +1300,7 @@ const SuraScreen: React.FC = () => {
       const isVerseBookmarked =
         bookmarksBySura.get(item.sura)?.has(item.aya) ?? false;
       const isCurrentlyPlaying = isVersePlaying(item);
+      const hasSajda = sajdaVerses.has(item.sura * 10000 + item.aya);
 
       return (
         <>
@@ -1168,6 +1320,7 @@ const SuraScreen: React.FC = () => {
             isJuzMode={isJuzMode || isPageMode}
             translitBaseStyle={translitBaseStyle}
             hasTafsir={hasTafsir}
+            hasSajda={hasSajda}
             onBookmark={(v) => handleBookmarkVerse(v, index)}
             onOpenInfo={handleOpenInfo}
             language={lang}
@@ -1196,6 +1349,7 @@ const SuraScreen: React.FC = () => {
       rtl,
       t,
       shouldShowBasmala,
+      sajdaVerses,
     ]
   );
 
@@ -1216,7 +1370,6 @@ const SuraScreen: React.FC = () => {
           ref={flatListRef}
           data={verses}
           onScroll={handleScroll}
-          // extraData={listExtraData}
           keyExtractor={(v) => `${v.sura}-${v.aya}`}
           bounces={false}
           overScrollMode="never"
@@ -1240,7 +1393,7 @@ const SuraScreen: React.FC = () => {
               suraInfo={suraInfo}
               displayName={displayName}
               juzHeader={juzHeader}
-              juzNumber={juzNumber} // Add this
+              juzNumber={juzNumber}
               pageNumber={pageNumber}
             />
           }

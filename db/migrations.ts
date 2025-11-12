@@ -547,6 +547,7 @@ export const migrationSQL = `
   CREATE UNIQUE INDEX IF NOT EXISTS uq_prayer_translations_pid_lang
   ON prayer_translations(prayer_id, language_code);
 
+  
   -- FAVORITES / FOLDERS (used by your helpers)
   CREATE TABLE IF NOT EXISTS prayer_folders (
     name  TEXT PRIMARY KEY,
@@ -567,7 +568,9 @@ export const migrationSQL = `
   CREATE INDEX IF NOT EXISTS idx_fav_prayers_prayer_folder ON favorite_prayers(prayer_id, folder_name);
   CREATE INDEX IF NOT EXISTS idx_prayer_translations_lang_pid ON prayer_translations(language_code, prayer_id);
   CREATE UNIQUE INDEX IF NOT EXISTS uq_favorite_prayers_unique ON favorite_prayers(prayer_id, folder_name);
+  CREATE INDEX IF NOT EXISTS idx_prayer_translations_pid_lang_covering ON prayer_translations(prayer_id, language_code, translated_text, translated_notes, translated_introduction);
 
+  
   -- PODCASTS
   CREATE TABLE IF NOT EXISTS podcasts (
     id INTEGER PRIMARY KEY,

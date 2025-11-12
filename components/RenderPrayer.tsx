@@ -783,6 +783,7 @@ const makeMarkdownRules = (
 
 const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
   const [prayer, setPrayer] = useState<PrayerWithTranslations | null>(null);
   const [selectTranslations, setSelectTranslations] = useState<
     Record<string, boolean>
@@ -888,24 +889,55 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     [prayersVersion, bookmark, selectTranslations]
   );
 
-  // Fetch prayer on mount (removed favorite check)
+  // Fetch prayer on mount
+  // useEffect(() => {
+  //   let alive = true;
+  //   (async () => {
+  //     try {
+  //       setIsLoading(true);
+  //       const data = await getPrayerWithTranslations(prayerID);
+  //       if (alive) setPrayer(data as PrayerWithTranslations);
+  //     } catch (e) {
+  //       console.error(e);
+  //     } finally {
+  //       if (alive) setIsLoading(false);
+  //     }
+  //   })();
+  //   return () => {
+  //     alive = false;
+  //   };
+  // }, [prayerID, prayersVersion]);
+
   useEffect(() => {
     let alive = true;
+    let loadingTimer: number | undefined;
+
     (async () => {
       try {
         setIsLoading(true);
+
+        loadingTimer = setTimeout(() => {
+          if (alive && isLoading) setShowLoadingSpinner(true);
+        }, 300);
+
         const data = await getPrayerWithTranslations(prayerID);
         if (alive) setPrayer(data as PrayerWithTranslations);
       } catch (e) {
         console.error(e);
       } finally {
-        if (alive) setIsLoading(false);
+        if (loadingTimer !== undefined) clearTimeout(loadingTimer);
+        if (alive) {
+          setIsLoading(false);
+          setShowLoadingSpinner(false);
+        }
       }
     })();
+
     return () => {
       alive = false;
+      if (loadingTimer !== undefined) clearTimeout(loadingTimer);
     };
-  }, [prayerID, prayersVersion]);
+  }, [prayerID, prayersVersion, isLoading]);
 
   // Init translation toggles
   useEffect(() => {
@@ -1030,7 +1062,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     bottomSheetRef.current?.close();
   };
 
-  if (isLoading) {
+  if (showLoadingSpinner) {
     return (
       <ThemedView style={styles.loadingAndNoDataContainer}>
         <LoadingIndicator size={"large"} />
