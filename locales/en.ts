@@ -314,6 +314,9 @@ export const en = {
   resetPasswordResendButton: "Request new code",
   noAnswereToQuestion: "New message available",
 
+  pleaseEnterEmail: "Please enter an email.",
+  pleaseEnterValidEmail: "Please enter a valid email.",
+  pleaseEnterPassword: "Please enter a password.",
   // Auth / Login
   adminLoginTitle: "Admin Login",
   emailPlaceholder: "Email",
@@ -383,7 +386,7 @@ export const en = {
   countdownDaysToGo: "{{count}} days to go",
 
   // Quran
-  basmala: "In the name of Allah, most benevolent, ever-merciful.", 
+  basmala: "In the name of Allah, most benevolent, ever-merciful.",
   quranTitle: "Holy Quran",
   quranSubtitle: "Chapter List (Suras)",
   selectLanguage: "Select Language",

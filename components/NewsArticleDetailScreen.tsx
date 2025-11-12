@@ -1010,6 +1010,7 @@ import {
   isNewsArticleFavorited,
   toggleNewsArticleFavorite,
 } from "@/utils/favorites";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 type Row = { key: "content" };
 type SavedBookmark = { offsetY: number; addedAt: number };
@@ -1025,7 +1026,7 @@ export default function NewsArticleDetailScreen({
   const { lang, rtl } = useLanguage();
   const { fetchNewsArticleById } = useNewsArticles(lang);
   const { triggerRefreshFavorites } = useRefreshFavorites();
-
+  const newsArticleVersion = useDataVersionStore((s) => s.newsArticleVersion);
   const [article, setArticle] = useState<NewsArticlesType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -1064,7 +1065,10 @@ export default function NewsArticleDetailScreen({
   const [showArrowUp, setShowArrowUp] = useState(false);
   const showArrowUpRef = useRef(false);
 
-  const bookmarkKey = (id: number) => `bookmark:newsArticle:${id}:${lang}`;
+  const bookmarkKey = useCallback(
+    (id: number) => `bookmark:newsArticle:${id}:${lang}`,
+    [lang]
+  );
 
   useEffect(() => {
     const id = scrollYAV.addListener(({ value }) => {
@@ -1115,28 +1119,35 @@ export default function NewsArticleDetailScreen({
     return () => {
       alive = false;
     };
-  }, [articleId, lang]);
+  }, [articleId, lang, newsArticleVersion, t, fetchNewsArticleById]);
 
   // useEffect(() => {
+  //   let cancelled = false;
   //   (async () => {
   //     try {
   //       const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
-  //       if (!raw) return;
+  //       if (!raw || cancelled) return;
   //       const saved: SavedBookmark = JSON.parse(raw);
-  //       if (typeof saved?.offsetY === "number")
+  //       if (typeof saved?.offsetY === "number" && !cancelled) {
   //         setBookmarkOffsetY(saved.offsetY);
+  //       }
   //     } catch (e) {
-  //       console.log("Failed to load bookmark", e);
+  //       if (!cancelled) console.log("Failed to load bookmark", e);
   //     }
   //   })();
-  // }, [articleId, lang]);
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [articleId, lang, bookmarkKey]);
 
   useEffect(() => {
     let cancelled = false;
+
     (async () => {
       try {
         const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
         if (!raw || cancelled) return;
+
         const saved: SavedBookmark = JSON.parse(raw);
         if (typeof saved?.offsetY === "number" && !cancelled) {
           setBookmarkOffsetY(saved.offsetY);
@@ -1145,10 +1156,11 @@ export default function NewsArticleDetailScreen({
         if (!cancelled) console.log("Failed to load bookmark", e);
       }
     })();
+
     return () => {
       cancelled = true;
     };
-  }, [articleId, lang]);
+  }, [articleId, bookmarkKey]);
 
   const saveBookmark = useCallback(
     async (offsetY: number) => {
@@ -1163,7 +1175,7 @@ export default function NewsArticleDetailScreen({
         console.log("Failed to save bookmark", e);
       }
     },
-    [articleId, lang]
+    [articleId, bookmarkKey]
   );
 
   const clearBookmark = useCallback(() => {
@@ -1187,7 +1199,7 @@ export default function NewsArticleDetailScreen({
       ],
       { cancelable: true }
     );
-  }, [articleId, lang, t]);
+  }, [articleId, bookmarkKey, t]);
 
   const jumpToBookmark = useCallback(() => {
     if (bookmarkOffsetY == null) return;
@@ -1353,21 +1365,6 @@ export default function NewsArticleDetailScreen({
           </Text>
         </View>
       ),
-      image: (node: any) => {
-        const uri = node?.attributes?.src;
-        if (!uri) return null;
-        return (
-          <Image
-            key={node.key}
-            source={{ uri }}
-            recyclingKey={uri}
-            cachePolicy="disk"
-            style={{ width: "100%", height: 200, marginVertical: 12 }}
-            contentFit="cover"
-            transition={0}
-          />
-        );
-      },
       code_inline: (node: any) => (
         <Text
           key={node?.key}
@@ -1383,6 +1380,43 @@ export default function NewsArticleDetailScreen({
           {node?.content}
         </Text>
       ),
+      image: (node: any) => {
+        const { src, alt } = node.attributes;
+        return (
+          <View
+            key={node?.key}
+            style={{
+              width: "90%",
+              alignSelf: "center",
+              marginVertical: 20,
+            }}
+          >
+            <Image
+              source={{ uri: src }}
+              style={{
+                width: "100%",
+                height: 250, // or aspectRatio: 16/9
+                borderRadius: 12,
+              }}
+              contentFit="cover"
+              alt={alt}
+            />
+            {alt && (
+              <Text
+                style={{
+                  fontSize: fontSize * 0.85,
+                  color: Colors[colorScheme].defaultIcon,
+                  marginTop: 8,
+                  textAlign: "center",
+                  fontStyle: "italic",
+                }}
+              >
+                {alt}
+              </Text>
+            )}
+          </View>
+        );
+      },
     };
   }, [colorScheme, fontSize, lineHeight]);
 
@@ -1458,16 +1492,14 @@ export default function NewsArticleDetailScreen({
 
   if (isLoading) {
     return (
-      <ThemedView style={[styles.container]}>
-        <View style={styles.loadingContainer}>
-          <View
-            style={[
-              styles.loadingCard,
-              { backgroundColor: Colors[colorScheme].background },
-            ]}
-          >
-            <LoadingIndicator size="large" />
-          </View>
+      <ThemedView style={styles.loadingContainer}>
+        <View
+          style={[
+            styles.loadingCard,
+            { backgroundColor: Colors[colorScheme].background },
+          ]}
+        >
+          <LoadingIndicator size="large" />
         </View>
       </ThemedView>
     );
@@ -1659,9 +1691,10 @@ export default function NewsArticleDetailScreen({
       ]}
       edges={["top"]}
     >
-      <Animated.FlatList<Row>
+      <Animated.FlatList
         ref={flatListRef}
         data={data}
+        extraData={newsArticleVersion}
         keyExtractor={(item) => item.key}
         renderItem={renderItem}
         ListHeaderComponent={header}
@@ -1853,7 +1886,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 40,
   },
   loadingCard: {
     alignItems: "center",

@@ -1,9 +1,7 @@
-import { StyleSheet, Text, useColorScheme, View } from "react-native";
 import React from "react";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 
 const _layout = () => {
-  const colorScheme = useColorScheme() || "light";
   return (
     <Stack>
       <Stack.Screen

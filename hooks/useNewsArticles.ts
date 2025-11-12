@@ -5,13 +5,13 @@ import {
   useInfiniteQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 const PAGE_SIZE = 5;
 
 export function useNewsArticles(language: string) {
   const queryClient = useQueryClient();
-  const queryKey = ["newsArticles", language];
+  const queryKey = useMemo(() => ["newsArticles", language], [language]);
 
   const infiniteQuery = useInfiniteQuery<NewsArticlesType[], Error>({
     queryKey,

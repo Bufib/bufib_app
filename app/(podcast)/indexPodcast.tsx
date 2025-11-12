@@ -1,6 +1,6 @@
 // app/home/podcast.tsx
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import PodcastPlayer from "@/components/PodcastPlayer";
 import { ThemedView } from "@/components/ThemedView";
@@ -16,7 +16,7 @@ export default function PodcastScreen() {
   let podcast;
   try {
     podcast = JSON.parse(podcastString);
-  } catch { 
+  } catch {
     return (
       <ThemedView style={styles.center}>
         <ThemedText style={styles.errorText}>{t("error")}</ThemedText>

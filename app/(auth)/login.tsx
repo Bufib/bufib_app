@@ -769,16 +769,17 @@ import { Colors } from "@/constants/Colors";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import useNotificationStore from "@/stores/notificationStore";
 import { useTranslation } from "react-i18next";
+import i18n from "@/utils/i18n";
 
 // Login data schema
 const loginSchema = z.object({
   email: z
-    .string({ required_error: "Bitte E-Mail eingeben." })
-    .nonempty("Bitte E-Mail eingeben.")
-    .email("Bitte eine gültige E-Mail eingeben."),
+    .string({ required_error: i18n.t("pleaseEnterEmail") })
+    .nonempty(i18n.t("pleaseEnterEmail"))
+    .email(i18n.t("pleaseEnterValidEmail")),
   password: z
-    .string({ required_error: "Bitte Passwort eingeben." })
-    .nonempty("Bitte Passwort eingeben."),
+    .string({ required_error: i18n.t("pleaseEnterPassword") })
+    .nonempty(i18n.t("pleaseEnterPassword")),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -995,7 +996,10 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 20 },
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
   scrollViewContent: {
     flexGrow: 1,
     justifyContent: "center",
@@ -1006,7 +1010,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minHeight: Platform.OS === "ios" ? 500 : 450,
   },
-  inputWrapper: { marginBottom: 8 },
+  inputWrapper: {
+    marginBottom: 8,
+  },
   contentContainer: {
     borderWidth: 1,
     padding: 20,
@@ -1036,8 +1042,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
   },
-  passwordInput: { flex: 1, padding: 12 },
-  eyeIcon: { padding: 10 },
+  passwordInput: {
+    flex: 1,
+    padding: 12,
+  },
+  eyeIcon: {
+    padding: 10,
+  },
   forgotPasswordContainer: {
     marginBottom: 10,
     alignSelf: "flex-end",

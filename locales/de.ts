@@ -342,7 +342,9 @@ export const de = {
   hardResetDatabase: "Datenbank neu laden",
   hardResetDatabaseText:
     "Dies wird die Datanbank neu laden und möglicherweise Fehler beheben.",
-
+  pleaseEnterEmail: "Bitte E-Mail eingeben.",
+  pleaseEnterValidEmail: "Bitte eine gültige E-Mail eingeben.",
+  pleaseEnterPassword: "Bitte Passwort eingeben.",
   // Language selector
   language: "Sprache",
   selectAppLanguage: "App-Sprache wählen",

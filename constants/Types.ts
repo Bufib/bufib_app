@@ -74,6 +74,7 @@ export type Sizes = {
   previewSizes: number;
   isLarge: boolean;
   isMedium: boolean;
+  previewSizesPaddingHorizontal: number
 };
 
 export type triggerRefreshFavoritesType = {

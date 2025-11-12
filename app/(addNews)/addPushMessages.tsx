@@ -155,7 +155,7 @@ const AddPushMessages: React.FC = () => {
               disabled={isSending || !hasInternet}
             >
               <Text style={styles.buttonText}>
-                {isSending ? "Wird gesendet..." : "Notification senden"}
+                {isSending ? "Wird gesendet..." : "Benachrichtigung senden"}
               </Text>
             </Pressable>
           </ThemedView>

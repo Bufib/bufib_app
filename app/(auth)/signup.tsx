@@ -817,7 +817,6 @@ import { supabase } from "@/utils/supabase";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { CoustomTheme } from "@/utils/coustomTheme";
-import { Colors } from "@/constants/Colors";
 import Toast from "react-native-toast-message";
 import {
   signUpErrorGeneral,
@@ -833,7 +832,6 @@ import {
   signUpUserPasswordConformation,
   cancleCaptcha,
 } from "@/constants/messages";
-import { NoInternet } from "@/components/NoInternet";
 import { useConnectionStatus } from "@/hooks/useConnectionStatus";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SignUpFormValues } from "@/constants/Types";

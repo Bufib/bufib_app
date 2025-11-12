@@ -1297,7 +1297,6 @@ import {
   BottomSheetBackdrop,
   BottomSheetFlatList,
 } from "@gorhom/bottom-sheet";
-import { LinearGradient } from "expo-linear-gradient";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 import { returnSize } from "@/utils/sizes";
 
@@ -1321,7 +1320,7 @@ export default function HomeScreen() {
   const { fadeAnim, onLayout } = useScreenFadeIn(800);
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const { width, height } = useWindowDimensions();
-  const { previewSizes } = returnSize(width, height);
+  const { previewSizes, previewSizesPaddingHorizontal } = returnSize(width, height);
   // Grid layout constants
   // const GRID_HORIZONTAL_PADDING = 10;
   // const GRID_GAP = 20;
@@ -1369,7 +1368,6 @@ export default function HomeScreen() {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const sheetBg = Colors[colorScheme].background;
-  const sheetTextColor = Colors[colorScheme].text;
 
   const openSheet = useCallback((type: ActiveSheet) => {
     if (!type) return;
@@ -1404,12 +1402,7 @@ export default function HomeScreen() {
   const renderArticleTile = useCallback(
     ({ item }: { item: NewsArticlesType }) => (
       <TouchableOpacity
-        style={[
-          styles.tileWrapper,
-          {
-           
-          },
-        ]}
+        style={[styles.tileWrapper, {}]}
         onPress={() => {
           if (item.is_external_link) {
             handleOpenExternalUrl(item.external_link_url || "");
@@ -1488,7 +1481,7 @@ export default function HomeScreen() {
         </View>
       </TouchableOpacity>
     ),
-    [closeSheet, colorScheme, lang]
+    [closeSheet, colorScheme, lang, previewSizes]
   );
 
   const renderPodcastTile = useCallback(
@@ -1564,7 +1557,7 @@ export default function HomeScreen() {
         </View>
       </TouchableOpacity>
     ),
-    [closeSheet, colorScheme, t]
+    [closeSheet, colorScheme, t, previewSizes]
   );
 
   return (
@@ -1578,6 +1571,8 @@ export default function HomeScreen() {
       >
         <Animated.ScrollView
           onLayout={onLayout}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           style={[
             styles.scrollStyles,
             {
@@ -1641,6 +1636,8 @@ export default function HomeScreen() {
               {!newsArticlesIsLoading && !newsArticlesIsError && (
                 <FlatList
                   horizontal
+                  showsHorizontalScrollIndicator={false}
+                  showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.flatListContentContainer}
                   data={articles}
                   keyExtractor={(item) => item.id.toString()}
@@ -1662,7 +1659,6 @@ export default function HomeScreen() {
                       />
                     </TouchableOpacity>
                   )}
-                  showsHorizontalScrollIndicator={false}
                   onEndReached={() => {
                     if (
                       newsArticlesHasNextPage &&
@@ -1727,6 +1723,8 @@ export default function HomeScreen() {
               {!podcastsLoading && !podcastsError && (
                 <FlatList
                   horizontal
+                  showsHorizontalScrollIndicator={false}
+                  showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.flatListContentContainer}
                   data={podcasts}
                   keyExtractor={(item) => item.id.toString()}
@@ -1742,7 +1740,6 @@ export default function HomeScreen() {
                       <PodcastPreviewCard podcast={item} />
                     </TouchableOpacity>
                   )}
-                  showsHorizontalScrollIndicator={false}
                   onEndReached={() => {
                     if (podcastsHasNextPage && !podcastsIsFetchingNextPage) {
                       podcastsFetchNextPage();
@@ -1780,7 +1777,7 @@ export default function HomeScreen() {
                   name="add-circle-outline"
                   size={35}
                   color={Colors[colorScheme].defaultIcon}
-                  onPress={() => router.push("/addNews")}
+                  onPress={() => router.push("/(addNews)")}
                 />
               )}
             </View>
@@ -1909,6 +1906,8 @@ export default function HomeScreen() {
           {activeSheet === "articles" && (
             <BottomSheetFlatList
               data={articles}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
               keyExtractor={(item: NewsArticlesType) => item.id.toString()}
               numColumns={2}
               columnWrapperStyle={styles.columnWrapper}
@@ -1938,6 +1937,8 @@ export default function HomeScreen() {
           {activeSheet === "podcasts" && (
             <BottomSheetFlatList
               data={podcasts}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
               keyExtractor={(item: PodcastType) => item.id.toString()}
               numColumns={2}
               columnWrapperStyle={styles.columnWrapper}
@@ -2035,6 +2036,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    marginHorizontal: 16
   },
   updateButtonContent: {
     flexDirection: "row",
@@ -2083,8 +2085,9 @@ const styles = StyleSheet.create({
   },
   tileWrapper: {
     flex: 1,
-    alignItems: "flex-start",
-     paddingHorizontal: 10,
+    alignItems: "center",
+
+
   },
   modernTile: {
     borderRadius: 16,

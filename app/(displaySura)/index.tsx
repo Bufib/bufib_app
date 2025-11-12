@@ -1,9 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import SuraScreen from "@/components/SuraScreen";
 
-const sura = () => {
+const Sura = () => {
   return <SuraScreen />;
 };
 
-export default sura;
+export default Sura;

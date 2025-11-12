@@ -299,7 +299,9 @@ export const ar = {
     "لقد وصلت إلى الحد الأقصى من المحاولات. يرجى المحاولة مرة أخرى لاحقاً.",
   resetPasswordResendButton: "طلب رمز جديد",
   noAnswereToQuestion: "رسالة جديدة متاحة",
-
+  pleaseEnterEmail: "يرجى إدخال البريد الإلكتروني.",
+  pleaseEnterValidEmail: "يرجى إدخال بريد إلكتروني صالح.",
+  pleaseEnterPassword: "يرجى إدخال كلمة المرور.",
   // Auth / Login
   adminLoginTitle: "تسجيل دخول المشرف",
   emailPlaceholder: "البريد الإلكتروني",

@@ -165,23 +165,15 @@
 //   },
 //
 
-import {
-  View,
-  StyleSheet,
-  useColorScheme,
-  ActivityIndicator,
-} from "react-native";
+import { View, StyleSheet, useColorScheme } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import { useLocalSearchParams } from "expo-router";
-import { Stack } from "expo-router";
 import RenderQuestion from "@/components/RenderQuestion";
 import { Colors } from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { removeFavoriteToast, addFavoriteToast } from "@/constants/messages";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import FontSizePickerModal from "@/components/FontSizePickerModal";
-import { router } from "expo-router";
 import {
   isQuestionInFavorite,
   toggleQuestionFavorite,
@@ -191,13 +183,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ThemedView";
 
 export default function Question() {
-  const { category, subcategory, questionId, questionTitle } =
-    useLocalSearchParams<{
-      category: string;
-      subcategory: string;
-      questionId: string;
-      questionTitle: string;
-    }>();
+  const { category, subcategory, questionId } = useLocalSearchParams<{
+    category: string;
+    subcategory: string;
+    questionId: string;
+  }>();
 
   const parsedId = parseInt(questionId ?? "", 10);
   const [isFavorite, setIsFavorite] = useState(false);
