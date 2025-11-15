@@ -512,7 +512,6 @@
 //                 fitPolicy={2}
 //                 spacing={10}
 
-
 //                 onLoadComplete={(numberOfPages) => {
 //                   setPageCount(numberOfPages);
 //                 }}
@@ -1115,7 +1114,6 @@
 //   },
 // });
 
-
 import React, { useEffect, useState, useRef } from "react";
 import {
   ActivityIndicator,
@@ -1131,8 +1129,6 @@ import Pdf from "react-native-pdf";
 import { Stack, useRouter } from "expo-router";
 import { usePdfs } from "@/hooks/usePdfs";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useFontSizeStore } from "@/stores/fontSizeStore";
-import FontSizePickerModal from "@/components/FontSizePickerModal";
 import Feather from "@expo/vector-icons/Feather";
 import * as ScreenOrientation from "expo-screen-orientation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -1158,7 +1154,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
 
   const { rtl, lang } = useLanguage();
   const { getCachedUri, downloadPdf } = usePdfs(lang);
-  const { fontSize } = useFontSizeStore();
 
   const [sourceUri, setSourceUri] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -1170,11 +1165,9 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
 
   // eBook reader features
   const [showControls, setShowControls] = useState<boolean>(true);
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [scale, setScale] = useState<number>(1.0);
   const [showPageJump, setShowPageJump] = useState<boolean>(false);
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const [showFontSizePicker, setShowFontSizePicker] = useState<boolean>(false);
 
   // Layout toggle
   const [isHorizontal, setIsHorizontal] = useState<boolean>(true);
@@ -1189,29 +1182,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
   const hasLoadedRef = useRef(false);
   const currentFilenameRef = useRef<string | undefined>(undefined);
 
-  const windowWidth = Dimensions.get("window").width;
-  const windowHeight = Dimensions.get("window").height;
-
-  // Convert fontSize from store to PDF scale
-  const getPdfScale = (fontSize: number): number => {
-    switch (fontSize) {
-      case 16:
-        return 0.85; // Small
-      case 18:
-        return 1.0; // Medium (default)
-      case 22:
-        return 1.25; // Large
-      default:
-        return 1.0;
-    }
-  };
-
-  // Update PDF scale when fontSize changes
-  useEffect(() => {
-    const newScale = getPdfScale(fontSize);
-    setScale(newScale);
-  }, [fontSize]);
-
+ 
   // Load saved reading position and preferences
   useEffect(() => {
     if (!filename) return;
@@ -1451,18 +1422,17 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 source={{ uri: sourceUri, cache: true }}
                 style={[
                   styles.pdf,
-                  { width: windowWidth, height: windowHeight },
                 ]}
                 enablePaging={isHorizontal}
                 horizontal={isHorizontal}
                 enableRTL={rtl}
                 trustAllCerts={false}
                 page={currentPage}
-                scale={scale}
-                minScale={0.5}
+                minScale={1}
                 maxScale={3.0}
                 enableAntialiasing={true}
-                enableAnnotationRendering={false}
+                enableAnnotationRendering={true}
+                enableDoubleTapZoom
                 fitPolicy={2}
                 spacing={10}
                 onLoadComplete={(numberOfPages) => {
@@ -1471,9 +1441,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 onPageChanged={(page) => {
                   setCurrentPage(page);
                   resetControlsTimer();
-                }}
-                onScaleChanged={(newScale) => {
-                  setScale(newScale);
                 }}
                 onError={(pdfError) => {
                   console.log("[PDF error]", pdfError);
@@ -1600,7 +1567,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                       <TouchableOpacity
                         style={[styles.settingRow, styles.settingRowButton]}
                         onPress={() => {
-                          setShowFontSizePicker(true);
                           setShowSettings(false);
                         }}
                         activeOpacity={0.7}
@@ -1610,13 +1576,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                           <Text style={styles.settingRowLabel}>Text Size</Text>
                         </View>
                         <View style={styles.settingRowRight}>
-                          <Text style={styles.settingValue}>
-                            {fontSize === 16
-                              ? "Small"
-                              : fontSize === 18
-                              ? "Medium"
-                              : "Large"}
-                          </Text>
                           <Feather
                             name="chevron-right"
                             size={20}
@@ -1684,15 +1643,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 </View>
               </View>
             )}
-
-            {/* Font Size Picker Modal */}
-            <FontSizePickerModal
-              visible={showFontSizePicker}
-              onClose={() => {
-                setShowFontSizePicker(false);
-                setShowSettings(true);
-              }}
-            />
 
             {/* Page Jump Menu */}
             {showPageJump && (

@@ -1406,7 +1406,7 @@ export default function HomeScreen() {
   const sheetTitle = useMemo(() => {
     if (activeSheet === "articles") return t("newsArticlesTitle");
     if (activeSheet === "podcasts") return t("podcastsTitle");
-    if (activeSheet === "pdfs") return t("pdfsTitle") || "PDFs";
+    if (activeSheet === "pdfs") return t("pdfsTitle");
     return "";
   }, [activeSheet, t]);
 
@@ -1625,7 +1625,7 @@ export default function HomeScreen() {
                   { color: Colors[colorScheme].text },
                 ]}
               >
-                {item.pdf_filename.trim()}
+                {item.pdf_title.trim()}
               </Text>
             </View>
 
@@ -2061,13 +2061,13 @@ export default function HomeScreen() {
         >
           <View style={styles.sheetHeader}>
             <ThemedText type="subtitle" style={[styles.sheetTitle]}>
-              {sheetTitle} ({sheetTitle} (
+              {sheetTitle} (
               {activeSheet === "articles"
                 ? articles.length
                 : activeSheet === "podcasts"
                 ? podcasts.length
                 : pdfs.length}
-              ) )
+              )
             </ThemedText>
 
             <TouchableOpacity onPress={closeSheet}>

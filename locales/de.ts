@@ -73,8 +73,8 @@ const de = {
   initAppWentWrong:
     "Beim Vorbereiten der App ist ein Fehler aufgetreten. Versuchen Sie, die App zu schließen und erneut zu öffnen.",
   pdfsTitle: "Bücher und PDFs",
-  
-    // Navigation
+
+  // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
   questionScreenTitle: "Fragen und Antworten",
@@ -215,7 +215,7 @@ const de = {
   surah: "Sure",
   ayah: "Vers",
   ayahs: "Verse",
-
+  tab_pdfs: "PDFs",
   // Tabs (short labels)
   tab_quran: "Qur’an",
   tab_questions: "Fragen",
@@ -229,7 +229,7 @@ const de = {
   placeholder_prayers: "Bittgebete durchsuchen",
   placeholder_podcasts: "Podcasts durchsuchen",
   placeholder_news: "News durchsuchen",
-
+  placeholder_pdfs: "PDFs durchsuchen",
   // Meta / errors
   results_count: "{{count}} Treffer",
   search_failed: "Suche fehlgeschlagen. Bitte erneut versuchen.",

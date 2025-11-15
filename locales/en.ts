@@ -221,6 +221,7 @@ const en = {
   surah: "Surah",
   ayah: "Ayah",
   ayahs: "Ayahs",
+  tab_pdfs: "PDFs",
 
   // Tabs (short labels)
   tab_quran: "Qur’an",
@@ -235,6 +236,7 @@ const en = {
   placeholder_prayers: "Search prayers",
   placeholder_podcasts: "Search podcasts",
   placeholder_news: "Search news",
+  placeholder_pdfs: "Search PDFs",
 
   // Meta / errors
   results_count: "{{count}} results",

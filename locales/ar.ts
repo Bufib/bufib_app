@@ -209,6 +209,7 @@ const ar = {
   surah: "سورة",
   ayah: "آية",
   ayahs: "آيات",
+  tab_pdfs: "PDFs",
 
   // Tabs (short labels)
   tab_quran: "القرآن",
@@ -223,6 +224,7 @@ const ar = {
   placeholder_prayers: "ابحث في الأدعية",
   placeholder_podcasts: "ابحث في البودكاست",
   placeholder_news: "ابحث في الأخبار",
+  placeholder_pdfs: "البحث في ملفات PDF",
 
   // Meta / errors
   results_count: "{{count}} نتيجة",
