@@ -742,27 +742,6 @@ type PrayerWithTranslations = PrayerType & {
 const SCROLL_UP_THRESH = 120;
 const SCROLL_UP_HYST = 16;
 
-//! With key which seems to be wrong
-// const markdownRules = (
-//   customFontSize: number,
-//   textColor: string,
-//   index: number
-// ): RenderRules => ({
-//   code_inline: (_node, _children, _parent, styles) => (
-//     <Text
-//       key={index}
-//       style={{
-//         fontSize: customFontSize,
-//         ...(styles.text as TextStyle),
-//         color: textColor,
-//       }}
-//     >
-//       {_node.content}
-//     </Text>
-//   ),
-// });
-
-//! Without
 // 1) keep your factory
 const makeMarkdownRules = (
   customFontSize: number,
@@ -889,55 +868,71 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     [prayersVersion, bookmark, selectTranslations]
   );
 
-  // Fetch prayer on mount
   // useEffect(() => {
   //   let alive = true;
+  //   let loadingTimer: number | undefined;
+
   //   (async () => {
   //     try {
   //       setIsLoading(true);
+
+  //       loadingTimer = setTimeout(() => {
+  //         if (alive && isLoading) setShowLoadingSpinner(true);
+  //       }, 300);
+
   //       const data = await getPrayerWithTranslations(prayerID);
   //       if (alive) setPrayer(data as PrayerWithTranslations);
   //     } catch (e) {
   //       console.error(e);
   //     } finally {
-  //       if (alive) setIsLoading(false);
+  //       if (loadingTimer !== undefined) clearTimeout(loadingTimer);
+  //       if (alive) {
+  //         setIsLoading(false);
+  //         setShowLoadingSpinner(false);
+  //       }
   //     }
   //   })();
+
   //   return () => {
   //     alive = false;
+  //     if (loadingTimer !== undefined) clearTimeout(loadingTimer);
   //   };
   // }, [prayerID, prayersVersion]);
 
   useEffect(() => {
     let alive = true;
-    let loadingTimer: number | undefined;
+    let hasCompleted = false;
+
+    // Start the 300ms timer for the spinner
+    const timer = setTimeout(() => {
+      if (!alive || hasCompleted) return;
+      setShowLoadingSpinner(true);
+    }, 300);
 
     (async () => {
       try {
         setIsLoading(true);
 
-        loadingTimer = setTimeout(() => {
-          if (alive && isLoading) setShowLoadingSpinner(true);
-        }, 300);
-
         const data = await getPrayerWithTranslations(prayerID);
-        if (alive) setPrayer(data as PrayerWithTranslations);
+        if (!alive) return;
+        setPrayer(data as PrayerWithTranslations);
       } catch (e) {
         console.error(e);
       } finally {
-        if (loadingTimer !== undefined) clearTimeout(loadingTimer);
-        if (alive) {
-          setIsLoading(false);
-          setShowLoadingSpinner(false);
-        }
+        // mark that the request is done (success or error)
+        hasCompleted = true;
+
+        if (!alive) return;
+        setIsLoading(false);
+        setShowLoadingSpinner(false);
       }
     })();
 
     return () => {
       alive = false;
-      if (loadingTimer !== undefined) clearTimeout(loadingTimer);
+      clearTimeout(timer);
     };
-  }, [prayerID, prayersVersion, isLoading]);
+  }, [prayerID, prayersVersion]);
 
   // Init translation toggles
   useEffect(() => {

@@ -1172,6 +1172,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 source={{ uri: sourceUri, cache: true }}
                 style={[styles.pdf]}
                 enablePaging={effectiveIsHorizontal}
+                
                 horizontal={effectiveIsHorizontal}
                 enableRTL={rtl}
                 trustAllCerts={false}
