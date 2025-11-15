@@ -1,4 +1,5 @@
-// //! Last that worked
+// //! Last works
+
 // // src/components/TodoList.tsx
 // import React from "react";
 // import {
@@ -10,13 +11,13 @@
 //   useWindowDimensions,
 // } from "react-native";
 // import { ThemedText } from "./ThemedText";
-// import { EvilIcons, Ionicons } from "@expo/vector-icons";
+// import { Ionicons } from "@expo/vector-icons";
 // import { TodoListType } from "@/constants/Types";
 // import { useTranslation } from "react-i18next";
 // import { Colors } from "@/constants/Colors";
 // import { useLanguage } from "@/contexts/LanguageContext";
 // import { returnSize } from "@/utils/sizes";
-// import RenderLink from "./RenderLink";
+// import { InlineTodoText } from "./InlineTodoText";
 
 // export const TodoList = ({
 //   todos,
@@ -64,7 +65,7 @@
 //             onPress={onShowAddModal}
 //             style={[
 //               styles.addButton,
-//               { color: Colors[colorScheme].text, fontWeight: 600 },
+//               { color: Colors.universal.primary, fontWeight: 700 },
 //             ]}
 //           >
 //             {t("addWeekly")}
@@ -126,7 +127,11 @@
 //               </View>
 //             </TouchableOpacity>
 
-//             <ThemedText
+//             {/* Use InlineTodoText to render text with inline links */}
+//             <InlineTodoText
+//               text={todo.text}
+//               internalUrls={todo.internal_urls}
+//               isDone={todo.completed}
 //               style={[
 //                 styles.todoText,
 //                 rtl
@@ -138,9 +143,13 @@
 //                     },
 //                 todo.completed && styles.todoTextCompleted,
 //               ]}
-//             >
-//               {todo.text}
-//             </ThemedText>
+//             />
+//             <Ionicons
+//               name="alarm-outline"
+//               size={23}
+//               color={Colors[colorScheme].defaultIcon}
+//               style={rtl ? { marginLeft: 3 } : { marginRight: 3 }}
+//             />
 
 //             <TouchableOpacity
 //               style={styles.deleteButton}
@@ -148,30 +157,11 @@
 //             >
 //               <Ionicons
 //                 name="close-circle-outline"
-//                 size={22}
-//                 color={colorScheme === "dark" ? "#999" : "#777"}
+//                 size={23}
+//                 color={Colors[colorScheme].defaultIcon}
 //               />
 //             </TouchableOpacity>
 //           </View>
-
-//           {/* Links Row (below text) */}
-//           {todo.internal_urls && todo.internal_urls.length > 0 && (
-//             <View
-//               style={[
-//                 styles.linksContainer,
-//                 rtl ? { paddingRight: 32 } : { paddingLeft: 0 },
-//               ]}
-//             >
-//               {todo.internal_urls.map((url, index) => (
-//                 <RenderLink
-//                   key={`todo-${todo.id}-link-${index}-${url}`}
-//                   url={url}
-//                   index={index}
-//                   isExternal={false}
-//                 />
-//               ))}
-//             </View>
-//           )}
 //         </View>
 //       ))}
 //     </ScrollView>
@@ -211,15 +201,10 @@
 //     fontSize: 15,
 //   },
 //   todoTextCompleted: {
-//     textDecorationLine: "line-through",
 //     opacity: 0.6,
 //   },
 //   deleteButton: {
 //     padding: 4,
-//   },
-//   linksContainer: {
-//     marginTop: 8,
-//     gap: 6,
 //   },
 //   emptyPrayerForDay: {
 //     flex: 1,
@@ -227,36 +212,21 @@
 //     alignItems: "flex-start",
 //     gap: 10,
 //     marginTop: 10,
-//     marginHorizontal: 15,
+//     paddingHorizontal: 15,
 //   },
 //   emptyDayText: {
-//     flex: 1,
 //     opacity: 0.8,
+//     flexWrap: "wrap",
 //     lineHeight: 25,
 //   },
 //   addButton: {
 //     fontSize: 18,
 //   },
-//   inlineAddChip: {
-//     paddingHorizontal: 12,
-//     paddingVertical: 4,
-//     borderRadius: 16,
-//     fontSize: 14,
-//     fontWeight: "600",
-//     overflow: "hidden",
-//   },
 //   emptyDayIcon: {},
-//   emptyDayAddButton: {
-//     borderRadius: 20,
-//   },
-//   emptyDayAddText: {
-//     fontSize: 14,
-//     fontWeight: "600",
-//   },
 // });
 
 // src/components/TodoList.tsx
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -273,6 +243,7 @@ import { Colors } from "@/constants/Colors";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { returnSize } from "@/utils/sizes";
 import { InlineTodoText } from "./InlineTodoText";
+import { TimePickerModal } from "./TimePickerModal";
 
 export const TodoList = ({
   todos,
@@ -280,6 +251,7 @@ export const TodoList = ({
   onToggleTodo,
   onShowDeleteModal,
   onShowAddModal,
+  onSetReminder,
 }: TodoListType) => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
@@ -287,19 +259,41 @@ export const TodoList = ({
   const { width, height } = useWindowDimensions();
   const { emptyIconSize, emptyTextSize, emptyGap } = returnSize(width, height);
 
+  const [timePickerVisible, setTimePickerVisible] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState<{
+    id: string;
+    text: string;
+    reminderTime?: Date;
+  } | null>(null);
+
+  const handleAlarmPress = (todo: any) => {
+    setSelectedTodo({
+      id: todo.id,
+      text: todo.text,
+      reminderTime: todo.reminder_time
+        ? new Date(todo.reminder_time)
+        : undefined,
+    });
+    setTimePickerVisible(true);
+  };
+
+  const handleConfirmTime = (date: Date) => {
+    if (selectedTodo) {
+      onSetReminder(dayIndex, selectedTodo.id, date);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setTimePickerVisible(false);
+    setSelectedTodo(null);
+  };
+
   if (!todos || todos.length === 0) {
     return (
       <View
         style={[
           styles.emptyPrayerForDay,
-
-          rtl
-            ? {
-                flexDirection: "row-reverse",
-              }
-            : {
-                flexDirection: "row",
-              },
+          rtl ? { flexDirection: "row-reverse" } : { flexDirection: "row" },
         ]}
       >
         <Ionicons
@@ -331,95 +325,100 @@ export const TodoList = ({
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      style={styles.scrollStyle}
-    >
-      {todos.map((todo) => (
-        <View
-          key={todo.id}
-          style={[
-            styles.todoItem,
-            {
-              backgroundColor: Colors[colorScheme].contrast,
-            },
-          ]}
-        >
-          {/* Checkbox and Content Row */}
+    <>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollStyle}
+      >
+        {todos.map((todo) => (
           <View
+            key={todo.id}
             style={[
-              styles.todoMainRow,
-              rtl
-                ? {
-                    flexDirection: "row-reverse",
-                  }
-                : {
-                    flexDirection: "row",
-                  },
+              styles.todoItem,
+              { backgroundColor: Colors[colorScheme].contrast },
             ]}
           >
-            <TouchableOpacity
+            <View
               style={[
-                styles.checkboxContainer,
-                rtl ? { marginLeft: 12 } : { marginRight: 10 },
-              ]}
-              onPress={() => onToggleTodo(dayIndex, todo.id)}
-            >
-              <View
-                style={[
-                  styles.checkbox,
-                  todo.completed && styles.checkboxCompleted,
-                  { borderColor: colorScheme === "dark" ? "#666" : "#999" },
-                  todo.completed && {
-                    backgroundColor: colorScheme === "dark" ? "#666" : "#999",
-                    borderColor: colorScheme === "dark" ? "#666" : "#999",
-                  },
-                ]}
-              >
-                {todo.completed && (
-                  <Ionicons name="checkmark" size={16} color="#fff" />
-                )}
-              </View>
-            </TouchableOpacity>
-
-            {/* Use InlineTodoText to render text with inline links */}
-            <InlineTodoText
-              text={todo.text}
-              internalUrls={todo.internal_urls}
-              isDone={todo.completed}
-              style={[
-                styles.todoText,
+                styles.todoMainRow,
                 rtl
-                  ? {
-                      textAlign: "right",
-                    }
-                  : {
-                      textAlign: "left",
-                    },
-                todo.completed && styles.todoTextCompleted,
+                  ? { flexDirection: "row-reverse" }
+                  : { flexDirection: "row" },
               ]}
-            />
-            <Ionicons
-              name="alarm-outline"
-              size={23}
-              color={Colors[colorScheme].defaultIcon}
-              style={rtl ? { marginLeft: 3 } : { marginRight: 3 }}
-            />
-
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => onShowDeleteModal(dayIndex, todo.id)}
             >
-              <Ionicons
-                name="close-circle-outline"
-                size={23}
-                color={Colors[colorScheme].defaultIcon}
+              <TouchableOpacity
+                style={[
+                  styles.checkboxContainer,
+                  rtl ? { marginLeft: 12 } : { marginRight: 10 },
+                ]}
+                onPress={() => onToggleTodo(dayIndex, todo.id)}
+              >
+                <View
+                  style={[
+                    styles.checkbox,
+                    todo.completed && styles.checkboxCompleted,
+                    { borderColor: colorScheme === "dark" ? "#666" : "#999" },
+                    todo.completed && {
+                      backgroundColor: colorScheme === "dark" ? "#666" : "#999",
+                      borderColor: colorScheme === "dark" ? "#666" : "#999",
+                    },
+                  ]}
+                >
+                  {todo.completed && (
+                    <Ionicons name="checkmark" size={16} color="#fff" />
+                  )}
+                </View>
+              </TouchableOpacity>
+
+              <InlineTodoText
+                text={todo.text}
+                internalUrls={todo.internal_urls}
+                isDone={todo.completed}
+                style={[
+                  styles.todoText,
+                  rtl ? { textAlign: "right" } : { textAlign: "left" },
+                  todo.completed && styles.todoTextCompleted,
+                ]}
               />
-            </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.alarmButton}
+                onPress={() => handleAlarmPress(todo)}
+              >
+                <Ionicons
+                  name={todo.reminder_time ? "alarm" : "alarm-outline"}
+                  size={23}
+                  color={
+                    todo.reminder_time
+                      ? Colors.universal.primary
+                      : Colors[colorScheme].defaultIcon
+                  }
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => onShowDeleteModal(dayIndex, todo.id)}
+              >
+                <Ionicons
+                  name="close-circle-outline"
+                  size={23}
+                  color={Colors[colorScheme].defaultIcon}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ))}
-    </ScrollView>
+        ))}
+      </ScrollView>
+
+      <TimePickerModal
+        visible={timePickerVisible}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmTime}
+        todoText={selectedTodo?.text || ""}
+        initialTime={selectedTodo?.reminderTime}
+      />
+    </>
   );
 };
 
@@ -457,6 +456,10 @@ const styles = StyleSheet.create({
   },
   todoTextCompleted: {
     opacity: 0.6,
+  },
+  alarmButton: {
+    padding: 4,
+    marginRight: 3,
   },
   deleteButton: {
     padding: 4,

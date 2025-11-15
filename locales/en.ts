@@ -184,6 +184,10 @@ const en = {
   undo: "Undo all",
   undoProgressText: "Are you sure you want to reset all progress for this day?",
 
+  setReminder: "Set reminder",
+  hours: "Hours",
+  minutes: "Minutes",
+
   // Days of week
   days: {
     short: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],

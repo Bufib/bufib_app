@@ -459,6 +459,7 @@ export type TodoItemType = {
   text: string;
   completed: boolean;
   internal_urls?: string[];
+  reminder_time?: string | null;
 };
 
 export type TodoListType = {
@@ -467,6 +468,7 @@ export type TodoListType = {
   onToggleTodo: (day: number, id: number) => void;
   onShowDeleteModal: (day: number, id: number) => void;
   onShowAddModal: () => void;
+  onSetReminder: (dayIndex: number, todoId: string, time: Date) => void; // Add this
 };
 
 export type WeeklyTodosType = {
@@ -517,7 +519,7 @@ export type PdfType = {
 };
 
 export type PdfViewerScreenPropsType = {
-  id: number,
+  id: number;
   filename: string;
 };
 

@@ -180,6 +180,11 @@ const de = {
   undo: "Alle zurücksetzen",
   undoProgressText:
     "Bist du sicher, dass du alle Einträge für diesen Tag zurücksetzen möchtest?",
+
+  setReminder: "Erinnerung einstellen",
+  hours: "Stunden",
+  minutes: "Minuten",
+
   // Days of week
   days: {
     short: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],

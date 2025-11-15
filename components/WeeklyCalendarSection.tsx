@@ -58,6 +58,29 @@ export const WeeklyCalendarSection: React.FC<
       },
     ]);
   };
+
+  const handleSetReminder = async (
+    dayIndex: number,
+    todoId: string,
+    time: Date
+  ) => {
+    try {
+      // Save to your database/state
+      // Example with Supabase:
+      // await supabase
+      //   .from('todos')
+      //   .update({ reminder_time: time.toISOString() })
+      //   .eq('id', todoId);
+
+      // Or update local state
+      console.log("Setting reminder:", { dayIndex, todoId, time });
+
+      // Schedule notification here if needed
+      // await scheduleNotification(todoId, time);
+    } catch (error) {
+      console.error("Failed to set reminder:", error);
+    }
+  };
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -107,7 +130,7 @@ export const WeeklyCalendarSection: React.FC<
       </View>
 
       {/* Day Selector */}
-      <View style={{ flex: 0, marginBottom: 5,  }}>
+      <View style={{ flex: 0, marginBottom: 5 }}>
         <DaySelector
           selectedDay={selectedDay}
           currentDayIndex={currentDayIndex}
@@ -147,6 +170,7 @@ export const WeeklyCalendarSection: React.FC<
               onToggleTodo={onToggleTodo}
               onShowDeleteModal={onShowDeleteModal}
               onShowAddModal={onShowAddModal}
+              onSetReminder={handleSetReminder}
             />
           </View>
         </>
@@ -158,7 +182,6 @@ export const WeeklyCalendarSection: React.FC<
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
   },
 
   calendarHeader: {
@@ -167,7 +190,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 15,
-    marginHorizontal: 2
+    marginHorizontal: 2,
   },
   calendarHeaderContainer: {
     flexDirection: "row",
@@ -198,7 +221,6 @@ const styles = StyleSheet.create({
     paddingRight: 18,
     marginTop: 5,
     marginBottom: 10,
-    
   },
   selectedDayTitle: {
     fontSize: 16,
@@ -209,13 +231,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 30,
-    
   },
   todoListContainer: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-start",
     marginTop: -10,
-    
   },
 });
