@@ -1,5 +1,5 @@
-// //! Last works
 
+//! Last worked
 // // src/components/TodoList.tsx
 // import React from "react";
 // import {
@@ -224,7 +224,6 @@
 //   },
 //   emptyDayIcon: {},
 // });
-
 // src/components/TodoList.tsx
 import React, { useState } from "react";
 import {
@@ -264,6 +263,7 @@ export const TodoList = ({
     id: string;
     text: string;
     reminderTime?: Date;
+    repeatWeekly?: boolean;
   } | null>(null);
 
   const handleAlarmPress = (todo: any) => {
@@ -273,13 +273,14 @@ export const TodoList = ({
       reminderTime: todo.reminder_time
         ? new Date(todo.reminder_time)
         : undefined,
+      repeatWeekly: todo.repeat_weekly ?? false, // if you add this field later
     });
     setTimePickerVisible(true);
   };
 
-  const handleConfirmTime = (date: Date) => {
+  const handleConfirmTime = (date: Date, repeatWeekly: boolean) => {
     if (selectedTodo) {
-      onSetReminder(dayIndex, selectedTodo.id, date);
+      onSetReminder(dayIndex, selectedTodo.id, date, repeatWeekly);
     }
   };
 
@@ -417,6 +418,7 @@ export const TodoList = ({
         onConfirm={handleConfirmTime}
         todoText={selectedTodo?.text || ""}
         initialTime={selectedTodo?.reminderTime}
+        initialRepeatWeekly={selectedTodo?.repeatWeekly ?? false}
       />
     </>
   );

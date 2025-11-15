@@ -1,23 +1,21 @@
-// //! Before changes with language
-// import { LanguageCode } from "@/constants/Types";
-// import { useLanguage } from "@/contexts/LanguageContext";
+// //! Last worked
+// import { useEffect, useRef, useState, useCallback } from "react";
+// import { Alert, Platform } from "react-native";
+// import * as Notifications from "expo-notifications";
+// import Constants from "expo-constants";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import { useRouter } from "expo-router";
+// import uuid from "react-native-uuid";
+// import { supabase } from "@/utils/supabase";
 // import { useAuthStore } from "@/stores/authStore";
 // import useNotificationStore from "@/stores/notificationStore";
-// import { supabase } from "@/utils/supabase";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import Constants from "expo-constants";
-// import * as Device from "expo-device";
-// import * as Notifications from "expo-notifications";
-// import { useRouter } from "expo-router";
-// import { useEffect, useRef, useState } from "react";
-// import { Alert, Platform } from "react-native";
-// import uuid from "react-native-uuid";
+// import { useLanguage } from "@/contexts/LanguageContext";
 
-// // 1) Notification handler
+// // 1) Notification handler (foreground behavior)
 // Notifications.setNotificationHandler({
 //   handleNotification: async () => ({
-//     shouldPlaySound: true,
 //     shouldShowAlert: true,
+//     shouldPlaySound: true,
 //     shouldSetBadge: true,
 //     shouldShowBanner: true,
 //     shouldShowList: true,
@@ -29,7 +27,7 @@
 // async function getOrCreateGuestId(): Promise<string> {
 //   let id = await AsyncStorage.getItem(GUEST_ID_KEY);
 //   if (!id) {
-//     id = uuid.v4();
+//     id = String(uuid.v4());
 //     await AsyncStorage.setItem(GUEST_ID_KEY, id);
 //   }
 //   return id;
@@ -37,8 +35,8 @@
 
 // export function usePushNotifications() {
 //   const router = useRouter();
+//   const { lang } = useLanguage(); // <- your UI language code: "de" | "ar" | "en" ...
 //   const getNotifications = useNotificationStore((s) => s.getNotifications);
-
 //   const session = useAuthStore((s) => s.session);
 //   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
 
@@ -48,144 +46,121 @@
 //     null
 //   );
 //   const responseListener = useRef<Notifications.EventSubscription | null>(null);
+//   const isMountedRef = useRef(true);
 
-//   // —————————— REGISTER / UPSERT TOKEN ——————————
 //   useEffect(() => {
-//     // Register or update the push token in Supabase.
-//     if (!getNotifications) return;
-
-//     const registerToken = async () => {
-//       if (!Device.isDevice) {
-//         Alert.alert(
-//           "Physical Device Required",
-//           "Push notifications only work on physical devices."
-//         );
-//         return;
-//       }
-
-//       try {
-//         // Fetch Expo Push Token
-//         const projectId =
-//           Constants?.expoConfig?.extra?.eas?.projectId ??
-//           Constants?.easConfig?.projectId;
-//         const pushTokenString = (
-//           await Notifications.getExpoPushTokenAsync({ projectId })
-//         ).data;
-//         setExpoPushToken(pushTokenString);
-
-//         // Build payload for upsert
-//         const payload: {
-//           expo_push_token: string;
-//           app_version: string | undefined;
-//           platform: string;
-//           user_id?: string;
-//           guest_id?: string;
-//
-//         } = {
-//           expo_push_token: pushTokenString,
-//           app_version: Constants.expoConfig?.extra?.appVersion,
-//           platform: Platform.OS,
-//
-//         };
-
-//         if (isLoggedIn && session?.user.id) {
-//           // Associate token with user_id for logged-in users.
-//           payload.user_id = session.user.id;
-//           payload.guest_id = undefined;
-//         } else {
-//           // Associate token with guest_id for logged-out users.
-//           payload.guest_id = await getOrCreateGuestId();
-//           payload.user_id = undefined;
-//         }
-
-//         // Upsert on `expo_push_token` conflict to insert or update.
-//         const { data, error } = await supabase
-//           .from("user_tokens")
-//           .upsert(payload, { onConflict: "expo_push_token" });
-
-//         if (error) {
-//           console.error("Supabase upsert error:", error);
-//           Alert.alert("Supabase Error", error.message);
-//         } else {
-//           console.log("Supabase upsert success:", data);
-//         }
-//       } catch (error) {
-//         console.error("Error registering push token:", error);
-//         if (error instanceof Error) {
-//           Alert.alert("Registration Error", error.message);
-//         }
-//       }
-
-//       // Android-specific notification channel setup.
-//       if (Platform.OS === "android") {
-//         await Notifications.setNotificationChannelAsync("default", {
-//           name: "default",
-//           importance: Notifications.AndroidImportance.MAX,
-//           vibrationPattern: [0, 250, 250, 250],
-//           lightColor: "#057958",
-//         });
-//       }
+//     return () => {
+//       isMountedRef.current = false;
 //     };
+//   }, []);
 
-//     registerToken();
-//   }, [getNotifications, isLoggedIn, session?.user.id]);
-
-//   // —————————— LISTEN FOR NOTIFICATIONS ——————————
-//   useEffect(() => {
-//     // Set up notification listeners.
+//   // Register / upsert token in Supabase with current language_code
+//   const registerOrUpdateToken = useCallback(async () => {
 //     if (!getNotifications) return;
 
-//     // Fires when a notification is received while the app is foregrounded.
+//     try {
+//       const projectId =
+//         Constants?.expoConfig?.extra?.eas?.projectId ??
+//         Constants?.easConfig?.projectId;
+
+//       const token = (await Notifications.getExpoPushTokenAsync({ projectId }))
+//         .data;
+//       if (isMountedRef.current) {
+//         setExpoPushToken(token);
+//       }
+
+//       const payload: {
+//         expo_push_token: string;
+//         app_version?: string;
+//         platform: string;
+//         language_code: string;
+//         user_id?: string;
+//         guest_id?: string;
+//       } = {
+//         expo_push_token: token,
+//         app_version: Constants.expoConfig?.extra?.appVersion,
+//         platform: Platform.OS,
+//         language_code: lang || "de",
+//       };
+
+//       if (isLoggedIn && session?.user?.id) {
+//         payload.user_id = session.user.id;
+//         payload.guest_id = undefined;
+//       } else {
+//         payload.user_id = undefined;
+//         payload.guest_id = await getOrCreateGuestId();
+//       }
+
+//       const { error } = await supabase
+//         .from("user_tokens")
+//         .upsert(payload, { onConflict: "expo_push_token" });
+
+//       if (error) {
+//         console.error("Supabase upsert error:", error);
+//         Alert.alert("Supabase Error", error.message);
+//       }
+//     } catch (err: any) {
+//       console.error("Error registering/updating push token:", err);
+//       Alert.alert("Registration Error", err?.message ?? String(err));
+//     }
+
+//     // Android notification channel
+//     if (Platform.OS === "android") {
+//       await Notifications.setNotificationChannelAsync("default", {
+//         name: "default",
+//         importance: Notifications.AndroidImportance.MAX,
+//         vibrationPattern: [0, 250, 250, 250],
+//         lightColor: "#057958",
+//       });
+//     }
+//   }, [getNotifications, isLoggedIn, session?.user?.id, lang]);
+
+//   // Register once when notifications are enabled / session changes / language changes
+//   useEffect(() => {
+//     registerOrUpdateToken();
+//   }, [registerOrUpdateToken]);
+
+//   // Listen for notifications (optional)
+//   useEffect(() => {
+//     if (!getNotifications) return;
+
 //     notificationListener.current =
 //       Notifications.addNotificationReceivedListener((notification) => {
 //         console.log("Notification received:", notification);
 //       });
 
-//     // Fires when a user taps on a notification.
 //     responseListener.current =
 //       Notifications.addNotificationResponseReceivedListener((response) => {
-//         console.log("Notification response received:", response);
+//         console.log("Notification response:", response);
 //         router.push("/(tabs)/home");
 //       });
 
-//     // Cleanup listeners on component unmount.
 //     return () => {
 //       notificationListener.current?.remove();
 //       responseListener.current?.remove();
 //     };
 //   }, [getNotifications, router]);
 
-//   // —————————— DELETE ON OPT-OUT ——————————
+//   // Delete token on opt-out
 //   useEffect(() => {
-//     // Delete the token if the user opts out of notifications.
-//     if (getNotifications) return; // Only run when notifications are OFF.
+//     if (getNotifications) return; // run only when user disabled notifications
+//     if (!expoPushToken) return;
 
-//     const tokenToDelete = expoPushToken;
-//     if (!tokenToDelete) return; // Can't delete if there's no token.
-
-//     const deleteToken = async () => {
-//       // Delete the entry by the unique push token for reliability.
-//       const { data, error } = await supabase
+//     (async () => {
+//       const { error } = await supabase
 //         .from("user_tokens")
 //         .delete()
-//         .eq("expo_push_token", tokenToDelete);
-
-//       if (error) {
-//         console.error("Supabase delete error:", error);
-//         Alert.alert("Supabase Error", error.message);
-//       } else {
-//         console.log("Supabase delete success: Token removed.", data);
-//       }
-//     };
-
-//     deleteToken();
+//         .eq("expo_push_token", expoPushToken);
+//       if (error) console.error("Supabase delete token error:", error);
+//     })();
 //   }, [getNotifications, expoPushToken]);
 
 //   return { expoPushToken };
 // }
-// hooks/usePushNotifications.ts
 
-//! language changes
+
+
+// hooks/usePushNotifications.ts
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Alert, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
@@ -198,19 +173,25 @@ import { useAuthStore } from "@/stores/authStore";
 import useNotificationStore from "@/stores/notificationStore";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-// 1) Notification handler (foreground behavior)
+// ---------------------------------------------------------------------------
+// 1) Global notification handler (foreground behavior)
+// ---------------------------------------------------------------------------
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    // iOS / newer SDKs:
     shouldShowBanner: true,
     shouldShowList: true,
   }),
 });
 
+// ---------------------------------------------------------------------------
 // 2) Guest-ID helper
+// ---------------------------------------------------------------------------
 const GUEST_ID_KEY = "guest_id";
+
 async function getOrCreateGuestId(): Promise<string> {
   let id = await AsyncStorage.getItem(GUEST_ID_KEY);
   if (!id) {
@@ -220,9 +201,140 @@ async function getOrCreateGuestId(): Promise<string> {
   return id;
 }
 
+// ---------------------------------------------------------------------------
+// 3) Date & weekday helpers for todo reminders
+// ---------------------------------------------------------------------------
+
+// Convert JS weekday (0=Sun..6=Sat) -> Monday-based index (0=Mon..6=Sun)
+function getMondayBasedDayIndex(date: Date): number {
+  const js = date.getDay(); // 0..6 (Sun..Sat)
+  return (js + 6) % 7; // Sun->6, Mon->0, Tue->1, ... Sat->5
+}
+
+/**
+ * Compute the next concrete Date where the given weekday (dayIndex) & time occur.
+ * Assumes: dayIndex 0=Mon..6=Sun (same indexing as your WeeklyCalendar).
+ */
+function computeNextDateForDay(dayIndex: number, time: Date): Date {
+  const now = new Date();
+  const todayIndex = getMondayBasedDayIndex(now);
+
+  let delta = dayIndex - todayIndex;
+  if (delta < 0) delta += 7;
+
+  const scheduled = new Date(now);
+  scheduled.setDate(scheduled.getDate() + delta);
+  scheduled.setHours(time.getHours(), time.getMinutes(), 0, 0);
+
+  // If it's "today" but time already passed → next week
+  if (delta === 0 && scheduled <= now) {
+    scheduled.setDate(scheduled.getDate() + 7);
+  }
+
+  return scheduled;
+}
+
+// Map your dayIndex (0=Mon..6=Sun) → Expo weekday (1=Sun..7=Sat)
+function mapDayIndexToExpoWeekday(dayIndex: number): number {
+  // [Mon, Tue, Wed, Thu, Fri, Sat, Sun] -> [2,3,4,5,6,7,1]
+  const map = [2, 3, 4, 5, 6, 7, 1];
+  return map[dayIndex] ?? 2;
+}
+
+// ---------------------------------------------------------------------------
+/**
+ * 4) Public helpers: schedule + cancel todo reminder notifications
+ *
+ * dayIndex = index from your weekly calendar (0=Mon..6=Sun).
+ */
+// ---------------------------------------------------------------------------
+
+export async function scheduleTodoReminderNotification(
+  todoId: string,
+  todoText: string,
+  dayIndex: number,
+  time: Date,
+  repeatWeekly: boolean
+): Promise<string | undefined> {
+  try {
+    const content: Notifications.NotificationContentInput = {
+      title: "Erinnerung",
+      body: todoText,
+      sound: "default",
+      data: {
+        type: "todo_reminder",
+        todoId,
+        repeatWeekly,
+      },
+    };
+
+    let notificationId: string;
+
+    if (repeatWeekly) {
+      // --- Weekly repeating reminder: same weekday & time every week ---
+      const weekday = mapDayIndexToExpoWeekday(dayIndex);
+
+      notificationId = await Notifications.scheduleNotificationAsync({
+        content,
+        trigger: {
+          // WeeklyTriggerInput (calendar type)
+          weekday,
+          hour: time.getHours(),
+          minute: time.getMinutes(),
+          repeats: true,
+          channelId: "default",
+        } as any,
+      });
+    } else {
+      // --- One-time reminder: next occurrence of that weekday & time ---
+      const scheduled = computeNextDateForDay(dayIndex, time);
+
+      console.log("[Notifications] ONE-TIME todo reminder:", {
+        todoId,
+        todoText,
+        dayIndex,
+        when: scheduled.toISOString(),
+      });
+
+      // ✅ NEW-style DATE trigger to avoid the deprecation warning:
+      const trigger: Notifications.DateTriggerInput = {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: scheduled,
+      };
+
+      notificationId = await Notifications.scheduleNotificationAsync({
+        content,
+        trigger: trigger as Notifications.NotificationTriggerInput,
+      });
+    }
+
+    return notificationId;
+  } catch (error) {
+    console.error("Error scheduling todo reminder:", error);
+    return undefined;
+  }
+}
+
+/**
+ * Optional helper to cancel a scheduled reminder if you stored notificationId.
+ */
+export async function cancelTodoReminderNotification(
+  notificationId: string
+): Promise<void> {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+  } catch (error) {
+    console.error("Error cancelling todo reminder:", error);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5) Hook: registers push token, syncs with Supabase, listens to notifications
+// ---------------------------------------------------------------------------
+
 export function usePushNotifications() {
   const router = useRouter();
-  const { lang } = useLanguage(); // <- your UI language code: "de" | "ar" | "en" ...
+  const { lang } = useLanguage();
   const getNotifications = useNotificationStore((s) => s.getNotifications);
   const session = useAuthStore((s) => s.session);
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -252,6 +364,7 @@ export function usePushNotifications() {
 
       const token = (await Notifications.getExpoPushTokenAsync({ projectId }))
         .data;
+
       if (isMountedRef.current) {
         setExpoPushToken(token);
       }
@@ -291,13 +404,14 @@ export function usePushNotifications() {
       Alert.alert("Registration Error", err?.message ?? String(err));
     }
 
-    // Android notification channel
+    // Android notification channel with sound
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("default", {
         name: "default",
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: "#057958",
+        sound: "default",
       });
     }
   }, [getNotifications, isLoggedIn, session?.user?.id, lang]);
@@ -307,7 +421,7 @@ export function usePushNotifications() {
     registerOrUpdateToken();
   }, [registerOrUpdateToken]);
 
-  // Listen for notifications (optional)
+  // Listen for notifications (receive + user tap)
   useEffect(() => {
     if (!getNotifications) return;
 
@@ -319,6 +433,8 @@ export function usePushNotifications() {
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log("Notification response:", response);
+
+        // Example: navigate to home when any notification is tapped
         router.push("/(tabs)/home");
       });
 

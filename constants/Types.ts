@@ -468,7 +468,12 @@ export type TodoListType = {
   onToggleTodo: (day: number, id: number) => void;
   onShowDeleteModal: (day: number, id: number) => void;
   onShowAddModal: () => void;
-  onSetReminder: (dayIndex: number, todoId: string, time: Date) => void; // Add this
+  onSetReminder: (
+    dayIndex: number,
+    todoId: string,
+    time: Date,
+    repeatWeekly: boolean
+  ) => void;
 };
 
 export type WeeklyTodosType = {
