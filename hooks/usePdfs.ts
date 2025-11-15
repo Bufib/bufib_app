@@ -308,7 +308,6 @@
 //   };
 // }
 
-
 // hooks/usePdfs.ts
 import { PdfType } from "@/constants/Types";
 import { supabase } from "@/utils/supabase";
@@ -458,6 +457,26 @@ export async function cleanupPdfCache(language?: string): Promise<void> {
 }
 
 /**
+ * Deletes ALL cached PDFs across ALL language directories.
+ * Used when PDFs are updated or deleted in the database.
+ */
+export async function clearAllPdfCaches(): Promise<void> {
+  try {
+    const pdfCacheRoot = `${getRootCacheDir()}pdfCache/`;
+    const dirInfo = await FileSystem.getInfoAsync(pdfCacheRoot);
+
+    if (!dirInfo.exists) {
+      return;
+    }
+
+    // Delete the entire pdfCache directory
+    await FileSystem.deleteAsync(pdfCacheRoot, { idempotent: true });
+    console.log("[PDF] Cleared all language caches");
+  } catch (err) {
+    console.warn(`[PDF cache clear error]`, err);
+  }
+}
+/**
  * Downloads a PDF from Supabase Storage into the language-scoped cache folder.
  */
 async function downloadToCache(
@@ -583,22 +602,16 @@ export function usePdfs(language: string) {
     },
     onError: (error, variables) => {
       console.error(`Error downloading ${variables.filename}:`, error);
-      queryClient.setQueryData(
-        ["pdfDownload", language, variables.filename],
-        {
-          status: "error",
-          error: error.message,
-        }
-      );
+      queryClient.setQueryData(["pdfDownload", language, variables.filename], {
+        status: "error",
+        error: error.message,
+      });
     },
     onSuccess: (localUri, variables) => {
-      queryClient.setQueryData(
-        ["pdfDownload", language, variables.filename],
-        {
-          status: "done",
-          uri: localUri,
-        }
-      );
+      queryClient.setQueryData(["pdfDownload", language, variables.filename], {
+        status: "done",
+        uri: localUri,
+      });
     },
   });
 

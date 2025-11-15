@@ -1114,7 +1114,7 @@
 //   },
 // });
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, cache } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -1427,7 +1427,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 // page={currentPage}
                 minScale={1}
                 maxScale={3.0}
-                
                 enableAntialiasing={true}
                 enableAnnotationRendering={true}
                 enableDoubleTapZoom
@@ -1460,16 +1459,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 ]}
               >
                 <HeaderLeftBackButton />
-                <TouchableOpacity
-                  style={styles.controlButton}
-                  onPress={onPressToggleFavorite}
-                >
-                  <Feather
-                    name="star"
-                    size={24}
-                    color={isFavorite ? "#F59E0B" : "#FFFFFF"}
-                  />
-                </TouchableOpacity>
 
                 <View style={styles.pageInfo}>
                   <TouchableOpacity
@@ -1481,6 +1470,16 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   </TouchableOpacity>
                 </View>
 
+                <TouchableOpacity
+                  style={styles.controlButton}
+                  onPress={onPressToggleFavorite}
+                >
+                  <Feather
+                    name="star"
+                    size={25}
+                    color={isFavorite ? "#F59E0B" : "#FFFFFF"}
+                  />
+                </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.controlButton}
                   onPress={() => setShowSettings(!showSettings)}

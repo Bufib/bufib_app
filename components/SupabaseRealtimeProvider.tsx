@@ -1191,6 +1191,7 @@ import { useTranslation } from "react-i18next";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { userQuestionsNewAnswerForQuestions } from "@/constants/messages";
 import { router } from "expo-router";
+import { clearAllPdfCaches } from "@/hooks/usePdfs";
 
 const SupabaseRealtimeContext = createContext<SupabaseRealtimeContextType>({
   userId: null,
@@ -1220,7 +1221,8 @@ export const SupabaseRealtimeProvider = ({
     useDataVersionStore.getState().incrementVideoVersion;
   const incrementUserQuestionVersion =
     useDataVersionStore.getState().incrementUserQuestionVersion;
-
+  const incrementPdfDataVersion =
+    useDataVersionStore.getState().incrementPdfDataVersion;
   // ---------- Helpers ----------
 
   useEffect(() => {
@@ -1394,6 +1396,46 @@ export const SupabaseRealtimeProvider = ({
       supabase.removeChannel(ch).catch(console.error);
     };
   }, [incrementNewsArticleVersion, invalidateByLang, langFromPayload]);
+
+  // ---------- PDFs ----------
+  useEffect(() => {
+    const ch = supabase
+      .channel("all_pdfs_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "pdfs" },
+        async (payload) => {
+          const lang = langFromPayload(payload);
+
+          if (payload.eventType === "INSERT") {
+            await invalidateByLang("pdfs", lang);
+            incrementPdfDataVersion();
+            return;
+          }
+
+          if (payload.eventType === "UPDATE") {
+            // Clear all cached PDFs across all languages
+            await clearAllPdfCaches();
+            await invalidateByLang("pdfs", lang);
+            incrementPdfDataVersion();
+            return;
+          }
+
+          if (payload.eventType === "DELETE") {
+            // Clear all cached PDFs across all languages
+            await clearAllPdfCaches();
+            await invalidateByLang("pdfs", lang);
+            incrementPdfDataVersion();
+            return;
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ch).catch(console.error);
+    };
+  }, [incrementPdfDataVersion, invalidateByLang, langFromPayload]);
 
   // ---------- Podcasts ----------
   useEffect(() => {
