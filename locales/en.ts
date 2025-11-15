@@ -359,6 +359,15 @@ const en = {
   hardResetDatabaseText:
     "This will reload the database and may fix some errors.",
 
+  clearAppCache: "Clear app cache",
+  clearAppCacheText:
+    "Deletes all cached files of the app. Content may need to be reloaded afterwards.",
+  clearAppCacheConfirmTitle: "Clear cache",
+  clearAppCacheConfirmMessage:
+    "Do you really want to delete all cached files of the app?",
+  clearAppCacheSuccessMessage: "The app cache was cleared successfully.",
+  clearAppCacheErrorMessage: "An error occurred while clearing the app cache.",
+
   // Language selector
   language: "Language",
   selectAppLanguage: "Select app language",

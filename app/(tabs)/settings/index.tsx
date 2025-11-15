@@ -32,6 +32,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { HardResetButton } from "@/components/HardResetButton";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+import ClearAppCacheButton from "@/components/ClearCacheButton";
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
@@ -194,7 +195,10 @@ const Settings = () => {
             </View>
             <LanguageSwitcher />
 
-            <HardResetButton />
+            <View style={{gap: 10}}>
+              <HardResetButton />
+              <ClearAppCacheButton />
+            </View>
           </View>
 
           {isLoggedIn && (

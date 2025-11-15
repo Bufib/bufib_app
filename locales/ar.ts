@@ -345,6 +345,15 @@ const ar = {
   hardResetDatabaseText:
     "سيؤدي هذا إلى إعادة تحميل قاعدة البيانات وقد يصلح بعض الأخطاء.",
 
+  clearAppCache: "مسح ذاكرة التخزين المؤقت للتطبيق",
+  clearAppCacheText:
+    "يحذف جميع الملفات المخزنة مؤقتًا في التطبيق. قد تحتاج المحتويات إلى إعادة التحميل بعد ذلك.",
+  clearAppCacheConfirmTitle: "مسح ذاكرة التخزين المؤقت",
+  clearAppCacheConfirmMessage:
+    "هل تريد حقًا حذف جميع الملفات المخزنة مؤقتًا للتطبيق؟",
+  clearAppCacheSuccessMessage: "تم مسح ذاكرة التخزين المؤقت للتطبيق بنجاح.",
+  clearAppCacheErrorMessage: "حدث خطأ أثناء مسح ذاكرة التخزين المؤقت للتطبيق.",
+
   // Language selector
   language: "اللغة",
   selectAppLanguage: "اختر لغة التطبيق",

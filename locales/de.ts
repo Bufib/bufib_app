@@ -347,6 +347,17 @@ const de = {
   pleaseEnterEmail: "Bitte E-Mail eingeben.",
   pleaseEnterValidEmail: "Bitte eine gültige E-Mail eingeben.",
   pleaseEnterPassword: "Bitte Passwort eingeben.",
+
+  clearAppCache: "App-Cache löschen",
+  clearAppCacheText:
+    "Löscht alle zwischengespeicherten Dateien der App. Inhalte müssen danach ggf. neu geladen werden.",
+  clearAppCacheConfirmTitle: "Cache löschen",
+  clearAppCacheConfirmMessage:
+    "Möchtest du wirklich alle zwischengespeicherten Dateien der App löschen?",
+  clearAppCacheSuccessMessage: "Der App-Cache wurde erfolgreich gelöscht.",
+  clearAppCacheErrorMessage:
+    "Beim Löschen des App-Caches ist ein Fehler aufgetreten.",
+
   // Language selector
   language: "Sprache",
   selectAppLanguage: "App-Sprache wählen",
