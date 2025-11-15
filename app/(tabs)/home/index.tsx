@@ -1267,7 +1267,12 @@ import RetryButton from "@/components/RetryButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
-import { NewsArticlesType, PodcastType } from "@/constants/Types";
+import {
+  ActiveSheet,
+  NewsArticlesType,
+  PodcastType,
+  PdfType,
+} from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNews } from "@/hooks/useNews";
 import { useNewsArticles } from "@/hooks/useNewsArticles";
@@ -1299,8 +1304,8 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 import { returnSize } from "@/utils/sizes";
-
-type ActiveSheet = "articles" | "podcasts" | null;
+import PdfPreviewCard from "@/components/PdfPreviewCard";
+import { usePdfs } from "@/hooks/usePdfs";
 
 // Format date helper
 const formatDate = (dateString: string, lang: string) => {
@@ -1357,9 +1362,19 @@ export default function HomeScreen() {
     isFetchingNextPage: podcastsIsFetchingNextPage,
   } = usePodcasts(lang);
 
+  const {
+    data: pdfPages,
+    isLoading: pdfsLoading,
+    isError: pdfsError,
+    error: pdfsErrorObj,
+    fetchNextPage: pdfsFetchNextPage,
+    hasNextPage: pdfsHasNextPage,
+    isFetchingNextPage: pdfsIsFetchingNextPage,
+  } = usePdfs(lang);
+
   const articles: NewsArticlesType[] = newsArticlesData?.pages.flat() ?? [];
   const podcasts: PodcastType[] = podcastPages?.pages.flat() ?? [];
-
+  const pdfs: PdfType[] = pdfPages?.pages.flat() ?? [];
   // Bottom sheet
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
@@ -1391,6 +1406,7 @@ export default function HomeScreen() {
   const sheetTitle = useMemo(() => {
     if (activeSheet === "articles") return t("newsArticlesTitle");
     if (activeSheet === "podcasts") return t("podcastsTitle");
+    if (activeSheet === "pdfs") return t("pdfsTitle") || "PDFs";
     return "";
   }, [activeSheet, t]);
 
@@ -1554,6 +1570,84 @@ export default function HomeScreen() {
       </TouchableOpacity>
     ),
     [closeSheet, colorScheme, t, previewSizes]
+  );
+
+  const renderPdfTile = useCallback(
+    ({ item }: { item: PdfType }) => (
+      <TouchableOpacity
+        style={styles.tileWrapper}
+        onPress={() => {
+          router.push({
+            pathname: "/(pdfs)",
+            params: {
+              filename: item.pdf_filename,
+            },
+          });
+          closeSheet();
+        }}
+        activeOpacity={0.85}
+      >
+        <View
+          style={[
+            styles.modernTile,
+            {
+              width: previewSizes,
+              height: 200,
+              backgroundColor: Colors[colorScheme].contrast,
+              borderColor: Colors[colorScheme].border,
+            },
+          ]}
+        >
+          <View style={styles.tileContent}>
+            <View style={styles.tileIconContainer}>
+              <View
+                style={[
+                  styles.iconCircle,
+                  {
+                    backgroundColor: Colors[colorScheme].background,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="document-text-outline"
+                  size={22}
+                  color={Colors[colorScheme].tint}
+                />
+              </View>
+            </View>
+
+            <View style={styles.tileTitleContainer}>
+              <Text
+                numberOfLines={3}
+                style={[
+                  styles.modernTileTitle,
+                  { color: Colors[colorScheme].text },
+                ]}
+              >
+                {item.pdf_filename.trim()}
+              </Text>
+            </View>
+
+            <View style={styles.tileFooter}>
+              <View style={styles.podcastMetaContainer}>
+                <Ionicons
+                  name="document-outline"
+                  size={12}
+                  color={Colors[colorScheme].icon}
+                  style={styles.dateIcon}
+                />
+                <Text
+                  style={[styles.dateText, { color: Colors[colorScheme].icon }]}
+                >
+                  {t("pdfsTitle")}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    ),
+    [closeSheet, colorScheme, previewSizes, t]
   );
 
   return (
@@ -1752,6 +1846,86 @@ export default function HomeScreen() {
             </View>
           )}
 
+          {/* PDFs */}
+          {pdfs.length > 0 && (
+            <View style={styles.pdfContainer}>
+              <View style={styles.sectionHeaderRow}>
+                <ThemedText
+                  type="titleBiggerLessBold"
+                  style={[
+                    styles.titleShadow,
+                    {
+                      shadowColor: Colors[colorScheme].shadow,
+                      lineHeight: 40,
+                      marginHorizontal: 16,
+                    },
+                  ]}
+                >
+                  {t("pdfsTitle")}
+                </ThemedText>
+                <TouchableOpacity onPress={() => openSheet("pdfs")}>
+                  <ThemedText style={{ marginRight: 15 }}>
+                    {t("showAll")}
+                  </ThemedText>
+                </TouchableOpacity>
+              </View>
+
+              {pdfsLoading && (
+                <LoadingIndicator style={{ marginVertical: 20 }} size="large" />
+              )}
+
+              {pdfsError && (
+                <View style={styles.errorContainer}>
+                  <Text
+                    style={[
+                      styles.errorText,
+                      { color: Colors[colorScheme].error },
+                    ]}
+                  >
+                    {pdfsErrorObj?.message ?? t("errorLoadingData")}
+                  </Text>
+                  <RetryButton onPress={() => pdfsFetchNextPage()} />
+                </View>
+              )}
+
+              {!pdfsLoading && !pdfsError && (
+                <FlatList
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={styles.flatListContentContainer}
+                  data={pdfs}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      onPress={() =>
+                        router.push({
+                          pathname: "/(pdfs)",
+                          params: {
+                            filename: item.pdf_filename,
+                          },
+                        })
+                      }
+                    >
+                      <PdfPreviewCard pdf={item} />
+                    </TouchableOpacity>
+                  )}
+                  onEndReached={() => {
+                    if (pdfsHasNextPage && !pdfsIsFetchingNextPage) {
+                      pdfsFetchNextPage();
+                    }
+                  }}
+                  onEndReachedThreshold={0.5}
+                  ListFooterComponent={() =>
+                    pdfsIsFetchingNextPage ? (
+                      <LoadingIndicator size="small" />
+                    ) : null
+                  }
+                />
+              )}
+            </View>
+          )}
+
           {/* News */}
           <View style={styles.newsContainer}>
             <View style={styles.newsTitleContainer}>
@@ -1886,8 +2060,13 @@ export default function HomeScreen() {
         >
           <View style={styles.sheetHeader}>
             <ThemedText type="subtitle" style={[styles.sheetTitle]}>
-              {sheetTitle} (
-              {activeSheet === "articles" ? articles.length : podcasts.length})
+              {sheetTitle} ({sheetTitle} (
+              {activeSheet === "articles"
+                ? articles.length
+                : activeSheet === "podcasts"
+                ? podcasts.length
+                : pdfs.length}
+              ) )
             </ThemedText>
 
             <TouchableOpacity onPress={closeSheet}>
@@ -1957,6 +2136,33 @@ export default function HomeScreen() {
               }
             />
           )}
+          {activeSheet === "pdfs" && (
+            <BottomSheetFlatList
+              data={pdfs}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item: PdfType) => item.id.toString()}
+              numColumns={2}
+              columnWrapperStyle={styles.columnWrapper}
+              contentContainerStyle={{
+                paddingBottom: 24,
+              }}
+              renderItem={renderPdfTile}
+              onEndReached={() => {
+                if (pdfsHasNextPage && !pdfsIsFetchingNextPage) {
+                  pdfsFetchNextPage();
+                }
+              }}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={() =>
+                pdfsIsFetchingNextPage ? (
+                  <View style={styles.sheetLoadingContainer}>
+                    <LoadingIndicator size="small" />
+                  </View>
+                ) : null
+              }
+            />
+          )}
         </BottomSheetModal>
       </SafeAreaView>
     </BottomSheetModalProvider>
@@ -1977,6 +2183,10 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   podcastContainer: {
+    flex: 1,
+    gap: 15,
+  },
+  pdfContainer: {
     flex: 1,
     gap: 15,
   },

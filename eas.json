@@ -3,11 +3,6 @@
     "version": ">= 16.2.1",
     "appVersionSource": "remote"
   },
-  // "build": {
-  //   "development": {
-  //     "developmentClient": true,
-  //     "distribution": "internal"
-  //   },
   "build": {
     "apk-local": {
       "android": {
@@ -19,6 +14,13 @@
     },
     "production": {
       "autoIncrement": true
+    },
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
     }
   },
   "submit": {

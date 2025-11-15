@@ -53,6 +53,12 @@
       "expo-sqlite",
       "expo-audio",
       "expo-notifications",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ],
       "expo-web-browser",
       [
         "expo-video",
@@ -63,6 +69,7 @@
       ],
       "expo-asset"
     ],
+
     "experiments": {
       "typedRoutes": true,
       "reactCanary": true

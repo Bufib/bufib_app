@@ -60,6 +60,7 @@ export type NewsCardType = {
 
 // General
 export type Language = "ar" | "en" | "de";
+export type ActiveSheet = "articles" | "podcasts" | "pdfs" | null;
 
 export type Sizes = {
   elementSize: number;
@@ -74,7 +75,7 @@ export type Sizes = {
   previewSizes: number;
   isLarge: boolean;
   isMedium: boolean;
-  previewSizesPaddingHorizontal: number
+  previewSizesPaddingHorizontal: number;
 };
 
 export type triggerRefreshFavoritesType = {
@@ -503,6 +504,20 @@ export type AddTodoModalType = {
 export type TodoToDeleteType = {
   dayIndex: number | null;
   todoId: number | null;
+};
+
+// Pdfs
+// Type definition for PDF records from Supabase
+export type PdfType = {
+  id: number;
+  created_at: string;
+  pdf_title: string;
+  pdf_filename: string; // The filename in your bucket (e.g., "quran-tafsir.pdf")
+  language_code: string; // e.g., "en", "de", "ar"
+};
+
+export type PdfViewerScreenPropsType = {
+  filename: string;
 };
 
 // Podcasts

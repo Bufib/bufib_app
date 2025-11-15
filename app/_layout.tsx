@@ -1161,6 +1161,7 @@ function AppContent() {
                   <Stack.Screen name="(displayPrayer)" />
                   <Stack.Screen name="(askQuestion)" />
                   <Stack.Screen name="(podcast)" />
+                  <Stack.Screen name="(pdfs)" />
                   <Stack.Screen
                     name="+not-found"
                     options={{ headerShown: true }}

@@ -72,7 +72,9 @@ const de = {
     "Synchronisierung fehlgeschlagen. Bitte versuche es erneut.",
   initAppWentWrong:
     "Beim Vorbereiten der App ist ein Fehler aufgetreten. Versuchen Sie, die App zu schließen und erneut zu öffnen.",
-  // Navigation
+  pdfsTitle: "Bücher und PDFs",
+  
+    // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",
   questionScreenTitle: "Fragen und Antworten",

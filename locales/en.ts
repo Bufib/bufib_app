@@ -73,6 +73,7 @@ const en = {
   syncFailedTryAgain: "Sync failed. Please try again.",
   initAppWentWrong:
     "Something went wrong while preparing the app. Try to close and open the app again.",
+  pdfsTitle: "Books and PDFs",
   // Navigation
   knowledge: "Knowledge",
   settings: "Settings",

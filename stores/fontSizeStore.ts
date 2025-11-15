@@ -7,11 +7,7 @@ interface FontSizeState {
   lineHeight: number;
   setFontSize: (size: number) => void;
   setLineHeight: (height: number) => void;
-  // loadSettings: () => Promise<void>;
 }
-
-// const FONT_SIZE_KEY = "fontSize";
-// const LINE_HEIGHT_KEY = "lineHeight";
 
 export const useFontSizeStore = create<FontSizeState>()(
   persist(
