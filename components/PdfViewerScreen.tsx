@@ -1182,7 +1182,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
   const hasLoadedRef = useRef(false);
   const currentFilenameRef = useRef<string | undefined>(undefined);
 
- 
   // Load saved reading position and preferences
   useEffect(() => {
     if (!filename) return;
@@ -1420,16 +1419,15 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
               <Pdf
                 ref={pdfRef}
                 source={{ uri: sourceUri, cache: true }}
-                style={[
-                  styles.pdf,
-                ]}
+                style={[styles.pdf]}
                 enablePaging={isHorizontal}
                 horizontal={isHorizontal}
                 enableRTL={rtl}
                 trustAllCerts={false}
-                page={currentPage}
+                // page={currentPage}
                 minScale={1}
                 maxScale={3.0}
+                
                 enableAntialiasing={true}
                 enableAnnotationRendering={true}
                 enableDoubleTapZoom
@@ -1562,29 +1560,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   </View>
 
                   <View style={styles.settingsContent}>
-                    {/* Text Size */}
-                    <View style={styles.settingSection}>
-                      <TouchableOpacity
-                        style={[styles.settingRow, styles.settingRowButton]}
-                        onPress={() => {
-                          setShowSettings(false);
-                        }}
-                        activeOpacity={0.7}
-                      >
-                        <View style={styles.settingRowLeft}>
-                          <Feather name="type" size={20} color="#FFFFFF" />
-                          <Text style={styles.settingRowLabel}>Text Size</Text>
-                        </View>
-                        <View style={styles.settingRowRight}>
-                          <Feather
-                            name="chevron-right"
-                            size={20}
-                            color="#9CA3AF"
-                          />
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-
                     {/* Layout Mode */}
                     <View style={styles.settingSection}>
                       <Text style={styles.settingLabel}>Page Layout</Text>
