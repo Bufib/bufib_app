@@ -60,7 +60,7 @@ export default function RenderFavoriteNewsArticles() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["favorite-news", lang, favKey, newsArticleVersion],
+    queryKey: ["favorite-news", lang, favKey],
     enabled: favoriteIds.length > 0,
     queryFn: async (): Promise<NewsArticlesType[]> => {
       const ids = favoriteIds.map(Number);

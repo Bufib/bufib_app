@@ -14,6 +14,7 @@ interface DataVersionStore {
   newsArticleVersion: number;
   videoVersion: number;
   userQuestionVersion: number;
+  pdfDataVersion: number;
 
   // per-dataset updaters
   incrementQuestionsVersion: () => void;
@@ -25,6 +26,7 @@ interface DataVersionStore {
   incrementNewsArticleVersion: () => void;
   incrementVideoVersion: () => void;
   incrementUserQuestionVersion: () => void;
+  incrementPdfDataVersion: () => void;
 
   // per-dataset resets (optional)
   resetQuestionsVersion: () => void;
@@ -36,6 +38,7 @@ interface DataVersionStore {
   resetNewsArticleVersion: () => void;
   resetVideoVersion: () => void;
   resetUserQuestionVersion: () => void;
+  resetPdfDataVersion: () => void;
 
   // all reset (optional)
   resetAllVersions: () => void;
@@ -51,6 +54,7 @@ export const useDataVersionStore = create<DataVersionStore>((set) => ({
   newsArticleVersion: 0,
   videoVersion: 0,
   userQuestionVersion: 0,
+  pdfDataVersion: 0,
 
   incrementQuestionsVersion: () =>
     set((s) => ({ questionsVersion: s.questionsVersion + 1 })),
@@ -70,6 +74,8 @@ export const useDataVersionStore = create<DataVersionStore>((set) => ({
     set((s) => ({ videoVersion: s.videoVersion + 1 })),
   incrementUserQuestionVersion: () =>
     set((s) => ({ userQuestionVersion: s.userQuestionVersion + 1 })),
+  incrementPdfDataVersion: () =>
+    set((s) => ({ pdfDataVersion: s.pdfDataVersion + 1 })),
 
   resetQuestionsVersion: () => set({ questionsVersion: 0 }),
   resetQuranDataVersion: () => set({ quranDataVersion: 0 }),
@@ -80,6 +86,7 @@ export const useDataVersionStore = create<DataVersionStore>((set) => ({
   resetNewsArticleVersion: () => set({ newsArticleVersion: 0 }),
   resetVideoVersion: () => set({ videoVersion: 0 }),
   resetUserQuestionVersion: () => set({ userQuestionVersion: 0 }),
+  resetPdfDataVersion: () => set({ pdfDataVersion: 0 }),
 
   resetAllVersions: () =>
     set({
@@ -92,5 +99,6 @@ export const useDataVersionStore = create<DataVersionStore>((set) => ({
       newsArticleVersion: 0,
       videoVersion: 0,
       userQuestionVersion: 0,
+      pdfDataVersion: 0,
     }),
 }));

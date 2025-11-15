@@ -9,50 +9,53 @@ import {
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
-import { PodcastType } from "@/constants/Types";
-import { getFavoritePodcasts } from "@/utils/favorites";
+import { PdfType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { Colors } from "@/constants/Colors";
-import { Entypo } from "@expo/vector-icons";
+import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "@/utils/formatDate";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
+import { getFavoritePdf } from "@/utils/favorites";
 
-export default function RenderFavoritePodcasts() {
+// must match the logic used in PdfViewerScreen
+const getPdfNumericId = (filename: string): number => {
+  const asNumber = Number(filename);
+  if (Number.isFinite(asNumber)) return asNumber;
+
+  let hash = 0;
+  for (let i = 0; i < filename.length; i++) {
+    hash = (hash * 31 + filename.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash) || 1;
+};
+
+export default function RenderFavoritePdfs() {
   const { lang, rtl } = useLanguage();
   const { favoritesRefreshed } = useRefreshFavorites();
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const podcastVersion = useDataVersionStore((s) => s.podcastVersion);
+  const pdfDataVersion = useDataVersionStore((s) => s.pdfDataVersion);
 
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const favKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
-
-  // // Load favorite IDs from storage (scoped per language)
-  // useEffect(() => {
-  //   (async () => {
-  //     const ids = await getFavoritePodcasts(lang);
-  //     setFavoriteIds(ids);
-  //   })();
-  // }, [lang, favoritesRefreshed, podcastVersion]);
+  console.log(pdfDataVersion);
 
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       try {
-        const ids = await getFavoritePodcasts(lang);
-        if (!cancelled) {
-          setFavoriteIds(ids);
-        }
+        const ids = await getFavoritePdf(lang);
+        if (!cancelled) setFavoriteIds(ids);
       } catch (e) {
         if (!cancelled) {
-          console.warn("Failed to load favorite podcasts:", e);
+          console.warn("Failed to load favorite PDF IDs:", e);
           setFavoriteIds([]);
         }
       }
@@ -61,27 +64,32 @@ export default function RenderFavoritePodcasts() {
     return () => {
       cancelled = true;
     };
-  }, [lang, favoritesRefreshed, podcastVersion]);
+  }, [lang, favoritesRefreshed, pdfDataVersion]);
 
-  // Fetch favorite episodes by ID directly (no pagination dance)
   const {
-    data: favoriteEpisodes = [],
+    data: favoritePdfs = [],
     isLoading,
     isError,
-    refetch,
-    isFetching,
   } = useQuery({
-    queryKey: ["favorite-episodes", lang, favKey],
+    queryKey: ["favorite-pdfs", lang, favKey],
     enabled: favoriteIds.length > 0,
-    queryFn: async (): Promise<PodcastType[]> => {
-      const ids = favoriteIds.map(Number);
+    queryFn: async (): Promise<PdfType[]> => {
+      // We store numeric IDs derived from filename, so we need
+      // to fetch PDFs and filter client-side based on filename → numericId.
       const { data, error } = await supabase
-        .from("podcasts")
+        .from("pdfs")
         .select("*")
-        .in("id", ids)
         .order("created_at", { ascending: false });
+
       if (error) throw error;
-      return data ?? [];
+      const rows = data ?? [];
+
+      const favoriteIdSet = new Set(favoriteIds.map(Number));
+      return rows.filter((pdf: PdfType) => {
+        if (!pdf.pdf_filename) return false;
+        const numericId = getPdfNumericId(pdf.pdf_filename);
+        return favoriteIdSet.has(numericId);
+      });
     },
     retry: 3,
     staleTime: 12 * 60 * 60 * 1000, // 12 hours
@@ -91,44 +99,27 @@ export default function RenderFavoritePodcasts() {
     refetchOnReconnect: true,
   });
 
-  // Pull-to-refresh (optional but handy)
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = async () => {
-    setRefreshing(true);
-    // Reload IDs in case user changed favorites while this screen was open
-    const ids = await getFavoritePodcasts(lang);
-    setFavoriteIds(ids);
-    await refetch();
-    setRefreshing(false);
-  };
-
-  // const listExtraData = React.useMemo(
-  //   () => `${podcastVersion}`,
-  //   [podcastVersion]
-  // );
-
-  // Loading first data
   if (isLoading && favoriteIds.length > 0) {
     return (
-      <ThemedView style={styles.centeredContainer}>
+      <ThemedView style={styles.centered}>
         <LoadingIndicator size="large" />
       </ThemedView>
     );
   }
 
-  // Error state
   if (isError) {
     return (
-      <ThemedView style={styles.centeredContainer}>
-        <ThemedText style={styles.errorText}>{t("error")}</ThemedText>
+      <ThemedView style={styles.centered}>
+        <ThemedText style={styles.errorText}>
+          {t("errorLoadingData")}
+        </ThemedText>
       </ThemedView>
     );
   }
 
-  // No favorites stored (or none returned)
-  if (favoriteIds.length === 0 || favoriteEpisodes.length === 0) {
+  if (favoriteIds.length === 0 || favoritePdfs.length === 0) {
     return (
-      <ThemedView style={styles.centeredContainer}>
+      <ThemedView style={styles.centered}>
         <ThemedText style={styles.emptyText}>{t("noFavorites")}</ThemedText>
       </ThemedView>
     );
@@ -137,11 +128,8 @@ export default function RenderFavoritePodcasts() {
   return (
     <ThemedView style={styles.container}>
       <FlatList
-        data={favoriteEpisodes}
-        // extraData={listExtraData}
+        data={favoritePdfs}
         keyExtractor={(item) => String(item.id)}
-        refreshing={refreshing || isFetching}
-        onRefresh={onRefresh}
         contentContainerStyle={styles.flatListContent}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -154,13 +142,14 @@ export default function RenderFavoritePodcasts() {
             ]}
             onPress={() =>
               router.push({
-                pathname: "/(podcast)/indexPodcast",
-                params: { podcast: JSON.stringify(item) },
+                // adjust path if your PDF route is different
+                pathname: "/(pdfs)",
+                params: { id: item.id, filename: item.pdf_filename },
               })
             }
           >
             <View style={{ flex: 1, gap: 40 }}>
-              <ThemedText style={styles.itemTitle}>{item.title}</ThemedText>
+              <ThemedText style={styles.itemTitle}>{item.pdf_title}</ThemedText>
               <ThemedText style={styles.itemDate}>
                 {formatDate(item.created_at)}
               </ThemedText>
@@ -180,11 +169,11 @@ export default function RenderFavoritePodcasts() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  centeredContainer: {
+  centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    padding: 15,
   },
   flatListContent: {
     paddingTop: 15,

@@ -10,6 +10,7 @@ import { Colors } from "@/constants/Colors";
 import { Image } from "expo-image";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 import FavoriteQuran from "@/app/(tabs)/favorites/favoriteQuran";
+import FavoritePdfs from "@/app/(tabs)/favorites/favoritePdfs";
 
 const renderScene = SceneMap({
   favoriteNewsArticles: FavoriteNewsArticles,
@@ -17,6 +18,7 @@ const renderScene = SceneMap({
   favoriteQuestions: FavoriteQuestions,
   favoritePodcasts: FavoritePodcasts,
   favoriteQuran: FavoriteQuran,
+  favoritePdfs: FavoritePdfs
 });
 
 export default function TopNavigationFavorites() {
@@ -57,6 +59,12 @@ export default function TopNavigationFavorites() {
         // title: t("prayerScreenTitle"),
         title: "",
         icon: require("@/assets/images/quranImage.png"),
+      },
+      {
+        key: "favoritePdfs",
+        // title: t("prayerScreenTitle"),
+        title: "",
+        icon: require("@/assets/images/pdfs.png"),
       },
     ],
     []
@@ -138,6 +146,19 @@ export default function TopNavigationFavorites() {
               ),
             },
             favoriteQuran: {
+              icon: ({ route, focused, color }) => (
+                <Image
+                  source={route.icon}
+                  contentFit="contain"
+                  style={{
+                    width: 35,
+                    height: 35,
+                    opacity: focused ? 1 : 0.6,
+                  }}
+                />
+              ),
+            },
+            favoritePdfs: {
               icon: ({ route, focused, color }) => (
                 <Image
                   source={route.icon}

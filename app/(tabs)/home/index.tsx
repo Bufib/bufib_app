@@ -1580,6 +1580,7 @@ export default function HomeScreen() {
           router.push({
             pathname: "/(pdfs)",
             params: {
+              id: item.id,
               filename: item.pdf_filename,
             },
           });
