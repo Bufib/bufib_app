@@ -1380,12 +1380,16 @@ export const SupabaseRealtimeProvider = ({
           if (payload.eventType === "UPDATE") {
             await invalidateByLang("newsArticles", lang);
             incrementNewsArticleVersion();
+            router.push("/home");
+
             return;
           }
 
           if (payload.eventType === "DELETE") {
             await invalidateByLang("newsArticles", lang);
             incrementNewsArticleVersion();
+            router.push("/home");
+
             return;
           }
         }
@@ -1418,6 +1422,7 @@ export const SupabaseRealtimeProvider = ({
             await clearAllPdfCaches();
             await invalidateByLang("pdfs", lang);
             incrementPdfDataVersion();
+            router.push("/home");
             return;
           }
 
@@ -1426,6 +1431,7 @@ export const SupabaseRealtimeProvider = ({
             await clearAllPdfCaches();
             await invalidateByLang("pdfs", lang);
             incrementPdfDataVersion();
+            router.push("/home");
             return;
           }
         }
@@ -1456,12 +1462,16 @@ export const SupabaseRealtimeProvider = ({
           if (payload.eventType === "UPDATE") {
             await invalidateByLang("podcasts", lang);
             incrementPodcastVersion();
+            router.push("/home");
+
             return;
           }
 
           if (payload.eventType === "DELETE") {
             await invalidateByLang("podcasts", lang);
             incrementPodcastVersion();
+            router.push("/home");
+
             return;
           }
         }
@@ -1492,12 +1502,16 @@ export const SupabaseRealtimeProvider = ({
           if (payload.eventType === "UPDATE") {
             await invalidateByLang("videos", lang);
             incrementVideoVersion();
+            router.push("/home");
+
             return;
           }
 
           if (payload.eventType === "DELETE") {
             await invalidateByLang("videos", lang);
             incrementVideoVersion();
+            router.push("/home");
+
             return;
           }
         }
@@ -1528,12 +1542,16 @@ export const SupabaseRealtimeProvider = ({
           if (payload.eventType === "UPDATE") {
             await invalidateByLang("video_categories", lang);
             incrementVideoVersion();
+            router.push("/home");
+
             return;
           }
 
           if (payload.eventType === "DELETE") {
             await invalidateByLang("video_categories", lang);
             incrementVideoVersion();
+            router.push("/home");
+
             return;
           }
         }

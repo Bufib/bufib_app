@@ -1,196 +1,4 @@
-// // // app/(pdfs)/pdf-viewer.tsx
-// // import React, { useEffect, useState } from "react";
-// // import {
-// //   ActivityIndicator,
-// //   Dimensions,
-// //   StyleSheet,
-// //   Text,
-// //   View,
-// // } from "react-native";
-// // import Pdf from "react-native-pdf";
-// // import { useLocalSearchParams } from "expo-router";
-// // import { usePdfs } from "@/hooks/usePdfs";
-// // import { useLanguage } from "@/contexts/LanguageContext";
-
-// // const PdfViewerScreen = () => {
-// //   const { filename } = useLocalSearchParams<{
-// //     filename?: string;
-// //   }>();
-
-// //   const { rtl, lang } = useLanguage();
-// //   const { getCachedUri, download } = usePdfs(lang);
-
-// //   const [sourceUri, setSourceUri] = useState<string | null>(null);
-// //   const [loading, setLoading] = useState<boolean>(true);
-// //   const [progress, setProgress] = useState<number>(0);
-// //   const [error, setError] = useState<string | null>(null);
-// //   const [pageCount, setPageCount] = useState<number>(0);
-// //   const [currentPage, setCurrentPage] = useState<number>(1);
-
-// //   useEffect(() => {
-// //     if (!filename) {
-// //       setError("No PDF filename provided.");
-// //       setLoading(false);
-// //       return;
-// //     }
-// //     let cancelled = false;
-
-// //     const prepare = async () => {
-// //       try {
-// //         setLoading(true);
-// //         setError(null);
-// //         setProgress(0);
-
-// //         // 1) Check if it is already cached
-// //         const cached = await getCachedUri(filename);
-
-// //         if (cancelled) return;
-// //         if (cached) {
-// //           setSourceUri(cached);
-// //         } else {
-// //           // 2) Download into our language-specific cache
-// //           const localUri = await download.mutateAsync({
-// //             filename,
-// //             onProgress: (frac) => {
-// //               if (!cancelled) setProgress(frac);
-// //             },
-// //           });
-// //           if (!cancelled) {
-// //             setSourceUri(localUri);
-// //           }
-// //         }
-// //       } catch (err: any) {
-// //         if (!cancelled) {
-// //           setError(err?.message ?? "Failed to load PDF.");
-// //         }
-// //       } finally {
-// //         if (!cancelled) {
-// //           setLoading(false);
-// //         }
-// //       }
-// //     };
-
-// //     prepare();
-// //     return () => {
-// //       cancelled = true;
-// //     };
-// //     // Only depend on filename and lang - the functions are stable
-// //     // eslint-disable-next-line react-hooks/exhaustive-deps
-// //   }, [filename, lang]);
-
-// //   const windowWidth = Dimensions.get("window").width;
-// //   const windowHeight = Dimensions.get("window").height;
-
-// //   if (!filename) {
-// //     return (
-// //       <View>
-// //         <Text>No filename received</Text>
-// //       </View>
-// //     );
-// //   }
-
-// //   return (
-// //     <>
-// //       <View style={styles.container}>
-// //         {error && (
-// //           <View style={styles.center}>
-// //             <Text style={styles.errorText}>{error}</Text>
-// //           </View>
-// //         )}
-
-// //         {!error && loading && (
-// //           <View style={styles.center}>
-// //             <ActivityIndicator size="large" />
-// //             {progress > 0 && (
-// //               <Text style={styles.progressText}>
-// //                 {Math.round(progress * 100)}%
-// //               </Text>
-// //             )}
-// //           </View>
-// //         )}
-
-// //         {!error && !loading && sourceUri && (
-// //           <>
-// //             <Pdf
-// //               source={{ uri: sourceUri }}
-// //               style={[styles.pdf, { width: windowWidth, height: windowHeight }]}
-// //               enableRTL={rtl}
-// //               trustAllCerts={true}
-// //               onLoadComplete={(numberOfPages) => {
-// //                 setPageCount(numberOfPages);
-// //               }}
-// //               onPageChanged={(page) => {
-// //                 setCurrentPage(page);
-// //               }}
-// //               onError={(pdfError) => {
-// //                 console.log("[PDF error]", pdfError);
-// //                 setError(
-// //                   pdfError instanceof Error
-// //                     ? pdfError.message
-// //                     : String(pdfError)
-// //                 );
-// //               }}
-// //             />
-
-// //             {pageCount > 0 && (
-// //               <View style={styles.pageIndicatorContainer}>
-// //                 <Text style={styles.pageIndicatorText}>
-// //                   {currentPage} / {pageCount}
-// //                 </Text>
-// //               </View>
-// //             )}
-// //           </>
-// //         )}
-// //       </View>
-// //     </>
-// //   );
-// // };
-
-// // export default PdfViewerScreen;
-
-// // const styles = StyleSheet.create({
-// //   container: {
-// //     flex: 1,
-// //     backgroundColor: "#111827",
-// //   },
-// //   pdf: {
-// //     flex: 1,
-// //     alignSelf: "center",
-// //   },
-// //   center: {
-// //     flex: 1,
-// //     alignItems: "center",
-// //     justifyContent: "center",
-// //   },
-// //   progressText: {
-// //     marginTop: 12,
-// //     color: "#E5E7EB",
-// //     fontSize: 14,
-// //   },
-// //   errorText: {
-// //     color: "#FCA5A5",
-// //     fontSize: 14,
-// //     textAlign: "center",
-// //     paddingHorizontal: 24,
-// //   },
-// //   pageIndicatorContainer: {
-// //     position: "absolute",
-// //     bottom: 16,
-// //     alignSelf: "center",
-// //     backgroundColor: "rgba(0,0,0,0.5)",
-// //     paddingHorizontal: 12,
-// //     paddingVertical: 6,
-// //     borderRadius: 16,
-// //   },
-// //   pageIndicatorText: {
-// //     color: "#FFFFFF",
-// //     fontSize: 12,
-// //   },
-// // });
-
-// //! Last worked
-
-// import React, { useEffect, useState, useRef } from "react";
+// import React, { useEffect, useState, useRef, cache } from "react";
 // import {
 //   ActivityIndicator,
 //   Dimensions,
@@ -205,21 +13,31 @@
 // import { Stack, useRouter } from "expo-router";
 // import { usePdfs } from "@/hooks/usePdfs";
 // import { useLanguage } from "@/contexts/LanguageContext";
-// import { useFontSizeStore } from "@/stores/fontSizeStore";
-// import FontSizePickerModal from "@/components/FontSizePickerModal";
 // import Feather from "@expo/vector-icons/Feather";
 // import * as ScreenOrientation from "expo-screen-orientation";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { PdfViewerScreenPropsType } from "@/constants/Types";
 // import { useSafeAreaInsets } from "react-native-safe-area-context";
 // import HeaderLeftBackButton from "./HeaderLeftBackButton";
+// import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
+// import { isPdfFavorited, togglePdfFavorite } from "@/utils/favorites";
+
+// const getPdfNumericId = (filename: string): number => {
+//   const asNumber = Number(filename);
+//   if (Number.isFinite(asNumber)) return asNumber;
+
+//   let hash = 0;
+//   for (let i = 0; i < filename.length; i++) {
+//     hash = (hash * 31 + filename.charCodeAt(i)) | 0;
+//   }
+//   return Math.abs(hash) || 1;
+// };
 
 // const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
 //   const router = useRouter();
 
 //   const { rtl, lang } = useLanguage();
 //   const { getCachedUri, downloadPdf } = usePdfs(lang);
-//   const { fontSize } = useFontSizeStore();
 
 //   const [sourceUri, setSourceUri] = useState<string | null>(null);
 //   const [loading, setLoading] = useState<boolean>(true);
@@ -231,63 +49,39 @@
 
 //   // eBook reader features
 //   const [showControls, setShowControls] = useState<boolean>(true);
-//   const [bookmarks, setBookmarks] = useState<number[]>([]);
-//   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
-//   const [scale, setScale] = useState<number>(1.0);
 //   const [showPageJump, setShowPageJump] = useState<boolean>(false);
 //   const [showSettings, setShowSettings] = useState<boolean>(false);
-//   const [showFontSizePicker, setShowFontSizePicker] = useState<boolean>(false);
 
 //   // Layout toggle
 //   const [isHorizontal, setIsHorizontal] = useState<boolean>(true);
+
+//   // Favorites
+//   const [isFavorite, setIsFavorite] = useState<boolean>(false);
+//   const { triggerRefreshFavorites } = useRefreshFavorites();
 
 //   const pdfRef = useRef<any>(null);
 //   const controlsOpacity = useRef(new Animated.Value(1)).current;
 //   const hideControlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 //   const hasLoadedRef = useRef(false);
 //   const currentFilenameRef = useRef<string | undefined>(undefined);
-
-//   const windowWidth = Dimensions.get("window").width;
-//   const windowHeight = Dimensions.get("window").height;
-
-//   // Convert fontSize from store to PDF scale
-//   const getPdfScale = (fontSize: number): number => {
-//     switch (fontSize) {
-//       case 16:
-//         return 0.85; // Small
-//       case 18:
-//         return 1.0; // Medium (default)
-//       case 22:
-//         return 1.25; // Large
-//       default:
-//         return 1.0;
-//     }
-//   };
-
-//   // Update PDF scale when fontSize changes
-//   useEffect(() => {
-//     const newScale = getPdfScale(fontSize);
-//     setScale(newScale);
-//   }, [fontSize]);
-
-//   // Load saved reading position, bookmarks, and preferences
+//   const hasLoadedPreferencesRef = useRef(false); // Add this new ref
+//   // Load saved reading position and preferences
 //   useEffect(() => {
 //     if (!filename) return;
 
 //     const loadSavedData = async () => {
 //       try {
 //         const savedPage = await AsyncStorage.getItem(`pdf_page_${filename}`);
-//         const savedBookmarks = await AsyncStorage.getItem(
-//           `pdf_bookmarks_${filename}`
-//         );
 //         const savedHorizontal = await AsyncStorage.getItem(
 //           `pdf_horizontal_${filename}`
 //         );
 
 //         if (savedPage) setCurrentPage(parseInt(savedPage, 10));
-//         if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks));
 //         if (savedHorizontal !== null)
 //           setIsHorizontal(savedHorizontal === "true");
+
+//         // Mark preferences as loaded
+//         hasLoadedPreferencesRef.current = true;
 //       } catch (err) {
 //         console.warn("Failed to load saved data:", err);
 //       }
@@ -295,6 +89,16 @@
 
 //     loadSavedData();
 //   }, [filename]);
+
+//   // Save layout preference - ONLY after initial load
+//   useEffect(() => {
+//     if (!filename || !hasLoadedPreferencesRef.current) return;
+
+//     AsyncStorage.setItem(
+//       `pdf_horizontal_${filename}`,
+//       isHorizontal.toString()
+//     ).catch(console.warn);
+//   }, [isHorizontal, filename]);
 
 //   // Save reading position (debounced)
 //   useEffect(() => {
@@ -308,14 +112,38 @@
 //     return () => clearTimeout(saveTimeout);
 //   }, [currentPage, filename]);
 
-//   // Save layout preference
+//   // Favorites: load initial favorite state
 //   useEffect(() => {
+//     if (!filename) {
+//       setIsFavorite(false);
+//       return;
+//     }
+//     const id = getPdfNumericId(filename);
+//     let mounted = true;
+//     (async () => {
+//       try {
+//         const result = await isPdfFavorited(id, lang);
+//         if (mounted) setIsFavorite(result);
+//       } catch (e) {
+//         console.warn("[PdfViewer] isPdfFavorited error", e);
+//       }
+//     })();
+//     return () => {
+//       mounted = false;
+//     };
+//   }, [filename, lang]);
+
+//   const onPressToggleFavorite = async () => {
 //     if (!filename) return;
-//     AsyncStorage.setItem(
-//       `pdf_horizontal_${filename}`,
-//       isHorizontal.toString()
-//     ).catch(console.warn);
-//   }, [isHorizontal, filename]);
+//     const id = getPdfNumericId(filename);
+//     try {
+//       const next = await togglePdfFavorite(id, lang);
+//       setIsFavorite(next);
+//       triggerRefreshFavorites();
+//     } catch (e) {
+//       console.warn("[PdfViewer] togglePdfFavorite error", e);
+//     }
+//   };
 
 //   // Auto-hide controls
 //   const resetControlsTimer = () => {
@@ -414,23 +242,6 @@
 //     };
 //   }, [filename, lang, downloadPdf, getCachedUri, sourceUri]);
 
-//   // Bookmark functions
-//   const toggleBookmark = async () => {
-//     const newBookmarks = bookmarks.includes(currentPage)
-//       ? bookmarks.filter((p) => p !== currentPage)
-//       : [...bookmarks, currentPage].sort((a, b) => a - b);
-
-//     setBookmarks(newBookmarks);
-//     if (filename) {
-//       await AsyncStorage.setItem(
-//         `pdf_bookmarks_${filename}`,
-//         JSON.stringify(newBookmarks)
-//       ).catch(console.warn);
-//     }
-//   };
-
-//   const isBookmarked = bookmarks.includes(currentPage);
-
 //   // Navigation functions
 //   const goToPage = (page: number) => {
 //     if (page >= 1 && page <= pageCount && pdfRef.current) {
@@ -495,32 +306,25 @@
 //               <Pdf
 //                 ref={pdfRef}
 //                 source={{ uri: sourceUri, cache: true }}
-//                 style={[
-//                   styles.pdf,
-//                   { width: windowWidth, height: windowHeight },
-//                 ]}
-//                 enablePaging={isHorizontal}
-//                 horizontal={isHorizontal}
+//                 style={[styles.pdf]}
+//                 enablePaging={isHorizontal || pageCount === 1}
+//                 horizontal={isHorizontal || pageCount === 1}
 //                 enableRTL={rtl}
 //                 trustAllCerts={false}
 //                 page={currentPage}
-//                 scale={scale}
-//                 minScale={0.5}
+//                 minScale={1}
 //                 maxScale={3.0}
 //                 enableAntialiasing={true}
-//                 enableAnnotationRendering={false}
+//                 enableAnnotationRendering={true}
+//                 enableDoubleTapZoom
 //                 fitPolicy={2}
 //                 spacing={10}
-
 //                 onLoadComplete={(numberOfPages) => {
 //                   setPageCount(numberOfPages);
 //                 }}
 //                 onPageChanged={(page) => {
 //                   setCurrentPage(page);
 //                   resetControlsTimer();
-//                 }}
-//                 onScaleChanged={(newScale) => {
-//                   setScale(newScale);
 //                 }}
 //                 onError={(pdfError) => {
 //                   console.log("[PDF error]", pdfError);
@@ -542,16 +346,6 @@
 //                 ]}
 //               >
 //                 <HeaderLeftBackButton />
-//                 <TouchableOpacity
-//                   style={styles.controlButton}
-//                   onPress={toggleBookmark}
-//                 >
-//                   <Feather
-//                     name="bookmark"
-//                     size={24}
-//                     color={isBookmarked ? "#F59E0B" : "#FFFFFF"}
-//                   />
-//                 </TouchableOpacity>
 
 //                 <View style={styles.pageInfo}>
 //                   <TouchableOpacity
@@ -563,6 +357,16 @@
 //                   </TouchableOpacity>
 //                 </View>
 
+//                 <TouchableOpacity
+//                   style={styles.controlButton}
+//                   onPress={onPressToggleFavorite}
+//                 >
+//                   <Feather
+//                     name="star"
+//                     size={25}
+//                     color={isFavorite ? "#F59E0B" : "#FFFFFF"}
+//                   />
+//                 </TouchableOpacity>
 //                 <TouchableOpacity
 //                   style={styles.controlButton}
 //                   onPress={() => setShowSettings(!showSettings)}
@@ -642,37 +446,6 @@
 //                   </View>
 
 //                   <View style={styles.settingsContent}>
-//                     {/* Text Size */}
-//                     <View style={styles.settingSection}>
-//                       <TouchableOpacity
-//                         style={[styles.settingRow, styles.settingRowButton]}
-//                         onPress={() => {
-//                           setShowFontSizePicker(true);
-//                           setShowSettings(false);
-//                         }}
-//                         activeOpacity={0.7}
-//                       >
-//                         <View style={styles.settingRowLeft}>
-//                           <Feather name="type" size={20} color="#FFFFFF" />
-//                           <Text style={styles.settingRowLabel}>Text Size</Text>
-//                         </View>
-//                         <View style={styles.settingRowRight}>
-//                           <Text style={styles.settingValue}>
-//                             {fontSize === 16
-//                               ? "Small"
-//                               : fontSize === 18
-//                               ? "Medium"
-//                               : "Large"}
-//                           </Text>
-//                           <Feather
-//                             name="chevron-right"
-//                             size={20}
-//                             color="#9CA3AF"
-//                           />
-//                         </View>
-//                       </TouchableOpacity>
-//                     </View>
-
 //                     {/* Layout Mode */}
 //                     <View style={styles.settingSection}>
 //                       <Text style={styles.settingLabel}>Page Layout</Text>
@@ -732,15 +505,6 @@
 //               </View>
 //             )}
 
-//             {/* Font Size Picker Modal */}
-//             <FontSizePickerModal
-//               visible={showFontSizePicker}
-//               onClose={() => {
-//                 setShowFontSizePicker(false);
-//                 setShowSettings(true);
-//               }}
-//             />
-
 //             {/* Page Jump Menu */}
 //             {showPageJump && (
 //               <View style={styles.pageJumpOverlay}>
@@ -753,35 +517,6 @@
 //                   </View>
 
 //                   <ScrollView style={styles.pageJumpScroll}>
-//                     {bookmarks.length > 0 && (
-//                       <>
-//                         <Text style={styles.sectionTitle}>Bookmarks</Text>
-//                         {bookmarks.map((page) => (
-//                           <TouchableOpacity
-//                             key={`bookmark-${page}`}
-//                             style={[
-//                               styles.pageJumpItem,
-//                               page === currentPage && styles.pageJumpItemActive,
-//                             ]}
-//                             onPress={() => {
-//                               goToPage(page);
-//                               setShowPageJump(false);
-//                             }}
-//                           >
-//                             <Feather
-//                               name="bookmark"
-//                               size={18}
-//                               color="#F59E0B"
-//                             />
-//                             <Text style={styles.pageJumpItemText}>
-//                               Page {page}
-//                             </Text>
-//                           </TouchableOpacity>
-//                         ))}
-//                         <View style={styles.divider} />
-//                       </>
-//                     )}
-
 //                     <Text style={styles.sectionTitle}>All Pages</Text>
 //                     {Array.from({ length: pageCount }, (_, i) => i + 1).map(
 //                       (page) => (
@@ -1114,10 +849,9 @@
 //   },
 // });
 
-import React, { useEffect, useState, useRef, cache } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   ActivityIndicator,
-  Dimensions,
   StyleSheet,
   Text,
   View,
@@ -1126,11 +860,10 @@ import {
   Animated,
 } from "react-native";
 import Pdf from "react-native-pdf";
-import { Stack, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { usePdfs } from "@/hooks/usePdfs";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Feather from "@expo/vector-icons/Feather";
-import * as ScreenOrientation from "expo-screen-orientation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PdfViewerScreenPropsType } from "@/constants/Types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -1165,11 +898,10 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
 
   // eBook reader features
   const [showControls, setShowControls] = useState<boolean>(true);
-  const [scale, setScale] = useState<number>(1.0);
   const [showPageJump, setShowPageJump] = useState<boolean>(false);
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
-  // Layout toggle
+  // Layout toggle - GLOBAL preference
   const [isHorizontal, setIsHorizontal] = useState<boolean>(true);
 
   // Favorites
@@ -1181,28 +913,50 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
   const hideControlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasLoadedRef = useRef(false);
   const currentFilenameRef = useRef<string | undefined>(undefined);
+  const hasLoadedPreferencesRef = useRef(false);
 
-  // Load saved reading position and preferences
+  // Load GLOBAL layout preference once on mount
   useEffect(() => {
-    if (!filename) return;
-
-    const loadSavedData = async () => {
+    const loadGlobalPreference = async () => {
       try {
-        const savedPage = await AsyncStorage.getItem(`pdf_page_${filename}`);
-        const savedHorizontal = await AsyncStorage.getItem(
-          `pdf_horizontal_${filename}`
-        );
-
-        if (savedPage) setCurrentPage(parseInt(savedPage, 10));
-        if (savedHorizontal !== null)
+        const savedHorizontal = await AsyncStorage.getItem("pdf_layout_global");
+        if (savedHorizontal !== null) {
           setIsHorizontal(savedHorizontal === "true");
+        }
+        hasLoadedPreferencesRef.current = true;
       } catch (err) {
-        console.warn("Failed to load saved data:", err);
+        console.warn("Failed to load layout preference:", err);
+        hasLoadedPreferencesRef.current = true;
       }
     };
 
-    loadSavedData();
+    loadGlobalPreference();
+  }, []); // Only run once on mount
+
+  // Load saved reading position (per-file)
+  useEffect(() => {
+    if (!filename) return;
+
+    const loadSavedPage = async () => {
+      try {
+        const savedPage = await AsyncStorage.getItem(`pdf_page_${filename}`);
+        if (savedPage) setCurrentPage(parseInt(savedPage, 10));
+      } catch (err) {
+        console.warn("Failed to load saved page:", err);
+      }
+    };
+
+    loadSavedPage();
   }, [filename]);
+
+  // Save GLOBAL layout preference - ONLY after initial load
+  useEffect(() => {
+    if (!hasLoadedPreferencesRef.current) return;
+
+    AsyncStorage.setItem("pdf_layout_global", isHorizontal.toString()).catch(
+      console.warn
+    );
+  }, [isHorizontal]);
 
   // Save reading position (debounced)
   useEffect(() => {
@@ -1215,15 +969,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
     }, 1000);
     return () => clearTimeout(saveTimeout);
   }, [currentPage, filename]);
-
-  // Save layout preference
-  useEffect(() => {
-    if (!filename) return;
-    AsyncStorage.setItem(
-      `pdf_horizontal_${filename}`,
-      isHorizontal.toString()
-    ).catch(console.warn);
-  }, [isHorizontal, filename]);
 
   // Favorites: load initial favorite state
   useEffect(() => {
@@ -1299,6 +1044,8 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
       setSourceUri(null);
       setError(null);
       setLoading(true);
+      setPageCount(0);
+      setCurrentPage(1);
     }
   }, [filename]);
 
@@ -1375,6 +1122,10 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
     setIsHorizontal(!isHorizontal);
   };
 
+  // Determine effective layout (force horizontal for single-page PDFs)
+  const effectiveIsHorizontal = pageCount === 1 ? true : isHorizontal;
+  const isForcedHorizontal = pageCount === 1 && !isHorizontal;
+
   if (!filename) {
     return (
       <View style={styles.center}>
@@ -1420,8 +1171,8 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 ref={pdfRef}
                 source={{ uri: sourceUri, cache: true }}
                 style={[styles.pdf]}
-                enablePaging={isHorizontal}
-                horizontal={isHorizontal}
+                enablePaging={effectiveIsHorizontal}
+                horizontal={effectiveIsHorizontal}
                 enableRTL={rtl}
                 trustAllCerts={false}
                 // page={currentPage}
@@ -1504,7 +1255,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 >
                   <Feather
                     name={
-                      isHorizontal
+                      effectiveIsHorizontal
                         ? rtl
                           ? "chevron-right"
                           : "chevron-left"
@@ -1534,7 +1285,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 >
                   <Feather
                     name={
-                      isHorizontal
+                      effectiveIsHorizontal
                         ? rtl
                           ? "chevron-left"
                           : "chevron-right"
@@ -1569,6 +1320,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                             isHorizontal && styles.layoutButtonActive,
                           ]}
                           onPress={() => !isHorizontal && toggleLayout()}
+                          disabled={pageCount === 1}
                         >
                           <Feather
                             name="columns"
@@ -1591,6 +1343,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                             !isHorizontal && styles.layoutButtonActive,
                           ]}
                           onPress={() => isHorizontal && toggleLayout()}
+                          disabled={pageCount === 1}
                         >
                           <Feather
                             name="align-justify"
@@ -1608,7 +1361,9 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                         </TouchableOpacity>
                       </View>
                       <Text style={styles.settingHint}>
-                        {isHorizontal
+                        {pageCount === 1
+                          ? "Single-page PDFs always use horizontal layout"
+                          : isHorizontal
                           ? "Swipe left/right to turn pages"
                           : "Scroll up/down continuously"}
                       </Text>
