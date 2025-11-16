@@ -1,3 +1,4 @@
+// // src/components/TimePickerModal.tsx
 // import React, { useCallback, useState, useRef, useEffect } from "react";
 // import {
 //   Modal,
@@ -11,13 +12,15 @@
 // import { Colors } from "@/constants/Colors";
 // import { useTranslation } from "react-i18next";
 // import { Ionicons } from "@expo/vector-icons";
+// import Toast from "react-native-toast-message";
 
 // interface TimePickerModalProps {
 //   visible: boolean;
 //   onClose: () => void;
-//   onConfirm: (date: Date) => void;
+//   onConfirm: (date: Date, repeatWeekly: boolean) => void;
 //   todoText: string;
 //   initialTime?: Date;
+//   initialRepeatWeekly?: boolean; // optional, if you later store it per todo
 // }
 
 // export const TimePickerModal: React.FC<TimePickerModalProps> = ({
@@ -26,6 +29,7 @@
 //   onConfirm,
 //   todoText,
 //   initialTime,
+//   initialRepeatWeekly = false,
 // }) => {
 //   const { t } = useTranslation();
 //   const colorScheme = useColorScheme() || "light";
@@ -38,6 +42,7 @@
 //   const [selectedMinute, setSelectedMinute] = useState(
 //     initialTime ? initialTime.getMinutes() : now.getMinutes()
 //   );
+//   const [repeatWeekly, setRepeatWeekly] = useState(initialRepeatWeekly);
 
 //   useEffect(() => {
 //     return () => {
@@ -50,14 +55,21 @@
 //       setSelectedHour(initialTime.getHours());
 //       setSelectedMinute(initialTime.getMinutes());
 //     }
-//   }, [visible, initialTime]);
+//     if (visible) {
+//       setRepeatWeekly(initialRepeatWeekly);
+//     }
+//   }, [visible, initialTime, initialRepeatWeekly]);
 
 //   const handleConfirm = useCallback(() => {
 //     const date = new Date();
 //     date.setHours(selectedHour, selectedMinute, 0, 0);
-//     onConfirm(date);
+//     onConfirm(date, repeatWeekly);
 //     onClose();
-//   }, [selectedHour, selectedMinute, onConfirm, onClose]);
+//     Toast.show({
+//       type: "success",
+//       text1: t("timerSet"),
+//     });
+//   }, [selectedHour, selectedMinute, repeatWeekly, onConfirm, onClose, t]);
 
 //   const hours = Array.from({ length: 24 }, (_, i) => i);
 //   const minutes = Array.from({ length: 60 }, (_, i) => i);
@@ -82,10 +94,7 @@
 //         activeOpacity={0.7}
 //       >
 //         <ThemedText
-//           style={[
-//             styles.timeText,
-//             isSelected && styles.timeTextSelected,
-//           ]}
+//           style={[styles.timeText, isSelected && styles.timeTextSelected]}
 //         >
 //           {value.toString().padStart(2, "0")}
 //         </ThemedText>
@@ -120,7 +129,9 @@
 //               size={24}
 //               color={Colors.universal.primary}
 //             />
-//             <ThemedText style={styles.title} type="subtitle">{t("setReminder")}</ThemedText>
+//             <ThemedText style={styles.title} type="subtitle">
+//               {t("setReminder")}
+//             </ThemedText>
 //           </View>
 
 //           {/* Todo Text */}
@@ -176,6 +187,22 @@
 //               </ScrollView>
 //             </View>
 //           </View>
+
+//           {/* Repeat Weekly Toggle */}
+//           <TouchableOpacity
+//             style={styles.repeatRow}
+//             onPress={() => setRepeatWeekly((prev) => !prev)}
+//             activeOpacity={0.7}
+//           >
+//             <Ionicons
+//               name={repeatWeekly ? "checkbox" : "square-outline"}
+//               size={22}
+//               color={Colors.universal.primary}
+//             />
+//             <ThemedText style={styles.repeatText}>
+//               {t("repeatWeekly") || "Repeat every week on this day"}
+//             </ThemedText>
+//           </TouchableOpacity>
 
 //           {/* Action Buttons */}
 //           <View style={styles.buttonContainer}>
@@ -237,8 +264,7 @@
 //     gap: 12,
 //     marginBottom: 16,
 //   },
-//   title: {
-//   },
+//   title: {},
 //   todoPreview: {
 //     fontSize: 14,
 //     opacity: 0.7,
@@ -259,7 +285,7 @@
 //     flexDirection: "row",
 //     alignItems: "center",
 //     justifyContent: "center",
-//     marginBottom: 24,
+//     marginBottom: 16,
 //     gap: 10,
 //   },
 //   pickerColumn: {
@@ -295,6 +321,15 @@
 //     fontWeight: "600",
 //     marginTop: 20,
 //   },
+//   repeatRow: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     marginBottom: 24,
+//     gap: 10,
+//   },
+//   repeatText: {
+//     fontSize: 14,
+//   },
 //   buttonContainer: {
 //     flexDirection: "row",
 //     gap: 12,
@@ -321,7 +356,6 @@
 //   },
 // });
 
-
 // src/components/TimePickerModal.tsx
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import {
@@ -336,6 +370,7 @@ import { ThemedText } from "./ThemedText";
 import { Colors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
 
 interface TimePickerModalProps {
   visible: boolean;
@@ -343,8 +378,10 @@ interface TimePickerModalProps {
   onConfirm: (date: Date, repeatWeekly: boolean) => void;
   todoText: string;
   initialTime?: Date;
-  initialRepeatWeekly?: boolean; // optional, if you later store it per todo
+  initialRepeatWeekly?: boolean;
 }
+
+const ITEM_HEIGHT = 44; // approximate row height (padding + margin)
 
 export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   visible,
@@ -356,7 +393,6 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const isMountedRef = useRef(true);
 
   const now = new Date();
   const [selectedHour, setSelectedHour] = useState(
@@ -367,12 +403,10 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   );
   const [repeatWeekly, setRepeatWeekly] = useState(initialRepeatWeekly);
 
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+  const hourScrollRef = useRef<ScrollView | null>(null);
+  const minuteScrollRef = useRef<ScrollView | null>(null);
 
+  // Sync state when editing an existing reminder
   useEffect(() => {
     if (visible && initialTime) {
       setSelectedHour(initialTime.getHours());
@@ -383,12 +417,38 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
     }
   }, [visible, initialTime, initialRepeatWeekly]);
 
+  // Auto-scroll to selected hour and minute when modal opens
+  useEffect(() => {
+    if (!visible) return;
+
+    const timeout = setTimeout(() => {
+      if (hourScrollRef.current) {
+        hourScrollRef.current.scrollTo({
+          y: selectedHour * ITEM_HEIGHT,
+          animated: false,
+        });
+      }
+      if (minuteScrollRef.current) {
+        minuteScrollRef.current.scrollTo({
+          y: selectedMinute * ITEM_HEIGHT,
+          animated: false,
+        });
+      }
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [visible, selectedHour, selectedMinute]);
+
   const handleConfirm = useCallback(() => {
     const date = new Date();
     date.setHours(selectedHour, selectedMinute, 0, 0);
     onConfirm(date, repeatWeekly);
     onClose();
-  }, [selectedHour, selectedMinute, repeatWeekly, onConfirm, onClose]);
+    Toast.show({
+      type: "success",
+      text1: t("timerSet"),
+    });
+  }, [selectedHour, selectedMinute, repeatWeekly, onConfirm, onClose, t]);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = Array.from({ length: 60 }, (_, i) => i);
@@ -396,8 +456,7 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   const renderTimeUnit = (
     value: number,
     selectedValue: number,
-    onSelect: (val: number) => void,
-    label: string
+    onSelect: (val: number) => void
   ) => {
     const isSelected = value === selectedValue;
     return (
@@ -413,10 +472,7 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
         activeOpacity={0.7}
       >
         <ThemedText
-          style={[
-            styles.timeText,
-            isSelected && styles.timeTextSelected,
-          ]}
+          style={[styles.timeText, isSelected && styles.timeTextSelected]}
         >
           {value.toString().padStart(2, "0")}
         </ThemedText>
@@ -477,11 +533,12 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
                 {t("hours") || "Hours"}
               </ThemedText>
               <ScrollView
+                ref={hourScrollRef}
                 style={styles.scrollPicker}
                 showsVerticalScrollIndicator={false}
               >
                 {hours.map((hour) =>
-                  renderTimeUnit(hour, selectedHour, setSelectedHour, "hour")
+                  renderTimeUnit(hour, selectedHour, setSelectedHour)
                 )}
               </ScrollView>
             </View>
@@ -495,16 +552,12 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
                 {t("minutes") || "Minutes"}
               </ThemedText>
               <ScrollView
+                ref={minuteScrollRef}
                 style={styles.scrollPicker}
                 showsVerticalScrollIndicator={false}
               >
                 {minutes.map((minute) =>
-                  renderTimeUnit(
-                    minute,
-                    selectedMinute,
-                    setSelectedMinute,
-                    "minute"
-                  )
+                  renderTimeUnit(minute, selectedMinute, setSelectedMinute)
                 )}
               </ScrollView>
             </View>
@@ -625,11 +678,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   timeItem: {
+    height: ITEM_HEIGHT,
     paddingVertical: 10,
     paddingHorizontal: 16,
     marginVertical: 2,
     borderRadius: 8,
     alignItems: "center",
+    justifyContent: "center",
   },
   timeText: {
     fontSize: 18,

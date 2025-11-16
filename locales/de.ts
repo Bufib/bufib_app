@@ -73,6 +73,10 @@ const de = {
   initAppWentWrong:
     "Beim Vorbereiten der App ist ein Fehler aufgetreten. Versuchen Sie, die App zu schließen und erneut zu öffnen.",
   pdfsTitle: "Bücher und PDFs",
+  timerSet: "Erinnerung wurde aktiviert",
+  reminderSet: "Erinnerung gesetzt",
+  reminderDeleted: "Erinnerung gelöscht",
+  repeatsWeekly: "Wiederholt sich wöchentlich",
 
   // Navigation
   knowledge: "Wissen",
@@ -184,6 +188,7 @@ const de = {
   setReminder: "Erinnerung einstellen",
   hours: "Stunden",
   minutes: "Minuten",
+  repeatWeekly: "Wöchentlich wiederholen",
 
   // Days of week
   days: {

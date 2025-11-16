@@ -1,4 +1,6 @@
-//! Last worked but remove the date stuff
+// //! Last worked
+
+// // components/WeeklyCalendarSection.tsx
 // import React from "react";
 // import {
 //   View,
@@ -22,6 +24,7 @@
 // import { returnSize } from "@/utils/sizes";
 // import useNotificationStore from "@/stores/notificationStore";
 // import { scheduleTodoReminderNotification } from "@/hooks/usePushNotifications";
+
 // export const WeeklyCalendarSection: React.FC<
 //   WeeklyCalendarSectionType & {
 //     todosByDay: WeeklyTodosType;
@@ -43,8 +46,10 @@
 //   const colorScheme = useColorScheme() || "light";
 //   const { width, height } = useWindowDimensions();
 //   const { isLarge, isMedium } = returnSize(width, height);
+
 //   const { getNotifications, permissionStatus, checkPermissions } =
 //     useNotificationStore();
+
 //   const handleUndo = () => {
 //     if (selectedDay === null) return;
 
@@ -63,57 +68,52 @@
 //     ]);
 //   };
 
-//   const handleSetReminder = async (
-//     dayIndex: number,
-//     todoId: string,
-//     time: Date,
-//     todoText: string
-//   ) => {
-//     try {
-//       // Respect in-app notification toggle
-//       if (!getNotifications) {
-//         Alert.alert(
-//           t("pushNotificationsDisabledTitle"),
-//           t("pushNotificationsDisabledMessage")
-//         );
+// const handleSetReminder = async (
+//   dayIndex: number,
+//   todoId: string,
+//   time: Date,
+//   repeatWeekly: boolean
+// ) => {
+//   try {
+//     if (!getNotifications) {
+//       Alert.alert(
+//         t("pushNotificationsDisabledTitle"),
+//         t("pushNotificationsDisabledMessage")
+//       );
+//       return;
+//     }
+
+//     if (permissionStatus !== "granted") {
+//       await checkPermissions();
+//       const latestStatus = useNotificationStore.getState().permissionStatus;
+//       if (latestStatus !== "granted") {
 //         return;
 //       }
-
-//       // Ensure OS permission is granted
-//       if (permissionStatus !== "granted") {
-//         await checkPermissions();
-//         const latestStatus = useNotificationStore.getState().permissionStatus;
-//         if (latestStatus !== "granted") {
-//           return;
-//         }
-//       }
-
-//       // Optional: persist reminder time in DB
-//       // await supabase
-//       //   .from("todos")
-//       //   .update({ reminder_time: time.toISOString() })
-//       //   .eq("id", todoId);
-
-//       console.log("Setting reminder:", { dayIndex, todoId, time, todoText });
-
-//       // Schedule local notification
-//       const notificationId = await scheduleTodoReminderNotification(
-//         todoId,
-//         time,
-//         todoText
-//       );
-
-//       // Optional: store notificationId in DB to cancel later
-//       // if (notificationId) {
-//       //   await supabase
-//       //     .from("todos")
-//       //     .update({ notification_id: notificationId })
-//       //     .eq("id", todoId);
-//       // }
-//     } catch (error) {
-//       console.error("Failed to set reminder:", error);
 //     }
-//   };
+
+//     const todosForDay = todosByDay[dayIndex] ?? [];
+//     const todo = todosForDay.find((t) => String(t.id) === String(todoId));
+//     const todoText = todo?.text ?? "";
+
+//     console.log("Setting reminder:", {
+//       dayIndex,
+//       todoId,
+//       time: time.toISOString(),
+//       repeatWeekly,
+//       todoText,
+//     });
+
+//     await scheduleTodoReminderNotification(
+//       todoId,
+//       todoText,
+//       dayIndex,
+//       time,
+//       repeatWeekly
+//     );
+//   } catch (error) {
+//     console.error("Failed to set reminder:", error);
+//   }
+// };
 
 //   return (
 //     <View style={styles.container}>
@@ -217,7 +217,6 @@
 //   container: {
 //     flex: 1,
 //   },
-
 //   calendarHeader: {
 //     flexDirection: "row",
 //     gap: 10,
@@ -243,10 +242,6 @@
 //   addButton: {
 //     paddingRight: 15,
 //   },
-//   addButtonText: {
-//     fontSize: 18,
-//     fontWeight: "700",
-//   },
 //   fulldayNameContainer: {
 //     flexDirection: "row",
 //     justifyContent: "space-between",
@@ -266,13 +261,8 @@
 //     alignItems: "center",
 //     paddingVertical: 30,
 //   },
-//   todoListContainer: {
-//     flex: 1,
-//     flexDirection: "column",
-//     justifyContent: "flex-start",
-//     marginTop: -10,
-//   },
 // });
+
 // components/WeeklyCalendarSection.tsx
 import React from "react";
 import {
@@ -296,7 +286,10 @@ import type { WeeklyCalendarSectionType } from "@/constants/Types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { returnSize } from "@/utils/sizes";
 import useNotificationStore from "@/stores/notificationStore";
-import { scheduleTodoReminderNotification } from "@/hooks/usePushNotifications";
+import {
+  scheduleTodoReminderNotification,
+  cancelTodoReminderNotification,
+} from "@/hooks/usePushNotifications";
 
 export const WeeklyCalendarSection: React.FC<
   WeeklyCalendarSectionType & {
@@ -341,58 +334,55 @@ export const WeeklyCalendarSection: React.FC<
     ]);
   };
 
-const handleSetReminder = async (
-  dayIndex: number,
-  todoId: string,
-  time: Date,
-  repeatWeekly: boolean
-) => {
-  try {
-    if (!getNotifications) {
-      Alert.alert(
-        t("pushNotificationsDisabledTitle"),
-        t("pushNotificationsDisabledMessage")
-      );
-      return;
-    }
+  const handleSetReminder = async (
+    dayIndex: number,
+    todoId: string | number,
+    time: Date | null,
+    repeatWeekly: boolean
+  ) => {
+    try {
+      const todoIdString = String(todoId);
 
-    if (permissionStatus !== "granted") {
-      await checkPermissions();
-      const latestStatus = useNotificationStore.getState().permissionStatus;
-      if (latestStatus !== "granted") {
+      if (time === null) {
+        await cancelTodoReminderNotification(todoIdString);
         return;
       }
+
+      if (!getNotifications) {
+        Alert.alert(
+          t("pushNotificationsDisabledTitle"),
+          t("pushNotificationsDisabledMessage")
+        );
+        return;
+      }
+
+      if (permissionStatus !== "granted") {
+        await checkPermissions();
+        const latestStatus = useNotificationStore.getState().permissionStatus;
+        if (latestStatus !== "granted") {
+          return;
+        }
+      }
+
+      const todosForDay = todosByDay[dayIndex] ?? [];
+      const todo = todosForDay.find((t) => String(t.id) === todoIdString);
+      const todoText = todo?.text ?? "";
+
+      await scheduleTodoReminderNotification(
+        todoIdString,
+        todoText,
+        dayIndex,
+        time,
+        repeatWeekly
+      );
+    } catch (error) {
+      console.error("Failed to set/delete reminder:", error);
     }
-
-    const todosForDay = todosByDay[dayIndex] ?? [];
-    const todo = todosForDay.find((t) => String(t.id) === String(todoId));
-    const todoText = todo?.text ?? "";
-
-    console.log("Setting reminder:", {
-      dayIndex,
-      todoId,
-      time: time.toISOString(),
-      repeatWeekly,
-      todoText,
-    });
-
-    await scheduleTodoReminderNotification(
-      todoId,
-      todoText,
-      dayIndex,
-      time,
-      repeatWeekly
-    );
-  } catch (error) {
-    console.error("Failed to set reminder:", error);
-  }
-};
-
+  };
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={[styles.calendarHeader]}>
+      <View style={styles.calendarHeader}>
         <View style={styles.calendarHeaderContainer}>
           <AntDesign
             name="calendar"
@@ -405,7 +395,7 @@ const handleSetReminder = async (
               paddingBottom: 7,
             }}
           />
-          <View style={[styles.calendarTextContainer]}>
+          <View style={styles.calendarTextContainer}>
             <ThemedText
               style={[
                 styles.calendarTextTitle,
@@ -437,7 +427,6 @@ const handleSetReminder = async (
         </TouchableOpacity>
       </View>
 
-      {/* Day Selector */}
       <View style={{ flex: 0, marginBottom: 5 }}>
         <DaySelector
           selectedDay={selectedDay}
@@ -446,7 +435,6 @@ const handleSetReminder = async (
         />
       </View>
 
-      {/* Todo List Area */}
       {loading || selectedDay === null ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator
@@ -456,7 +444,7 @@ const handleSetReminder = async (
         </View>
       ) : (
         <>
-          <ThemedView style={[styles.fulldayNameContainer]}>
+          <ThemedView style={styles.fulldayNameContainer}>
             <ThemedText style={styles.selectedDayTitle}>
               {getFullDayName(selectedDay)}
             </ThemedText>

@@ -187,6 +187,11 @@ const en = {
   setReminder: "Set reminder",
   hours: "Hours",
   minutes: "Minutes",
+  repeatWeekly: "Repeat weekly",
+  timerSet: "Reminder has been activated",
+  reminderSet: "Reminder Set",
+  reminderDeleted: "Reminder deleted",
+  repeatsWeekly: "Repeats weekly",
 
   // Days of week
   days: {

@@ -470,11 +470,12 @@ export type TodoListType = {
   onShowAddModal: () => void;
   onSetReminder: (
     dayIndex: number,
-    todoId: string,
-    time: Date,
+    todoId: string | number,
+    time: Date | null,
     repeatWeekly: boolean
   ) => void;
 };
+
 
 export type WeeklyTodosType = {
   [day: number]: TodoItemType[];

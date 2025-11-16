@@ -172,7 +172,11 @@ const ar = {
   setReminder: "تعيين تذكير",
   hours: "الساعات",
   minutes: "الدقائق",
-
+  repeatWeekly: "كرر أسبوعيا",
+  timerSet: "تم تفعيل التذكير",
+  reminderSet: "تم تعيين التذكير",
+  reminderDeleted: "تم حذف التذكير",
+  repeatsWeekly: "يتكرر أسبوعياً",
   // Days of week
   days: {
     short: ["إث", "ثل", "أر", "خم", "جم", "سب", "أح"],

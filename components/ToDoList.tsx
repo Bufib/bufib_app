@@ -1,7 +1,7 @@
+// //! Last worked
 
-//! Last worked
 // // src/components/TodoList.tsx
-// import React from "react";
+// import React, { useState } from "react";
 // import {
 //   View,
 //   TouchableOpacity,
@@ -18,6 +18,8 @@
 // import { useLanguage } from "@/contexts/LanguageContext";
 // import { returnSize } from "@/utils/sizes";
 // import { InlineTodoText } from "./InlineTodoText";
+// import { TimePickerModal } from "./TimePickerModal";
+// import Toast from "react-native-toast-message";
 
 // export const TodoList = ({
 //   todos,
@@ -25,6 +27,7 @@
 //   onToggleTodo,
 //   onShowDeleteModal,
 //   onShowAddModal,
+//   onSetReminder,
 // }: TodoListType) => {
 //   const { t } = useTranslation();
 //   const colorScheme = useColorScheme() || "light";
@@ -32,19 +35,46 @@
 //   const { width, height } = useWindowDimensions();
 //   const { emptyIconSize, emptyTextSize, emptyGap } = returnSize(width, height);
 
+//   const [timePickerVisible, setTimePickerVisible] = useState(false);
+//   const [selectedTodo, setSelectedTodo] = useState<{
+//     id: string;
+//     text: string;
+//     reminderTime?: Date;
+//     repeatWeekly?: boolean;
+//   } | null>(null);
+
+//   const handleAlarmPress = (todo: any) => {
+//     setSelectedTodo({
+//       id: todo.id,
+//       text: todo.text,
+//       reminderTime: todo.reminder_time
+//         ? new Date(todo.reminder_time)
+//         : undefined,
+//       repeatWeekly: todo.repeat_weekly ?? false, // if you add this field later
+//     });
+//       console.log(todo.reminder_time)
+
+//     setTimePickerVisible(true);
+//   };
+
+//   const handleConfirmTime = (date: Date, repeatWeekly: boolean) => {
+//     if (selectedTodo) {
+//       onSetReminder(dayIndex, selectedTodo.id, date, repeatWeekly);
+//     }
+    
+//   };
+
+//   const handleCloseModal = () => {
+//     setTimePickerVisible(false);
+//     setSelectedTodo(null);
+//   };
+
 //   if (!todos || todos.length === 0) {
 //     return (
 //       <View
 //         style={[
 //           styles.emptyPrayerForDay,
-
-//           rtl
-//             ? {
-//                 flexDirection: "row-reverse",
-//               }
-//             : {
-//                 flexDirection: "row",
-//               },
+//           rtl ? { flexDirection: "row-reverse" } : { flexDirection: "row" },
 //         ]}
 //       >
 //         <Ionicons
@@ -76,95 +106,102 @@
 //   }
 
 //   return (
-//     <ScrollView
-//       contentContainerStyle={styles.scrollContent}
-//       style={styles.scrollStyle}
-//     >
-//       {todos.map((todo) => (
-//         <View
-//           key={todo.id}
-//           style={[
-//             styles.todoItem,
-//             {
-//               backgroundColor: Colors[colorScheme].contrast,
-//             },
-//           ]}
-//         >
-//           {/* Checkbox and Content Row */}
+//     <>
+//       <ScrollView
+//         contentContainerStyle={styles.scrollContent}
+//         style={styles.scrollStyle}
+//       >
+//         {todos.map((todo) => (
 //           <View
+//             key={todo.id}
 //             style={[
-//               styles.todoMainRow,
-//               rtl
-//                 ? {
-//                     flexDirection: "row-reverse",
-//                   }
-//                 : {
-//                     flexDirection: "row",
-//                   },
+//               styles.todoItem,
+//               { backgroundColor: Colors[colorScheme].contrast },
 //             ]}
 //           >
-//             <TouchableOpacity
+//             <View
 //               style={[
-//                 styles.checkboxContainer,
-//                 rtl ? { marginLeft: 12 } : { marginRight: 10 },
-//               ]}
-//               onPress={() => onToggleTodo(dayIndex, todo.id)}
-//             >
-//               <View
-//                 style={[
-//                   styles.checkbox,
-//                   todo.completed && styles.checkboxCompleted,
-//                   { borderColor: colorScheme === "dark" ? "#666" : "#999" },
-//                   todo.completed && {
-//                     backgroundColor: colorScheme === "dark" ? "#666" : "#999",
-//                     borderColor: colorScheme === "dark" ? "#666" : "#999",
-//                   },
-//                 ]}
-//               >
-//                 {todo.completed && (
-//                   <Ionicons name="checkmark" size={16} color="#fff" />
-//                 )}
-//               </View>
-//             </TouchableOpacity>
-
-//             {/* Use InlineTodoText to render text with inline links */}
-//             <InlineTodoText
-//               text={todo.text}
-//               internalUrls={todo.internal_urls}
-//               isDone={todo.completed}
-//               style={[
-//                 styles.todoText,
+//                 styles.todoMainRow,
 //                 rtl
-//                   ? {
-//                       textAlign: "right",
-//                     }
-//                   : {
-//                       textAlign: "left",
-//                     },
-//                 todo.completed && styles.todoTextCompleted,
+//                   ? { flexDirection: "row-reverse" }
+//                   : { flexDirection: "row" },
 //               ]}
-//             />
-//             <Ionicons
-//               name="alarm-outline"
-//               size={23}
-//               color={Colors[colorScheme].defaultIcon}
-//               style={rtl ? { marginLeft: 3 } : { marginRight: 3 }}
-//             />
-
-//             <TouchableOpacity
-//               style={styles.deleteButton}
-//               onPress={() => onShowDeleteModal(dayIndex, todo.id)}
 //             >
-//               <Ionicons
-//                 name="close-circle-outline"
-//                 size={23}
-//                 color={Colors[colorScheme].defaultIcon}
+//               <TouchableOpacity
+//                 style={[
+//                   styles.checkboxContainer,
+//                   rtl ? { marginLeft: 12 } : { marginRight: 10 },
+//                 ]}
+//                 onPress={() => onToggleTodo(dayIndex, todo.id)}
+//               >
+//                 <View
+//                   style={[
+//                     styles.checkbox,
+//                     todo.completed && styles.checkboxCompleted,
+//                     { borderColor: colorScheme === "dark" ? "#666" : "#999" },
+//                     todo.completed && {
+//                       backgroundColor: colorScheme === "dark" ? "#666" : "#999",
+//                       borderColor: colorScheme === "dark" ? "#666" : "#999",
+//                     },
+//                   ]}
+//                 >
+//                   {todo.completed && (
+//                     <Ionicons name="checkmark" size={16} color="#fff" />
+//                   )}
+//                 </View>
+//               </TouchableOpacity>
+
+//               <InlineTodoText
+//                 text={todo.text}
+//                 internalUrls={todo.internal_urls}
+//                 isDone={todo.completed}
+//                 style={[
+//                   styles.todoText,
+//                   rtl ? { textAlign: "right" } : { textAlign: "left" },
+//                   todo.completed && styles.todoTextCompleted,
+//                 ]}
 //               />
-//             </TouchableOpacity>
+
+//               <TouchableOpacity
+//                 style={styles.alarmButton}
+//                 onPress={() => handleAlarmPress(todo)}
+//               >
+//                 {/*!  */}
+//                 <Ionicons
+//                   name={"alarm-outline" }
+//                   size={23}
+//                   color={
+//                     todo.reminder_time
+//                       ? Colors.universal.primary
+//                       : Colors[colorScheme].defaultIcon
+//                   }
+//                 />
+//               </TouchableOpacity>
+
+//               <TouchableOpacity
+//                 style={styles.deleteButton}
+//                 onPress={() => onShowDeleteModal(dayIndex, todo.id)}
+//               >
+//                 <Ionicons
+//                   name="close-circle-outline"
+//                   size={23}
+//                   color={Colors[colorScheme].defaultIcon}
+//                 />
+//               </TouchableOpacity>
+//             </View>
 //           </View>
-//         </View>
-//       ))}
-//     </ScrollView>
+//         ))}
+//       </ScrollView>
+
+//       <TimePickerModal
+//         visible={timePickerVisible}
+//         onClose={handleCloseModal}
+//         onConfirm={handleConfirmTime}
+//         todoText={selectedTodo?.text || ""}
+//         initialTime={selectedTodo?.reminderTime}
+//         initialRepeatWeekly={selectedTodo?.repeatWeekly ?? false}
+//       />
+//     </>
 //   );
 // };
 
@@ -203,6 +240,10 @@
 //   todoTextCompleted: {
 //     opacity: 0.6,
 //   },
+//   alarmButton: {
+//     padding: 4,
+//     marginRight: 3,
+//   },
 //   deleteButton: {
 //     padding: 4,
 //   },
@@ -224,7 +265,9 @@
 //   },
 //   emptyDayIcon: {},
 // });
-// src/components/TodoList.tsx
+
+
+// components/ToDoList.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -233,6 +276,7 @@ import {
   useColorScheme,
   ScrollView,
   useWindowDimensions,
+  Alert,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { Ionicons } from "@expo/vector-icons";
@@ -243,6 +287,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { returnSize } from "@/utils/sizes";
 import { InlineTodoText } from "./InlineTodoText";
 import { TimePickerModal } from "./TimePickerModal";
+import Toast from "react-native-toast-message";
+import useTodoReminderStore from "@/stores/todoReminderStore";
 
 export const TodoList = ({
   todos,
@@ -266,16 +312,64 @@ export const TodoList = ({
     repeatWeekly?: boolean;
   } | null>(null);
 
+  const reminders = useTodoReminderStore((s) => s.reminders);
+
   const handleAlarmPress = (todo: any) => {
-    setSelectedTodo({
-      id: todo.id,
-      text: todo.text,
-      reminderTime: todo.reminder_time
-        ? new Date(todo.reminder_time)
-        : undefined,
-      repeatWeekly: todo.repeat_weekly ?? false, // if you add this field later
-    });
-    setTimePickerVisible(true);
+    const reminder = reminders[String(todo.id)];
+
+    if (reminder) {
+      const reminderDate = new Date(reminder.timeISO);
+      const timeString = reminderDate.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      Alert.alert(
+        t("reminderSet") || "Reminder Set",
+        `${timeString}${
+          reminder.repeatWeekly
+            ? "\n" + (t("repeatsWeekly") || "Repeats weekly")
+            : ""
+        }`,
+        [
+          {
+            text: t("delete") || "Delete",
+            style: "destructive",
+            onPress: () => {
+              onSetReminder(dayIndex, todo.id, null, false);
+              Toast.show({
+                type: "success",
+                text1: t("reminderDeleted") || "Reminder deleted",
+              });
+            },
+          },
+          {
+            text: t("edit") || "Edit",
+            onPress: () => {
+              setSelectedTodo({
+                id: String(todo.id),
+                text: todo.text,
+                reminderTime: reminderDate,
+                repeatWeekly: reminder.repeatWeekly,
+              });
+              setTimePickerVisible(true);
+            },
+          },
+          {
+            text: t("cancel"),
+            style: "cancel",
+          },
+        ]
+      );
+    } else {
+      setSelectedTodo({
+        id: String(todo.id),
+        text: todo.text,
+        reminderTime: undefined,
+        repeatWeekly: false,
+      });
+      setTimePickerVisible(true);
+    }
   };
 
   const handleConfirmTime = (date: Date, repeatWeekly: boolean) => {
@@ -315,7 +409,7 @@ export const TodoList = ({
             onPress={onShowAddModal}
             style={[
               styles.addButton,
-              { color: Colors.universal.primary, fontWeight: 700 },
+              { color: Colors.universal.primary, fontWeight: "700" as any },
             ]}
           >
             {t("addWeekly")}
@@ -331,85 +425,95 @@ export const TodoList = ({
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollStyle}
       >
-        {todos.map((todo) => (
-          <View
-            key={todo.id}
-            style={[
-              styles.todoItem,
-              { backgroundColor: Colors[colorScheme].contrast },
-            ]}
-          >
+        {todos.map((todo) => {
+          const reminder = reminders[String(todo.id)];
+          const hasReminder = !!reminder;
+
+          return (
             <View
+              key={todo.id}
               style={[
-                styles.todoMainRow,
-                rtl
-                  ? { flexDirection: "row-reverse" }
-                  : { flexDirection: "row" },
+                styles.todoItem,
+                { backgroundColor: Colors[colorScheme].contrast },
               ]}
             >
-              <TouchableOpacity
+              <View
                 style={[
-                  styles.checkboxContainer,
-                  rtl ? { marginLeft: 12 } : { marginRight: 10 },
+                  styles.todoMainRow,
+                  rtl
+                    ? { flexDirection: "row-reverse" }
+                    : { flexDirection: "row" },
                 ]}
-                onPress={() => onToggleTodo(dayIndex, todo.id)}
               >
-                <View
+                <TouchableOpacity
                   style={[
-                    styles.checkbox,
-                    todo.completed && styles.checkboxCompleted,
-                    { borderColor: colorScheme === "dark" ? "#666" : "#999" },
-                    todo.completed && {
-                      backgroundColor: colorScheme === "dark" ? "#666" : "#999",
-                      borderColor: colorScheme === "dark" ? "#666" : "#999",
-                    },
+                    styles.checkboxContainer,
+                    rtl ? { marginLeft: 12 } : { marginRight: 10 },
                   ]}
+                  onPress={() => onToggleTodo(dayIndex, todo.id)}
                 >
-                  {todo.completed && (
-                    <Ionicons name="checkmark" size={16} color="#fff" />
-                  )}
-                </View>
-              </TouchableOpacity>
+                  <View
+                    style={[
+                      styles.checkbox,
+                      todo.completed && styles.checkboxCompleted,
+                      {
+                        borderColor:
+                          colorScheme === "dark" ? "#666" : "#999",
+                      },
+                      todo.completed && {
+                        backgroundColor:
+                          colorScheme === "dark" ? "#666" : "#999",
+                        borderColor:
+                          colorScheme === "dark" ? "#666" : "#999",
+                      },
+                    ]}
+                  >
+                    {todo.completed && (
+                      <Ionicons name="checkmark" size={16} color="#fff" />
+                    )}
+                  </View>
+                </TouchableOpacity>
 
-              <InlineTodoText
-                text={todo.text}
-                internalUrls={todo.internal_urls}
-                isDone={todo.completed}
-                style={[
-                  styles.todoText,
-                  rtl ? { textAlign: "right" } : { textAlign: "left" },
-                  todo.completed && styles.todoTextCompleted,
-                ]}
-              />
-
-              <TouchableOpacity
-                style={styles.alarmButton}
-                onPress={() => handleAlarmPress(todo)}
-              >
-                <Ionicons
-                  name={todo.reminder_time ? "alarm" : "alarm-outline"}
-                  size={23}
-                  color={
-                    todo.reminder_time
-                      ? Colors.universal.primary
-                      : Colors[colorScheme].defaultIcon
-                  }
+                <InlineTodoText
+                  text={todo.text}
+                  internalUrls={todo.internal_urls}
+                  isDone={todo.completed}
+                  style={[
+                    styles.todoText,
+                    rtl ? { textAlign: "right" } : { textAlign: "left" },
+                    todo.completed && styles.todoTextCompleted,
+                  ]}
                 />
-              </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => onShowDeleteModal(dayIndex, todo.id)}
-              >
-                <Ionicons
-                  name="close-circle-outline"
-                  size={23}
-                  color={Colors[colorScheme].defaultIcon}
-                />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.alarmButton}
+                  onPress={() => handleAlarmPress(todo)}
+                >
+                  <Ionicons
+                    name={hasReminder ? "alarm" : "alarm-outline"}
+                    size={23}
+                    color={
+                      hasReminder
+                        ? Colors.universal.primary
+                        : Colors[colorScheme].defaultIcon
+                    }
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => onShowDeleteModal(dayIndex, todo.id)}
+                >
+                  <Ionicons
+                    name="close-circle-outline"
+                    size={23}
+                    color={Colors[colorScheme].defaultIcon}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        ))}
+          );
+        })}
       </ScrollView>
 
       <TimePickerModal

@@ -22,6 +22,7 @@ import { Image } from "expo-image";
 import { ThemedText } from "./ThemedText";
 import { PrayerQuestionLinksType, TodoToDeleteType } from "@/constants/Types";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+import { cancelTodoReminderNotification } from "@/hooks/usePushNotifications";
 
 const PrayerLinks = () => {
   const colorScheme: ColorSchemeName = useColorScheme() || "light";
@@ -86,11 +87,26 @@ const PrayerLinks = () => {
     []
   );
 
-  const handleConfirmDelete = useCallback((): void => {
+  // const handleConfirmDelete = useCallback((): void => {
+  //   const { dayIndex, todoId } = todoToDelete;
+  //   if (dayIndex !== null && todoId !== null) {
+  //     deleteTodo(dayIndex, todoId);
+  //   }
+  //   setDeleteModalVisible(false);
+  //   setTodoToDelete({ dayIndex: null, todoId: null });
+  // }, [deleteTodo, todoToDelete]);
+
+  const handleConfirmDelete = useCallback(async (): Promise<void> => {
     const { dayIndex, todoId } = todoToDelete;
+
     if (dayIndex !== null && todoId !== null) {
+      // 1) cancel push + remove reminder from store
+      await cancelTodoReminderNotification(todoId);
+
+      // 2) delete todo from your weekly todos
       deleteTodo(dayIndex, todoId);
     }
+
     setDeleteModalVisible(false);
     setTodoToDelete({ dayIndex: null, todoId: null });
   }, [deleteTodo, todoToDelete]);
