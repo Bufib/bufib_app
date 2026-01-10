@@ -1,6 +1,5 @@
 // import { Sizes } from "@/constants/Types";
 
-
 // export const returnSize = (width: number, height: number): Sizes => {
 //   const isLarge = width > 380 && height > 900;
 //   const isMedium = width < 380 && height > 650;
@@ -21,7 +20,6 @@
 //     isMedium,
 //   };
 // };
-
 
 import { Sizes } from "@/constants/Types";
 
@@ -47,5 +45,7 @@ export const returnSize = (width: number, height: number): Sizes => {
     previewSizesPaddingHorizontal: 15,
     isLarge: baseLarge,
     isMedium,
+    fontsizeHomeHeaders: baseLarge ? 35 : isMedium ? 31 : 25,
+    fontsizeHomeShowAll: baseLarge ? 16 : isMedium ? 14 : 12,
   };
 };

@@ -148,7 +148,7 @@
 // //               >
 // //                 {t("newsArticlesTitle")}
 // //               </ThemedText>
-// //               <ThemedText style={{ marginRight: 15 }}>
+// //               <ThemedText style={{ marginRight: 15, fontSize: fontSize }}>
 // //                 {t("showAll")}
 // //               </ThemedText>
 // //             </View>
@@ -798,7 +798,7 @@
 //                   {t("newsArticlesTitle")}
 //                 </ThemedText>
 //                 <TouchableOpacity onPress={() => openSheet("articles")}>
-//                   <ThemedText style={{ marginRight: 15 }}>
+//                   <ThemedText style={{ marginRight: 15, fontSize: fontSize }}>
 //                     {t("showAll")}
 //                   </ThemedText>
 //                 </TouchableOpacity>
@@ -886,7 +886,7 @@
 //                   {t("podcastsTitle")}
 //                 </ThemedText>
 //                 <TouchableOpacity onPress={() => openSheet("podcasts")}>
-//                   <ThemedText style={{ marginRight: 15 }}>
+//                   <ThemedText style={{ marginRight: 15, fontSize: fontSize }}>
 //                     {t("showAll")}
 //                   </ThemedText>
 //                 </TouchableOpacity>
@@ -1325,7 +1325,10 @@ export default function HomeScreen() {
   const { fadeAnim, onLayout } = useScreenFadeIn(800);
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const { width, height } = useWindowDimensions();
-  const { previewSizes } = returnSize(width, height);
+  const { previewSizes, fontsizeHomeShowAll, fontsizeHomeHeaders } = returnSize(
+    width,
+    height
+  );
 
   // Hooks
   const {
@@ -1694,13 +1697,16 @@ export default function HomeScreen() {
                       shadowColor: Colors[colorScheme].shadow,
                       lineHeight: 40,
                       marginHorizontal: 16,
+                      fontSize: fontsizeHomeHeaders,
                     },
                   ]}
                 >
                   {t("newsArticlesTitle")}
                 </ThemedText>
                 <TouchableOpacity onPress={() => openSheet("articles")}>
-                  <ThemedText style={{ marginRight: 15 }}>
+                  <ThemedText
+                    style={{ marginRight: 15, fontSize: fontsizeHomeShowAll }}
+                  >
                     {t("showAll")}
                   </ThemedText>
                 </TouchableOpacity>
@@ -1781,13 +1787,16 @@ export default function HomeScreen() {
                       shadowColor: Colors[colorScheme].shadow,
                       lineHeight: 40,
                       marginHorizontal: 16,
+                      fontSize: fontsizeHomeHeaders,
                     },
                   ]}
                 >
                   {t("podcastsTitle")}
                 </ThemedText>
                 <TouchableOpacity onPress={() => openSheet("podcasts")}>
-                  <ThemedText style={{ marginRight: 15 }}>
+                  <ThemedText
+                    style={{ marginRight: 15, fontSize: fontsizeHomeShowAll }}
+                  >
                     {t("showAll")}
                   </ThemedText>
                 </TouchableOpacity>
@@ -1859,13 +1868,16 @@ export default function HomeScreen() {
                       shadowColor: Colors[colorScheme].shadow,
                       lineHeight: 40,
                       marginHorizontal: 16,
+                      fontSize: fontsizeHomeHeaders,
                     },
                   ]}
                 >
                   {t("pdfsTitle")}
                 </ThemedText>
                 <TouchableOpacity onPress={() => openSheet("pdfs")}>
-                  <ThemedText style={{ marginRight: 15 }}>
+                  <ThemedText
+                    style={{ marginRight: 15, fontSize: fontsizeHomeShowAll }}
+                  >
                     {t("showAll")}
                   </ThemedText>
                 </TouchableOpacity>
@@ -1937,6 +1949,7 @@ export default function HomeScreen() {
                     paddingBottom: 3,
                     lineHeight: 40,
                     marginHorizontal: 16,
+                    fontSize: fontsizeHomeHeaders,
                   },
                   styles.titleShadow,
                 ]}

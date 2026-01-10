@@ -1,4 +1,4 @@
-import { useColorScheme, Platform } from "react-native";
+import { useColorScheme, Platform, Pressable } from "react-native";
 import React from "react";
 import { Stack, router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -6,7 +6,11 @@ import { Colors } from "@/constants/Colors";
 const Layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerBackButtonMenuEnabled: false,
+      }}
+    >
       <Stack.Screen name="indexQuestion" options={{ headerShown: false }} />
       <Stack.Screen
         name="questionCategories"
@@ -14,23 +18,28 @@ const Layout = () => {
           headerShown: true,
           headerLeft: () => {
             return (
-              <Ionicons
-                name="chevron-back-outline"
-                size={30}
-                color={
-                  Platform.OS === "ios"
-                    ? Colors.universal.link
-                    : colorScheme === "dark"
-                    ? "#d0d0c0"
-                    : "#000"
-                }
-                style={{ marginLeft: -16 }}
+              <Pressable
                 onPress={() =>
                   router.canGoBack()
                     ? router.back()
                     : router.replace("/(tabs)/knowledge")
                 }
-              />
+                hitSlop={10}
+                style={({ pressed }) => ({})}
+              >
+                <Ionicons
+                  name="chevron-back-outline"
+                  size={30}
+                  color={
+                    Platform.OS === "ios"
+                      ? Colors.universal.link
+                      : colorScheme === "dark"
+                      ? "#d0d0c0"
+                      : "#000"
+                  }
+                  style={{}}
+                />
+              </Pressable>
             );
           },
         }}

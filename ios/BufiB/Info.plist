@@ -36,7 +36,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>bufib</string>
-          <string>BufiB</string>
+          <string>de.bundfuerislamischebildung.bufib</string>
         </array>
       </dict>
     </array>

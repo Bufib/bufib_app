@@ -76,6 +76,8 @@ export type Sizes = {
   isLarge: boolean;
   isMedium: boolean;
   previewSizesPaddingHorizontal: number;
+  fontsizeHomeShowAll:number,
+  fontsizeHomeHeaders:number
 };
 
 export type triggerRefreshFavoritesType = {
