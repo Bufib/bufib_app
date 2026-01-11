@@ -196,6 +196,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
+    textAlign: "center"
+
   },
   flatListContent: {
     paddingTop: 15,

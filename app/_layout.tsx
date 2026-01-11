@@ -1151,7 +1151,12 @@ function AppContent() {
             <NoInternet showUI={!hasInternet} showToast={true} />
             <QueryClientProvider client={queryClient}>
               <SupabaseRealtimeProvider>
-                <Stack screenOptions={{ headerShown: false }}>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    headerBackButtonMenuEnabled: false,
+                  }}
+                >
                   <Stack.Screen name="index" />
                   <Stack.Screen name="(tabs)" />
                   <Stack.Screen name="(addNews)" />

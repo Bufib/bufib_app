@@ -149,6 +149,7 @@ export default function Index() {
       <Stack.Screen
         options={{
           headerTitle: t("yourQuestions"),
+          headerBackButtonMenuEnabled: false,
         }}
       />
       <FlatList

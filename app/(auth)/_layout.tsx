@@ -2,9 +2,12 @@ import { Stack } from "expo-router";
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 
 export default function RootLayout() {
-
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerBackButtonMenuEnabled: false,
+      }}
+    >
       <Stack.Screen
         name="login"
         options={{

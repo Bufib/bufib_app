@@ -2,7 +2,7 @@ import React from "react";
 import { Stack } from "expo-router";
 const _layout = () => {
   return (
-    <Stack>
+    <Stack screenOptions={{ headerBackButtonMenuEnabled: false }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen
         name="about"
@@ -23,4 +23,3 @@ const _layout = () => {
 };
 
 export default _layout;
-

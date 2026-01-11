@@ -3,7 +3,11 @@ import { Stack } from "expo-router";
 
 const _layout = () => {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerBackButtonMenuEnabled: false,
+      }}
+    >
       <Stack.Screen
         name="prayer"
         options={{

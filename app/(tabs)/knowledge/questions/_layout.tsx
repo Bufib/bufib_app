@@ -1,8 +1,8 @@
-import { useColorScheme, Platform, Pressable } from "react-native";
+import { useColorScheme, Pressable } from "react-native";
 import React from "react";
 import { Stack, router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Colors } from "@/constants/Colors";
+
 const Layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
@@ -31,10 +31,8 @@ const Layout = () => {
                   name="chevron-back-outline"
                   size={30}
                   color={
-                    Platform.OS === "ios"
-                      ? Colors.universal.link
-                      : colorScheme === "dark"
-                      ? "#d0d0c0"
+                    colorScheme === "dark"
+                      ? "#fff"
                       : "#000"
                   }
                   style={{}}

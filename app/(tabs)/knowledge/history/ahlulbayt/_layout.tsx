@@ -3,7 +3,8 @@ import { Stack } from "expo-router";
 
 const _layout = () => {
   return (
-    <Stack>
+         <Stack screenOptions={{headerBackButtonMenuEnabled: false,}}>
+
       <Stack.Screen name="muhammad" options={{ headerShown: false }} />
       <Stack.Screen name="fatima" options={{ headerShown: false }} />
       <Stack.Screen name="ali" options={{ headerShown: false }} />

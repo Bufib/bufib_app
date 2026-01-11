@@ -10,6 +10,7 @@ export default function RootLayout() {
     <Stack
       screenOptions={{
         headerTintColor: colorScheme === "dark" ? "#d0d0c0" : "#000",
+        headerBackButtonMenuEnabled: false,
       }}
     >
       <Stack.Screen

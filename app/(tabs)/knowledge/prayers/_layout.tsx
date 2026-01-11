@@ -30,13 +30,7 @@ const Layout = () => {
                 <Ionicons
                   name="chevron-back-outline"
                   size={30}
-                  color={
-                    Platform.OS === "ios"
-                      ? Colors.universal.link
-                      : colorScheme === "dark"
-                      ? "#d0d0c0"
-                      : "#000"
-                  }
+                  color={colorScheme === "dark" ? "#fff" : "#000"}
                   style={{}}
                 />
               </Pressable>
@@ -65,10 +59,8 @@ const Layout = () => {
                   name="chevron-back-outline"
                   size={30}
                   color={
-                    Platform.OS === "ios"
-                      ? Colors.universal.link
-                      : colorScheme === "dark"
-                      ? "#d0d0c0"
+                     colorScheme === "dark"
+                      ? "#fff"
                       : "#000"
                   }
                   style={{}}

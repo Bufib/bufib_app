@@ -1823,7 +1823,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
 
   heroSection: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 10,
     paddingBottom: 3,
     paddingTop: 10,
   },
@@ -1841,6 +1841,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
+    marginRight: 5
   },
   heroTitle: {
     fontSize: 32,

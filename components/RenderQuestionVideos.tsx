@@ -265,6 +265,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    textAlign: "center"
+
   },
   listContainer: { paddingBottom: 20 },
   videoContainer: {
