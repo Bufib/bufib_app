@@ -1,3 +1,5 @@
+// //! Last worked
+
 // import { Colors } from "@/constants/Colors";
 // import { NewsArticlesType } from "@/constants/Types";
 // import { useLanguage } from "@/contexts/LanguageContext";
@@ -40,6 +42,8 @@
 //   isNewsArticleFavorited,
 //   toggleNewsArticleFavorite,
 // } from "@/utils/favorites";
+// import { useDataVersionStore } from "@/stores/dataVersionStore";
+// import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 
 // type Row = { key: "content" };
 // type SavedBookmark = { offsetY: number; addedAt: number };
@@ -55,7 +59,7 @@
 //   const { lang, rtl } = useLanguage();
 //   const { fetchNewsArticleById } = useNewsArticles(lang);
 //   const { triggerRefreshFavorites } = useRefreshFavorites();
-
+//   const newsArticleVersion = useDataVersionStore((s) => s.newsArticleVersion);
 //   const [article, setArticle] = useState<NewsArticlesType | null>(null);
 //   const [isLoading, setIsLoading] = useState(true);
 //   const [error, setError] = useState<string | null>(null);
@@ -90,11 +94,15 @@
 //   const bookmarkOffsetAV = useRef(new Animated.Value(0)).current;
 //   const neg14AV = useRef(new Animated.Value(-14)).current;
 //   const lastScrollYRef = useRef(0);
+//   const { fadeAnim, onLayout } = useScreenFadeIn(800);
 
 //   const [showArrowUp, setShowArrowUp] = useState(false);
 //   const showArrowUpRef = useRef(false);
 
-//   const bookmarkKey = (id: number) => `bookmark:newsArticle:${id}:${lang}`;
+//   const bookmarkKey = useCallback(
+//     (id: number) => `bookmark:newsArticle:${id}:${lang}`,
+//     [lang]
+//   );
 
 //   useEffect(() => {
 //     const id = scrollYAV.addListener(({ value }) => {
@@ -118,6 +126,8 @@
 //     containerRef.current?.measureInWindow?.((_, y) => setContainerTop(y ?? 0));
 //   }, []);
 
+//   console.log('fontSize:', fontSize, 'lineHeight:', lineHeight);
+// console.log('Content:', JSON.stringify(article.content));
 //   useEffect(() => {
 //     let alive = true;
 //     (async () => {
@@ -145,28 +155,35 @@
 //     return () => {
 //       alive = false;
 //     };
-//   }, [articleId, lang]);
+//   }, [articleId, lang, newsArticleVersion, t, fetchNewsArticleById]);
 
 //   // useEffect(() => {
+//   //   let cancelled = false;
 //   //   (async () => {
 //   //     try {
 //   //       const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
-//   //       if (!raw) return;
+//   //       if (!raw || cancelled) return;
 //   //       const saved: SavedBookmark = JSON.parse(raw);
-//   //       if (typeof saved?.offsetY === "number")
+//   //       if (typeof saved?.offsetY === "number" && !cancelled) {
 //   //         setBookmarkOffsetY(saved.offsetY);
+//   //       }
 //   //     } catch (e) {
-//   //       console.log("Failed to load bookmark", e);
+//   //       if (!cancelled) console.log("Failed to load bookmark", e);
 //   //     }
 //   //   })();
-//   // }, [articleId, lang]);
+//   //   return () => {
+//   //     cancelled = true;
+//   //   };
+//   // }, [articleId, lang, bookmarkKey]);
 
 //   useEffect(() => {
 //     let cancelled = false;
+
 //     (async () => {
 //       try {
 //         const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
 //         if (!raw || cancelled) return;
+
 //         const saved: SavedBookmark = JSON.parse(raw);
 //         if (typeof saved?.offsetY === "number" && !cancelled) {
 //           setBookmarkOffsetY(saved.offsetY);
@@ -175,10 +192,11 @@
 //         if (!cancelled) console.log("Failed to load bookmark", e);
 //       }
 //     })();
+
 //     return () => {
 //       cancelled = true;
 //     };
-//   }, [articleId, lang]);
+//   }, [articleId, bookmarkKey]);
 
 //   const saveBookmark = useCallback(
 //     async (offsetY: number) => {
@@ -193,7 +211,7 @@
 //         console.log("Failed to save bookmark", e);
 //       }
 //     },
-//     [articleId, lang]
+//     [articleId, bookmarkKey]
 //   );
 
 //   const clearBookmark = useCallback(() => {
@@ -217,7 +235,7 @@
 //       ],
 //       { cancelable: true }
 //     );
-//   }, [articleId, lang, t]);
+//   }, [articleId, bookmarkKey, t]);
 
 //   const jumpToBookmark = useCallback(() => {
 //     if (bookmarkOffsetY == null) return;
@@ -275,19 +293,22 @@
 //     },
 //     [bookmarkOffsetY, containerTop, saveBookmark, t]
 //   );
-
 //   const mdRules = useMemo(() => {
+//     const baseText = {
+//       color: Colors[colorScheme].text,
+//     } as const;
+
 //     return {
 //       paragraph: (node: any, children: any) => (
 //         <Text
 //           key={node?.key}
 //           style={{
-//             color: Colors[colorScheme].text,
+//             ...baseText,
 //             fontSize,
-//             lineHeight: lineHeight * 1.3,
-//             marginBottom: 20,
+//             lineHeight: fontSize * 1.6,  // Use fontSize as base: 20 * 1.6 = 32
+//       marginBottom: 16,
 //             fontFamily: "System",
-//             textAlign:"left"
+//             flexShrink: 1,
 //           }}
 //         >
 //           {children}
@@ -297,7 +318,7 @@
 //         <Text
 //           key={node?.key}
 //           style={{
-//             color: Colors[colorScheme].text,
+//             ...baseText,
 //             fontSize: fontSize * 1.8,
 //             fontWeight: "800",
 //             marginBottom: 20,
@@ -312,7 +333,7 @@
 //         <Text
 //           key={node?.key}
 //           style={{
-//             color: Colors[colorScheme].text,
+//             ...baseText,
 //             fontSize: fontSize * 1.5,
 //             fontWeight: "700",
 //             marginBottom: 16,
@@ -376,21 +397,6 @@
 //           </Text>
 //         </View>
 //       ),
-//       image: (node: any) => {
-//         const uri = node?.attributes?.src;
-//         if (!uri) return null;
-//         return (
-//           <Image
-//             key={node.key}
-//             source={{ uri }}
-//             recyclingKey={uri}
-//             cachePolicy="disk"
-//             style={{ width: "100%", height: 200, marginVertical: 12 }}
-//             contentFit="cover"
-//             transition={0}
-//           />
-//         );
-//       },
 //       code_inline: (node: any) => (
 //         <Text
 //           key={node?.key}
@@ -406,6 +412,43 @@
 //           {node?.content}
 //         </Text>
 //       ),
+//       image: (node: any) => {
+//         const { src, alt } = node.attributes;
+//         return (
+//           <View
+//             key={node?.key}
+//             style={{
+//               width: "90%",
+//               alignSelf: "center",
+//               marginVertical: 20,
+//             }}
+//           >
+//             <Image
+//               source={{ uri: src }}
+//               style={{
+//                 width: "100%",
+//                 height: 250, // or aspectRatio: 16/9
+//                 borderRadius: 12,
+//               }}
+//               contentFit="cover"
+//               alt={alt}
+//             />
+//             {alt && (
+//               <Text
+//                 style={{
+//                   fontSize: fontSize * 0.85,
+//                   color: Colors[colorScheme].defaultIcon,
+//                   marginTop: 8,
+//                   textAlign: "center",
+//                   fontStyle: "italic",
+//                 }}
+//               >
+//                 {alt}
+//               </Text>
+//             )}
+//           </View>
+//         );
+//       },
 //     };
 //   }, [colorScheme, fontSize, lineHeight]);
 
@@ -419,7 +462,18 @@
 //           onLongPress={handleLongPress}
 //         >
 //           <View style={styles.articleContent}>
-//             <Markdown rules={mdRules}>{article.content}</Markdown>
+//             <View style={{ flex: 1, width: "100%" }}>
+//               <Markdown
+//                 rules={mdRules}
+//                 style={{
+//                   body: {
+//                     width: "100%",
+//                   },
+//                 }}
+//               >
+//                 {article.content}
+//               </Markdown>
+//             </View>
 //           </View>
 
 //           {!!article.source && (
@@ -445,7 +499,6 @@
 //                       style={{
 //                         color: Colors[colorScheme].text,
 //                         fontSize: 14,
-//                         textAlign: "justify",
 //                       }}
 //                     >
 //                       {children}
@@ -482,16 +535,14 @@
 
 //   if (isLoading) {
 //     return (
-//       <ThemedView style={[styles.container]}>
-//         <View style={styles.loadingContainer}>
-//           <View
-//             style={[
-//               styles.loadingCard,
-//               { backgroundColor: Colors[colorScheme].background },
-//             ]}
-//           >
-//             <LoadingIndicator size="large" />
-//           </View>
+//       <ThemedView style={styles.loadingContainer}>
+//         <View
+//           style={[
+//             styles.loadingCard,
+//             { backgroundColor: Colors[colorScheme].background },
+//           ]}
+//         >
+//           <LoadingIndicator size="large" />
 //         </View>
 //       </ThemedView>
 //     );
@@ -683,12 +734,15 @@
 //       ]}
 //       edges={["top"]}
 //     >
-//       <Animated.FlatList<Row>
+//       <Animated.FlatList
 //         ref={flatListRef}
 //         data={data}
+//         onLayout={onLayout}
+//         extraData={newsArticleVersion}
 //         keyExtractor={(item) => item.key}
 //         renderItem={renderItem}
 //         ListHeaderComponent={header}
+//         style={{ opacity: fadeAnim }}
 //         onScroll={Animated.event(
 //           [{ nativeEvent: { contentOffset: { y: scrollYAV } } }],
 //           { useNativeDriver: true }
@@ -698,6 +752,7 @@
 //         initialNumToRender={1}
 //         maxToRenderPerBatch={1}
 //         windowSize={3}
+//         contentContainerStyle={{ flexGrow: 1 }}
 //       />
 
 //       {/* Bookmark overlay (no re-renders on scroll) */}
@@ -857,7 +912,7 @@
 //     fontWeight: "600",
 //   },
 
-//   contentSection: { flex: 1 },
+//   contentSection: { flex: 1, width: "100%" },
 
 //   border: {
 //     height: 2,
@@ -869,13 +924,17 @@
 //   borderFill: { height: "100%", borderRadius: 2 },
 
 //   //! Here
-//   articleContent: { paddingHorizontal: 15 },
+//   articleContent: {
+//     paddingBottom: 40,
+//     paddingHorizontal: 15,
+//     flex: 1,
+//     width: "100%",
+//   },
 
 //   loadingContainer: {
 //     flex: 1,
 //     justifyContent: "center",
 //     alignItems: "center",
-//     padding: 40,
 //   },
 //   loadingCard: {
 //     alignItems: "center",
@@ -966,8 +1025,6 @@
 //   },
 // });
 
-//! Last worked
-
 import { Colors } from "@/constants/Colors";
 import { NewsArticlesType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -1021,7 +1078,7 @@ export default function NewsArticleDetailScreen({
 }: {
   articleId: number;
 }) {
-  const { fontSize, lineHeight } = useFontSizeStore();
+  const { fontSize } = useFontSizeStore();
   const colorScheme = useColorScheme() ?? "light";
   const { t } = useTranslation();
   const { lang, rtl } = useLanguage();
@@ -1123,25 +1180,6 @@ export default function NewsArticleDetailScreen({
     };
   }, [articleId, lang, newsArticleVersion, t, fetchNewsArticleById]);
 
-  // useEffect(() => {
-  //   let cancelled = false;
-  //   (async () => {
-  //     try {
-  //       const raw = await AsyncStorage.getItem(bookmarkKey(articleId));
-  //       if (!raw || cancelled) return;
-  //       const saved: SavedBookmark = JSON.parse(raw);
-  //       if (typeof saved?.offsetY === "number" && !cancelled) {
-  //         setBookmarkOffsetY(saved.offsetY);
-  //       }
-  //     } catch (e) {
-  //       if (!cancelled) console.log("Failed to load bookmark", e);
-  //     }
-  //   })();
-  //   return () => {
-  //     cancelled = true;
-  //   };
-  // }, [articleId, lang, bookmarkKey]);
-
   useEffect(() => {
     let cancelled = false;
 
@@ -1210,7 +1248,6 @@ export default function NewsArticleDetailScreen({
   }, [bookmarkOffsetY]);
 
   // Initialize favorite status on mount/article change
-
   useEffect(() => {
     let cancelled = false;
 
@@ -1259,11 +1296,10 @@ export default function NewsArticleDetailScreen({
     },
     [bookmarkOffsetY, containerTop, saveBookmark, t]
   );
+
   const mdRules = useMemo(() => {
     const baseText = {
       color: Colors[colorScheme].text,
-      width: "90%",
-      alignSelf: "center",
     } as const;
 
     return {
@@ -1273,10 +1309,10 @@ export default function NewsArticleDetailScreen({
           style={{
             ...baseText,
             fontSize,
-            lineHeight: lineHeight * 1.3,
-            paddingBottom: 20,
+            lineHeight: fontSize * 1.85,
+            marginBottom: 28,
             fontFamily: "System",
-            flexShrink: 1,
+            letterSpacing: 0.3,
           }}
         >
           {children}
@@ -1292,7 +1328,6 @@ export default function NewsArticleDetailScreen({
             marginBottom: 20,
             marginTop: 32,
             letterSpacing: -0.5,
-            flexShrink: 1,
           }}
         >
           {children}
@@ -1308,7 +1343,6 @@ export default function NewsArticleDetailScreen({
             marginBottom: 16,
             marginTop: 28,
             letterSpacing: -0.3,
-            flexShrink: 1,
           }}
         >
           {children}
@@ -1397,7 +1431,7 @@ export default function NewsArticleDetailScreen({
               source={{ uri: src }}
               style={{
                 width: "100%",
-                height: 250, // or aspectRatio: 16/9
+                height: 250,
                 borderRadius: 12,
               }}
               contentFit="cover"
@@ -1420,7 +1454,7 @@ export default function NewsArticleDetailScreen({
         );
       },
     };
-  }, [colorScheme, fontSize, lineHeight]);
+  }, [colorScheme, fontSize]);
 
   const renderItem = useCallback(
     ({ item }: { item: Row }) => {
@@ -1432,7 +1466,16 @@ export default function NewsArticleDetailScreen({
           onLongPress={handleLongPress}
         >
           <View style={styles.articleContent}>
-            <Markdown rules={mdRules}>{article.content}</Markdown>
+            <Markdown
+              rules={mdRules}
+              style={{
+                body: {
+                  width: "100%",
+                },
+              }}
+            >
+              {article.content}
+            </Markdown>
           </View>
 
           {!!article.source && (
@@ -1711,6 +1754,7 @@ export default function NewsArticleDetailScreen({
         initialNumToRender={1}
         maxToRenderPerBatch={1}
         windowSize={3}
+        contentContainerStyle={{ flexGrow: 1 }}
       />
 
       {/* Bookmark overlay (no re-renders on scroll) */}
@@ -1850,7 +1894,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  // NEW: actions
+  // Actions
   actionsRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -1870,7 +1914,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  contentSection: { flex: 1 },
+  contentSection: { flex: 1, width: "100%" },
 
   border: {
     height: 2,
@@ -1881,9 +1925,11 @@ const styles = StyleSheet.create({
   },
   borderFill: { height: "100%", borderRadius: 2 },
 
-  //! Here
   articleContent: {
     paddingBottom: 40,
+    paddingHorizontal: 20,
+    flex: 1,
+    width: "100%",
   },
 
   loadingContainer: {

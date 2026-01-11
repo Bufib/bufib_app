@@ -20,7 +20,7 @@ const de = {
   preparing: "Wird vorbereitet",
   stream: "Streamen",
   loading_stream: "Stream lädt",
-
+  delete_from_cache: "Aus Cache löschen",
   // General
   yes: "Ja",
   reset: "Zurücksetzen",

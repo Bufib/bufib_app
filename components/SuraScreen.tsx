@@ -960,7 +960,7 @@ const SuraScreen: React.FC = () => {
   }>();
 
   const hasTafsir = true;
-  const { fontSize, lineHeight } = useFontSizeStore();
+  const { fontSize } = useFontSizeStore();
   const [nextPage, setNextPage] = useState<number | null>(null);
   const [prevPage, setPrevPage] = useState<number | null>(null);
   const [jumping, setJumping] = useState(false);
@@ -1307,7 +1307,6 @@ const SuraScreen: React.FC = () => {
           {shouldShowBasmala(item, index) && (
             <BasmalaRow
               fontSize={fontSize}
-              lineHeight={lineHeight}
               lang={lang}
               rtl={rtl}
               t={t}
@@ -1345,7 +1344,6 @@ const SuraScreen: React.FC = () => {
       toggleVerse,
       openReciterPicker,
       fontSize,
-      lineHeight,
       rtl,
       t,
       shouldShowBasmala,
@@ -1510,7 +1508,7 @@ const SuraScreen: React.FC = () => {
                         styles.infoArabicText,
                         {
                           fontSize: fontSize * 1.3,
-                          lineHeight: lineHeight * 1.5,
+                          lineHeight: fontSize * 1.3 * 2.0,
                         },
                       ]}
                     >
@@ -1527,7 +1525,7 @@ const SuraScreen: React.FC = () => {
                       {t("translation")}:
                     </ThemedText>
                     <ThemedText
-                      style={[styles.infoTranslation, { fontSize: fontSize }]}
+                      style={[styles.infoTranslation, { fontSize: fontSize, lineHeight: fontSize * 1.85, }]}
                     >
                       {selectedVerse.text}
                     </ThemedText>
@@ -1541,7 +1539,7 @@ const SuraScreen: React.FC = () => {
                     {t("tafsir")}:
                   </ThemedText>
                   <ThemedText
-                    style={[styles.infoTafsir, { fontSize: fontSize }]}
+                    style={[styles.infoTafsir, { fontSize: fontSize, lineHeight: fontSize * 1.85 }]}
                   >
                     {t("tafsirPlaceholder") ||
                       "Detailed explanation and commentary for this verse will appear here."}

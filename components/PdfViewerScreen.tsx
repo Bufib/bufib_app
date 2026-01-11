@@ -879,7 +879,6 @@ import {
   ScrollView,
   Animated,
   Alert,
-  Platform,
 } from "react-native";
 import Pdf from "react-native-pdf";
 import { useRouter } from "expo-router";

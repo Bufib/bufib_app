@@ -43,7 +43,7 @@ export const returnSize = (width: number, height: number): Sizes => {
     emptyGap: baseLarge ? 10 : isMedium ? 6 : 5,
     previewSizes: baseLarge ? 200 : isMedium ? 170 : 160,
     previewSizesPaddingHorizontal: 15,
-    isLarge: baseLarge,
+    isLarge: baseLarge, 
     isMedium,
     fontsizeHomeHeaders: baseLarge ? 35 : isMedium ? 31 : 25,
     fontsizeHomeShowAll: baseLarge ? 16 : isMedium ? 14 : 12,

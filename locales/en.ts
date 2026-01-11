@@ -20,7 +20,8 @@ const en = {
   preparing: "Preparing",
   stream: "Stream",
   loading_stream: "Stream is loading",
-
+  delete_from_cache: "Delete from cache",
+  
   // General
   yes: "Yes",
   reset: "reset",
