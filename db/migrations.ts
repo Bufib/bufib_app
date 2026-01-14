@@ -25,7 +25,7 @@ export const migrationSQL = `
     islamic_date TEXT NOT NULL,
     gregorian_date TEXT NOT NULL,
     description TEXT,
-    legend_type TEXT NOT NULL,
+    legend_type INTEGER NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     language_code TEXT NOT NULL
   );

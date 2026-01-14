@@ -62,24 +62,44 @@ export type NewsCardType = {
 export type Language = "ar" | "en" | "de";
 export type ActiveSheet = "articles" | "podcasts" | "pdfs" | null;
 
-export type Sizes = {
+// export type Sizes = {
+//   elementSize: number;
+//   fontSize: number;
+//   badgeSize: number;
+//   iconSize: number;
+//   imageSize: number;
+//   gap: number;
+//   emptyTextSize: number;
+//   emptyIconSize: number;
+//   emptyGap: number;
+//   previewSizes: number;
+//   isLarge: boolean;
+//   isMedium: boolean;
+//   previewSizesPaddingHorizontal: number;
+//   fontsizeHomeShowAll:number,
+//   fontsizeHomeHeaders:number
+// };
+
+
+export type SizesType = {
   elementSize: number;
   fontSize: number;
   badgeSize: number;
   iconSize: number;
   imageSize: number;
   gap: number;
-  emptyTextSize: number;
   emptyIconSize: number;
+  emptyTextSize: number;
   emptyGap: number;
   previewSizes: number;
+  previewSizesPaddingHorizontal: number;
+  isTablet: boolean;
   isLarge: boolean;
   isMedium: boolean;
-  previewSizesPaddingHorizontal: number;
-  fontsizeHomeShowAll:number,
-  fontsizeHomeHeaders:number
+  isSmall: boolean;
+  fontsizeHomeHeaders: number;
+  fontsizeHomeShowAll: number;
 };
-
 export type triggerRefreshFavoritesType = {
   favoritesRefreshed: number;
   triggerRefreshFavorites: () => void;
@@ -601,7 +621,7 @@ export type CalendarType = {
   type: string;
   created_at: string;
   language_code: string;
-  legend_type: string;
+  legend_type: number;
 };
 export type calendarLegendType = {
   id: number;

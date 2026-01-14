@@ -523,6 +523,7 @@
 //     opacity: 0.5,
 //   },
 // });
+
 import React, { useCallback, useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -539,9 +540,9 @@ import { CalendarSectionType, CalendarType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import {
   getAllCalendarDates,
-  getCalendarLegendTypeNames,
+  getCalendarLegendColorById,
 } from "@/db/queries/calendar";
-import { CALENDARPALLETTE, Colors } from "@/constants/Colors";
+import { Colors } from "@/constants/Colors";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { Entypo } from "@expo/vector-icons";
@@ -551,7 +552,9 @@ const RenderCalendar: React.FC = () => {
   const { lang } = useLanguage();
   const { t } = useTranslation();
   const [events, setEvents] = useState<CalendarType[]>([]);
-  const [legendNames, setLegendNames] = useState<string[]>([]);
+  const [legendColorMap, setLegendColorMap] = useState<Record<number, string>>(
+    {}
+  ); // ← Geändert
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState<CalendarSectionType[]>([]);
   const [nextUpcomingDiff, setNextUpcomingDiff] = useState<number | null>(null);
@@ -560,24 +563,24 @@ const RenderCalendar: React.FC = () => {
   );
   const calendarVersion = useDataVersionStore((s) => s.calendarVersion);
 
-  // Fetch calendar data and legend names
+  // Fetch calendar data
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         setLoading(true);
-        const [ev, names] = await Promise.all([
+        const [ev, colorMap] = await Promise.all([
           getAllCalendarDates(lang),
-          getCalendarLegendTypeNames(lang),
+          getCalendarLegendColorById(lang), // ← Neue Query
         ]);
         if (!cancelled) {
           setEvents(ev ?? []);
-          setLegendNames(names ?? []);
+          setLegendColorMap(colorMap); // ← Direkt setzen
         }
       } catch (e) {
         if (!cancelled) {
           setEvents([]);
-          setLegendNames([]);
+          setLegendColorMap({});
         }
         console.warn("Calendar load failed:", e);
       } finally {
@@ -588,22 +591,16 @@ const RenderCalendar: React.FC = () => {
       cancelled = true;
     };
   }, [calendarVersion, lang]);
-
-  // Map legend names to colors
-  const legendColorMap = Object.fromEntries(
-    legendNames.map((n, i) => [
-      n,
-      CALENDARPALLETTE[i % CALENDARPALLETTE.length],
-    ])
-  );
-
   // Day-precision date helpers
   const startOfDay = (d: Date) => {
     const x = new Date(d);
     x.setHours(0, 0, 0, 0);
     return x;
   };
-  const parseItemDate = useCallback((s: string) => startOfDay(new Date(s)), []);
+  const parseItemDate = useCallback((s: string) => {
+    const [year, month, day] = s.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }, []);
 
   const todayStart = startOfDay(new Date());
 
@@ -763,7 +760,7 @@ const RenderCalendar: React.FC = () => {
               ? "rgba(251, 146, 60, 0.6)"
               : "rgba(251, 146, 60, 0.2)",
           borderLeftWidth: 4,
-          borderLeftColor: "#FB923C",
+          borderLeftColor: badgeColor,
         }
       : isNext
       ? {
@@ -772,7 +769,7 @@ const RenderCalendar: React.FC = () => {
               ? "rgba(6, 182, 212, 0.20)"
               : "rgba(34, 211, 238, 0.15)",
           borderLeftWidth: 4,
-          borderLeftColor: "#06B6D4",
+          borderLeftColor: badgeColor,
         }
       : isOld
       ? {
@@ -787,6 +784,7 @@ const RenderCalendar: React.FC = () => {
           borderLeftWidth: 4,
           borderLeftColor: badgeColor,
         };
+    console.log(isOld);
     return (
       <View
         style={[

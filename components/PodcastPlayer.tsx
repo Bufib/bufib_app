@@ -2323,7 +2323,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
               style={styles.coverArt}
               contentFit="cover"
             />
-            {!hasDownloaded && !showInitialButtons && !isDownloading &&(
+            {!hasDownloaded && !showInitialButtons && !isDownloading && (
               <Ionicons
                 name="download"
                 size={35}

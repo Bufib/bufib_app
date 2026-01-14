@@ -61,7 +61,7 @@
 //     if (selectedTodo) {
 //       onSetReminder(dayIndex, selectedTodo.id, date, repeatWeekly);
 //     }
-    
+
 //   };
 
 //   const handleCloseModal = () => {
@@ -266,7 +266,6 @@
 //   emptyDayIcon: {},
 // });
 
-
 // components/ToDoList.tsx
 import React, { useState } from "react";
 import {
@@ -302,7 +301,7 @@ export const TodoList = ({
   const colorScheme = useColorScheme() || "light";
   const { rtl } = useLanguage();
   const { width, height } = useWindowDimensions();
-  const { emptyIconSize, emptyTextSize, emptyGap } = returnSize(width, height);
+  const { emptyIconSize } = returnSize(width, height);
 
   const [timePickerVisible, setTimePickerVisible] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<{
@@ -397,20 +396,21 @@ export const TodoList = ({
           color={colorScheme === "dark" ? "#666" : "#999"}
           style={styles.emptyDayIcon}
         />
-
         <ThemedText
           style={[
             styles.emptyDayText,
-            { fontSize: emptyTextSize, marginBottom: emptyGap },
+            { flex: 1 },
+            rtl && { textAlign: "right" },
           ]}
         >
           {t("noPlansForToday")}{" "}
           <ThemedText
             onPress={onShowAddModal}
-            style={[
-              styles.addButton,
-              { color: Colors.universal.primary, fontWeight: "700" as any },
-            ]}
+            style={{
+              color: Colors.universal.primary,
+              fontWeight: "700",
+              fontSize: 18,
+            }}
           >
             {t("addWeekly")}
           </ThemedText>
@@ -457,14 +457,12 @@ export const TodoList = ({
                       styles.checkbox,
                       todo.completed && styles.checkboxCompleted,
                       {
-                        borderColor:
-                          colorScheme === "dark" ? "#666" : "#999",
+                        borderColor: colorScheme === "dark" ? "#666" : "#999",
                       },
                       todo.completed && {
                         backgroundColor:
                           colorScheme === "dark" ? "#666" : "#999",
-                        borderColor:
-                          colorScheme === "dark" ? "#666" : "#999",
+                        borderColor: colorScheme === "dark" ? "#666" : "#999",
                       },
                     ]}
                   >
@@ -580,8 +578,6 @@ const styles = StyleSheet.create({
   },
   emptyDayText: {
     opacity: 0.8,
-    flexWrap: "wrap",
-    lineHeight: 25,
   },
   addButton: {
     fontSize: 18,
