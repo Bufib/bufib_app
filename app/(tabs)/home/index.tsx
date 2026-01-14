@@ -1272,6 +1272,7 @@ import {
   NewsArticlesType,
   PodcastType,
   PdfType,
+  NewsCardType,
 } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNews } from "@/hooks/useNews";
@@ -1413,244 +1414,280 @@ export default function HomeScreen() {
     return "";
   }, [activeSheet, t]);
 
+  const getPaddedData = (data: any[]) => {
+    if (data.length % 2 === 1) {
+      return [...data, { id: "placeholder", isPlaceholder: true }];
+    }
+    return data;
+  };
+
   // Modern tile renderers
   const renderArticleTile = useCallback(
-    ({ item }: { item: NewsArticlesType }) => (
-      <TouchableOpacity
-        style={[styles.tileWrapper, {}]}
-        onPress={() => {
-          if (item.is_external_link) {
-            handleOpenExternalUrl(item.external_link_url || "");
-          } else {
-            router.push({
-              pathname: "/(newsArticle)",
-              params: { articleId: item.id },
-            });
-          }
-          closeSheet();
-        }}
-        activeOpacity={0.85}
-      >
-        <View
-          style={[
-            styles.modernTile,
-            {
-              width: previewSizes,
-              height: 200,
-              backgroundColor: Colors[colorScheme].contrast,
-              borderColor: Colors[colorScheme].border,
-            },
-          ]}
+    ({ item }: { item: NewsArticlesType & { isPlaceholder?: boolean } }) => {
+      if (item.isPlaceholder) {
+        return <View style={{ width: previewSizes }} />;
+      }
+
+      return (
+        <TouchableOpacity
+          style={styles.tileWrapper}
+          onPress={() => {
+            if (item.is_external_link) {
+              handleOpenExternalUrl(item.external_link_url || "");
+            } else {
+              router.push({
+                pathname: "/(newsArticle)",
+                params: { articleId: item.id },
+              });
+            }
+            closeSheet();
+          }}
+          activeOpacity={0.85}
         >
-          <View style={styles.tileContent}>
-            <View style={styles.tileIconContainer}>
-              <View
-                style={[
-                  styles.iconCircle,
-                  {
-                    backgroundColor:
-                      colorScheme === "dark"
-                        ? "rgba(74, 144, 226, 0.2)"
-                        : "rgba(74, 144, 226, 0.12)",
-                  },
-                ]}
-              >
-                <Ionicons
-                  name={
-                    item.is_external_link ? "link-outline" : "newspaper-outline"
-                  }
-                  size={22}
-                  color={Colors[colorScheme].tint}
-                />
-              </View>
-            </View>
-
-            <View style={styles.tileTitleContainer}>
-              <Text
-                numberOfLines={3}
-                style={[
-                  styles.modernTileTitle,
-                  { color: Colors[colorScheme].text },
-                ]}
-              >
-                {item.title.trim()}
-              </Text>
-            </View>
-
-            <View style={styles.tileFooter}>
-              <View style={styles.dateContainer}>
-                <Ionicons
-                  name="time-outline"
-                  size={12}
-                  color={Colors[colorScheme].icon}
-                  style={styles.dateIcon}
-                />
-                <Text
-                  style={[styles.dateText, { color: Colors[colorScheme].icon }]}
+          <View
+            style={[
+              styles.modernTile,
+              {
+                width: previewSizes,
+                height: 200,
+                backgroundColor: Colors[colorScheme].contrast,
+                borderColor: Colors[colorScheme].border,
+              },
+            ]}
+          >
+            <View style={styles.tileContent}>
+              <View style={styles.tileIconContainer}>
+                <View
+                  style={[
+                    styles.iconCircle,
+                    {
+                      backgroundColor:
+                        colorScheme === "dark"
+                          ? "rgba(74, 144, 226, 0.2)"
+                          : "rgba(74, 144, 226, 0.12)",
+                    },
+                  ]}
                 >
-                  {formatDate(item.created_at, lang)}
+                  <Ionicons
+                    name={
+                      item.is_external_link
+                        ? "link-outline"
+                        : "newspaper-outline"
+                    }
+                    size={22}
+                    color={Colors[colorScheme].tint}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.tileTitleContainer}>
+                <Text
+                  numberOfLines={3}
+                  style={[
+                    styles.modernTileTitle,
+                    { color: Colors[colorScheme].text },
+                  ]}
+                >
+                  {item.title.trim()}
                 </Text>
+              </View>
+
+              <View style={styles.tileFooter}>
+                <View style={styles.dateContainer}>
+                  <Ionicons
+                    name="time-outline"
+                    size={12}
+                    color={Colors[colorScheme].icon}
+                    style={styles.dateIcon}
+                  />
+                  <Text
+                    style={[
+                      styles.dateText,
+                      { color: Colors[colorScheme].icon },
+                    ]}
+                  >
+                    {formatDate(item.created_at, lang)}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    ),
+        </TouchableOpacity>
+      );
+    },
     [closeSheet, colorScheme, lang, previewSizes]
   );
 
   const renderPodcastTile = useCallback(
-    ({ item }: { item: PodcastType }) => (
-      <TouchableOpacity
-        style={styles.tileWrapper}
-        onPress={() => {
-          router.push({
-            pathname: "/indexPodcast",
-            params: { podcast: JSON.stringify(item) },
-          });
-          closeSheet();
-        }}
-        activeOpacity={0.85}
-      >
-        <View
-          style={[
-            styles.modernTile,
-            {
-              width: previewSizes,
-              height: 200,
-              backgroundColor: Colors[colorScheme].contrast,
-              borderColor: Colors[colorScheme].border,
-            },
-          ]}
+    ({ item }: { item: PodcastType & { isPlaceholder?: boolean } }) => {
+      if (item.isPlaceholder) {
+        return <View style={{ width: previewSizes }} />;
+      }
+
+      return (
+        <TouchableOpacity
+          style={styles.tileWrapper}
+          onPress={() => {
+            router.push({
+              pathname: "/indexPodcast",
+              params: { podcast: JSON.stringify(item) },
+            });
+            closeSheet();
+          }}
+          activeOpacity={0.85}
         >
-          <View style={styles.tileContent}>
-            <View style={styles.tileIconContainer}>
-              <View
-                style={[
-                  styles.iconCircle,
-                  {
-                    backgroundColor: Colors[colorScheme].background,
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="mic-outline"
-                  size={22}
-                  color={colorScheme === "dark" ? "#2ea853" : "#08832d"}
-                />
-              </View>
-            </View>
-
-            <View style={styles.tileTitleContainer}>
-              <Text
-                numberOfLines={3}
-                style={[
-                  styles.modernTileTitle,
-                  { color: Colors[colorScheme].text },
-                ]}
-              >
-                {item.title.trim()}
-              </Text>
-            </View>
-
-            <View style={styles.tileFooter}>
-              <View style={styles.podcastMetaContainer}>
-                <Ionicons
-                  name="headset-outline"
-                  size={12}
-                  color={Colors[colorScheme].icon}
-                  style={styles.dateIcon}
-                />
-                <Text
-                  style={[styles.dateText, { color: Colors[colorScheme].icon }]}
+          <View
+            style={[
+              styles.modernTile,
+              {
+                width: previewSizes,
+                height: 200,
+                backgroundColor: Colors[colorScheme].contrast,
+                borderColor: Colors[colorScheme].border,
+              },
+            ]}
+          >
+            <View style={styles.tileContent}>
+              <View style={styles.tileIconContainer}>
+                <View
+                  style={[
+                    styles.iconCircle,
+                    {
+                      backgroundColor: Colors[colorScheme].background,
+                    },
+                  ]}
                 >
-                  {t("podcast")}
+                  <Ionicons
+                    name="mic-outline"
+                    size={22}
+                    color={colorScheme === "dark" ? "#2ea853" : "#08832d"}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.tileTitleContainer}>
+                <Text
+                  numberOfLines={3}
+                  style={[
+                    styles.modernTileTitle,
+                    { color: Colors[colorScheme].text },
+                  ]}
+                >
+                  {item.title.trim()}
                 </Text>
+              </View>
+
+              <View style={styles.tileFooter}>
+                <View style={styles.podcastMetaContainer}>
+                  <Ionicons
+                    name="headset-outline"
+                    size={12}
+                    color={Colors[colorScheme].icon}
+                    style={styles.dateIcon}
+                  />
+                  <Text
+                    style={[
+                      styles.dateText,
+                      { color: Colors[colorScheme].icon },
+                    ]}
+                  >
+                    {t("podcast")}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    ),
+        </TouchableOpacity>
+      );
+    },
     [closeSheet, colorScheme, t, previewSizes]
   );
 
   const renderPdfTile = useCallback(
-    ({ item }: { item: PdfType }) => (
-      <TouchableOpacity
-        style={styles.tileWrapper}
-        onPress={() => {
-          router.push({
-            pathname: "/(pdfs)",
-            params: {
-              id: item.id,
-              filename: item.pdf_filename,
-            },
-          });
-          closeSheet();
-        }}
-        activeOpacity={0.85}
-      >
-        <View
-          style={[
-            styles.modernTile,
-            {
-              width: previewSizes,
-              height: 200,
-              backgroundColor: Colors[colorScheme].contrast,
-              borderColor: Colors[colorScheme].border,
-            },
-          ]}
+    ({ item }: { item: PdfType & { isPlaceholder?: boolean } }) => {
+      if (item.isPlaceholder) {
+        return <View style={{ width: previewSizes }} />;
+      }
+
+      return (
+        <TouchableOpacity
+          style={styles.tileWrapper}
+          onPress={() => {
+            router.push({
+              pathname: "/(pdfs)",
+              params: {
+                id: item.id,
+                filename: item.pdf_filename,
+              },
+            });
+            closeSheet();
+          }}
+          activeOpacity={0.85}
         >
-          <View style={styles.tileContent}>
-            <View style={styles.tileIconContainer}>
-              <View
-                style={[
-                  styles.iconCircle,
-                  {
-                    backgroundColor: Colors[colorScheme].background,
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="document-text-outline"
-                  size={22}
-                  color={Colors[colorScheme].tint}
-                />
-              </View>
-            </View>
-
-            <View style={styles.tileTitleContainer}>
-              <Text
-                numberOfLines={3}
-                style={[
-                  styles.modernTileTitle,
-                  { color: Colors[colorScheme].text },
-                ]}
-              >
-                {item.pdf_title.trim()}
-              </Text>
-            </View>
-
-            <View style={styles.tileFooter}>
-              <View style={styles.podcastMetaContainer}>
-                <Ionicons
-                  name="document-outline"
-                  size={12}
-                  color={Colors[colorScheme].icon}
-                  style={styles.dateIcon}
-                />
-                <Text
-                  style={[styles.dateText, { color: Colors[colorScheme].icon }]}
+          <View
+            style={[
+              styles.modernTile,
+              {
+                width: previewSizes,
+                height: 200,
+                backgroundColor: Colors[colorScheme].contrast,
+                borderColor: Colors[colorScheme].border,
+              },
+            ]}
+          >
+            <View style={styles.tileContent}>
+              <View style={styles.tileIconContainer}>
+                <View
+                  style={[
+                    styles.iconCircle,
+                    {
+                      backgroundColor: Colors[colorScheme].background,
+                    },
+                  ]}
                 >
-                  {t("pdfsTitle")}
+                  <Ionicons
+                    name="document-text-outline"
+                    size={22}
+                    color={Colors[colorScheme].tint}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.tileTitleContainer}>
+                <Text
+                  numberOfLines={3}
+                  style={[
+                    styles.modernTileTitle,
+                    { color: Colors[colorScheme].text },
+                  ]}
+                >
+                  {item.pdf_title.trim()}
                 </Text>
+              </View>
+
+              <View style={styles.tileFooter}>
+                <View style={styles.podcastMetaContainer}>
+                  <Ionicons
+                    name="document-outline"
+                    size={12}
+                    color={Colors[colorScheme].icon}
+                    style={styles.dateIcon}
+                  />
+                  <Text
+                    style={[
+                      styles.dateText,
+                      { color: Colors[colorScheme].icon },
+                    ]}
+                  >
+                    {t("pdfsTitle")}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    ),
+        </TouchableOpacity>
+      );
+    },
     [closeSheet, colorScheme, previewSizes, t]
   );
 
@@ -2094,10 +2131,10 @@ export default function HomeScreen() {
 
           {activeSheet === "articles" && (
             <BottomSheetFlatList
-              data={articles}
+              data={getPaddedData(articles)}
+              keyExtractor={(item: NewsArticlesType) => item.id.toString()}
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
-              keyExtractor={(item: NewsArticlesType) => item.id.toString()}
               numColumns={2}
               columnWrapperStyle={styles.columnWrapper}
               contentContainerStyle={{
@@ -2125,10 +2162,10 @@ export default function HomeScreen() {
 
           {activeSheet === "podcasts" && (
             <BottomSheetFlatList
-              data={podcasts}
+              data={getPaddedData(podcasts)}
+              keyExtractor={(item: PodcastType) => item.id.toString()}
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
-              keyExtractor={(item: PodcastType) => item.id.toString()}
               numColumns={2}
               columnWrapperStyle={styles.columnWrapper}
               contentContainerStyle={{
@@ -2152,10 +2189,10 @@ export default function HomeScreen() {
           )}
           {activeSheet === "pdfs" && (
             <BottomSheetFlatList
-              data={pdfs}
+              data={getPaddedData(pdfs)}
+              keyExtractor={(item: PdfType) => item.id.toString()}
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
-              keyExtractor={(item: PdfType) => item.id.toString()}
               numColumns={2}
               columnWrapperStyle={styles.columnWrapper}
               contentContainerStyle={{
@@ -2300,13 +2337,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   columnWrapper: {
-    justifyContent: "space-between",
     marginBottom: 12,
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
   },
-  tileWrapper: {
-    flex: 1,
-    alignItems: "center",
-  },
+  tileWrapper: {},
   modernTile: {
     borderRadius: 16,
     borderWidth: 1,

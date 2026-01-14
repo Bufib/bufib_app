@@ -784,7 +784,6 @@ const RenderCalendar: React.FC = () => {
           borderLeftWidth: 4,
           borderLeftColor: badgeColor,
         };
-    console.log(isOld);
     return (
       <View
         style={[
