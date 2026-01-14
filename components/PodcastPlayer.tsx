@@ -1932,6 +1932,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const [isStreamLoading, setIsStreamLoading] = useState(false);
   const [isStream, setIsStream] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [hasDownloaded, setHasDownloaded] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [lastTime, setLastTime] = useState<SavedProgress | null>(null);
 
@@ -2151,6 +2152,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
         filename: podcast.filename,
         rate,
       }).catch((e) => setPlayerError(e?.message ?? "Player error"));
+      setHasDownloaded(true);
     } catch (err: any) {
       // Don't show error if cancelled - just return to initial state
       if (
@@ -2160,6 +2162,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
         setPlayerError(err?.message ?? "Download failed");
       }
       setDownloadProgress(0);
+      setHasDownloaded(false);
     } finally {
       setIsDownloading(false);
     }
@@ -2320,7 +2323,7 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
               style={styles.coverArt}
               contentFit="cover"
             />
-            {isStream && (
+            {!hasDownloaded && !showInitialButtons && !isDownloading &&(
               <Ionicons
                 name="download"
                 size={35}
@@ -2328,7 +2331,6 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
                 onPress={handleDownload}
               />
             )}
-
             {cachedUri && (
               <TouchableOpacity
                 onPress={handleDeleteFromCache}
@@ -2340,7 +2342,6 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
                 </ThemedText>
               </TouchableOpacity>
             )}
-
             <View style={styles.podcastInfo}>
               <ThemedText
                 style={styles.podcastTitle}
@@ -2350,11 +2351,9 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
                 {podcast.title}
               </ThemedText>
             </View>
-
             <ThemedText style={styles.podcastDescription} numberOfLines={3}>
               {podcast.description}
             </ThemedText>
-
             <View
               style={{
                 width: "100%",

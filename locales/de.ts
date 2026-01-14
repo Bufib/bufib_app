@@ -123,6 +123,14 @@ const de = {
   removeProgress: "Fortschritt entfernen",
   markAsRead: "Als gelesen markieren",
 
+  // Books and PDF
+  readingSettings: "Format",
+  pageLayout: "Seitenlayout",
+  horizontal: "Horizontal",
+  horizontalInfoText: "Swipe nach rechts/inks um die Seite zu wechseln",
+  vertical: "Vertikal",
+  verticalInfoText: "Swipe  nach unten/oben um die Seite zu wechseln",
+
   // Prayer
   dua: "Dua",
   ziyarat: "Ziyarat",

@@ -93,6 +93,7 @@ import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 import * as FileSystem from "expo-file-system/legacy";
 import { useTranslation } from "react-i18next";
 import { LoadingIndicator } from "./LoadingIndicator";
+import Toast from "react-native-toast-message";
 
 async function clearAppCache(): Promise<void> {
   const cacheDir = FileSystem.cacheDirectory;
@@ -133,10 +134,10 @@ const ClearAppCacheButton: React.FC = () => {
               await clearAppCache();
 
               if (isMountedRef.current) {
-                Alert.alert(
-                  t("successTitle"),
-                  t("clearAppCacheSuccessMessage")
-                );
+                Toast.show({
+                  text1: t("successTitle"),
+                  text2: t("clearAppCacheSuccessMessage"),
+                });
               }
             } catch {
               if (isMountedRef.current) {

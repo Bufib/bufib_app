@@ -73,6 +73,14 @@ const ar = {
     "حدث خطأ ما أثناء إعداد التطبيق. حاول إغلاق التطبيق وفتحه مرة أخرى.",
   pdfsTitle: "كتب وملفات PDFs",
 
+  // Books and PDF
+  readingSettings: "التنسيق",
+  pageLayout: "تخطيط الصفحة",
+  horizontal: "أفقي",
+  horizontalInfoText: "اسحب يسارًا أو يمينًا لتغيير الصفحة",
+  vertical: "عمودي",
+  verticalInfoText: "اسحب للأعلى أو للأسفل لتغيير الصفحة",
+
   // Navigation
   knowledge: "معرفة",
   settings: "إعدادات",

@@ -21,7 +21,15 @@ const en = {
   stream: "Stream",
   loading_stream: "Stream is loading",
   delete_from_cache: "Delete from cache",
-  
+
+  // Books and PDF
+  readingSettings: "Format",
+  pageLayout: "Page Layout",
+  horizontal: "Horizontal",
+  horizontalInfoText: "Swipe left or right to change the page",
+  vertical: "Vertical",
+  verticalInfoText: "Swipe up or down to change the page",
+
   // General
   yes: "Yes",
   reset: "reset",

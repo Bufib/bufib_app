@@ -868,7 +868,6 @@
 //   },
 // });
 
-
 import React, { useEffect, useState, useRef } from "react";
 import {
   ActivityIndicator,
@@ -894,6 +893,7 @@ import HeaderLeftBackButton from "./HeaderLeftBackButton";
 import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { isPdfFavorited, togglePdfFavorite } from "@/utils/favorites";
 import { StatusBar } from "expo-status-bar";
+import { useTranslation } from "react-i18next";
 
 const getPdfNumericId = (filename: string): number => {
   const asNumber = Number(filename);
@@ -941,7 +941,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
   const hasLoadedRef = useRef(false);
   const currentFilenameRef = useRef<string | undefined>(undefined);
   const hasLoadedPreferencesRef = useRef(false);
-
+  const { t } = useTranslation();
   // Load GLOBAL layout preference once on mount
   useEffect(() => {
     const loadGlobalPreference = async () => {
@@ -1041,19 +1041,18 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
 
       // Check if sharing is available
       const isAvailable = await Sharing.isAvailableAsync();
-      
+
       if (!isAvailable) {
-        Alert.alert(
-          "Unavailable",
-          "Sharing is not available on this device"
-        );
+        Alert.alert("Unavailable", "Sharing is not available on this device");
         return;
       }
 
       // iOS requires files to be in DocumentDirectory to share
       // Copy from cache to a temporary shareable location
-      const fileName = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
-      tempFilePath = `${FileSystem.documentDirectory}temp_${Date.now()}_${fileName}`;
+      const fileName = filename.endsWith(".pdf") ? filename : `${filename}.pdf`;
+      tempFilePath = `${
+        FileSystem.documentDirectory
+      }temp_${Date.now()}_${fileName}`;
 
       await FileSystem.copyAsync({
         from: sourceUri,
@@ -1066,7 +1065,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
         dialogTitle: `Save ${filename}`,
         UTI: "com.adobe.pdf",
       });
-
     } catch (err: any) {
       console.warn("[PdfViewer] Download error:", err);
       Alert.alert(
@@ -1214,7 +1212,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
   if (!filename) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>No filename received</Text>
+        <Text style={styles.errorText}>{t("error")}</Text>
       </View>
     );
   }
@@ -1240,7 +1238,9 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
             <ActivityIndicator size="large" color="#3B82F6" />
             {progress > 0 && (
               <Text style={styles.progressText}>
-                Loading {Math.round(progress * 100)}%
+                {t("loading")}
+                {"  "}
+                {Math.round(progress * 100)}%
               </Text>
             )}
           </View>
@@ -1294,7 +1294,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   { opacity: controlsOpacity, paddingTop: insets.top },
                 ]}
               >
-                <HeaderLeftBackButton />
+                <HeaderLeftBackButton color={"#fff"}/>
 
                 <View style={styles.pageInfo}>
                   <TouchableOpacity
@@ -1328,13 +1328,14 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                     color={isFavorite ? "#F59E0B" : "#FFFFFF"}
                   />
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.controlButton}
-                  onPress={() => setShowSettings(!showSettings)}
-                >
-                  <Feather name="settings" size={24} color="#FFFFFF" />
-                </TouchableOpacity>
+                {pageCount > 1 && (
+                  <TouchableOpacity
+                    style={styles.controlButton}
+                    onPress={() => setShowSettings(!showSettings)}
+                  >
+                    <Feather name="settings" size={24} color="#FFFFFF" />
+                  </TouchableOpacity>
+                )}
               </Animated.View>
             )}
 
@@ -1397,11 +1398,13 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
             )}
 
             {/* Settings Menu */}
-            {showSettings && (
+            {showSettings && pageCount > 1 && (
               <View style={styles.settingsOverlay}>
                 <View style={styles.settingsContainer}>
                   <View style={styles.settingsHeader}>
-                    <Text style={styles.settingsTitle}>Reading Settings</Text>
+                    <Text style={styles.settingsTitle}>
+                      {t("readingSettings")}
+                    </Text>
                     <TouchableOpacity onPress={() => setShowSettings(false)}>
                       <Feather name="x" size={24} color="#FFFFFF" />
                     </TouchableOpacity>
@@ -1410,7 +1413,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   <View style={styles.settingsContent}>
                     {/* Layout Mode */}
                     <View style={styles.settingSection}>
-                      <Text style={styles.settingLabel}>Page Layout</Text>
+                      <Text style={styles.settingLabel}>{t("pageLayout")}</Text>
                       <View style={styles.layoutButtons}>
                         <TouchableOpacity
                           style={[
@@ -1431,7 +1434,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                               isHorizontal && styles.layoutButtonTextActive,
                             ]}
                           >
-                            Horizontal
+                            {t("horizontal")}
                           </Text>
                         </TouchableOpacity>
 
@@ -1454,7 +1457,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                               !isHorizontal && styles.layoutButtonTextActive,
                             ]}
                           >
-                            Vertical
+                            {t("vertical")}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -1462,8 +1465,8 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                         {pageCount === 1
                           ? "Single-page PDFs always use horizontal layout"
                           : isHorizontal
-                          ? "Swipe left/right to turn pages"
-                          : "Scroll up/down continuously"}
+                          ? t("horizontalInfoText")
+                          : t("verticalInfoText")}
                       </Text>
                     </View>
                   </View>

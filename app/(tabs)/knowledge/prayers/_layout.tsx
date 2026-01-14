@@ -1,8 +1,7 @@
-import { Platform, Pressable, useColorScheme } from "react-native";
+import { Pressable, useColorScheme } from "react-native";
 import React from "react";
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "@/constants/Colors";
 const Layout = () => {
   const colorScheme = useColorScheme() || "light";
   return (
@@ -58,11 +57,7 @@ const Layout = () => {
                 <Ionicons
                   name="chevron-back-outline"
                   size={30}
-                  color={
-                     colorScheme === "dark"
-                      ? "#fff"
-                      : "#000"
-                  }
+                  color={colorScheme === "dark" ? "#fff" : "#000"}
                   style={{}}
                 />
               </Pressable>
