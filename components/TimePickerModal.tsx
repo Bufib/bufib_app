@@ -370,7 +370,7 @@ import { ThemedText } from "./ThemedText";
 import { Colors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
-import Toast from "react-native-toast-message";
+
 
 interface TimePickerModalProps {
   visible: boolean;
@@ -440,15 +440,19 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   }, [visible, selectedHour, selectedMinute]);
 
   const handleConfirm = useCallback(() => {
+    
     const date = new Date();
     date.setHours(selectedHour, selectedMinute, 0, 0);
     onConfirm(date, repeatWeekly);
     onClose();
-    Toast.show({
-      type: "success",
-      text1: t("timerSet"),
-    });
-  }, [selectedHour, selectedMinute, repeatWeekly, onConfirm, onClose, t]);
+    
+  }, [
+    selectedHour,
+    selectedMinute,
+    repeatWeekly,
+    onConfirm,
+    onClose,
+  ]);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = Array.from({ length: 60 }, (_, i) => i);

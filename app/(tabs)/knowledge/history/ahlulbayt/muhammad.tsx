@@ -106,6 +106,7 @@ const Muhammad = () => {
                 alignSelf: "flex-start",
                 marginLeft: 10,
               }}
+              color={"#fff"}
             />
 
             <View style={styles.ornamentTop}>
