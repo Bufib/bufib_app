@@ -321,6 +321,7 @@ const ar = {
   pleaseEnterEmail: "يرجى إدخال البريد الإلكتروني.",
   pleaseEnterValidEmail: "يرجى إدخال بريد إلكتروني صالح.",
   pleaseEnterPassword: "يرجى إدخال كلمة المرور.",
+
   // Auth / Login
   adminLoginTitle: "تسجيل دخول المشرف",
   emailPlaceholder: "البريد الإلكتروني",
@@ -337,7 +338,62 @@ const ar = {
   emailNotConfirmed: "لم يتم تأكيد البريد الإلكتروني بعد.",
   loginErrorGeneric: "حدث خطأ أثناء تسجيل الدخول.",
   loginSuccess: "تم تسجيل الدخول بنجاح!",
+  signupTitle: "أنشئ حسابًا مجانيًا الآن لإرسال أسئلتك.",
+  usernamePlaceholder: "اسم المستخدم",
+  confirmPasswordPlaceholder: "تأكيد كلمة المرور",
+  registerButton: "تسجيل",
+  alreadyHaveAccount: "هل لديك حساب بالفعل؟",
 
+  emailVerificationTitle: "التحقق من البريد الإلكتروني",
+  emailVerificationSubtitle: "يرجى إدخال الرمز المرسل إلى {{email}}.",
+  emailVerificationNote:
+    "إذا لم تتلقَّ الرمز، يرجى التحقق من مجلد البريد العشوائي قبل طلب رمز جديد!",
+  verificationCodePlaceholder: "رمز التحقق الخاص بك",
+  verifyButton: "تحقق",
+  cancelButton: "إلغاء",
+  resendCodeButton: "إعادة إرسال الرمز",
+
+  tooManyAttemptsTitle: "محاولات كثيرة جدًا",
+  tooManyAttemptsMessage:
+    "لقد تجاوزت الحد الأقصى لمحاولات التحقق. يرجى طلب رمز جديد.",
+  maxResendAttemptsMessage:
+    "لقد وصلت إلى الحد الأقصى لمحاولات إعادة الإرسال. يرجى المحاولة لاحقًا!",
+  verificationTimeoutMessage: "انتهت مهلة التحقق. يرجى المحاولة مرة أخرى.",
+  codeResentMessage: "تم إرسال رمز تحقق جديد!",
+  registrationSuccessToast: "تم التسجيل بنجاح!",
+
+  usernameNotEmpty: "اسم المستخدم لا يمكن أن يكون فارغًا.",
+  usernameMinLength: "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل.",
+  usernameInvalidChars:
+    "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطات وشرطات سفلية فقط.",
+  usernameAlreadyInUse: "اسم المستخدم هذا مستخدم بالفعل.",
+  emailNotEmpty: "البريد الإلكتروني لا يمكن أن يكون فارغًا.",
+  emailInvalid: "يرجى إدخال عنوان بريد إلكتروني صالح.",
+  emailAlreadyInUse: "هذا البريد الإلكتروني مسجل بالفعل.",
+  passwordNotEmpty: "كلمة المرور لا يمكن أن تكون فارغة.",
+  passwordMinLength: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+  passwordFormat:
+    "يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم ورمز خاص على الأقل.",
+  passwordMismatch: "كلمات المرور غير متطابقة.",
+  captchaCancelled: "تم إلغاء التحقق. يرجى المحاولة مرة أخرى.",
+  noInternetHeader: "لا يوجد اتصال بالإنترنت!",
+  noInternetBody: "يرجى التأكد من اتصالك بالإنترنت لتلقي التحديثات!",
+  signUpErrorGeneral: "خطأ أثناء التسجيل!",
+  signUpUserNameMin: "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل",
+  signUpUserPasswordMin: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+  signUpUserPasswordFormat:
+    "يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم ورمز خاص على الأقل",
+  signUpUserPasswordConformation: "كلمات المرور غير متطابقة",
+  signUpUserNameAlreadyInUsage: "اسم المستخدم هذا مستخدم بالفعل!",
+  signUpUserEmailAlreadyInUsage: "هذا البريد الإلكتروني مستخدم بالفعل!",
+  signUpUsernameNotEmpty: "اسم المستخدم لا يمكن أن يكون فارغًا.",
+  signUpEmailNotEmpty: "البريد الإلكتروني لا يمكن أن يكون فارغًا.",
+  signUpPasswordNotEmpty: "كلمة المرور لا يمكن أن تكون فارغة.",
+  signUpEmailInvalid: "يرجى إدخال عنوان بريد إلكتروني صالح.",
+  signUpUsernameInvalidChars:
+    "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطات وشرطات سفلية فقط.",
+  cancelCaptcha: "يرجى عدم النقر بعيدًا، وإلا سيتم إلغاء التحقق!",
+  
   // Settings
   logout: "تسجيل الخروج",
   login: "تسجيل الدخول",

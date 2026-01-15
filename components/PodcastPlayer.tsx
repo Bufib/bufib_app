@@ -1970,14 +1970,14 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
     (async () => {
       if (!podcast?.id) return;
       try {
-        const result = await isPodcastFavorited(podcast.id);
+        const result = await isPodcastFavorited(podcast.id, lang);
         if (mounted) setIsFavorite(result);
       } catch {}
     })();
     return () => {
       mounted = false;
     };
-  }, [podcast?.id]);
+  }, [podcast?.id, lang]);
 
   const { triggerRefreshFavorites } = useRefreshFavorites();
   const onPressToggleFavorite = async () => {

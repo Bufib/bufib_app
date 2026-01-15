@@ -341,7 +341,66 @@ const de = {
   emailNotConfirmed: "E-Mail ist noch nicht bestätigt.",
   loginErrorGeneric: "Es gab einen Fehler beim Login.",
   loginSuccess: "Du wurdest erfolgreich angemeldet!",
+  signupTitle:
+    "Erstelle jetzt einen kostenlosen Account, um deine Fragen versenden zu können.",
+  usernamePlaceholder: "Benutzername",
+  confirmPasswordPlaceholder: "Passwort bestätigen",
+  registerButton: "Registrieren",
+  alreadyHaveAccount: "Hast du bereits einen Account?",
 
+  emailVerificationTitle: "E-Mail-Verifizierung",
+  emailVerificationSubtitle:
+    "Bitte gib den Code ein, der an {{email}} gesendet wurde.",
+  emailVerificationNote:
+    "Falls du keinen Code bekommen hast, überprüfe zuerst deinen Spam-Ordner, bevor du einen neuen anforderst!",
+  verificationCodePlaceholder: "Dein Verifizierungscode",
+  verifyButton: "Verifizieren",
+  cancelButton: "Abbrechen",
+  resendCodeButton: "Code erneut senden",
+
+  tooManyAttemptsTitle: "Zu viele Versuche",
+  tooManyAttemptsMessage:
+    "Du hast die maximale Anzahl an Verifizierungsversuchen überschritten. Bitte fordere einen neuen Code an.",
+  maxResendAttemptsMessage:
+    "Du hast die maximale Anzahl an erneuten Sendeversuchen erreicht. Bitte später erneut registrieren!",
+  verificationTimeoutMessage:
+    "Die Verifizierung ist abgelaufen. Bitte erneut versuchen.",
+  codeResentMessage: "Ein neuer Bestätigungscode wurde gesendet!",
+  registrationSuccessToast: "Registrierung erfolgreich!",
+
+  usernameNotEmpty: "Benutzername darf nicht leer sein.",
+  usernameMinLength: "Der Benutzername muss mindestens 3 Zeichen lang sein.",
+  usernameInvalidChars:
+    "Der Benutzername darf nur Buchstaben, Zahlen, Binde- und Unterstriche enthalten.",
+  usernameAlreadyInUse: "Dieser Benutzername ist bereits vergeben.",
+  emailNotEmpty: "E-Mail darf nicht leer sein.",
+  emailInvalid: "Bitte gib eine gültige E-Mail-Adresse ein.",
+  emailAlreadyInUse: "Diese E-Mail-Adresse ist bereits registriert.",
+  passwordNotEmpty: "Passwort darf nicht leer sein.",
+  passwordMinLength: "Das Passwort muss mindestens 8 Zeichen lang sein.",
+  passwordFormat:
+    "Das Passwort muss mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.",
+  passwordMismatch: "Die Passwörter stimmen nicht überein.",
+  captchaCancelled: "Captcha wurde abgebrochen. Bitte erneut versuchen.",
+  noInternetHeader: "Keine Internetverbindung!",
+  noInternetBody:
+    "Bitte stelle sicher, dass du mit dem Internet verbunden bist, damit du Updates erhalten kannst!",
+  signUpErrorGeneral: "Fehler beim Registrieren!",
+  signUpUserNameMin: "Benutzername muss mindestens 3 Zeichen lang sein",
+  signUpUserPasswordMin: "Passwort muss mindestens 8 Zeichen lang sein",
+  signUpUserPasswordFormat:
+    "Passwort muss mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten",
+  signUpUserPasswordConformation: "Passwörter stimmen nicht überein",
+  signUpUserNameAlreadyInUsage: "Dieser Benutzername ist bereits vergeben!",
+  signUpUserEmailAlreadyInUsage: "Diese E-Mail wird bereits verwendet!",
+  signUpUsernameNotEmpty: "Benutzername darf nicht leer sein.",
+  signUpEmailNotEmpty: "E-Mail darf nicht leer sein.",
+  signUpPasswordNotEmpty: "Passwort darf nicht leer sein.",
+  signUpEmailInvalid: "Bitte gib eine gültige E-Mail-Adresse ein.",
+  signUpUsernameInvalidChars:
+    "Der Benutzername darf nur Buchstaben, Zahlen, Binde- und Unterstriche enthalten.",
+  cancelCaptcha:
+    "Bitte nicht wegklicken, da die Überprüfung sonst abgebrochen wird!",
   // Settings
   logout: "Abmelden",
   login: "Anmelden",
@@ -400,7 +459,6 @@ const de = {
   legendUpcoming: "Bevorstehend",
   legendMajorEvent: "Großes Ereignis",
   legendMinorEvent: "Kleines Ereignis",
-
   countdownToday: "Heute!",
   countdownDaysToGo: "Noch {{count}} Tage",
 

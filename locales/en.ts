@@ -338,6 +338,7 @@ const en = {
   pleaseEnterEmail: "Please enter an email.",
   pleaseEnterValidEmail: "Please enter a valid email.",
   pleaseEnterPassword: "Please enter a password.",
+
   // Auth / Login
   adminLoginTitle: "Admin Login",
   emailPlaceholder: "Email",
@@ -354,7 +355,63 @@ const en = {
   emailNotConfirmed: "Email has not been confirmed yet.",
   loginErrorGeneric: "An error occurred during login.",
   loginSuccess: "You have successfully logged in!",
+  signupTitle: "Create a free account now to send your questions.",
+  usernamePlaceholder: "Username",
+  confirmPasswordPlaceholder: "Confirm password",
+  registerButton: "Register",
+  alreadyHaveAccount: "Already have an account?",
 
+  emailVerificationTitle: "Email Verification",
+  emailVerificationSubtitle: "Please enter the code sent to {{email}}.",
+  emailVerificationNote:
+    "If you haven't received a code, please check your spam folder before requesting a new one!",
+  verificationCodePlaceholder: "Your verification code",
+  verifyButton: "Verify",
+  cancelButton: "Cancel",
+  resendCodeButton: "Resend code",
+
+  tooManyAttemptsTitle: "Too many attempts",
+  tooManyAttemptsMessage:
+    "You have exceeded the maximum number of verification attempts. Please request a new code.",
+  maxResendAttemptsMessage:
+    "You have reached the maximum number of resend attempts. Please try registering again later!",
+  verificationTimeoutMessage: "Verification has timed out. Please try again.",
+  codeResentMessage: "A new verification code has been sent!",
+  registrationSuccessToast: "Registration successful!",
+
+  usernameNotEmpty: "Username cannot be empty.",
+  usernameMinLength: "Username must be at least 3 characters long.",
+  usernameInvalidChars:
+    "Username can only contain letters, numbers, hyphens and underscores.",
+  usernameAlreadyInUse: "This username is already taken.",
+  emailNotEmpty: "Email cannot be empty.",
+  emailInvalid: "Please enter a valid email address.",
+  emailAlreadyInUse: "This email address is already registered.",
+  passwordNotEmpty: "Password cannot be empty.",
+  passwordMinLength: "Password must be at least 8 characters long.",
+  passwordFormat:
+    "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character.",
+  passwordMismatch: "Passwords do not match.",
+  captchaCancelled: "Captcha was cancelled. Please try again.",
+  noInternetHeader: "No internet connection!",
+  noInternetBody:
+    "Please make sure you are connected to the internet to receive updates!",
+  signUpErrorGeneral: "Error during registration!",
+  signUpUserNameMin: "Username must be at least 3 characters long",
+  signUpUserPasswordMin: "Password must be at least 8 characters long",
+  signUpUserPasswordFormat:
+    "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character",
+  signUpUserPasswordConformation: "Passwords do not match",
+  signUpUserNameAlreadyInUsage: "This username is already taken!",
+  signUpUserEmailAlreadyInUsage: "This email is already in use!",
+  signUpUsernameNotEmpty: "Username cannot be empty.",
+  signUpEmailNotEmpty: "Email cannot be empty.",
+  signUpPasswordNotEmpty: "Password cannot be empty.",
+  signUpEmailInvalid: "Please enter a valid email address.",
+  signUpUsernameInvalidChars:
+    "Username can only contain letters, numbers, hyphens and underscores.",
+  cancelCaptcha:
+    "Please do not click away, otherwise the verification will be cancelled!",
   // Settings
   logout: "Log out",
   login: "Log in",

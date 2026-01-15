@@ -878,6 +878,7 @@ import {
   ScrollView,
   Animated,
   Alert,
+  useColorScheme,
 } from "react-native";
 import Pdf from "react-native-pdf";
 import { useRouter } from "expo-router";
@@ -894,6 +895,8 @@ import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { isPdfFavorited, togglePdfFavorite } from "@/utils/favorites";
 import { StatusBar } from "expo-status-bar";
 import { useTranslation } from "react-i18next";
+import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 
 const getPdfNumericId = (filename: string): number => {
   const asNumber = Number(filename);
@@ -919,7 +922,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
   const [pageCount, setPageCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const insets = useSafeAreaInsets();
-
+  const colorScheme = useColorScheme() || "light";
   // eBook reader features
   const [showControls, setShowControls] = useState<boolean>(true);
   const [showPageJump, setShowPageJump] = useState<boolean>(false);
@@ -1294,7 +1297,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   { opacity: controlsOpacity, paddingTop: insets.top },
                 ]}
               >
-                <HeaderLeftBackButton color={"#fff"}/>
+                <HeaderLeftBackButton color={"#fff"} />
 
                 <View style={styles.pageInfo}>
                   <TouchableOpacity
@@ -1322,10 +1325,14 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   style={styles.controlButton}
                   onPress={onPressToggleFavorite}
                 >
-                  <Feather
-                    name="star"
+                  <Ionicons
+                    name={isFavorite ? "star" : "star-outline"}
                     size={24}
-                    color={isFavorite ? "#F59E0B" : "#FFFFFF"}
+                    color={
+                      isFavorite
+                        ? Colors.universal.favorite
+                        : "#fff"
+                    }
                   />
                 </TouchableOpacity>
                 {pageCount > 1 && (

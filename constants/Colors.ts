@@ -99,7 +99,7 @@ export const Colors = {
     questionLinks: "#2ea853",
     prayerLinks: "#84CEEB",
     externalLinkIcon: "#057958",
-    favorite: "gold",
+    favorite: "#F59E0B",
     chatBubbleQuestion: "#b7d6ef",
     chatBubbleAnswer: "#b3e1c1",
     error: "#f44336",
