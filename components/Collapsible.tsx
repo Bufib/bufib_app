@@ -12,15 +12,22 @@ export function Collapsible({
   children,
   title,
   marja,
-}: PropsWithChildren & { title: string; marja?: string }) {
+  style,
+  alignItems = "center",
+}: PropsWithChildren & {
+  title: string;
+  marja?: string;
+  style?: any;
+  alignItems?: any;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const { fontSize } = useFontSizeStore();
   const colorScheme = useColorScheme() || "light";
 
   return (
-    <ThemedView>
+    <ThemedView style={style}>
       <TouchableOpacity
-        style={styles.heading}
+        style={[styles.heading, { alignItems: alignItems }]}
         onPress={() => setIsOpen((value) => !value)}
         activeOpacity={0.8}
       >
@@ -66,7 +73,6 @@ export function Collapsible({
 const styles = StyleSheet.create({
   heading: {
     flexDirection: "row",
-    alignItems: "center",
     gap: 6,
   },
   content: {
