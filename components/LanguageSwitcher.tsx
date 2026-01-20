@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
  * A small UI widget with three buttons (“Deutsch” / “English” / “العربية”) that uses
  * LanguageContext to switch the app’s i18n language and persist it.
  */
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ disabled }: { disabled: boolean }) {
   const { lang, rtl, setAppLanguage, ready: langReady } = useLanguage();
   const { width, height } = useWindowDimensions();
   const { isLarge } = returnSize(width, height);
@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
 
   return (
     <View style={[styles.container, rtl && styles.rtlContainer]}>
-      <View style={rtl && styles.rtlTextContainer}>
+      <View style={[rtl && styles.rtlTextContainer]}>
         <ThemedText style={[styles.title, rtl && styles.rtlText]}>
           {t("language")}
         </ThemedText>
@@ -48,61 +48,100 @@ export function LanguageSwitcher() {
           {t("selectAppLanguage")}
         </ThemedText>
       </View>
-      <View style={[styles.buttons, rtl && styles.rtlButtons]}>
-        <Pressable
-          onPress={selectDeutsch}
-          style={({ pressed }) => [
-            styles.button,
-            lang === "de" && styles.buttonActive,
-            { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
-            rtl && { marginLeft: 0, marginRight: 8 },
-          ]}
-        >
-          <Text
-            style={[
-              styles.buttonText,
-              lang === "de" && styles.buttonTextActive,
+      <View
+        style={{
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 5,
+        }}
+      >
+        {disabled && (
+          <ThemedText
+            style={{ fontWeight: 600, color: Colors.universal.error }}
+          >
+            Bald verfügbar
+          </ThemedText>
+        )}
+        <View style={[styles.buttons, rtl && styles.rtlButtons]}>
+          <Pressable
+            onPress={selectDeutsch}
+            style={({ pressed }) => [
+              styles.button,
+              lang === "de" && styles.buttonActive,
+              {
+                opacity: pressed ? 0.8 : 1,
+                paddingHorizontal: isLarge ? 12 : 7,
+              },
+              rtl && { marginLeft: 0, marginRight: 8 },
             ]}
           >
-            {t("deutsch")}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={selectEnglish}
-          style={({ pressed }) => [
-            styles.button,
-            lang === "en" && styles.buttonActive,
-            { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
-            rtl && { marginLeft: 0, marginRight: 8 },
-          ]}
-        >
-          <Text
-            style={[
-              styles.buttonText,
-              lang === "en" && styles.buttonTextActive,
+            <Text
+              style={[
+                styles.buttonText,
+                lang === "de" && styles.buttonTextActive,
+              ]}
+            >
+              {t("deutsch")}
+            </Text>
+          </Pressable>
+          <Pressable
+            disabled={disabled}
+            onPress={selectEnglish}
+            style={({ pressed }) => [
+              styles.button,
+              lang === "en" && styles.buttonActive,
+              {
+                opacity: pressed ? 0.8 : 1,
+                paddingHorizontal: isLarge ? 12 : 7,
+              },
+              rtl && { marginLeft: 0, marginRight: 8 },
+
+              disabled && {
+                backgroundColor: "#ccc",
+                borderRadius: 5,
+                borderColor: "#ccc",
+              },
             ]}
           >
-            {t("english")}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={selectArabic}
-          style={({ pressed }) => [
-            styles.button,
-            lang === "ar" && styles.buttonActive,
-            { opacity: pressed ? 0.8 : 1, paddingHorizontal: isLarge ? 12 : 7 },
-            rtl && { marginLeft: 0, marginRight: 8 },
-          ]}
-        >
-          <Text
-            style={[
-              styles.buttonText,
-              lang === "ar" && styles.buttonTextActive,
+            <Text
+              style={[
+                styles.buttonText,
+                lang === "en" && styles.buttonTextActive,
+              ]}
+            >
+              {t("english")}
+            </Text>
+          </Pressable>
+          <Pressable
+            disabled={disabled}
+            onPress={selectArabic}
+            style={({ pressed }) => [
+              styles.button,
+              lang === "ar" && styles.buttonActive,
+              {
+                opacity: pressed ? 0.8 : 1,
+                paddingHorizontal: isLarge ? 12 : 7,
+              },
+              rtl && { marginLeft: 0, marginRight: 8 },
+
+              disabled && {
+                backgroundColor: "#ccc",
+                borderRadius: 5,
+                borderColor: "#ccc",
+              },
             ]}
           >
-            {t("arabic")}
-          </Text>
-        </Pressable>
+            <Text
+              style={[
+                styles.buttonText,
+                lang === "ar" && styles.buttonTextActive,
+              ]}
+            >
+              {t("arabic")}
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );

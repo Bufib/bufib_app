@@ -207,7 +207,8 @@ const Settings = () => {
                 }
               />
             </View>
-            <LanguageSwitcher />
+
+            <LanguageSwitcher disabled={true}/>
 
             <View style={{ gap: 10 }}>
               <HardResetButton />

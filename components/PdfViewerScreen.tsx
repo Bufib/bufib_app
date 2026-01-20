@@ -897,6 +897,8 @@ import { StatusBar } from "expo-status-bar";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { ThemedView } from "./ThemedView";
+import { ThemedText } from "./ThemedText";
 
 const getPdfNumericId = (filename: string): number => {
   const asNumber = Number(filename);
@@ -1237,16 +1239,19 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
         )}
 
         {!error && loading && (
-          <View style={styles.center}>
-            <ActivityIndicator size="large" color="#3B82F6" />
+          <ThemedView style={styles.center}>
+            <ActivityIndicator
+              size="large"
+              color={Colors[colorScheme].defaultIcon}
+            />
             {progress > 0 && (
-              <Text style={styles.progressText}>
+              <ThemedText style={styles.progressText}>
                 {t("loading")}
-                {"  "}
+                {" "}
                 {Math.round(progress * 100)}%
-              </Text>
+              </ThemedText>
             )}
-          </View>
+          </ThemedView>
         )}
 
         {!error && !loading && sourceUri && (
@@ -1310,7 +1315,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 </View>
 
                 <TouchableOpacity
-                  style={styles.controlButton}
+                  style={[styles.controlButton]}
                   onPress={handleDownloadPdf}
                   disabled={isDownloading}
                 >
@@ -1328,11 +1333,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   <Ionicons
                     name={isFavorite ? "star" : "star-outline"}
                     size={24}
-                    color={
-                      isFavorite
-                        ? Colors.universal.favorite
-                        : "#fff"
-                    }
+                    color={isFavorite ? Colors.universal.favorite : "#fff"}
                   />
                 </TouchableOpacity>
                 {pageCount > 1 && (
@@ -1545,7 +1546,6 @@ const styles = StyleSheet.create({
   },
   progressText: {
     marginTop: 12,
-    color: "#E5E7EB",
     fontSize: 16,
     fontWeight: "600",
   },
