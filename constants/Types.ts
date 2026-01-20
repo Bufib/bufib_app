@@ -739,6 +739,8 @@ export type QuranVerseType = {
   aya: number; // 1..n
   text: string; // verse text in the chosen language
   transliteration?: string | null; // en only
+  podcastId: any,
+  filename: any
 };
 
 export type SuraRowType = {

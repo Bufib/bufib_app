@@ -115,6 +115,8 @@ export function useQuranAudio(
         artwork: opts.artworkUri,
         currentKey: `quran:${v.sura}:${v.aya}:${reciter}`,
         stoppedByUser: false,
+        podcastId: undefined,
+        filename: undefined,
       });
     },
     [makeTitle, opts.artworkUri, reciter]
@@ -152,24 +154,24 @@ export function useQuranAudio(
   // }, []);
 
   const preloadVerse = useCallback((urls: string[], verseIndex: number) => {
-  const existing = preloadControllersRef.current.get(verseIndex);
-  if (existing) existing.abort();
+    const existing = preloadControllersRef.current.get(verseIndex);
+    if (existing) existing.abort();
 
-  const controller = new AbortController();
-  preloadControllersRef.current.set(verseIndex, controller);
+    const controller = new AbortController();
+    preloadControllersRef.current.set(verseIndex, controller);
 
-  Promise.allSettled(
-    urls.map((url) =>
-      fetch(url, { signal: controller.signal }).catch((err) => {
-        if (__DEV__ && err.name !== "AbortError") console.log("⚠️ Preload failed:", url);
-        // swallow to let allSettled continue
-      })
-    )
-  ).finally(() => {
-    preloadControllersRef.current.delete(verseIndex);
-  });
-}, []);
-
+    Promise.allSettled(
+      urls.map((url) =>
+        fetch(url, { signal: controller.signal }).catch((err) => {
+          if (__DEV__ && err.name !== "AbortError")
+            console.log("⚠️ Preload failed:", url);
+          // swallow to let allSettled continue
+        })
+      )
+    ).finally(() => {
+      preloadControllersRef.current.delete(verseIndex);
+    });
+  }, []);
 
   const playByIndex = useCallback(
     async (index: number) => {
@@ -278,19 +280,18 @@ export function useQuranAudio(
   // }, [reciter]);
 
   useEffect(() => {
-  // reset per-reciter preloaded set
-  preloadedRef.current.clear();
+    // reset per-reciter preloaded set
+    preloadedRef.current.clear();
 
-  // capture the Map reference used during this effect’s lifetime
-  const controllers = preloadControllersRef.current;
+    // capture the Map reference used during this effect’s lifetime
+    const controllers = preloadControllersRef.current;
 
-  return () => {
-    // cancel any in-flight preloads and clear the same Map instance
-    controllers.forEach((c) => c.abort());
-    controllers.clear();
-  };
-}, [reciter]);
-
+    return () => {
+      // cancel any in-flight preloads and clear the same Map instance
+      controllers.forEach((c) => c.abort());
+      controllers.clear();
+    };
+  }, [reciter]);
 
   const stop = useCallback(() => {
     stopRaw();
