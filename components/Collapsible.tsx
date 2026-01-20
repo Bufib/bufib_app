@@ -14,11 +14,13 @@ export function Collapsible({
   marja,
   style,
   alignItems = "center",
+  useFontSize = true,
 }: PropsWithChildren & {
   title: string;
   marja?: string;
   style?: any;
   alignItems?: any;
+  useFontSize?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { fontSize } = useFontSizeStore();
@@ -50,7 +52,7 @@ export function Collapsible({
           />
         )}
 
-        <ThemedText type="defaultSemiBold" style={{ fontSize }}>
+        <ThemedText type="defaultSemiBold" style={useFontSize && { fontSize }}>
           {title}
         </ThemedText>
       </TouchableOpacity>

@@ -224,7 +224,13 @@ export default function RenderQuestionVideos() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
           renderItem={({ item }) => (
-            <Collapsible title={item.title} marja={undefined} style={{marginBottom: 10}} alignItems={"flex-start"}>
+            <Collapsible
+              title={item.title}
+              marja={undefined}
+              style={{ marginBottom: 10 }}
+              alignItems={"flex-start"}
+              useFontSize={false}
+            >
               <VideoPlayer publicId={item.public_id} title={item.title} />
             </Collapsible>
           )}
@@ -260,14 +266,14 @@ function VideoPlayer({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16},
+  container: { flex: 1, padding: 16 },
   centeredContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
   },
-  listContainer: { paddingBottom: 20,  },
+  listContainer: { paddingBottom: 20 },
   videoContainer: {
     width: "100%",
     height: 250,

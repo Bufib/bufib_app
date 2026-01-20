@@ -144,7 +144,7 @@ export default function QuestionLinks() {
         <LatestQuestions />
       </View>
       {/* Login */}
-      {lang === "de" && (
+      {/* {lang === "de" && (
         <TouchableOpacity
           style={styles.askQuestionButton}
           onPress={() => router.push("/(askQuestion)")}
@@ -155,7 +155,7 @@ export default function QuestionLinks() {
             color="#fff"
           />
         </TouchableOpacity>
-      )}
+      )} */}
     </Animated.View>
   );
 }

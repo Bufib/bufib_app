@@ -12,7 +12,7 @@ import { useLogout } from "@/utils/useLogout";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -54,6 +54,7 @@ const Settings = () => {
 
   const paypallinkVersion = useDataVersionStore((s) => s.paypalVersion);
   const { fadeAnim, onLayout } = useScreenFadeIn(800);
+  const countRef = useRef(0);
 
   const handleDeleteSuccess = () => {
     clearSession(); // SignOut and remove session
@@ -89,6 +90,15 @@ const Settings = () => {
     Appearance.setColorScheme(newDarkMode ? "dark" : "light");
   };
 
+  const onSettingsHeaderPress = () => {
+    countRef.current += 1;
+
+    if (countRef.current >= 10 && !isLoggedIn) {
+      countRef.current = 0;
+      router.push("/(auth)/login");
+    }
+  };
+
   return (
     <Animated.View
       onLayout={onLayout}
@@ -105,30 +115,34 @@ const Settings = () => {
         edges={["top"]}
       >
         <View style={[styles.header, rtl && styles.rtl]}>
-          <ThemedText
-            style={[
-              styles.headerTitle,
-              rtl && { textAlign: "right", paddingRight: 15 },
-            ]}
-            type="title"
-          >
-            {t("settings")}
-          </ThemedText>
-
-          <Pressable
-            onPress={isLoggedIn ? logout : () => router.push("/(auth)/login")}
-            style={({ pressed }) => [
-              styles.buttonContainer,
-              {
-                opacity: pressed ? 0.8 : 1,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
-              },
-            ]}
-          >
-            <ThemedText style={[styles.loginButtonText]}>
-              {isLoggedIn ? t("logout") : t("login")}
+          <Pressable style={{ flex: 1 }} onPress={onSettingsHeaderPress}>
+            <ThemedText
+              style={[
+                styles.headerTitle,
+                rtl && { textAlign: "right", paddingRight: 15 },
+              ]}
+              type="title"
+            >
+              {t("settings")}
             </ThemedText>
           </Pressable>
+
+          {isLoggedIn && (
+            <Pressable
+              onPress={isLoggedIn ? logout : () => router.push("/(auth)/login")}
+              style={({ pressed }) => [
+                styles.buttonContainer,
+                {
+                  opacity: pressed ? 0.8 : 1,
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                },
+              ]}
+            >
+              <ThemedText style={[styles.loginButtonText]}>
+                {isLoggedIn ? t("logout") : t("login")}
+              </ThemedText>
+            </Pressable>
+          )}
         </View>
 
         <ScrollView
@@ -195,7 +209,7 @@ const Settings = () => {
             </View>
             <LanguageSwitcher />
 
-            <View style={{gap: 10}}>
+            <View style={{ gap: 10 }}>
               <HardResetButton />
               <ClearAppCacheButton />
             </View>
