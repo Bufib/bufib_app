@@ -179,6 +179,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "flex-start",
+    width: 180,
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -186,6 +187,7 @@ const styles = StyleSheet.create({
   label: {
     color: "#FFFFFF",
     fontSize: 16,
+    textAlign: "center",
   },
 });
 

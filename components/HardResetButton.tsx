@@ -52,9 +52,11 @@ export function HardResetButton() {
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
+        width: 180,
+        
       }}
     >
-      <ThemedText style={{ color: Colors.universal.error }}>
+      <ThemedText style={{ color: Colors.universal.error, textAlign: "center" }}>
         {t("hardResetDatabase")}
       </ThemedText>
       {resetting && <LoadingIndicator />}

@@ -107,6 +107,7 @@ const en = {
   noInternetConnectionMessage:
     "The changes could not be applied because there is no internet connection.",
   ok: "OK",
+feedback: "Feedback",
 
   // Database
   updateAvailable: "New update available",

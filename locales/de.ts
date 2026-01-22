@@ -77,7 +77,7 @@ const de = {
   reminderSet: "Erinnerung gesetzt",
   reminderDeleted: "Erinnerung gelöscht",
   repeatsWeekly: "Wiederholt sich wöchentlich",
-
+  feedback: "Feedback",
   // Navigation
   knowledge: "Wissen",
   settings: "Einstellungen",

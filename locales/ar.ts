@@ -72,6 +72,7 @@ const ar = {
   initAppWentWrong:
     "حدث خطأ ما أثناء إعداد التطبيق. حاول إغلاق التطبيق وفتحه مرة أخرى.",
   pdfsTitle: "كتب وملفات PDFs",
+  feedback: "ملاحظات",
 
   // Books and PDF
   readingSettings: "التنسيق",
@@ -393,7 +394,7 @@ const ar = {
   signUpUsernameInvalidChars:
     "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطات وشرطات سفلية فقط.",
   cancelCaptcha: "يرجى عدم النقر بعيدًا، وإلا سيتم إلغاء التحقق!",
-  
+
   // Settings
   logout: "تسجيل الخروج",
   login: "تسجيل الدخول",

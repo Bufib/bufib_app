@@ -33,6 +33,7 @@ import { HardResetButton } from "@/components/HardResetButton";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 import ClearAppCacheButton from "@/components/ClearCacheButton";
+import FeedbackButton from "@/components/FeedbackButton";
 const Settings = () => {
   const colorScheme = useColorScheme() || "light";
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
@@ -208,11 +209,12 @@ const Settings = () => {
               />
             </View>
 
-            <LanguageSwitcher disabled={true}/>
+            <LanguageSwitcher disabled={false}/>
 
             <View style={{ gap: 10 }}>
               <HardResetButton />
               <ClearAppCacheButton />
+              <FeedbackButton />
             </View>
           </View>
 

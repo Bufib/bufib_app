@@ -3,6 +3,7 @@ import type { PdfType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useGradient } from "@/hooks/useGradient";
 import { formatDate } from "@/utils/formatDate";
+import { Entypo } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { FC } from "react";
@@ -26,14 +27,21 @@ const PdfPreviewCard: FC<PdfProps> = ({ pdf }) => {
         end={{ x: 1, y: 1 }}
       >
         {/* Document icon / badge */}
+
         <View style={styles.vinylRecord}>
-          <View style={styles.vinylCenter}>
-            <Feather
-              name="file-text"
-              size={16}
-              color="rgba(255, 255, 255, 0.8)"
-            />
-          </View>
+            {pdf.isBook ? (
+              <Entypo
+                name="open-book"
+                size={20}
+                color="rgba(255, 255, 255, 0.8)"
+              />
+            ) : (
+              <Feather
+                name="file-text"
+                size={20}
+                color="rgba(255, 255, 255, 0.8)"
+              />
+            )}
         </View>
 
         {/* Overlay */}
@@ -91,10 +99,10 @@ const styles = StyleSheet.create({
 
   // reuse "vinyl" styles as a generic badge
   vinylRecord: {
-    top: 8,
-    right: 8,
-    width: 80,
-    height: 80,
+    top: 10,
+    right: 10,
+    width: 60,
+    height: 60,
     borderRadius: 40,
     backgroundColor: "rgba(0, 0, 0, 0.2)",
     justifyContent: "center",

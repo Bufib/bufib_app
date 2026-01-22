@@ -91,9 +91,7 @@ const PodcastPreviewCard: FC<PodcastProps> = ({ podcast }) => {
       >
         {/* Vinyl record inspired circle */}
         <View style={styles.vinylRecord}>
-          <View style={styles.vinylCenter}>
-            <Feather name="mic" size={16} color="rgba(255, 255, 255, 0.8)" />
-          </View>
+            <Feather name="mic" size={20} color="rgba(255, 255, 255, 0.8)" />
         </View>
 
         {/* Overlay */}
@@ -156,10 +154,10 @@ const styles = StyleSheet.create({
   },
 
   vinylRecord: {
-    top: 8,
-    right: 8,
-    width: 80,
-    height: 80,
+    top: 10,
+    right: 10,
+    width: 60,
+    height: 60,
     borderRadius: 40,
     backgroundColor: "rgba(0, 0, 0, 0.2)",
     justifyContent: "center",

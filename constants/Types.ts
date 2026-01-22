@@ -544,6 +544,7 @@ export type PdfType = {
   pdf_title: string;
   pdf_filename: string; // The filename in your bucket (e.g., "quran-tafsir.pdf")
   language_code: string; // e.g., "en", "de", "ar"
+  isBook: boolean
 };
 
 export type PdfViewerScreenPropsType = {
