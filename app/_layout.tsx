@@ -847,7 +847,7 @@ import { setDatabase } from "../db";
 import { migrateDbIfNeeded, DB_NAME } from "@/db/migrates";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { ThemedText } from "@/components/ThemedText";
-
+import { setAudioModeAsync } from "expo-audio";
 // If removeEventListener doesn’t exist, patch it on-the-fly:
 if (typeof (BackHandler as any).removeEventListener !== "function") {
   (BackHandler as any).removeEventListener = (
@@ -1107,6 +1107,7 @@ function AppContent() {
     const fg = colorScheme === "dark" ? Colors.dark.text : Colors.light.text;
     const bg =
       colorScheme === "dark" ? Colors.dark.background : Colors.light.background;
+
     return (
       <View
         style={{
@@ -1188,6 +1189,7 @@ export default function RootLayout() {
   const colorScheme = (useColorScheme() || "light") as "light" | "dark";
   const [migrationError, setMigrationError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
+  const [audioReady, setAudioReady] = useState(Platform.OS !== "ios");
 
   // Memoize the onInit callback to prevent SQLiteProvider from reinitializing
   const onInit = useCallback(async (db: SQLite.SQLiteDatabase) => {
@@ -1215,6 +1217,20 @@ export default function RootLayout() {
       setRetrying(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") return;
+
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      allowsRecording: false,
+      shouldPlayInBackground: true,
+    })
+      .catch(() => {})
+      .finally(() => setAudioReady(true));
+  }, []);
+
+  if (!audioReady) return null;
 
   return (
     <GlobalVideoHost>

@@ -1,14 +1,9 @@
-//! WOrks but without return function
-// import React, { useCallback, useState } from "react";
-// import {
-//   Alert,
-//   StyleSheet,
-//   Text,
-//   TouchableOpacity,
-// } from "react-native";
+// import React, { useCallback, useState, useRef, useEffect } from "react";
+// import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 // import * as FileSystem from "expo-file-system/legacy";
 // import { useTranslation } from "react-i18next";
 // import { LoadingIndicator } from "./LoadingIndicator";
+// import Toast from "react-native-toast-message";
 
 // async function clearAppCache(): Promise<void> {
 //   const cacheDir = FileSystem.cacheDirectory;
@@ -25,6 +20,14 @@
 // const ClearAppCacheButton: React.FC = () => {
 //   const { t } = useTranslation();
 //   const [isClearing, setIsClearing] = useState(false);
+//   const isMountedRef = useRef(false);
+
+//   useEffect(() => {
+//     isMountedRef.current = true;
+//     return () => {
+//       isMountedRef.current = false;
+//     };
+//   }, []);
 
 //   const handlePress = useCallback(() => {
 //     Alert.alert(
@@ -39,11 +42,21 @@
 //             try {
 //               setIsClearing(true);
 //               await clearAppCache();
-//               Alert.alert(t("successTitle"), t("clearAppCacheSuccessMessage"));
+
+//               if (isMountedRef.current) {
+//                 Toast.show({
+//                   text1: t("successTitle"),
+//                   text2: t("clearAppCacheSuccessMessage"),
+//                 });
+//               }
 //             } catch {
-//               Alert.alert(t("errorTitle"), t("clearAppCacheErrorMessage"));
+//               if (isMountedRef.current) {
+//                 Alert.alert(t("errorTitle"), t("clearAppCacheErrorMessage"));
+//               }
 //             } finally {
-//               setIsClearing(false);
+//               if (isMountedRef.current) {
+//                 setIsClearing(false);
+//               }
 //             }
 //           },
 //         },
@@ -59,7 +72,7 @@
 //       activeOpacity={0.7}
 //     >
 //       {isClearing ? (
-//         <LoadingIndicator size={"large"} />
+//         <LoadingIndicator size="large" />
 //       ) : (
 //         <Text style={styles.label}>{t("clearAppCache")}</Text>
 //       )}
@@ -76,6 +89,7 @@
 //     alignItems: "center",
 //     justifyContent: "center",
 //     alignSelf: "flex-start",
+//     width: 180,
 //   },
 //   buttonDisabled: {
 //     opacity: 0.6,
@@ -83,6 +97,7 @@
 //   label: {
 //     color: "#FFFFFF",
 //     fontSize: 16,
+//     textAlign: "center",
 //   },
 // });
 
@@ -92,13 +107,16 @@ import React, { useCallback, useState, useRef, useEffect } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 import * as FileSystem from "expo-file-system/legacy";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoadingIndicator } from "./LoadingIndicator";
 import Toast from "react-native-toast-message";
+import { useGlobalPlayer } from "@/player/useGlobalPlayer";
+import { usePodcastDownloadStore } from "@/stores/usePodcastDownloadStore";
 
 async function clearAppCache(): Promise<void> {
   const cacheDir = FileSystem.cacheDirectory;
   if (!cacheDir) return;
-
   const items = await FileSystem.readDirectoryAsync(cacheDir);
   await Promise.all(
     items.map((name) =>
@@ -107,10 +125,21 @@ async function clearAppCache(): Promise<void> {
   );
 }
 
+async function clearPodcastAsyncStorage(): Promise<void> {
+  const allKeys = await AsyncStorage.getAllKeys();
+  const podcastKeys = allKeys.filter((key) => key.startsWith("podcast:"));
+  if (podcastKeys.length > 0) {
+    await AsyncStorage.multiRemove(podcastKeys);
+  }
+}
+
 const ClearAppCacheButton: React.FC = () => {
   const { t } = useTranslation();
   const [isClearing, setIsClearing] = useState(false);
   const isMountedRef = useRef(false);
+  const queryClient = useQueryClient();
+  const { stopAndUnload } = useGlobalPlayer();
+  const resetAllDownloads = usePodcastDownloadStore((s) => s.resetAll);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -131,7 +160,22 @@ const ClearAppCacheButton: React.FC = () => {
           onPress: async () => {
             try {
               setIsClearing(true);
+
+              // 1. Stop and unload the global player
+              await stopAndUnload();
+
+              // 2. Clear file system cache
               await clearAppCache();
+
+              // 3. Clear AsyncStorage podcast data
+              await clearPodcastAsyncStorage();
+
+              // 4. Reset Zustand download store
+              resetAllDownloads?.();
+
+              // 5. Clear React Query cache
+              queryClient.removeQueries({ queryKey: ["podcasts"] });
+              queryClient.removeQueries({ queryKey: ["download"] });
 
               if (isMountedRef.current) {
                 Toast.show({
@@ -152,7 +196,7 @@ const ClearAppCacheButton: React.FC = () => {
         },
       ]
     );
-  }, [t]);
+  }, [t, queryClient, stopAndUnload, resetAllDownloads]);
 
   return (
     <TouchableOpacity
