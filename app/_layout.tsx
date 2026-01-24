@@ -300,7 +300,9 @@ function AppContent() {
   if (!languageContextReady || !storesHydrated || !isSessionRestored)
     return null;
 
-  if (languageContextReady && !hasStoredLanguage) return <LanguageSelection />;
+
+  //! Language Context
+  // if (languageContextReady && !hasStoredLanguage) return <LanguageSelection />;
 
   if (!isDbReady && showLoadingScreen && hasInternet) {
     const fg = colorScheme === "dark" ? Colors.dark.text : Colors.light.text;

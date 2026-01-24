@@ -15,34 +15,21 @@ export const useFontSizeStore = create<FontSizeState>()(
       fontSize: 20, // Default font size
       lineHeight: 40, // Default line height
 
-      // Setter for fontSize
       setFontSize: (size: number) => {
         set({ fontSize: size });
       },
 
-      // Setter for lineHeight
       setLineHeight: (height: number) => {
         set({ lineHeight: height });
       },
-
-      // Load settings from KV Store (optional custom logic)
-      // loadSettings: async () => {
-      //   const storedFontSize = await AsyncStorage.getItem(FONT_SIZE_KEY);
-      //   const storedLineHeight = await AsyncStorage.getItem(LINE_HEIGHT_KEY);
-
-      //   set({
-      //     fontSize: storedFontSize ? parseInt(storedFontSize, 10) : 20,
-      //     lineHeight: storedLineHeight ? parseInt(storedLineHeight, 10) : 40,
-      //   });
-      // },
     }),
     {
-      name: "font-settings", // Unique key for the persisted state
+      name: "font-settings",
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         fontSize: state.fontSize,
         lineHeight: state.lineHeight,
-      }), // Only persist fontSize and lineHeight
+      }),
     }
   )
 );
