@@ -324,7 +324,7 @@ export const globalPlayer = getOrCreatePlayer();
 // Keep "stopped" in the union for backwards compat, but we won't set it on keepSource
 type PlayerStatus =
   | "idle"
-  | "playing"   
+  | "playing"
   | "loading"
   | "ready"
   | "error"

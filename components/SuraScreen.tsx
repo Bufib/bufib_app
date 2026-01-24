@@ -46,6 +46,7 @@ import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { useQuranAudio } from "@/hooks/useQuranAudio";
 import { RECITERS, type ReciterId } from "@/hooks/useQuranAudio";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+import { Asset } from "expo-asset";
 
 const SuraScreen: React.FC = () => {
   const colorScheme = useColorScheme() || "light";
@@ -69,7 +70,8 @@ const SuraScreen: React.FC = () => {
     v: QuranVerseType;
     i: number;
   } | null>(null);
-
+const logoAsset = Asset.fromModule(require("@/assets/images/logo.png"));
+const artworkUri = logoAsset.uri;
   const [reciterPicker, setReciterPicker] = useState<{
     visible: boolean;
     verse: QuranVerseType | null;
@@ -161,6 +163,7 @@ const SuraScreen: React.FC = () => {
         ? `${juzHeader?.title ?? "Juz"} • ${v.sura}:${v.aya}`
         : `${displayName ?? `Sura ${suraNumber}`} • ${v.aya}`,
     reciter,
+    artworkUri,
   });
 
   const openReciterPicker = useCallback((v: QuranVerseType, i: number) => {

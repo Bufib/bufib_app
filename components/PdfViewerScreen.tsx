@@ -1,3 +1,5 @@
+//! Last worked
+
 // import React, { useEffect, useState, useRef } from "react";
 // import {
 //   ActivityIndicator,
@@ -7,9 +9,13 @@
 //   TouchableOpacity,
 //   ScrollView,
 //   Animated,
+//   Alert,
+//   useColorScheme,
 // } from "react-native";
 // import Pdf from "react-native-pdf";
 // import { useRouter } from "expo-router";
+// import * as Sharing from "expo-sharing";
+// import * as FileSystem from "expo-file-system/legacy";
 // import { usePdfs } from "@/hooks/usePdfs";
 // import { useLanguage } from "@/contexts/LanguageContext";
 // import Feather from "@expo/vector-icons/Feather";
@@ -17,9 +23,14 @@
 // import { PdfViewerScreenPropsType } from "@/constants/Types";
 // import { useSafeAreaInsets } from "react-native-safe-area-context";
 // import HeaderLeftBackButton from "./HeaderLeftBackButton";
-// import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 // import { isPdfFavorited, togglePdfFavorite } from "@/utils/favorites";
 // import { StatusBar } from "expo-status-bar";
+// import { useTranslation } from "react-i18next";
+// import { Ionicons } from "@expo/vector-icons";
+// import { Colors } from "@/constants/Colors";
+// import { ThemedView } from "./ThemedView";
+// import { ThemedText } from "./ThemedText";
+// import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 // const getPdfNumericId = (filename: string): number => {
 //   const asNumber = Number(filename);
@@ -45,18 +56,20 @@
 //   const [pageCount, setPageCount] = useState<number>(0);
 //   const [currentPage, setCurrentPage] = useState<number>(1);
 //   const insets = useSafeAreaInsets();
-
+//   const colorScheme = useColorScheme() || "light";
 //   // eBook reader features
 //   const [showControls, setShowControls] = useState<boolean>(true);
 //   const [showPageJump, setShowPageJump] = useState<boolean>(false);
 //   const [showSettings, setShowSettings] = useState<boolean>(false);
+
+//   // Download state
+//   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
 //   // Layout toggle - GLOBAL preference
 //   const [isHorizontal, setIsHorizontal] = useState<boolean>(true);
 
 //   // Favorites
 //   const [isFavorite, setIsFavorite] = useState<boolean>(false);
-//   const { triggerRefreshFavorites } = useRefreshFavorites();
 
 //   const pdfRef = useRef<any>(null);
 //   const controlsOpacity = useRef(new Animated.Value(1)).current;
@@ -64,6 +77,10 @@
 //   const hasLoadedRef = useRef(false);
 //   const currentFilenameRef = useRef<string | undefined>(undefined);
 //   const hasLoadedPreferencesRef = useRef(false);
+//   const { t } = useTranslation();
+//   const incrementPdfFavoritesVersion = useDataVersionStore(
+//     (s) => s.incrementPdfFavoritesVersion
+//   );
 
 //   // Load GLOBAL layout preference once on mount
 //   useEffect(() => {
@@ -81,7 +98,7 @@
 //     };
 
 //     loadGlobalPreference();
-//   }, []); // Only run once on mount
+//   }, []);
 
 //   // Load saved reading position (per-file)
 //   useEffect(() => {
@@ -147,9 +164,66 @@
 //     try {
 //       const next = await togglePdfFavorite(id, lang);
 //       setIsFavorite(next);
-//       triggerRefreshFavorites();
+//       incrementPdfFavoritesVersion();
 //     } catch (e) {
 //       console.warn("[PdfViewer] togglePdfFavorite error", e);
+//     }
+//   };
+
+//   // Download/Share PDF function
+//   const handleDownloadPdf = async () => {
+//     if (!sourceUri || isDownloading || !filename) return;
+
+//     let tempFilePath: string | null = null;
+
+//     try {
+//       setIsDownloading(true);
+
+//       // Check if sharing is available
+//       const isAvailable = await Sharing.isAvailableAsync();
+
+//       if (!isAvailable) {
+//         Alert.alert("Unavailable", "Sharing is not available on this device");
+//         return;
+//       }
+
+//       // iOS requires files to be in DocumentDirectory to share
+//       // Copy from cache to a temporary shareable location
+//       const fileName = filename.endsWith(".pdf") ? filename : `${filename}.pdf`;
+//       tempFilePath = `${
+//         FileSystem.documentDirectory
+//       }temp_${Date.now()}_${fileName}`;
+
+//       await FileSystem.copyAsync({
+//         from: sourceUri,
+//         to: tempFilePath,
+//       });
+
+//       // Share the PDF file from the temporary location
+//       await Sharing.shareAsync(tempFilePath, {
+//         mimeType: "application/pdf",
+//         dialogTitle: `Save ${filename}`,
+//         UTI: "com.adobe.pdf",
+//       });
+//     } catch (err: any) {
+//       console.warn("[PdfViewer] Download error:", err);
+//       Alert.alert(
+//         "Download Failed",
+//         err?.message || "Unable to save the PDF file"
+//       );
+//     } finally {
+//       // Clean up temporary file
+//       if (tempFilePath) {
+//         try {
+//           const fileInfo = await FileSystem.getInfoAsync(tempFilePath);
+//           if (fileInfo.exists) {
+//             await FileSystem.deleteAsync(tempFilePath, { idempotent: true });
+//           }
+//         } catch (cleanupErr) {
+//           console.warn("[PdfViewer] Cleanup error:", cleanupErr);
+//         }
+//       }
+//       setIsDownloading(false);
 //     }
 //   };
 
@@ -274,12 +348,11 @@
 
 //   // Determine effective layout (force horizontal for single-page PDFs)
 //   const effectiveIsHorizontal = pageCount === 1 ? true : isHorizontal;
-//   const isForcedHorizontal = pageCount === 1 && !isHorizontal;
 
 //   if (!filename) {
 //     return (
 //       <View style={styles.center}>
-//         <Text style={styles.errorText}>No filename received</Text>
+//         <Text style={styles.errorText}>{t("error")}</Text>
 //       </View>
 //     );
 //   }
@@ -287,7 +360,7 @@
 //   return (
 //     <>
 //       <View style={styles.container}>
-//         <StatusBar style={showControls? "light" : "dark"} />
+//         <StatusBar style={showControls ? "light" : "dark"} />
 //         {error && (
 //           <View style={styles.center}>
 //             <Text style={styles.errorText}>{error}</Text>
@@ -300,18 +373,21 @@
 //           </View>
 //         )}
 
-//         {!error && loading && (
-//           <View style={styles.center}>
-//             <ActivityIndicator size="large" color="#3B82F6" />
+//         {!error && loading ? (
+//           <ThemedView style={styles.center}>
+//             <ActivityIndicator
+//               size="large"
+//               color={Colors[colorScheme].defaultIcon}
+//             />
 //             {progress > 0 && (
-//               <Text style={styles.progressText}>
-//                 Loading {Math.round(progress * 100)}%
-//               </Text>
+//               <ThemedText style={styles.progressText}>
+//                 {t("loading")} {Math.round(progress * 100)}%
+//               </ThemedText>
 //             )}
-//           </View>
-//         )}
+//           </ThemedView>
+//         ) : null}
 
-//         {!error && !loading && sourceUri && (
+//         {!error && !loading && sourceUri ? (
 //           <>
 //             <TouchableOpacity
 //               activeOpacity={1}
@@ -326,7 +402,6 @@
 //                 horizontal={effectiveIsHorizontal}
 //                 enableRTL={rtl}
 //                 trustAllCerts={false}
-//                 // page={currentPage}
 //                 minScale={1}
 //                 maxScale={3.0}
 //                 enableAntialiasing={true}
@@ -353,14 +428,14 @@
 //             </TouchableOpacity>
 
 //             {/* Top Controls Bar */}
-//             {showControls && (
+//             {showControls ? (
 //               <Animated.View
 //                 style={[
 //                   styles.topBar,
 //                   { opacity: controlsOpacity, paddingTop: insets.top },
 //                 ]}
 //               >
-//                 <HeaderLeftBackButton />
+//                 <HeaderLeftBackButton color={"#fff"} />
 
 //                 <View style={styles.pageInfo}>
 //                   <TouchableOpacity
@@ -373,26 +448,40 @@
 //                 </View>
 
 //                 <TouchableOpacity
+//                   style={[styles.controlButton]}
+//                   onPress={handleDownloadPdf}
+//                   disabled={isDownloading}
+//                 >
+//                   {isDownloading ? (
+//                     <ActivityIndicator size="small" color="#FFFFFF" />
+//                   ) : (
+//                     <Feather name="download" size={24} color="#FFFFFF" />
+//                   )}
+//                 </TouchableOpacity>
+
+//                 <TouchableOpacity
 //                   style={styles.controlButton}
 //                   onPress={onPressToggleFavorite}
 //                 >
-//                   <Feather
-//                     name="star"
-//                     size={25}
-//                     color={isFavorite ? "#F59E0B" : "#FFFFFF"}
+//                   <Ionicons
+//                     name={isFavorite ? "star" : "star-outline"}
+//                     size={24}
+//                     color={isFavorite ? Colors.universal.favorite : "#fff"}
 //                   />
 //                 </TouchableOpacity>
-//                 <TouchableOpacity
-//                   style={styles.controlButton}
-//                   onPress={() => setShowSettings(!showSettings)}
-//                 >
-//                   <Feather name="settings" size={24} color="#FFFFFF" />
-//                 </TouchableOpacity>
+//                 {pageCount > 1 && (
+//                   <TouchableOpacity
+//                     style={styles.controlButton}
+//                     onPress={() => setShowSettings(!showSettings)}
+//                   >
+//                     <Feather name="settings" size={24} color="#FFFFFF" />
+//                   </TouchableOpacity>
+//                 )}
 //               </Animated.View>
-//             )}
+//             ) : null}
 
 //             {/* Bottom Navigation Bar */}
-//             {showControls && (
+//             {showControls ? (
 //               <Animated.View
 //                 style={[styles.bottomBar, { opacity: controlsOpacity }]}
 //               >
@@ -447,14 +536,16 @@
 //                   />
 //                 </TouchableOpacity>
 //               </Animated.View>
-//             )}
+//             ) : null}
 
 //             {/* Settings Menu */}
-//             {showSettings && (
+//             {showSettings && pageCount > 1 ? (
 //               <View style={styles.settingsOverlay}>
 //                 <View style={styles.settingsContainer}>
 //                   <View style={styles.settingsHeader}>
-//                     <Text style={styles.settingsTitle}>Reading Settings</Text>
+//                     <Text style={styles.settingsTitle}>
+//                       {t("readingSettings")}
+//                     </Text>
 //                     <TouchableOpacity onPress={() => setShowSettings(false)}>
 //                       <Feather name="x" size={24} color="#FFFFFF" />
 //                     </TouchableOpacity>
@@ -463,7 +554,7 @@
 //                   <View style={styles.settingsContent}>
 //                     {/* Layout Mode */}
 //                     <View style={styles.settingSection}>
-//                       <Text style={styles.settingLabel}>Page Layout</Text>
+//                       <Text style={styles.settingLabel}>{t("pageLayout")}</Text>
 //                       <View style={styles.layoutButtons}>
 //                         <TouchableOpacity
 //                           style={[
@@ -484,7 +575,7 @@
 //                               isHorizontal && styles.layoutButtonTextActive,
 //                             ]}
 //                           >
-//                             Horizontal
+//                             {t("horizontal")}
 //                           </Text>
 //                         </TouchableOpacity>
 
@@ -507,7 +598,7 @@
 //                               !isHorizontal && styles.layoutButtonTextActive,
 //                             ]}
 //                           >
-//                             Vertical
+//                             {t("vertical")}
 //                           </Text>
 //                         </TouchableOpacity>
 //                       </View>
@@ -515,17 +606,17 @@
 //                         {pageCount === 1
 //                           ? "Single-page PDFs always use horizontal layout"
 //                           : isHorizontal
-//                           ? "Swipe left/right to turn pages"
-//                           : "Scroll up/down continuously"}
+//                           ? t("horizontalInfoText")
+//                           : t("verticalInfoText")}
 //                       </Text>
 //                     </View>
 //                   </View>
 //                 </View>
 //               </View>
-//             )}
+//             ) : null}
 
 //             {/* Page Jump Menu */}
-//             {showPageJump && (
+//             {showPageJump ? (
 //               <View style={styles.pageJumpOverlay}>
 //                 <View style={styles.pageJumpContainer}>
 //                   <View style={styles.pageJumpHeader}>
@@ -559,9 +650,9 @@
 //                   </ScrollView>
 //                 </View>
 //               </View>
-//             )}
+//             ) : null}
 //           </>
-//         )}
+//         ) : null}
 //       </View>
 //     </>
 //   );
@@ -588,7 +679,6 @@
 //   },
 //   progressText: {
 //     marginTop: 12,
-//     color: "#E5E7EB",
 //     fontSize: 16,
 //     fontWeight: "600",
 //   },
@@ -626,6 +716,9 @@
 //   },
 //   controlButton: {
 //     padding: 8,
+//     minWidth: 40,
+//     alignItems: "center",
+//     justifyContent: "center",
 //   },
 //   pageInfo: {
 //     flex: 1,
@@ -713,41 +806,10 @@
 //     fontWeight: "600",
 //     marginBottom: 12,
 //   },
-//   settingRowLabel: {
-//     color: "#FFFFFF",
-//     fontSize: 16,
-//     fontWeight: "600",
-//   },
 //   settingHint: {
 //     color: "#9CA3AF",
 //     fontSize: 13,
 //     marginTop: 8,
-//   },
-//   settingRow: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     paddingVertical: 4,
-//   },
-//   settingRowButton: {
-//     backgroundColor: "#374151",
-//     paddingHorizontal: 12,
-//     paddingVertical: 12,
-//     borderRadius: 8,
-//   },
-//   settingRowLeft: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     gap: 12,
-//   },
-//   settingRowRight: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     gap: 8,
-//   },
-//   settingValue: {
-//     color: "#9CA3AF",
-//     fontSize: 14,
 //   },
 
 //   // Layout Buttons
@@ -779,29 +841,6 @@
 //   },
 //   layoutButtonTextActive: {
 //     color: "#FFFFFF",
-//   },
-
-//   // Toggle Switch
-//   toggle: {
-//     width: 50,
-//     height: 28,
-//     borderRadius: 14,
-//     backgroundColor: "#374151",
-//     padding: 2,
-//     justifyContent: "center",
-//   },
-//   toggleActive: {
-//     backgroundColor: "#3B82F6",
-//   },
-//   toggleThumb: {
-//     width: 24,
-//     height: 24,
-//     borderRadius: 12,
-//     backgroundColor: "#FFFFFF",
-//     alignSelf: "flex-start",
-//   },
-//   toggleThumbActive: {
-//     alignSelf: "flex-end",
 //   },
 
 //   // Page Jump Menu
@@ -860,11 +899,6 @@
 //   pageJumpItemText: {
 //     color: "#FFFFFF",
 //     fontSize: 16,
-//   },
-//   divider: {
-//     height: 1,
-//     backgroundColor: "#374151",
-//     marginVertical: 8,
 //   },
 // });
 
@@ -950,9 +984,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
     (s) => s.incrementPdfFavoritesVersion
   );
 
-  useEffect(() => {
-  console.log('[PdfViewer] render', { filename, sourceUri, loading });
-});
   // Load GLOBAL layout preference once on mount
   useEffect(() => {
     const loadGlobalPreference = async () => {
@@ -1256,15 +1287,11 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
               </ThemedText>
             )}
           </ThemedView>
-        ):(null)}
+        ) : null}
 
         {!error && !loading && sourceUri ? (
           <>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={styles.pdfContainer}
-              onPress={toggleControls}
-            >
+            <View style={styles.pdfContainer}>
               <Pdf
                 ref={pdfRef}
                 source={{ uri: sourceUri, cache: true }}
@@ -1280,6 +1307,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                 enableDoubleTapZoom
                 fitPolicy={2}
                 spacing={10}
+                onPageSingleTap={toggleControls}
                 onLoadComplete={(numberOfPages) => {
                   setPageCount(numberOfPages);
                 }}
@@ -1296,7 +1324,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   );
                 }}
               />
-            </TouchableOpacity>
+            </View>
 
             {/* Top Controls Bar */}
             {showControls ? (
@@ -1349,7 +1377,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   </TouchableOpacity>
                 )}
               </Animated.View>
-            ):(null)}
+            ) : null}
 
             {/* Bottom Navigation Bar */}
             {showControls ? (
@@ -1407,7 +1435,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   />
                 </TouchableOpacity>
               </Animated.View>
-            ):(null)}
+            ) : null}
 
             {/* Settings Menu */}
             {showSettings && pageCount > 1 ? (
@@ -1484,7 +1512,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   </View>
                 </View>
               </View>
-            ):(null)}
+            ) : null}
 
             {/* Page Jump Menu */}
             {showPageJump ? (
@@ -1521,9 +1549,9 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   </ScrollView>
                 </View>
               </View>
-            ):(null)}
+            ) : null}
           </>
-        ):(null)}
+        ) : null}
       </View>
     </>
   );

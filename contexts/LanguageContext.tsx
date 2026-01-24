@@ -1,70 +1,3 @@
-// //! Works
-// // import { LanguageContextType } from "@/constants/Types";
-// // import AsyncStorage from "@react-native-async-storage/async-storage";
-// // import React, {
-// //   createContext,
-// //   ReactNode,
-// //   useContext,
-// //   useEffect,
-// //   useState,
-// // } from "react";
-// // import { useTranslation } from "react-i18next";
-
-// // const LanguageContext = createContext<LanguageContextType>({
-// //   language: null,
-// //   setAppLanguage: async () => {},
-// //   ready: false,
-// //   isArabic: () => false,
-// // });
-
-// // export function LanguageProvider({ children }: { children: ReactNode }) {
-// //   const { i18n, ready: i18nReady } = useTranslation();
-// //   const [appLanguage, setAppLanguage] = useState<string | null>(null);
-// //   const [checkedStorage, setCheckedStorage] = useState(false);
-
-// //   // on mount, read saved language (if any)
-// //   useEffect(() => {
-// //     AsyncStorage.getItem("language")
-// //       .then((stored) => {
-// //         if (stored) {
-// //           i18n.changeLanguage(stored);
-// //           setAppLanguage(stored);
-// //         } else {
-// //           // no saved choice → stay null so LanguageSelection shows
-// //           setAppLanguage(null);
-// //         }
-// //       })
-// //       .finally(() => setCheckedStorage(true));
-// //   }, [i18n]);
-
-// //   // helper to set & persist a new language
-// //   const setAppLanguageFn = async (lng: string) => {
-// //     await AsyncStorage.setItem("language", lng);
-// //     await i18n.changeLanguage(lng);
-// //     setAppLanguage(lng);
-// //   };
-
-// //   const isArabic = () => appLanguage === "ar";
-
-// //   return (
-// //     <LanguageContext.Provider
-// //       value={{
-// //         language: appLanguage,
-// //         setAppLanguage: setAppLanguageFn,
-// //         isArabic,
-// //         ready: i18nReady && checkedStorage,
-// //       }}
-// //     >
-// //       {children}
-// //     </LanguageContext.Provider>
-// //   );
-// // }
-
-// // export function useLanguage() {
-// //   return useContext(LanguageContext);
-// // }
-
-// //! Works
 // import { LanguageContextType, LanguageCode } from "@/constants/Types";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 // import React, {
@@ -90,46 +23,65 @@
 
 // export function LanguageProvider({ children }: { children: ReactNode }) {
 //   const { i18n, ready: i18nReady } = useTranslation();
+
 //   const [lang, setLang] = useState<LanguageCode>(DEFAULT_LANG);
 //   const [checkedStorage, setCheckedStorage] = useState(false);
 //   const [hasStoredLanguage, setHasStoredLanguage] = useState(false);
 
+//   // Load stored language once on mount
 //   useEffect(() => {
 //     let mounted = true;
+
 //     (async () => {
 //       try {
 //         const stored = (await AsyncStorage.getItem(
 //           "language"
 //         )) as LanguageCode | null;
-//         console.log(stored)
-//         const next = stored ?? "de";
+
+//         const next = stored ?? DEFAULT_LANG;
+
+//         // This will trigger the languageChanged listener below
 //         await i18n.changeLanguage(next);
+
 //         if (!mounted) return;
-//         setLang(next);
+
 //         setHasStoredLanguage(!!stored);
+//       } catch (e) {
+//         // Optional: log in dev
+//         if (__DEV__) {
+//           console.warn("Failed to load language from storage:", e);
+//         }
 //       } finally {
 //         if (mounted) setCheckedStorage(true);
 //       }
 //     })();
+
 //     return () => {
 //       mounted = false;
 //     };
 //   }, [i18n]);
 
+//   // Keep local `lang` in sync with i18next
 //   useEffect(() => {
-//     const onChange = (lng: string) => setLang(lng as LanguageCode);
+//     const onChange = (lng: string) => {
+//       setLang(lng as LanguageCode);
+//     };
+
 //     i18n.on("languageChanged", onChange);
 //     return () => {
 //       i18n.off("languageChanged", onChange);
 //     };
 //   }, [i18n]);
 
+//   // Public setter for app language
 //   const setAppLanguage = useCallback(
 //     async (lng: LanguageCode) => {
 //       try {
+//         // This triggers the languageChanged event,
+//         // which updates `lang` via the effect above.
 //         await i18n.changeLanguage(lng);
 //         await AsyncStorage.setItem("language", lng);
-//         setLang(lng);
+//         setHasStoredLanguage(true);
 //       } catch (e) {
 //         console.warn("Failed to change language:", e);
 //       }
@@ -140,9 +92,15 @@
 //   const ready = i18nReady && checkedStorage;
 //   const rtl = lang === "ar";
 
-//  const value = useMemo(
-//     () => ({ lang, setAppLanguage, ready: i18nReady && checkedStorage, rtl: lang === "ar", hasStoredLanguage }),
-//     [lang, setAppLanguage, i18nReady, checkedStorage, hasStoredLanguage]
+//   const value = useMemo(
+//     () => ({
+//       lang,
+//       setAppLanguage,
+//       ready,
+//       rtl,
+//       hasStoredLanguage,
+//     }),
+//     [lang, setAppLanguage, ready, rtl, hasStoredLanguage]
 //   );
 
 //   return (
@@ -176,15 +134,13 @@ const LanguageContext = createContext<LanguageContextType>({
   setAppLanguage: async () => {},
   ready: false,
   rtl: false,
-  hasStoredLanguage: false,
+  hasStoredLanguage: true,
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const { i18n, ready: i18nReady } = useTranslation();
-
   const [lang, setLang] = useState<LanguageCode>(DEFAULT_LANG);
   const [checkedStorage, setCheckedStorage] = useState(false);
-  const [hasStoredLanguage, setHasStoredLanguage] = useState(false);
 
   // Load stored language once on mount
   useEffect(() => {
@@ -198,14 +154,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
         const next = stored ?? DEFAULT_LANG;
 
+        // Save default language if nothing was stored
+        if (!stored) {
+          await AsyncStorage.setItem("language", DEFAULT_LANG);
+        }
+
         // This will trigger the languageChanged listener below
         await i18n.changeLanguage(next);
 
         if (!mounted) return;
-
-        setHasStoredLanguage(!!stored);
       } catch (e) {
-        // Optional: log in dev
         if (__DEV__) {
           console.warn("Failed to load language from storage:", e);
         }
@@ -224,7 +182,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const onChange = (lng: string) => {
       setLang(lng as LanguageCode);
     };
-
     i18n.on("languageChanged", onChange);
     return () => {
       i18n.off("languageChanged", onChange);
@@ -235,11 +192,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setAppLanguage = useCallback(
     async (lng: LanguageCode) => {
       try {
-        // This triggers the languageChanged event,
-        // which updates `lang` via the effect above.
         await i18n.changeLanguage(lng);
         await AsyncStorage.setItem("language", lng);
-        setHasStoredLanguage(true);
       } catch (e) {
         console.warn("Failed to change language:", e);
       }
@@ -256,9 +210,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       setAppLanguage,
       ready,
       rtl,
-      hasStoredLanguage,
+      hasStoredLanguage: true, // Always true since we auto-save default
     }),
-    [lang, setAppLanguage, ready, rtl, hasStoredLanguage]
+    [lang, setAppLanguage, ready, rtl]
   );
 
   return (

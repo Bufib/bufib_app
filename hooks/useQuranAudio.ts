@@ -1,4 +1,5 @@
 //! More aggressive cache. Last that worked
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { globalPlayer, useGlobalPlayer } from "@/player/useGlobalPlayer";
 import { QuranVerseType } from "@/constants/Types";
@@ -72,11 +73,31 @@ function uriMatchesVerse(
   );
 }
 
-async function tryReplaceAny(urls: string[]): Promise<string> {
+// async function tryReplaceAny(urls: string[]): Promise<string> {
+//   let lastErr: unknown;
+//   for (const uri of urls) {
+//     try {
+//       await globalPlayer.replaceAsync({ uri });
+//       return uri;
+//     } catch (e) {
+//       lastErr = e;
+//     }
+//   }
+//   throw lastErr;
+// }
+
+// Change tryReplaceAny to accept metadata
+async function tryReplaceAny(
+  urls: string[],
+  metadata?: { title?: string; artist?: string; artwork?: string }
+): Promise<string> {
   let lastErr: unknown;
   for (const uri of urls) {
     try {
-      await globalPlayer.replaceAsync({ uri });
+      await globalPlayer.replaceAsync({
+        uri,
+        metadata: metadata ?? undefined,
+      });
       return uri;
     } catch (e) {
       lastErr = e;
@@ -173,6 +194,52 @@ export function useQuranAudio(
     });
   }, []);
 
+  // const playByIndex = useCallback(
+  //   async (index: number) => {
+  //     if (index < 0 || index >= verses.length) return;
+  //     const verse = verses[index];
+  //     const myId = ++requestIdRef.current;
+
+  //     try {
+  //       const startTime = Date.now();
+  //       const used = await tryReplaceAny(buildUrls(verse, reciter));
+  //       const loadTime = Date.now() - startTime;
+
+  //       if (myId !== requestIdRef.current) return;
+
+  //       await globalPlayer.play();
+  //       if (myId !== requestIdRef.current) return;
+
+  //       setCurrentVerseIndex(index);
+  //       idxRef.current = index;
+  //       setMetaFor(verse);
+  //       lastReciterRef.current = reciter;
+
+  //       // Preload next 2 verses
+  //       for (let i = 1; i <= 2; i++) {
+  //         const nextIndex = index + i;
+  //         if (
+  //           nextIndex < verses.length &&
+  //           !preloadedRef.current.has(nextIndex)
+  //         ) {
+  //           preloadedRef.current.add(nextIndex);
+  //           const nextUrls = buildUrls(verses[nextIndex], reciter);
+  //           preloadVerse(nextUrls, nextIndex);
+  //         }
+  //       }
+
+  //       if (__DEV__)
+  //         console.log(
+  //           `🎵 Playing ${verse.sura}:${verse.aya} (${loadTime}ms) → ${used} ▪ ${reciter}`
+  //         );
+  //     } catch (err) {
+  //       if (myId !== requestIdRef.current) return;
+  //       console.error("❌ Audio load failed", err);
+  //     }
+  //   },
+  //   [verses, reciter, setMetaFor, preloadVerse]
+  // );
+
   const playByIndex = useCallback(
     async (index: number) => {
       if (index < 0 || index >= verses.length) return;
@@ -181,7 +248,15 @@ export function useQuranAudio(
 
       try {
         const startTime = Date.now();
-        const used = await tryReplaceAny(buildUrls(verse, reciter));
+        const title = makeTitle(verse);
+
+        // ✅ Pass metadata to tryReplaceAny for lock screen
+        const used = await tryReplaceAny(buildUrls(verse, reciter), {
+          title,
+          artist: RECITERS[reciter].label,
+          artwork: opts.artworkUri,
+        });
+
         const loadTime = Date.now() - startTime;
 
         if (myId !== requestIdRef.current) return;
@@ -216,9 +291,8 @@ export function useQuranAudio(
         console.error("❌ Audio load failed", err);
       }
     },
-    [verses, reciter, setMetaFor, preloadVerse]
+    [verses, reciter, setMetaFor, preloadVerse, makeTitle, opts.artworkUri]
   );
-
   const playVerse = useCallback(
     async (_v: QuranVerseType, i: number) => playByIndex(i),
     [playByIndex]
