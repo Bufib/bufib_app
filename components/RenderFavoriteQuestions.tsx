@@ -1,8 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Pressable,
@@ -15,7 +11,6 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { router } from "expo-router";
 import { getFavoriteQuestions } from "@/db/queries/questions";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { QuestionType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -30,9 +25,8 @@ function RenderFavoriteQuestions() {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const { favoritesRefreshed } = useRefreshFavorites();
   const { lang } = useLanguage();
-  const questionVersion = useDataVersionStore((s) => s.questionsVersion);
+  const questionsFavoritesVersion = useDataVersionStore((s) => s.questionsFavoritesVersion);
 
   // useEffect(() => {
   //   let isMounted = true;
@@ -66,7 +60,7 @@ function RenderFavoriteQuestions() {
   //   return () => {
   //     isMounted = false;
   //   };
-  // }, [favoritesRefreshed, lang, questionVersion]);
+  // }, [favoritesRefreshed, lang, questionsFavoritesVersion]);
 
   useEffect(() => {
     let cancelled = false;
@@ -103,11 +97,11 @@ function RenderFavoriteQuestions() {
     return () => {
       cancelled = true;
     };
-  }, [favoritesRefreshed, lang, questionVersion, t]);
+  }, [lang, questionsFavoritesVersion, t]);
 
   // const listExtraData = React.useMemo(
-  //   () => `${favoritesRefreshed}|${questionVersion}`,
-  //   [favoritesRefreshed, questionVersion]
+  //   () => `${favoritesRefreshed}|${questionsFavoritesVersion}`,
+  //   [favoritesRefreshed, questionsFavoritesVersion]
   // );
 
   const renderItem = useCallback(
@@ -196,8 +190,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    textAlign: "center"
-
+    textAlign: "center",
   },
   flatListContent: {
     paddingTop: 15,

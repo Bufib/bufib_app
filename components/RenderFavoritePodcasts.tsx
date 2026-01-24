@@ -12,7 +12,6 @@ import { supabase } from "@/utils/supabase";
 import { PodcastType } from "@/constants/Types";
 import { getFavoritePodcasts } from "@/utils/favorites";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
@@ -25,10 +24,9 @@ import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function RenderFavoritePodcasts() {
   const { lang, rtl } = useLanguage();
-  const { favoritesRefreshed } = useRefreshFavorites();
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const podcastVersion = useDataVersionStore((s) => s.podcastVersion);
+  const podcastFavoritesVersion = useDataVersionStore((s) => s.podcastFavoritesVersion);
 
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const favKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
@@ -39,7 +37,7 @@ export default function RenderFavoritePodcasts() {
   //     const ids = await getFavoritePodcasts(lang);
   //     setFavoriteIds(ids);
   //   })();
-  // }, [lang, favoritesRefreshed, podcastVersion]);
+  // }, [lang, favoritesRefreshed, podcastFavoritesVersion]);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,7 +59,7 @@ export default function RenderFavoritePodcasts() {
     return () => {
       cancelled = true;
     };
-  }, [lang, favoritesRefreshed, podcastVersion]);
+  }, [lang, podcastFavoritesVersion]);
 
   // Fetch favorite episodes by ID directly (no pagination dance)
   const {
@@ -103,8 +101,8 @@ export default function RenderFavoritePodcasts() {
   };
 
   // const listExtraData = React.useMemo(
-  //   () => `${podcastVersion}`,
-  //   [podcastVersion]
+  //   () => `${podcastFavoritesVersion}`,
+  //   [podcastFavoritesVersion]
   // );
 
   // Loading first data

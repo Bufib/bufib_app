@@ -21,15 +21,14 @@ import { Colors } from "@/constants/Colors";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { AntDesign, Entypo } from "@expo/vector-icons";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
-const FavoritePrayersScreen: React.FC = () => {
+const RenderFavoritePrayers: React.FC = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
 
   // Zustand trigger (useful if other screens must refresh too)
-  const { triggerRefreshFavorites } = useRefreshFavorites();
   // const { lang } = useLanguage();
   const [folders, setFolders] = useState<FavoritePrayerFolderType[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -40,8 +39,12 @@ const FavoritePrayersScreen: React.FC = () => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedRef = useRef(true);
   const requestIdRef = useRef(0);
-  // const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
-
+  const prayersFavoritesVersion = useDataVersionStore(
+    (s) => s.prayersFavoritesVersion
+  );
+  const incrementPrayersFavoritesVersion = useDataVersionStore(
+    (s) => s.incrementPrayersFavoritesVersion
+  );
   // track mount/unmount
   useEffect(() => {
     mountedRef.current = true;
@@ -70,7 +73,7 @@ const FavoritePrayersScreen: React.FC = () => {
   //   } finally {
   //     setIsLoadingFolders(false);
   //   }
-  // }, [lang, favoritesRefreshed, prayersVersion]);
+  // }, [lang, favoritesRefreshed, prayersFavoritesVersion]);
 
   const reloadFolders = useCallback(async () => {
     setIsLoadingFolders(true);
@@ -149,7 +152,7 @@ const FavoritePrayersScreen: React.FC = () => {
         // Confirm state from DB
         await reloadFolders();
         // selectedFolder effect will reload prayers automatically
-        triggerRefreshFavorites(); // notify other screens (optional)
+        incrementPrayersFavoritesVersion(); // notify other screens (optional)
       } catch (e) {
         console.error(e);
         Alert.alert(t("error"), t("errorDeletingFolder"));
@@ -158,18 +161,24 @@ const FavoritePrayersScreen: React.FC = () => {
         await reloadPrayers(selectedFolder);
       }
     },
-    [selectedFolder, reloadFolders, reloadPrayers, triggerRefreshFavorites, t]
+    [
+      selectedFolder,
+      reloadFolders,
+      reloadPrayers,
+      incrementPrayersFavoritesVersion,
+      t,
+    ]
   );
 
   // Initial & external trigger reload
   useEffect(() => {
     reloadFolders();
-  }, [reloadFolders]);
+  }, [reloadFolders, prayersFavoritesVersion]);
 
   // Load prayers whenever selectedFolder changes
   useEffect(() => {
     reloadPrayers(selectedFolder);
-  }, [selectedFolder, reloadPrayers]);
+  }, [selectedFolder, reloadPrayers, prayersFavoritesVersion]);
 
   useFocusEffect(
     useCallback(() => {
@@ -180,10 +189,10 @@ const FavoritePrayersScreen: React.FC = () => {
     }, [])
   );
 
-  // const listExtraData = React.useMemo(
-  //   () => `${favoritesRefreshed}|${prayersVersion}`,
-  //   [favoritesRefreshed, prayersVersion]
-  // );
+  const listExtraData = React.useMemo(
+    () => `${prayersFavoritesVersion}|${prayersFavoritesVersion}`,
+    [prayersFavoritesVersion]
+  );
 
   const renderFolderPill = (folder: FavoritePrayerFolderType) => {
     const isActive = folder.name === selectedFolder;
@@ -301,7 +310,7 @@ const FavoritePrayersScreen: React.FC = () => {
         ) : (
           <FlatList
             data={prayers}
-            // extraData={listExtraData}
+            extraData={listExtraData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderPrayerCard}
             contentContainerStyle={styles.flatListContent}
@@ -312,7 +321,7 @@ const FavoritePrayersScreen: React.FC = () => {
   );
 };
 
-export default FavoritePrayersScreen;
+export default RenderFavoritePrayers;
 
 // --- Styles -----------------------------------------------------------------
 
@@ -380,8 +389,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    textAlign: "center"
-
+    textAlign: "center",
   },
   emptyText: {
     textAlign: "center",

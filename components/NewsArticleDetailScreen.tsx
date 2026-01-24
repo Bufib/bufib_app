@@ -1062,7 +1062,6 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import ArrowUp from "./ArrowUp";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import {
   isNewsArticleFavorited,
   toggleNewsArticleFavorite,
@@ -1083,7 +1082,10 @@ export default function NewsArticleDetailScreen({
   const { t } = useTranslation();
   const { lang, rtl } = useLanguage();
   const { fetchNewsArticleById } = useNewsArticles(lang);
-  const { triggerRefreshFavorites } = useRefreshFavorites();
+  const incrementNewsArticleFavoritesVersion = useDataVersionStore(
+    (s) => s.incrementNewsArticleFavoritesVersion
+  );
+
   const newsArticleVersion = useDataVersionStore((s) => s.newsArticleVersion);
   const [article, setArticle] = useState<NewsArticlesType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -1097,11 +1099,11 @@ export default function NewsArticleDetailScreen({
     try {
       const newFavStatus = await toggleNewsArticleFavorite(articleId, lang);
       setIsFavorite(newFavStatus);
-      triggerRefreshFavorites();
+      incrementNewsArticleFavoritesVersion();
     } catch (e) {
       console.log("Failed to toggle favorite", e);
     }
-  }, [articleId, lang, triggerRefreshFavorites]);
+  }, [articleId, lang, incrementNewsArticleFavoritesVersion]);
 
   // Font-size modal visibility
   const [fontModalVisible, setFontModalVisible] = useState(false);
@@ -1841,7 +1843,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    marginRight: 5
+    marginRight: 5,
   },
   heroTitle: {
     fontSize: 32,

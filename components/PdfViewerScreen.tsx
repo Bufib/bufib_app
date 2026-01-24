@@ -891,7 +891,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PdfViewerScreenPropsType } from "@/constants/Types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HeaderLeftBackButton from "./HeaderLeftBackButton";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { isPdfFavorited, togglePdfFavorite } from "@/utils/favorites";
 import { StatusBar } from "expo-status-bar";
 import { useTranslation } from "react-i18next";
@@ -899,6 +898,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 const getPdfNumericId = (filename: string): number => {
   const asNumber = Number(filename);
@@ -938,7 +938,6 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
 
   // Favorites
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
-  const { triggerRefreshFavorites } = useRefreshFavorites();
 
   const pdfRef = useRef<any>(null);
   const controlsOpacity = useRef(new Animated.Value(1)).current;
@@ -947,6 +946,13 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
   const currentFilenameRef = useRef<string | undefined>(undefined);
   const hasLoadedPreferencesRef = useRef(false);
   const { t } = useTranslation();
+  const incrementPdfFavoritesVersion = useDataVersionStore(
+    (s) => s.incrementPdfFavoritesVersion
+  );
+
+  useEffect(() => {
+  console.log('[PdfViewer] render', { filename, sourceUri, loading });
+});
   // Load GLOBAL layout preference once on mount
   useEffect(() => {
     const loadGlobalPreference = async () => {
@@ -1029,7 +1035,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
     try {
       const next = await togglePdfFavorite(id, lang);
       setIsFavorite(next);
-      triggerRefreshFavorites();
+      incrementPdfFavoritesVersion();
     } catch (e) {
       console.warn("[PdfViewer] togglePdfFavorite error", e);
     }
@@ -1238,7 +1244,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
           </View>
         )}
 
-        {!error && loading && (
+        {!error && loading ? (
           <ThemedView style={styles.center}>
             <ActivityIndicator
               size="large"
@@ -1246,15 +1252,13 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
             />
             {progress > 0 && (
               <ThemedText style={styles.progressText}>
-                {t("loading")}
-                {" "}
-                {Math.round(progress * 100)}%
+                {t("loading")} {Math.round(progress * 100)}%
               </ThemedText>
             )}
           </ThemedView>
-        )}
+        ):(null)}
 
-        {!error && !loading && sourceUri && (
+        {!error && !loading && sourceUri ? (
           <>
             <TouchableOpacity
               activeOpacity={1}
@@ -1295,7 +1299,7 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
             </TouchableOpacity>
 
             {/* Top Controls Bar */}
-            {showControls && (
+            {showControls ? (
               <Animated.View
                 style={[
                   styles.topBar,
@@ -1345,10 +1349,10 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   </TouchableOpacity>
                 )}
               </Animated.View>
-            )}
+            ):(null)}
 
             {/* Bottom Navigation Bar */}
-            {showControls && (
+            {showControls ? (
               <Animated.View
                 style={[styles.bottomBar, { opacity: controlsOpacity }]}
               >
@@ -1403,10 +1407,10 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   />
                 </TouchableOpacity>
               </Animated.View>
-            )}
+            ):(null)}
 
             {/* Settings Menu */}
-            {showSettings && pageCount > 1 && (
+            {showSettings && pageCount > 1 ? (
               <View style={styles.settingsOverlay}>
                 <View style={styles.settingsContainer}>
                   <View style={styles.settingsHeader}>
@@ -1480,10 +1484,10 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   </View>
                 </View>
               </View>
-            )}
+            ):(null)}
 
             {/* Page Jump Menu */}
-            {showPageJump && (
+            {showPageJump ? (
               <View style={styles.pageJumpOverlay}>
                 <View style={styles.pageJumpContainer}>
                   <View style={styles.pageJumpHeader}>
@@ -1517,9 +1521,9 @@ const PdfViewerScreen: React.FC<PdfViewerScreenPropsType> = ({ filename }) => {
                   </ScrollView>
                 </View>
               </View>
-            )}
+            ):(null)}
           </>
-        )}
+        ):(null)}
       </View>
     </>
   );

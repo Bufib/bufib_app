@@ -25,14 +25,12 @@ import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function RenderFavoriteNewsArticles() {
   const { lang, rtl } = useLanguage();
-  const { favoritesRefreshed } = useRefreshFavorites();
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const newsArticleVersion = useDataVersionStore((s) => s.newsArticleVersion);
+  const newsArticleFavoritesVersion = useDataVersionStore((s) => s.newsArticleFavoritesVersion);
 
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const favKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
-  console.log(newsArticleVersion);
 
   useEffect(() => {
     let cancelled = false;
@@ -52,7 +50,7 @@ export default function RenderFavoriteNewsArticles() {
     return () => {
       cancelled = true;
     };
-  }, [lang, favoritesRefreshed, newsArticleVersion]);
+  }, [lang, newsArticleFavoritesVersion]);
 
   // Fetch favorite news in one query
   const {
@@ -81,8 +79,8 @@ export default function RenderFavoriteNewsArticles() {
   });
 
   // const listExtraData = React.useMemo(
-  //   () => `${newsArticleVersion}`,
-  //   [newsArticleVersion]
+  //   () => `${newsArticleFavoritesVersion}`,
+  //   [newsArticleFavoritesVersion]
   // );
 
   if (isLoading && favoriteIds.length > 0) {

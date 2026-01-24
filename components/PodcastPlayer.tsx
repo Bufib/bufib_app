@@ -2211,12 +2211,12 @@ import {
   cancelCurrentDownload,
   deleteFromCache,
 } from "@/hooks/usePodcasts";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { isPodcastFavorited, togglePodcastFavorite } from "@/utils/favorites";
 import { ThemedText } from "./ThemedText";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePodcastDownloadStore } from "@/stores/usePodcastDownloadStore";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
   const { t } = useTranslation();
@@ -2318,13 +2318,15 @@ export default function PodcastPlayer({ podcast }: PodcastPlayerPropsType) {
     };
   }, [podcast?.id, lang]);
 
-  const { triggerRefreshFavorites } = useRefreshFavorites();
+  const incrementPodcastFavoritesVersion = useDataVersionStore(
+    (s) => s.incrementPodcastFavoritesVersion
+  );
   const onPressToggleFavorite = async () => {
     if (!podcast?.id) return;
     try {
       const next = await togglePodcastFavorite(podcast.id, lang);
       setIsFavorite(next);
-      triggerRefreshFavorites();
+      incrementPodcastFavoritesVersion();
     } catch {}
   };
 

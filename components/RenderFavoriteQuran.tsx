@@ -18,7 +18,6 @@ import {
   getFavoritePagesWithInfo,
   getSurahDisplayName,
 } from "@/db/queries/quran";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { FavoriteQuranItemType } from "@/constants/Types";
 import { useTranslation } from "react-i18next";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -32,9 +31,10 @@ function RenderFavoriteQuran() {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const { favoritesRefreshed } = useRefreshFavorites();
   const { lang, rtl } = useLanguage();
-  const quranDataVersion = useDataVersionStore((s) => s.quranDataVersion);
+  const quranFavoritesVersion = useDataVersionStore(
+    (s) => s.quranFavoritesVersion
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -144,7 +144,7 @@ function RenderFavoriteQuran() {
     return () => {
       cancelled = true;
     };
-  }, [favoritesRefreshed, lang, quranDataVersion, t]);
+  }, [lang, quranFavoritesVersion, t]);
 
   const handlePress = useCallback((item: FavoriteQuranItemType) => {
     switch (item.type) {
@@ -195,12 +195,11 @@ function RenderFavoriteQuran() {
             rtl
               ? {
                   flexDirection: "row-reverse",
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }
               : {
                   flexDirection: "row",
-                  justifyContent: "space-between"
-
+                  justifyContent: "space-between",
                 },
           ]}
         >
@@ -278,8 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    textAlign: "center"
-
+    textAlign: "center",
   },
   flatListContent: {
     paddingTop: 15,

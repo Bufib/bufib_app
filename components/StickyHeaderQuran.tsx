@@ -158,7 +158,6 @@ import FontSizePickerModal from "./FontSizePickerModal";
 import { Colors } from "@/constants/Colors";
 import { StickyHeaderQuranPropsType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import {
   isFavoriteSura,
   toggleFavoriteSura,
@@ -167,6 +166,7 @@ import {
   isFavoritePage,
   toggleFavoritePage,
 } from "@/db/queries/quran";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export const StickyHeaderQuran: React.FC<StickyHeaderQuranPropsType> = ({
   suraNumber,
@@ -188,8 +188,9 @@ export const StickyHeaderQuran: React.FC<StickyHeaderQuranPropsType> = ({
   const isPageMode = pageNumber != null && pageNumber > 0;
   const isJuzMode = juzNumber != null && juzNumber > 0 && !isPageMode;
 
-  const { triggerRefreshFavorites } = useRefreshFavorites();
-
+  const incrementQuranFavoritesVersion = useDataVersionStore(
+    (s) => s.incrementQuranFavoritesVersion
+  );
   // Load favorite state based on mode
   useEffect(() => {
     let isActive = true;
@@ -238,7 +239,7 @@ export const StickyHeaderQuran: React.FC<StickyHeaderQuranPropsType> = ({
       }
 
       setIsInFavorites(next);
-      triggerRefreshFavorites();
+      incrementQuranFavoritesVersion();
     } catch (err) {
       console.error("StickyHeaderQuran: toggle favorite failed", {
         suraNumber,
@@ -253,7 +254,7 @@ export const StickyHeaderQuran: React.FC<StickyHeaderQuranPropsType> = ({
     pageNumber,
     isJuzMode,
     isPageMode,
-    triggerRefreshFavorites,
+    incrementQuranFavoritesVersion,
   ]);
 
   return (

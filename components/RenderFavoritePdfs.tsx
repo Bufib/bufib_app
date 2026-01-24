@@ -11,7 +11,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
 import { PdfType } from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
@@ -37,14 +36,13 @@ const getPdfNumericId = (filename: string): number => {
 
 export default function RenderFavoritePdfs() {
   const { lang, rtl } = useLanguage();
-  const { favoritesRefreshed } = useRefreshFavorites();
+  
   const { t } = useTranslation();
   const colorScheme = useColorScheme() || "light";
-  const pdfDataVersion = useDataVersionStore((s) => s.pdfDataVersion);
+  const pdfFavoritesVersion = useDataVersionStore((s) => s.pdfFavoritesVersion);
 
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const favKey = useMemo(() => favoriteIds.join(","), [favoriteIds]);
-  console.log(pdfDataVersion);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,7 +62,7 @@ export default function RenderFavoritePdfs() {
     return () => {
       cancelled = true;
     };
-  }, [lang, favoritesRefreshed, pdfDataVersion]);
+  }, [lang, pdfFavoritesVersion]);
 
   const {
     data: favoritePdfs = [],

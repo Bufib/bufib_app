@@ -172,7 +172,6 @@ import RenderQuestion from "@/components/RenderQuestion";
 import { Colors } from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { removeFavoriteToast, addFavoriteToast } from "@/constants/messages";
-import { useRefreshFavorites } from "@/stores/refreshFavoriteStore";
 import FontSizePickerModal from "@/components/FontSizePickerModal";
 import {
   isQuestionInFavorite,
@@ -181,6 +180,7 @@ import {
 import HeaderLeftBackButton from "@/components/HeaderLeftBackButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedView } from "@/components/ThemedView";
+import { useDataVersionStore } from "@/stores/dataVersionStore";
 
 export default function Question() {
   const { category, subcategory, questionId } = useLocalSearchParams<{
@@ -194,7 +194,9 @@ export default function Question() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const colorScheme = useColorScheme() || "light";
-  const { triggerRefreshFavorites } = useRefreshFavorites();
+  const incrementQuestionsFavoritesVersion = useDataVersionStore(
+    (s) => s.incrementQuestionsFavoritesVersion
+  );
 
   // 1) On mount, check if this question is already favorited.
   // Check if question is favorite
@@ -232,11 +234,11 @@ export default function Question() {
       } else {
         removeFavoriteToast();
       }
-      triggerRefreshFavorites();
+      incrementQuestionsFavoritesVersion();
     } catch (error) {
       console.log("Error toggling favorite:", error);
     }
-  }, [parsedId, triggerRefreshFavorites]);
+  }, [parsedId, incrementQuestionsFavoritesVersion]);
 
   return (
     <SafeAreaView
