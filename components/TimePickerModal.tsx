@@ -1,5 +1,3 @@
-
-
 // src/components/TimePickerModal.tsx
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import {
@@ -15,7 +13,6 @@ import { Colors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 
-
 interface TimePickerModalProps {
   visible: boolean;
   onClose: () => void;
@@ -25,7 +22,7 @@ interface TimePickerModalProps {
   initialRepeatWeekly?: boolean;
 }
 
-const ITEM_HEIGHT = 44; // approximate row height (padding + margin)
+const ITEM_HEIGHT = 48; // approximate row height (padding + margin)
 
 export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   visible,
@@ -50,15 +47,33 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   const hourScrollRef = useRef<ScrollView | null>(null);
   const minuteScrollRef = useRef<ScrollView | null>(null);
 
-  // Sync state when editing an existing reminder
+  // // Sync state when editing an existing reminder
+  // useEffect(() => {
+  //   if (visible && initialTime) {
+  //     setSelectedHour(initialTime.getHours());
+  //     setSelectedMinute(initialTime.getMinutes());
+  //   }
+  //   if (visible) {
+  //     setRepeatWeekly(initialRepeatWeekly);
+  //   }
+  // }, [visible, initialTime, initialRepeatWeekly]);
+
+  // Sync state when opening (new reminder = current time, edit reminder = initialTime)
   useEffect(() => {
-    if (visible && initialTime) {
+    if (!visible) return;
+
+    const current = new Date();
+
+    if (initialTime) {
       setSelectedHour(initialTime.getHours());
       setSelectedMinute(initialTime.getMinutes());
+    } else {
+      // always fresh current time when opening for a NEW reminder
+      setSelectedHour(current.getHours());
+      setSelectedMinute(current.getMinutes());
     }
-    if (visible) {
-      setRepeatWeekly(initialRepeatWeekly);
-    }
+
+    setRepeatWeekly(initialRepeatWeekly);
   }, [visible, initialTime, initialRepeatWeekly]);
 
   // Auto-scroll to selected hour and minute when modal opens
@@ -84,19 +99,11 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   }, [visible, selectedHour, selectedMinute]);
 
   const handleConfirm = useCallback(() => {
-    
     const date = new Date();
     date.setHours(selectedHour, selectedMinute, 0, 0);
     onConfirm(date, repeatWeekly);
     onClose();
-    
-  }, [
-    selectedHour,
-    selectedMinute,
-    repeatWeekly,
-    onConfirm,
-    onClose,
-  ]);
+  }, [selectedHour, selectedMinute, repeatWeekly, onConfirm, onClose]);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = Array.from({ length: 60 }, (_, i) => i);
@@ -196,9 +203,7 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
 
             {/* Minutes */}
             <View style={styles.pickerColumn}>
-              <ThemedText style={styles.pickerLabel}>
-                {t("minutes")}
-              </ThemedText>
+              <ThemedText style={styles.pickerLabel}>{t("minutes")}</ThemedText>
               <ScrollView
                 ref={minuteScrollRef}
                 style={styles.scrollPicker}
