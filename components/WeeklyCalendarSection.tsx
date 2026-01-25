@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   View,
@@ -117,58 +116,57 @@ export const WeeklyCalendarSection: React.FC<
   //   }
   // };
 
-
   const handleSetReminder = async (
-  dayIndex: number,
-  todoId: string | number,
-  time: Date | null,
-  repeatWeekly: boolean
-) => {
-  try {
-    const todoIdString = String(todoId);
+    dayIndex: number,
+    todoId: string | number,
+    time: Date | null,
+    repeatWeekly: boolean
+  ) => {
+    try {
+      const todoIdString = String(todoId);
 
-    if (time === null) {
-      await cancelTodoReminderNotification(todoIdString);
-      return;
-    }
-
-    if (!getNotifications) {
-      Alert.alert(
-        t("pushNotificationsDisabledTitle"),
-        t("pushNotificationsDisabledMessage")
-      );
-      return;
-    }
-
-    if (permissionStatus !== "granted") {
-      await checkPermissions();
-      const latestStatus = useNotificationStore.getState().permissionStatus;
-      if (latestStatus !== "granted") {
+      if (time === null) {
+        await cancelTodoReminderNotification(todoIdString);
         return;
       }
+
+      if (!getNotifications) {
+        Alert.alert(
+          t("pushNotificationsDisabledTitle"),
+          t("pushNotificationsDisabledMessage")
+        );
+        return;
+      }
+
+      if (permissionStatus !== "granted") {
+        await checkPermissions();
+        const latestStatus = useNotificationStore.getState().permissionStatus;
+        if (latestStatus !== "granted") {
+          return;
+        }
+      }
+
+      const todosForDay = todosByDay[dayIndex] ?? [];
+      const todo = todosForDay.find((t) => String(t.id) === todoIdString);
+      const todoText = todo?.text.replace(/\{\{|\}\}/g, "") ?? "";
+
+      await scheduleTodoReminderNotification(
+        todoIdString,
+        todoText,
+        dayIndex,
+        time,
+        repeatWeekly
+      );
+
+      // Only show toast after successful scheduling
+      Toast.show({
+        type: "success",
+        text1: t("timerSet"),
+      });
+    } catch (error) {
+      console.error("Failed to set/delete reminder:", error);
     }
-
-    const todosForDay = todosByDay[dayIndex] ?? [];
-    const todo = todosForDay.find((t) => String(t.id) === todoIdString);
-    const todoText = todo?.text.replace(/\{\{|\}\}/g, "") ?? "";
-
-    await scheduleTodoReminderNotification(
-      todoIdString,
-      todoText,
-      dayIndex,
-      time,
-      repeatWeekly
-    );
-
-    // Only show toast after successful scheduling
-    Toast.show({
-      type: "success",
-      text1: t("timerSet"),
-    });
-  } catch (error) {
-    console.error("Failed to set/delete reminder:", error);
-  }
-};
+  };
   return (
     <View style={styles.container}>
       <View style={styles.calendarHeader}>
@@ -237,15 +235,17 @@ export const WeeklyCalendarSection: React.FC<
             <ThemedText style={styles.selectedDayTitle}>
               {getFullDayName(selectedDay)}
             </ThemedText>
-            <TouchableOpacity onPress={handleUndo}>
-              <View style={{ flexDirection: "row", gap: 5 }}>
-                <ThemedText
-                  style={{ fontSize: 14, color: Colors.universal.primary }}
-                >
-                  {t("undo")}
-                </ThemedText>
-              </View>
-            </TouchableOpacity>
+            {(todosByDay[selectedDay] ?? []).length > 0 ? (
+              <TouchableOpacity onPress={handleUndo}>
+                <View style={{ flexDirection: "row", gap: 5 }}>
+                  <ThemedText
+                    style={{ fontSize: 14, color: Colors.universal.primary }}
+                  >
+                    {t("undo")}
+                  </ThemedText>
+                </View>
+              </TouchableOpacity>
+            ) : null}
           </ThemedView>
 
           <View style={{ flex: 1 }}>

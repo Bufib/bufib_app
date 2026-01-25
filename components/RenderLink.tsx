@@ -286,7 +286,7 @@ const RenderLink = ({
       ]}
       onPress={handlePress}
     >
-      <Feather
+      {/* <Feather
         name={isExternal ? "external-link" : "link"}
         size={14}
         color={colorScheme === "dark" ? "#fff" : "#000"}
@@ -294,7 +294,7 @@ const RenderLink = ({
           { paddingRight: 5 },
           isDone && { textDecorationLine: "line-through", opacity: 0.6 },
         ]}
-      />
+      /> */}
       <ThemedText
         style={[
           styles.linkText,
