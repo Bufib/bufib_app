@@ -100,7 +100,7 @@ export default function RenderSearchResults({
     questions: "tab_questions",
     prayers: "tab_prayers",
     podcasts: "tab_podcasts",
-    news: "tab_news",
+    news: "tab_newsArticles",
     pdfs: "tab_pdfs",
   };
   const PLACEHOLDER_KEY: Record<TabType, string> = {
@@ -108,7 +108,7 @@ export default function RenderSearchResults({
     questions: "placeholder_questions",
     prayers: "placeholder_prayers",
     podcasts: "placeholder_podcasts",
-    news: "placeholder_news",
+    news: "placeholder_newsArticles",
     pdfs: "placeholder_pdfs",
   };
 
@@ -645,19 +645,9 @@ export default function RenderSearchResults({
                 },
               ]}
             >
-              <Text
-                style={[
-                  styles.tabText,
-
-                  active
-                    ? { color: "#fff" }
-                    : {
-                        color: "#000",
-                      },
-                ]}
-              >
+              <ThemedText style={[styles.tabText, active && { color: "#fff" }]}>
                 {t(TAB_LABEL_KEY[tKey])}
-              </Text>
+              </ThemedText>
             </TouchableOpacity>
           );
         })}
@@ -744,7 +734,7 @@ export default function RenderSearchResults({
         {isLoadingMore &&
           (tab === "quran" || tab === "questions" || tab === "prayers") && (
             <View style={styles.moreLoader}>
-              <ActivityIndicator size={"small"}/>
+              <ActivityIndicator size={"small"} />
             </View>
           )}
       </Animated.View>

@@ -1823,7 +1823,7 @@ export default function NewsArticleDetailScreen({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, },
 
   heroSection: {
     paddingHorizontal: 10,

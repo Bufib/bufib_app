@@ -239,14 +239,14 @@ const de = {
   tab_questions: "Fragen",
   tab_prayers: "Bittgebete",
   tab_podcasts: "Podcasts",
-  tab_news: "News",
+  tab_newsArticles: "Artikel",
 
   // Placeholders (per tab)
   placeholder_quran: "Qur’an durchsuchen",
   placeholder_questions: "Fragen durchsuchen",
   placeholder_prayers: "Bittgebete durchsuchen",
   placeholder_podcasts: "Podcasts durchsuchen",
-  placeholder_news: "News durchsuchen",
+  placeholder_newsArticles: "Artikel durchsuchen",
   placeholder_pdfs: "PDFs durchsuchen",
   // Meta / errors
   results_count: "{{count}} Treffer",

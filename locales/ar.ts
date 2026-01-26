@@ -232,14 +232,14 @@ const ar = {
   tab_questions: "الأسئلة",
   tab_prayers: "الأدعية",
   tab_podcasts: "بودكاست",
-  tab_news: "الأخبار",
+  tab_newsArticles: "الأخبار",
 
   // Placeholders (per tab)
   placeholder_quran: "ابحث في القرآن",
   placeholder_questions: "ابحث في الأسئلة",
   placeholder_prayers: "ابحث في الأدعية",
   placeholder_podcasts: "ابحث في البودكاست",
-  placeholder_news: "ابحث في الأخبار",
+  placeholder_newsArticles: "ابحث في الأخبار",
   placeholder_pdfs: "البحث في ملفات PDF",
 
   // Meta / errors

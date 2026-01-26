@@ -247,14 +247,14 @@ feedback: "Feedback",
   tab_questions: "Questions",
   tab_prayers: "Prayers",
   tab_podcasts: "Podcasts",
-  tab_news: "News",
+  tab_newsArticles: "News articles",
 
   // Placeholders (per tab)
   placeholder_quran: "Search the Qur’an",
   placeholder_questions: "Search questions",
   placeholder_prayers: "Search prayers",
   placeholder_podcasts: "Search podcasts",
-  placeholder_news: "Search news",
+  placeholder_newsArticles: "Search news articles",
   placeholder_pdfs: "Search PDFs",
 
   // Meta / errors
