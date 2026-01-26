@@ -228,7 +228,7 @@ function RenderQuestionSubCategoryItems() {
         );
         if (cancelled) return;
 
-        if (qs && qs.length) {
+        if (qs) {
           setQuestions(qs);
           setError(null);
         } else {

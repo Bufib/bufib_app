@@ -142,7 +142,7 @@ feedback: "Feedback",
   geschichte: "History",
   glaubensfragen: "Questions of faith",
   ethik: "Ethics",
-  ratschlaege: "Advice",
+  ratschläge: "Advice",
   videos: "Videos",
 
   // Prayer

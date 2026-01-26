@@ -38,7 +38,7 @@ export const questionCategories: PrayerQuestionLinksType[] = [
   {
     id: 5,
 
-    name: "ratschlaege",
+    name: "ratschläge",
     image: require("@/assets/images/ratschlaege.png"),
     value: "Ratschläge",
   },

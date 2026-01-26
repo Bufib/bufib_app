@@ -118,7 +118,7 @@ const de = {
   geschichte: "Geschichte",
   glaubensfragen: "Glaubensfragen",
   ethik: "Ethik",
-  ratschlaege: "Ratschläge",
+  ratschläge: "Ratschläge",
   videos: "Videos",
   removeProgress: "Fortschritt entfernen",
   markAsRead: "Als gelesen markieren",

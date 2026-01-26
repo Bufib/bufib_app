@@ -126,7 +126,7 @@ const ar = {
   geschichte: "تاريخ",
   glaubensfragen: "مسائل دينية",
   ethik: "أخلاق",
-  ratschlaege: "نصائح",
+  ratschläge: "نصائح",
   videos: "أشرطة الفيديو",
 
   // Prayer

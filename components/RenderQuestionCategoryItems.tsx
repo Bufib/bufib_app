@@ -214,7 +214,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
         const list = await getSubcategoriesForCategory(category, lang);
         if (cancelled) return;
 
-        if (list && list.length) {
+        if (list) {
           setSubcategories(list);
           setError(null);
         } else {
@@ -264,7 +264,7 @@ function RenderQuestionCategoryItems({ category }: { category: string }) {
     <ThemedView style={styles.container}>
       <Stack.Screen
         options={{
-          headerTitle: t(category.toLowerCase()) || category,
+          headerTitle: t(category.toLowerCase()),
         }}
       />
       <FlatList
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    textAlign:"center"
+    textAlign: "center",
   },
   flatListStyle: {
     paddingTop: 15,
