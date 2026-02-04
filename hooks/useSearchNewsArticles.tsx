@@ -79,6 +79,7 @@ export function useSearchNewsArticles(searchTerm: string) {
       const { data, error } = await supabase
         .from("news_articles")
         .select("*")
+        .eq("is_external_link", false)
         .eq("language_code", lang)
         .or(orConditions)
         .order("created_at", { ascending: false });
