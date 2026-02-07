@@ -209,7 +209,7 @@ const Settings = () => {
               />
             </View>
 
-            <LanguageSwitcher disabled={false}/>
+            <LanguageSwitcher disabled={false} />
 
             <View style={{ gap: 10 }}>
               <HardResetButton />
@@ -286,7 +286,7 @@ const Settings = () => {
             <Pressable
               onPress={() =>
                 handleOpenExternalUrl(
-                  "https://bufib.github.io/Islam-Fragen-App-rechtliches/datenschutz"
+                  "https://bufib.github.io/Islam-Fragen-App-rechtliches/datenschutz",
                 )
               }
             >
@@ -310,6 +310,13 @@ const Settings = () => {
                 style={[styles.footerLink, rtl && { textAlign: "right" }]}
               >
                 {t("imprint")}
+              </ThemedText>
+            </Pressable>
+            <Pressable onPress={() => router.push("/settings/recommendations")}>
+              <ThemedText
+                style={[styles.footerLink, rtl && { textAlign: "right" }, {color: Colors.universal.favorite, fontWeight: "500"}]}
+              >
+                {t("recommendations")}
               </ThemedText>
             </Pressable>
           </View>
@@ -430,7 +437,7 @@ const styles = StyleSheet.create({
   },
   footerLink: {
     color: Colors.universal.link,
-    fontSize: 16,
+    fontSize: 14,
   },
   // New RTL style
   rtl: {

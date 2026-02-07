@@ -417,6 +417,8 @@ const de = {
   appVersion: "App-Version: {{version}}",
   dataPrivacy: "Datenschutz",
   aboutTheApp: "Über die App",
+  recommendations:"Empfehlungen",
+  ourRecommendations:"Unsere Empfehlungen",
   imprint: "Impressum",
   hardResetDatabase: "Datenbank neu laden",
   hardResetDatabaseText:

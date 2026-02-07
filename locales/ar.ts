@@ -412,6 +412,8 @@ const ar = {
   appVersion: "إصدار التطبيق: {{version}}",
   dataPrivacy: "خصوصية البيانات",
   aboutTheApp: "عن التطبيق",
+  recommendations: "توصيات",
+  ourRecommendations: "توصياتنا",
   imprint: "البصمة",
   hardResetDatabase: "إعادة تعيين قاعدة البيانات بشكل كامل",
   hardResetDatabaseText:
