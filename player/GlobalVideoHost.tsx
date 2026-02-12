@@ -1,14 +1,14 @@
-//! Last worked
-// // /player/GlobalVideoHost.tsx
+// //! Last worked
+
 // import React, { PropsWithChildren } from "react";
 // import { View } from "react-native";
 // import { VideoView } from "expo-video";
 // import { useEvent } from "expo";
 // import { globalPlayer, useGlobalPlayer } from "./useGlobalPlayer";
-
+// import GlobalAutoAdvance from "@/components/GlobalAutoAdvance";
 // export { globalPlayer } from "./useGlobalPlayer";
 
-// export default function GlobalVideoHost({ children }: PropsWithChildren<{}>) {
+// export default function GlobalVideoHost({ children }: PropsWithChildren) {
 //   const setPlaying = useGlobalPlayer((s) => s._setPlaying);
 //   const setTime = useGlobalPlayer((s) => s._setTime);
 //   const setStatus = useGlobalPlayer((s) => s._setStatus);
@@ -28,9 +28,11 @@
 //       const cur =
 //         typeof timeEvt?.currentTime === "number"
 //           ? timeEvt.currentTime
-//           : globalPlayer.currentTime ?? 0;
+//           : (globalPlayer.currentTime ?? 0);
 //       const dur =
-//         typeof globalPlayer.duration === "number" ? globalPlayer.duration : undefined;
+//         typeof globalPlayer.duration === "number"
+//           ? globalPlayer.duration
+//           : undefined;
 //       setTime(cur, dur);
 //       lastTick.current = now;
 //     }
@@ -45,6 +47,7 @@
 //   return (
 //     <>
 //       {children}
+//       <GlobalAutoAdvance />
 //       <View
 //         pointerEvents="none"
 //         style={{ position: "absolute", width: 1, height: 1, opacity: 0 }}
@@ -59,8 +62,8 @@
 //   );
 // }
 
-// /player/GlobalVideoHost.tsx
 
+// /player/GlobalVideoHost.tsx
 import React, { PropsWithChildren } from "react";
 import { View } from "react-native";
 import { VideoView } from "expo-video";
@@ -80,20 +83,25 @@ export default function GlobalVideoHost({ children }: PropsWithChildren) {
     if (playingEvt) setPlaying(!!playingEvt.isPlaying);
   }, [playingEvt, setPlaying]);
 
-  // timeUpdate (no initial payload → no type mismatch)
+  // timeUpdate
   const timeEvt = useEvent(globalPlayer, "timeUpdate");
   const lastTick = React.useRef(0);
   React.useEffect(() => {
     const now = Date.now();
-    if (now - lastTick.current >= 200) {
+    // align with timeUpdateEventInterval=0.5s; reduces churn
+    if (now - lastTick.current >= 450) {
       const cur =
-        typeof timeEvt?.currentTime === "number"
-          ? timeEvt.currentTime
-          : globalPlayer.currentTime ?? 0;
+        typeof (timeEvt as any)?.currentTime === "number"
+          ? (timeEvt as any).currentTime
+          : (globalPlayer.currentTime ?? 0);
+
       const dur =
-        typeof globalPlayer.duration === "number"
-          ? globalPlayer.duration
-          : undefined;
+        typeof (timeEvt as any)?.duration === "number"
+          ? (timeEvt as any).duration
+          : typeof globalPlayer.duration === "number"
+            ? globalPlayer.duration
+            : undefined;
+
       setTime(cur, dur);
       lastTick.current = now;
     }

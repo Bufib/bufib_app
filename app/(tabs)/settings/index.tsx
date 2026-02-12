@@ -312,13 +312,13 @@ const Settings = () => {
                 {t("imprint")}
               </ThemedText>
             </Pressable>
-            <Pressable onPress={() => router.push("/settings/recommendations")}>
+            {/* <Pressable onPress={() => router.push("/settings/recommendations")}>
               <ThemedText
                 style={[styles.footerLink, rtl && { textAlign: "right" }, {color: Colors.universal.favorite, fontWeight: "500"}]}
               >
                 {t("recommendations")}
               </ThemedText>
-            </Pressable>
+            </Pressable> */}
           </View>
         </ScrollView>
 

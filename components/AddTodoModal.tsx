@@ -18,7 +18,7 @@ import {
   useColorScheme,
   FlatList,
 } from "react-native";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Feather, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
@@ -40,7 +40,7 @@ type SearchFilter = "prayers" | "quran" | "questions";
 /** Encode as "type:identifier" for internal URLs. */
 const encodeInternalUrl = (
   type: InternalLinkType,
-  identifier: string
+  identifier: string,
 ): string => `${type}:${identifier}`;
 
 /* ------------ debounce helper with cleanup ------------ */
@@ -51,7 +51,7 @@ type Debounced<F extends (...args: any[]) => void> = ((
 
 const debounceFn = <F extends (...args: any[]) => void>(
   fn: F,
-  delay: number
+  delay: number,
 ): Debounced<F> => {
   let timeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -230,12 +230,12 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
         }
       }
     },
-    [filter, lang, t]
+    [filter, lang, t],
   );
 
   const debouncedSearch = useMemo(
     () => debounceFn((q: string) => runSearch(q), 250),
-    [runSearch]
+    [runSearch],
   );
 
   // Re-run search when query, filter, or expanded state changes
@@ -315,16 +315,18 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                 </ThemedText>
 
                 <View style={styles.headerRight}>
-                  <TouchableOpacity
-                    onPress={handleOpenSearch}
-                    style={styles.iconButton}
-                  >
-                    <Feather
-                      name="search"
-                      size={22}
-                      color={Colors[colorScheme].defaultIcon}
-                    />
-                  </TouchableOpacity>
+                  {searchExpanded ? null : (
+                    <TouchableOpacity
+                      onPress={handleOpenSearch}
+                      style={styles.iconButton}
+                    >
+                      <FontAwesome6
+                        name="add"
+                        size={22}
+                        color={Colors[colorScheme].defaultIcon}
+                      />
+                    </TouchableOpacity>
+                  )}
 
                   <TouchableOpacity
                     style={styles.closeButton}
@@ -404,8 +406,8 @@ export const AddTodoModal: React.FC<AddTodoModalType> = ({
                           searchQuery.length > 0
                             ? Colors.universal.primary
                             : colorScheme === "dark"
-                            ? "rgba(255,255,255,0.1)"
-                            : "rgba(0,0,0,0.1)",
+                              ? "rgba(255,255,255,0.1)"
+                              : "rgba(0,0,0,0.1)",
                       },
                     ]}
                   >

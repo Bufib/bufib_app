@@ -1723,7 +1723,7 @@ export default function HomeScreen() {
           }
         >
           {/* News Articles */}
-          {articles.length > 0 && (
+          {/* {articles.length > 0 && (
             <View style={styles.newsArticleContainer}>
               <View style={styles.sectionHeaderRow}>
                 <ThemedText
@@ -1810,7 +1810,7 @@ export default function HomeScreen() {
                 />
               )}
             </View>
-          )}
+          )} */}
 
           {/* Podcasts */}
           {podcasts.length > 0 && (
