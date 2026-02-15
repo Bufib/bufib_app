@@ -1832,7 +1832,7 @@ export default function HomeScreen() {
                 </ThemedText>
                 <TouchableOpacity onPress={() => openSheet("podcasts")}>
                   <ThemedText
-                    style={{ marginRight: 15, fontSize: fontsizeHomeShowAll }}
+                    style={{ marginRight: 15, fontSize: fontsizeHomeShowAll, color: Colors.universal.link }}
                   >
                     {t("showAll")}
                   </ThemedText>
@@ -1913,7 +1913,7 @@ export default function HomeScreen() {
                 </ThemedText>
                 <TouchableOpacity onPress={() => openSheet("pdfs")}>
                   <ThemedText
-                    style={{ marginRight: 15, fontSize: fontsizeHomeShowAll }}
+                    style={{ marginRight: 15, fontSize: fontsizeHomeShowAll, color: Colors.universal.link  }}
                   >
                     {t("showAll")}
                   </ThemedText>

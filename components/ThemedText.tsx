@@ -29,7 +29,6 @@ export function ThemedText({
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
   const { fontSize } = useFontSizeStore();
 
-  console.log(fontSize);
   return (
     <Text
       style={[

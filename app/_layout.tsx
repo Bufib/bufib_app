@@ -790,11 +790,8 @@ function AppContent() {
         </Text>
         <LoadingIndicator size={"large"} />
         <Text style={{ fontSize: 16, textAlign: "center", color: fg }}>
-          {t("dataIsBeingLoadedTitle")}
-        </Text>
-        <ThemedText style={{ fontSize: 16, textAlign: "center", color: fg }}>
           {t("dataIsBeingLoadedMessage")}
-        </ThemedText>
+        </Text>
         <Toast />
       </View>
     );
