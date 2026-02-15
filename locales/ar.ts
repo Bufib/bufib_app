@@ -71,7 +71,7 @@ const ar = {
   syncFailedTryAgain: "فشل التزامن. يرجى المحاولة مرة أخرى.",
   initAppWentWrong:
     "حدث خطأ ما أثناء إعداد التطبيق. حاول إغلاق التطبيق وفتحه مرة أخرى.",
-  pdfsTitle: "كتب وملفات PDFs",
+  pdfsTitle: "لقراءة",
   feedback: "ملاحظات",
 
   // Books and PDF

@@ -72,7 +72,7 @@ const de = {
     "Synchronisierung fehlgeschlagen. Bitte versuche es erneut.",
   initAppWentWrong:
     "Beim Vorbereiten der App ist ein Fehler aufgetreten. Versuchen Sie, die App zu schließen und erneut zu öffnen.",
-  pdfsTitle: "Bücher und PDFs",
+  pdfsTitle: "Zum Lesen",
   timerSet: "Erinnerung wurde aktiviert",
   reminderSet: "Erinnerung gesetzt",
   reminderDeleted: "Erinnerung gelöscht",

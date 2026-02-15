@@ -1328,7 +1328,7 @@ export default function HomeScreen() {
   const { width, height } = useWindowDimensions();
   const { previewSizes, fontsizeHomeShowAll, fontsizeHomeHeaders } = returnSize(
     width,
-    height
+    height,
   );
 
   // Hooks
@@ -1404,7 +1404,7 @@ export default function HomeScreen() {
         pressBehavior="close"
       />
     ),
-    []
+    [],
   );
 
   const sheetTitle = useMemo(() => {
@@ -1515,7 +1515,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       );
     },
-    [closeSheet, colorScheme, lang, previewSizes]
+    [closeSheet, colorScheme, lang, previewSizes],
   );
 
   const renderPodcastTile = useCallback(
@@ -1600,7 +1600,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       );
     },
-    [closeSheet, colorScheme, t, previewSizes]
+    [closeSheet, colorScheme, t, previewSizes],
   );
 
   const renderPdfTile = useCallback(
@@ -1688,7 +1688,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       );
     },
-    [closeSheet, colorScheme, previewSizes, t]
+    [closeSheet, colorScheme, previewSizes, t],
   );
 
   return (
@@ -1832,7 +1832,12 @@ export default function HomeScreen() {
                 </ThemedText>
                 <TouchableOpacity onPress={() => openSheet("podcasts")}>
                   <ThemedText
-                    style={{ marginRight: 15, fontSize: fontsizeHomeShowAll, color: Colors.universal.link }}
+                    style={{
+                      marginRight: 15,
+                      fontSize: fontsizeHomeShowAll,
+                      color: Colors.universal.link,
+                      fontWeight: 600,
+                    }}
                   >
                     {t("showAll")}
                   </ThemedText>
@@ -1913,7 +1918,12 @@ export default function HomeScreen() {
                 </ThemedText>
                 <TouchableOpacity onPress={() => openSheet("pdfs")}>
                   <ThemedText
-                    style={{ marginRight: 15, fontSize: fontsizeHomeShowAll, color: Colors.universal.link  }}
+                    style={{
+                      marginRight: 15,
+                      fontSize: fontsizeHomeShowAll,
+                      color: Colors.universal.link,
+                      fontWeight: 600,
+                    }}
                   >
                     {t("showAll")}
                   </ThemedText>
@@ -2115,8 +2125,8 @@ export default function HomeScreen() {
               {activeSheet === "articles"
                 ? articles.length
                 : activeSheet === "podcasts"
-                ? podcasts.length
-                : pdfs.length}
+                  ? podcasts.length
+                  : pdfs.length}
               )
             </ThemedText>
 
