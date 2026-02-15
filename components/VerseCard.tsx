@@ -23,9 +23,6 @@ const TAGS_STYLES = Object.freeze({
 const DEFAULT_TEXT_PROPS = Object.freeze({ selectable: true });
 const IGNORED_TAGS = ["script", "style"] as const;
 
-const CARD_MARGIN_HORIZONTAL = 10;
-const CARD_PADDING = 16;
-
 export type VerseCardProps = {
   item: QuranVerseType;
   arabicVerse?: QuranVerseType;
@@ -91,7 +88,6 @@ function VerseCard({
               ? "#1B4332"
               : "#A5D6A7"
             : Colors[colorScheme].contrast,
-          marginHorizontal: CARD_MARGIN_HORIZONTAL,
           marginTop: 10,
         },
       ]}
@@ -215,15 +211,16 @@ export default React.memo(VerseCard);
 
 const styles = StyleSheet.create({
   card: {
+    width: "100%",
     borderRadius: 16,
     marginBottom: 12,
-    padding: CARD_PADDING,
+    padding: 15,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-    overflow: "visible", 
+    overflow: "visible",
   },
   header: {
     flexDirection: "row",

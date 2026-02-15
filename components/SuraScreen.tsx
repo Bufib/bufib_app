@@ -70,8 +70,8 @@ const SuraScreen: React.FC = () => {
     v: QuranVerseType;
     i: number;
   } | null>(null);
-const logoAsset = Asset.fromModule(require("@/assets/images/logo.png"));
-const artworkUri = logoAsset.uri;
+  const logoAsset = Asset.fromModule(require("@/assets/images/logo.png"));
+  const artworkUri = logoAsset.uri;
   const [reciterPicker, setReciterPicker] = useState<{
     visible: boolean;
     verse: QuranVerseType | null;
@@ -109,7 +109,7 @@ const artworkUri = logoAsset.uri;
         setShowArrow(next);
       }
     },
-    []
+    [],
   );
 
   const scrollToTop = () => {
@@ -117,7 +117,7 @@ const artworkUri = logoAsset.uri;
   };
 
   const [selectedVerse, setSelectedVerse] = useState<QuranVerseType | null>(
-    null
+    null,
   );
   const [selectedArabicVerse, setSelectedArabicVerse] =
     useState<QuranVerseType | null>(null);
@@ -127,10 +127,10 @@ const artworkUri = logoAsset.uri;
 
   const setTotalVerses = useReadingProgressQuran((s) => s.setTotalVerses);
   const setTotalVersesForJuz = useReadingProgressQuran(
-    (s) => s.setTotalVersesForJuz
+    (s) => s.setTotalVersesForJuz,
   );
   const setTotalVersesForPage = useReadingProgressQuran(
-    (s) => s.setTotalVersesForPage
+    (s) => s.setTotalVersesForPage,
   );
 
   // Use custom hooks
@@ -193,7 +193,7 @@ const artworkUri = logoAsset.uri;
 
       setReciterPicker({ visible: false, verse: null, index: -1 });
     },
-    [reciterPicker, reciter, toggleVerse]
+    [reciterPicker, reciter, toggleVerse],
   );
 
   const handleCloseReciterPicker = useCallback(() => {
@@ -215,10 +215,10 @@ const artworkUri = logoAsset.uri;
       if (top) {
         // avoid redundant writes
         useLastSuraStore.setState((prev) =>
-          prev.lastSura === top.sura ? prev : { lastSura: top.sura }
+          prev.lastSura === top.sura ? prev : { lastSura: top.sura },
         );
       }
-    }
+    },
   ).current;
 
   // Handle pending play after reciter state update
@@ -332,7 +332,7 @@ const artworkUri = logoAsset.uri;
 
   const arabicByKey = useMemo(
     () => new Map(arabicVerses.map((v) => [vkey(v.sura, v.aya), v])),
-    [arabicVerses]
+    [arabicVerses],
   );
 
   const handleOpenInfo = useCallback(
@@ -341,7 +341,7 @@ const artworkUri = logoAsset.uri;
       setSelectedArabicVerse(arabicVerse || null);
       bottomSheetRef.current?.expand();
     },
-    []
+    [],
   );
 
   const renderBackdrop = useCallback(
@@ -353,7 +353,7 @@ const artworkUri = logoAsset.uri;
         opacity={0.5}
       />
     ),
-    []
+    [],
   );
 
   const handleGoToNextPage = useCallback(async () => {
@@ -384,7 +384,7 @@ const artworkUri = logoAsset.uri;
 
   const translitBaseStyle = useMemo(
     () => StyleSheet.flatten([styles.arabicTransliterationText]),
-    []
+    [],
   );
 
   // Helper: should we show basmala before this row?
@@ -394,7 +394,7 @@ const artworkUri = logoAsset.uri;
       if (isJuzMode || isPageMode) return v.aya === 1;
       return index === 0;
     },
-    [isJuzMode, isPageMode]
+    [isJuzMode, isPageMode],
   );
 
   const renderVerse = useCallback(
@@ -406,7 +406,7 @@ const artworkUri = logoAsset.uri;
       const hasSajda = sajdaVerses.has(item.sura * 10000 + item.aya);
 
       return (
-        <>
+        <View style={{ paddingHorizontal: 10 }}>
           {shouldShowBasmala(item, index) && (
             <BasmalaRow fontSize={fontSize} lang={lang} rtl={rtl} t={t} />
           )}
@@ -425,7 +425,7 @@ const artworkUri = logoAsset.uri;
             onPlayAudio={() => toggleVerse(item, index)}
             onPickReciter={() => openReciterPicker(item, index)}
           />
-        </>
+        </View>
       );
     },
     [
@@ -446,7 +446,7 @@ const artworkUri = logoAsset.uri;
       t,
       shouldShowBasmala,
       sajdaVerses,
-    ]
+    ],
   );
 
   return (
@@ -470,6 +470,7 @@ const artworkUri = logoAsset.uri;
           bounces={false}
           overScrollMode="never"
           alwaysBounceVertical={false}
+          contentContainerStyle={{ paddingBottom: 30 }}
           renderItem={renderVerse}
           onViewableItemsChanged={onViewableItemsChanged}
           onScrollToIndexFailed={(info) => {
@@ -495,7 +496,6 @@ const artworkUri = logoAsset.uri;
           }
           stickyHeaderIndices={[0]}
           stickyHeaderHiddenOnScroll
-          contentContainerStyle={{ paddingBottom: 30 }}
           ListHeaderComponentStyle={{}}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
@@ -805,7 +805,6 @@ const styles = StyleSheet.create({
   infoArabicText: {
     textAlign: "right",
     fontWeight: "400",
-
   },
   infoTranslation: {},
   infoTafsir: {
