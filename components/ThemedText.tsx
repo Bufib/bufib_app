@@ -1,6 +1,7 @@
 import { StyleSheet, Text, type TextProps } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useFontSizeStore } from "@/stores/fontSizeStore";
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
@@ -10,6 +11,9 @@ export type ThemedTextProps = TextProps & {
     | "title"
     | "titleBiggerLessBold"
     | "defaultSemiBold"
+    | "arabic"
+    | "transliteration"
+    | "defaultWithFontsize"
     | "subtitle"
     | "link"
     | "layoutNavigationText";
@@ -23,7 +27,9 @@ export function ThemedText({
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const { fontSize } = useFontSizeStore();
 
+  console.log(fontSize);
   return (
     <Text
       style={[
@@ -32,6 +38,15 @@ export function ThemedText({
         type === "title" ? styles.title : undefined,
         type === "titleBiggerLessBold" ? styles.titleBiggerLessBold : undefined,
         type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
+        type === "arabic"
+          ? { fontSize: fontSize * 1.5, lineHeight: Math.round(fontSize * 2.8) }
+          : undefined,
+        type === "transliteration"
+          ? { fontSize: fontSize * 1.3, lineHeight: Math.round(fontSize * 2.5) }
+          : undefined,
+        type === "defaultWithFontsize"
+          ? { fontSize: fontSize * 1, lineHeight: Math.round(fontSize * 1.6) }
+          : undefined,
         type === "subtitle" ? styles.subtitle : undefined,
         type === "link" ? styles.link : undefined,
         type === "layoutNavigationText"

@@ -805,6 +805,7 @@ const styles = StyleSheet.create({
   infoArabicText: {
     textAlign: "right",
     fontWeight: "400",
+
   },
   infoTranslation: {},
   infoTafsir: {
