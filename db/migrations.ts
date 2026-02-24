@@ -574,7 +574,7 @@ export const migrationSQL = `
 
   CREATE TABLE IF NOT EXISTS prayers (
     id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
+    name TEXT,
     arabic_title TEXT,
     category_id INTEGER NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -589,6 +589,7 @@ export const migrationSQL = `
   -- Helpful for ORDER BY name lists
   -- Case-insensitive sorts that can use an index
   CREATE INDEX IF NOT EXISTS idx_prayers_name_nocase ON prayers(name COLLATE NOCASE);
+  CREATE INDEX IF NOT EXISTS idx_prayers_arabic_title_nocase ON prayers(arabic_title COLLATE NOCASE);
   CREATE INDEX IF NOT EXISTS idx_prayers_category_name
   ON prayers(category_id, name COLLATE NOCASE);
   CREATE INDEX IF NOT EXISTS idx_prayer_categories_lang_title
@@ -601,6 +602,7 @@ export const migrationSQL = `
     language_code TEXT NOT NULL,
     translated_introduction TEXT,
     translated_text TEXT,
+    translated_title TEXT,
     source TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -609,6 +611,7 @@ export const migrationSQL = `
   
   CREATE UNIQUE INDEX IF NOT EXISTS uq_prayer_translations_pid_lang
   ON prayer_translations(prayer_id, language_code);
+  CREATE INDEX IF NOT EXISTS idx_prayer_translations_translated_title_nocase ON prayer_translations(translated_title COLLATE NOCASE);
 
   
   -- FAVORITES / FOLDERS (used by your helpers)

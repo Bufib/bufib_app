@@ -12,7 +12,7 @@
 //       accessibilityLabel="Scroll to top"
 //       accessibilityRole="button"
 //     >
-//       <AntDesign name="up" size={24} color="white" />
+//       <AntDesign name="up" size={18} color="white" />
 //     </TouchableOpacity>
 //   );
 // };
@@ -24,8 +24,8 @@
 //     position: "absolute",
 //     bottom: "15%",
 //     right: "5%",
-//     width: 56,
-//     height: 56,
+//     width: 40,
+//     height: 40,
 //     borderRadius: 28,
 //     backgroundColor: Colors.universal.primary,
 //     justifyContent: "center",
@@ -44,8 +44,7 @@
 //     elevation: 8,
 //   },
 // });
-// FloatingScrollButton.tsx
-// FloatingScrollButton.tsx
+
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import { StyleSheet, useWindowDimensions } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
@@ -62,29 +61,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
 
 type Props = {
-  direction: "up" | "down";
-  onPress: () => void;
-  visible: boolean;
-  /** Optional: different screens can store different positions */
+  scrollToTop: () => void;
+  visible?: boolean;
   storageKey?: string;
 };
 
-const SIZE = 56;
+const SIZE = 40;
 const MARGIN = 12;
 
-type SavedPos = {
-  side: "left" | "right";
-  yNorm: number; // 0..1
-};
+type SavedPos = { side: "left" | "right"; yNorm: number };
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
-export default function FloatingScrollButton({
-  direction,
-  onPress,
-  visible,
-  storageKey = "FloatingScrollButton:pos",
-}: Props) {
+const ArrowUp = ({
+  scrollToTop,
+  visible = true,
+  storageKey = "ArrowUp:pos",
+}: Props) => {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
 
@@ -92,21 +85,24 @@ export default function FloatingScrollButton({
   const x = useSharedValue(0);
   const y = useSharedValue(0);
 
-  // bounds (shared values, worklet-safe)
+  // bounds
   const minX = useSharedValue(0);
   const maxX = useSharedValue(0);
   const minY = useSharedValue(0);
   const maxY = useSharedValue(0);
 
-  // start position during drag
+  // drag start
   const startX = useSharedValue(0);
   const startY = useSharedValue(0);
 
-  // show/hide (keep mounted if YOU want; but works even if parent unmounts)
+  // visibility animation
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.95);
 
-  // ---- Persistence (JS side) ----
+  // drag state – keeps button visible & full-size while dragging
+  const isDragging = useSharedValue(false);
+
+  // persistence
   const savedRef = useRef<SavedPos | null>(null);
   const didInitRef = useRef(false);
   const [rehydrated, setRehydrated] = useState(false);
@@ -141,13 +137,12 @@ export default function FloatingScrollButton({
           storageKey,
           JSON.stringify(savedRef.current),
         );
-      } catch {
-        // ignore persistence failures
-      }
+      } catch {}
     },
     [storageKey],
   );
 
+  // load on mount
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -159,13 +154,13 @@ export default function FloatingScrollButton({
     };
   }, [loadSaved]);
 
-  // animate visibility (your visible prop from parent)
+  // animate visibility
   useEffect(() => {
     opacity.value = withTiming(visible ? 1 : 0, { duration: 160 });
     scale.value = withTiming(visible ? 1 : 0.95, { duration: 160 });
   }, [visible, opacity, scale]);
 
-  // update bounds whenever screen/safe-area changes
+  // update bounds + init position
   useEffect(() => {
     const bMinX = MARGIN;
     const bMaxX = Math.max(MARGIN, width - SIZE - MARGIN);
@@ -180,28 +175,25 @@ export default function FloatingScrollButton({
     minY.value = bMinY;
     maxY.value = bMaxY;
 
-    // Only initialize position once per mount AFTER we know savedRef (rehydrated).
     if (!didInitRef.current && rehydrated) {
       didInitRef.current = true;
 
       const saved = savedRef.current;
-
       if (saved) {
         const targetX = saved.side === "left" ? bMinX : bMaxX;
         const yRange = Math.max(1, bMaxY - bMinY);
         const targetY = bMinY + clamp01(saved.yNorm) * yRange;
-
         x.value = targetX;
         y.value = Math.max(bMinY, Math.min(targetY, bMaxY));
       } else {
-        // default bottom-right
+        // default: bottom-right (matches the old fixed position)
         x.value = bMaxX;
-        y.value = bMaxY;
+        y.value = bMaxY - (height * 0.15 - MARGIN); // ≈ old bottom 15%
       }
       return;
     }
 
-    // If already initialized, keep position but clamp inside bounds
+    // already initialized → clamp
     if (didInitRef.current) {
       x.value = Math.max(bMinX, Math.min(x.value, bMaxX));
       y.value = Math.max(bMinY, Math.min(y.value, bMaxY));
@@ -227,28 +219,33 @@ export default function FloatingScrollButton({
     [saveSaved],
   );
 
+  // ---- Gestures ----
   const pan = Gesture.Pan()
     .enabled(visible)
     .minDistance(4)
     .onBegin(() => {
+      isDragging.value = true;
       startX.value = x.value;
       startY.value = y.value;
     })
     .onUpdate((e) => {
       "worklet";
-      const nx = startX.value + e.translationX;
-      const ny = startY.value + e.translationY;
-
-      x.value = Math.max(minX.value, Math.min(nx, maxX.value));
-      y.value = Math.max(minY.value, Math.min(ny, maxY.value));
+      x.value = Math.max(
+        minX.value,
+        Math.min(startX.value + e.translationX, maxX.value),
+      );
+      y.value = Math.max(
+        minY.value,
+        Math.min(startY.value + e.translationY, maxY.value),
+      );
     })
     .onEnd(() => {
       "worklet";
-      // snap to left or right edge
+      isDragging.value = false;
+
+      // snap to nearest side
       const mid = (minX.value + maxX.value) / 2;
       const targetX = x.value < mid ? minX.value : maxX.value;
-
-      // persist "side + yNorm" (NOT absolute pixels)
       const side: "left" | "right" = targetX === minX.value ? "left" : "right";
       const yRange = Math.max(1, maxY.value - minY.value);
       const yNorm = (y.value - minY.value) / yRange;
@@ -263,17 +260,17 @@ export default function FloatingScrollButton({
     .enabled(visible)
     .onEnd((_e, success) => {
       "worklet";
-      if (success) runOnJS(onPress)();
+      if (success) runOnJS(scrollToTop)();
     });
 
   const gesture = Gesture.Exclusive(pan, tap);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    opacity: isDragging.value ? 1 : opacity.value,
     transform: [
       { translateX: x.value },
       { translateY: y.value },
-      { scale: scale.value },
+      { scale: isDragging.value ? 1 : scale.value },
     ],
   }));
 
@@ -283,21 +280,20 @@ export default function FloatingScrollButton({
         style={[styles.fab, animatedStyle]}
         pointerEvents={visible ? "auto" : "none"}
       >
-        <AntDesign
-          name={direction === "up" ? "up" : "down"}
-          size={24}
-          color="white"
-        />
+        <AntDesign name="up" size={18} color="white" />
       </Animated.View>
     </GestureDetector>
   );
-}
+};
+
+export default ArrowUp;
 
 const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     width: SIZE,
     height: SIZE,
+    borderWidth: 0.3,
     borderRadius: SIZE / 2,
     backgroundColor: Colors.universal.primary,
     justifyContent: "center",

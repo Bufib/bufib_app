@@ -80,7 +80,6 @@ export type ActiveSheet = "articles" | "podcasts" | "pdfs" | null;
 //   fontsizeHomeHeaders:number
 // };
 
-
 export type SizesType = {
   elementSize: number;
   fontSize: number;
@@ -408,8 +407,8 @@ export type VersionType = {
 
 // Prayer
 export type PrayerType = {
+  name: string,
   id: number;
-  name: string;
   arabic_title?: string;
   category_id?: number;
   created_at: string;
@@ -426,6 +425,7 @@ export type PrayerWithTranslationType = {
   id: number;
   prayer_id: number;
   language_code: string;
+  translated_title: string;
   translated_introduction?: string;
   translated_text?: string;
   source?: string;
@@ -434,7 +434,7 @@ export type PrayerWithTranslationType = {
   translated_notes?: string;
 };
 
-export type FullPrayer = PrayerType & {
+export type FullPrayer = PrayerType & PrayerWithTranslationType &{
   translations: PrayerWithTranslationType[];
 };
 
@@ -494,10 +494,9 @@ export type TodoListType = {
     dayIndex: number,
     todoId: string | number,
     time: Date | null,
-    repeatWeekly: boolean
+    repeatWeekly: boolean,
   ) => void;
 };
-
 
 export type WeeklyTodosType = {
   [day: number]: TodoItemType[];
@@ -544,7 +543,7 @@ export type PdfType = {
   pdf_title: string;
   pdf_filename: string; // The filename in your bucket (e.g., "quran-tafsir.pdf")
   language_code: string; // e.g., "en", "de", "ar"
-  isBook: boolean
+  isBook: boolean;
 };
 
 export type PdfViewerScreenPropsType = {
@@ -740,8 +739,8 @@ export type QuranVerseType = {
   aya: number; // 1..n
   text: string; // verse text in the chosen language
   transliteration?: string | null; // en only
-  podcastId: any,
-  filename: any
+  podcastId: any;
+  filename: any;
 };
 
 export type SuraRowType = {

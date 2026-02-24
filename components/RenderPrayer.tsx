@@ -746,7 +746,11 @@ import Octicons from "@expo/vector-icons/Octicons";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
 import { getPrayerWithTranslations } from "@/db/queries/prayers";
-import { PrayerType, PrayerWithTranslationType } from "@/constants/Types";
+import {
+  FullPrayer,
+  PrayerType,
+  PrayerWithTranslationType,
+} from "@/constants/Types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThemedView } from "./ThemedView";
 import { ThemedText } from "./ThemedText";
@@ -760,10 +764,7 @@ import PrayerInformationModal from "./PrayerInformationModal";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 import FloatingScrollButton from "./ArrowUp";
-
-type PrayerWithTranslations = PrayerType & {
-  translations: PrayerWithTranslationType[];
-};
+import ArrowUp from "./ArrowUp";
 
 const SCROLL_UP_THRESH = 120;
 const SCROLL_UP_HYST = 16;
@@ -774,6 +775,7 @@ const makeMarkdownRules = (
 ): RenderRules => ({
   code_inline: (_node, _children, _parent, styles) => (
     <Text
+      key={_node.key}
       style={{
         fontSize: customFontSize,
         ...(styles.text as TextStyle),
@@ -788,17 +790,18 @@ const makeMarkdownRules = (
 const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
-  const [prayer, setPrayer] = useState<PrayerWithTranslations | null>(null);
+  const [prayer, setPrayer] = useState<FullPrayer | null>(null);
   const [selectTranslations, setSelectTranslations] = useState<
     Record<string, boolean>
   >({});
   const [bookmark, setBookmark] = useState<number | null>(null);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const showUpRef = useRef(false);
 
   const colorScheme = useColorScheme() || "light";
   const { t } = useTranslation();
   const { lang, rtl } = useLanguage();
 
-  const listRef = useRef<any>(null);
   const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
   const snapPoints = useMemo(() => ["70%"], []);
 
@@ -807,20 +810,19 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
   const [pickerVisible, setPickerVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
-  const [showScrollButton, setShowScrollButton] = useState(false);
-  const showBtnRef = useRef(false);
+  const flashListRef = useRef<any>(null);
 
+  const scrollToTop = useCallback(() => {
+    flashListRef.current?.scrollToOffset({ offset: 0, animated: true });
+  }, []);
   const prayersVersion = useDataVersionStore((s) => s.prayersVersion);
   const { fadeAnim, onLayout } = useScreenFadeIn(600);
 
   // ---- Scroll tracking (direction + edges + long-list bottom offset) ----
-  const lastYRef = useRef(0);
-  const currentOffsetRef = useRef(0);
   const contentHeightRef = useRef(0);
   const layoutHeightRef = useRef(0);
 
   const scrollDirRef = useRef<"up" | "down">("down");
-  const [scrollDir, setScrollDir] = useState<"up" | "down">("down");
 
   // ✅ NEW: only show button while actively scrolling (same logic as SuraScreen)
   const [isScrolling, setIsScrolling] = useState(false);
@@ -925,7 +927,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         setIsLoading(true);
         const data = await getPrayerWithTranslations(prayerID);
         if (!alive) return;
-        setPrayer(data as PrayerWithTranslations);
+        setPrayer(data as FullPrayer);
       } catch (e) {
         console.error(e);
       } finally {
@@ -1046,6 +1048,21 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     bottomSheetRef.current?.close();
   };
 
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const y = e.nativeEvent.contentOffset.y;
+      // Hysteresis avoids flicker near the boundary
+      const next = showUpRef.current
+        ? y > SCROLL_UP_THRESH - SCROLL_UP_HYST
+        : y > SCROLL_UP_THRESH + SCROLL_UP_HYST;
+      if (next !== showUpRef.current) {
+        showUpRef.current = next;
+        setShowScrollUp(next);
+      }
+    },
+    [],
+  );
+
   // Keep maxOffset up to date even when content changes without scrolling
   const onContentSizeChange = useCallback((_w: number, h: number) => {
     contentHeightRef.current = h;
@@ -1055,54 +1072,54 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
     layoutHeightRef.current = e.nativeEvent.layout.height;
   }, []);
 
-  // Unified scroll handler:
-  // - show/hide button with hysteresis
-  // - detect direction
-  // - force direction at edges (top => down, bottom => up)
-  const handleScroll = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const y = e.nativeEvent.contentOffset.y;
-      const contentH = e.nativeEvent.contentSize.height;
-      const layoutH = e.nativeEvent.layoutMeasurement.height;
+  // // Unified scroll handler:
+  // // - show/hide button with hysteresis
+  // // - detect direction
+  // // - force direction at edges (top => down, bottom => up)
+  // const handleScroll = useCallback(
+  //   (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+  //     const y = e.nativeEvent.contentOffset.y;
+  //     const contentH = e.nativeEvent.contentSize.height;
+  //     const layoutH = e.nativeEvent.layoutMeasurement.height;
 
-      currentOffsetRef.current = y;
-      contentHeightRef.current = contentH;
-      layoutHeightRef.current = layoutH;
+  //     currentOffsetRef.current = y;
+  //     contentHeightRef.current = contentH;
+  //     layoutHeightRef.current = layoutH;
 
-      // show button
-      const nextShow = showBtnRef.current
-        ? y > SCROLL_UP_THRESH - SCROLL_UP_HYST
-        : y > SCROLL_UP_THRESH + SCROLL_UP_HYST;
+  //     // show button
+  //     const nextShow = showBtnRef.current
+  //       ? y > SCROLL_UP_THRESH - SCROLL_UP_HYST
+  //       : y > SCROLL_UP_THRESH + SCROLL_UP_HYST;
 
-      if (nextShow !== showBtnRef.current) {
-        showBtnRef.current = nextShow;
-        setShowScrollButton(nextShow);
-      }
+  //     if (nextShow !== showBtnRef.current) {
+  //       showBtnRef.current = nextShow;
+  //       setShowScrollButton(nextShow);
+  //     }
 
-      // direction
-      let nextDir = scrollDirRef.current;
-      if (y > lastYRef.current + 2) nextDir = "down";
-      else if (y < lastYRef.current - 2) nextDir = "up";
+  //     // direction
+  //     let nextDir = scrollDirRef.current;
+  //     if (y > lastYRef.current + 2) nextDir = "down";
+  //     else if (y < lastYRef.current - 2) nextDir = "up";
 
-      const maxOffset = Math.max(0, contentH - layoutH);
+  //     const maxOffset = Math.max(0, contentH - layoutH);
 
-      // force at edges so the button always makes sense
-      if (y <= 2) nextDir = "down";
-      if (y >= maxOffset - 2) nextDir = "up";
+  //     // force at edges so the button always makes sense
+  //     if (y <= 2) nextDir = "down";
+  //     if (y >= maxOffset - 2) nextDir = "up";
 
-      if (nextDir !== scrollDirRef.current) {
-        scrollDirRef.current = nextDir;
-        setScrollDir(nextDir);
-      }
+  //     if (nextDir !== scrollDirRef.current) {
+  //       scrollDirRef.current = nextDir;
+  //       setScrollDir(nextDir);
+  //     }
 
-      lastYRef.current = y;
-    },
-    [],
-  );
+  //     lastYRef.current = y;
+  //   },
+  //   [],
+  // );
 
   // Button press => jump to top/bottom (reliable for long lists)
   const scrollToEdge = useCallback(() => {
-    const list = listRef.current;
+    const list = flashListRef.current;
     if (!list) return;
 
     if (scrollDirRef.current === "up") {
@@ -1148,15 +1165,15 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
       ]}
     >
       <FlatList
-        ref={listRef}
+        ref={flashListRef}
         scrollEventThrottle={16}
         onScroll={handleScroll}
         onContentSizeChange={onContentSizeChange}
         onLayout={onListLayout}
         keyExtractor={(i) => i.toString()}
         data={indices}
-        stickyHeaderIndices={[0]}
-        stickyHeaderHiddenOnScroll
+        // stickyHeaderIndices={[0]}
+        // stickyHeaderHiddenOnScroll
         bounces={false}
         overScrollMode="never"
         alwaysBounceVertical={false}
@@ -1197,7 +1214,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                   <ThemedText
                     style={[styles.title, { fontSize, color: "#fff" }]}
                   >
-                    {prayer?.name} ({indices.length} {t("lines")})
+                    {prayer?.translated_title} ({indices.length} {t("lines")})
                   </ThemedText>
                   <ThemedText
                     style={[
@@ -1330,6 +1347,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
                     lineHeight,
                     color: Colors[colorScheme].prayerArabicText,
                     alignSelf: "flex-end",
+                    textAlign: "right",
                     marginBottom: 16,
                   }}
                 >
@@ -1370,14 +1388,7 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         }
         ListFooterComponentStyle={{ paddingBottom: 20 }}
       />
-
-      {/* ✅ Always mounted so it keeps drag position */}
-      <FloatingScrollButton
-        visible={showScrollButton && isScrolling}
-        direction={scrollDir}
-        onPress={scrollToEdge}
-      />
-
+      {showScrollUp && <ArrowUp scrollToTop={scrollToTop} />}
       <PrayerInformationModal
         ref={bottomSheetRef}
         prayer={prayer}
@@ -1390,18 +1401,15 @@ const RenderPrayer = ({ prayerID }: { prayerID: number }) => {
         onChange={handleSheetChanges}
         onRequestClose={closeSheet}
       />
-
       <FontSizePickerModal
         visible={fontSizeModalVisible}
         onClose={() => setFontSizeModalVisible(false)}
       />
-
       <FavoritePrayerPickerModal
         visible={pickerVisible}
         prayerId={prayerID}
         onClose={() => setPickerVisible(false)}
       />
-
       <StatusBar style="light" />
     </Animated.View>
   );
@@ -1465,7 +1473,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  lineNumber: { fontSize: 12, fontWeight: "700" },
+  lineNumber: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#fff",
+  },
   translationBlock: {
     marginTop: 12,
     paddingTop: 8,

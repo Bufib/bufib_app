@@ -299,7 +299,7 @@ export default async function syncPrayers(): Promise<void> {
           translated_languages, created_at, updated_at
         `),
       supabase.from("prayer_translations").select(`
-          id, prayer_id, language_code, translated_introduction,
+          id, prayer_id, language_code, translated_introduction, translated_title,
           translated_text, translated_notes, source, created_at, updated_at
         `),
     ]);
@@ -331,9 +331,9 @@ export default async function syncPrayers(): Promise<void> {
 
       const insertTrans = await txn.prepareAsync(
         `INSERT OR REPLACE INTO prayer_translations
-           (id, prayer_id, language_code, translated_introduction,
+           (id, prayer_id, language_code, translated_introduction, translated_title,
             translated_text, translated_notes, source, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
       );
 
       try {
@@ -376,6 +376,7 @@ export default async function syncPrayers(): Promise<void> {
             t.id,
             t.prayer_id,
             t.language_code,
+            t.translated_title,
             t.translated_introduction ?? null,
             t.translated_text ?? null,
             t.translated_notes ?? null,

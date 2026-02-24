@@ -966,9 +966,9 @@ import BasmalaRow from "./BasmalaRow";
 import { useDataVersionStore } from "@/stores/dataVersionStore";
 import { useQuranAudio, RECITERS, type ReciterId } from "@/hooks/useQuranAudio";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
+import ArrowUp from "./ArrowUp";
 
 // ✅ IMPORTANT: import from the correct file
-import FloatingScrollButton from "./ArrowUp";
 
 const clamp = (v: number, min: number, max: number) =>
   Math.max(min, Math.min(v, max));
@@ -991,7 +991,8 @@ const SuraScreen: React.FC = () => {
   const [nextPage, setNextPage] = useState<number | null>(null);
   const [prevPage, setPrevPage] = useState<number | null>(null);
   const [jumping, setJumping] = useState(false);
-
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const showUpRef = useRef(false);
   const [reciter, setReciter] = useState<ReciterId>("alafasy");
   const [pendingPlay, setPendingPlay] = useState<{
     v: QuranVerseType;
@@ -1096,6 +1097,25 @@ const SuraScreen: React.FC = () => {
     },
     [reciterPicker, reciter, toggleVerse],
   );
+
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const y = e.nativeEvent.contentOffset.y;
+      // hysteresis to avoid flicker near the threshold
+      const THRESH = 200;
+      const HYST = 16;
+      const next = showArrowRef.current ? y > THRESH - HYST : y > THRESH + HYST;
+      if (next !== showArrowRef.current) {
+        showArrowRef.current = next;
+        setShowArrow(next);
+      }
+    },
+    [],
+  );
+
+  const scrollToTop = () => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+  };
 
   const handleCloseReciterPicker = useCallback(() => {
     setReciterPicker({ visible: false, verse: null, index: -1 });
@@ -1368,35 +1388,6 @@ const SuraScreen: React.FC = () => {
     return () => clearIdle();
   }, [clearIdle]);
 
-  const handleScroll = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const y = e.nativeEvent.contentOffset.y;
-      currentOffsetRef.current = y;
-
-      // direction
-      if (y > lastYRef.current + DIR_EPS && scrollDirRef.current !== "down") {
-        scrollDirRef.current = "down";
-        setScrollDir("down");
-      } else if (
-        y < lastYRef.current - DIR_EPS &&
-        scrollDirRef.current !== "up"
-      ) {
-        scrollDirRef.current = "up";
-        setScrollDir("up");
-      }
-      lastYRef.current = y;
-
-      // show/hide button with hysteresis (your current logic)
-      const nextShow = showArrowRef.current
-        ? y > THRESH - HYST
-        : y > THRESH + HYST;
-      if (nextShow !== showArrowRef.current) {
-        showArrowRef.current = nextShow;
-        setShowArrow(nextShow);
-      }
-    },
-    [],
-  );
 
   const scrollToEdge = useCallback(() => {
     if (!verses.length) return;
@@ -1591,12 +1582,7 @@ const SuraScreen: React.FC = () => {
         />
       )}
 
-      {/* Floating draggable button: down when scrolling down, up when scrolling up */}
-      <FloatingScrollButton
-        visible={showArrow && isScrolling}
-        direction={scrollDir}
-        onPress={scrollToEdge}
-      />
+       {showArrow && <ArrowUp scrollToTop={scrollToTop} />}
 
       {/* Bottom Sheet for Verse Info */}
       <BottomSheet
