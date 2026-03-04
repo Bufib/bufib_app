@@ -8,6 +8,7 @@ import {
   Animated,
   useColorScheme,
 } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { prayerCategories, tasbihCategory } from "@/utils/categories";
@@ -23,6 +24,7 @@ import { ThemedText } from "./ThemedText";
 import { PrayerQuestionLinksType, TodoToDeleteType } from "@/constants/Types";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 import { cancelTodoReminderNotification } from "@/hooks/usePushNotifications";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 const PrayerLinks = () => {
   const colorScheme: ColorSchemeName = useColorScheme() || "light";
@@ -45,6 +47,7 @@ const PrayerLinks = () => {
     todoId: null,
   });
   const { fadeAnim, onLayout } = useScreenFadeIn(800);
+  const tabBarHeight = useBottomTabBarHeight();
 
   // fade-in animation value
 
@@ -76,7 +79,7 @@ const PrayerLinks = () => {
       }
       setAddModalVisible(false);
     },
-    [addTodo, selectedDay]
+    [addTodo, selectedDay],
   );
 
   const showDeleteConfirmation = useCallback(
@@ -84,7 +87,7 @@ const PrayerLinks = () => {
       setTodoToDelete({ dayIndex, todoId });
       setDeleteModalVisible(true);
     },
-    []
+    [],
   );
 
   // const handleConfirmDelete = useCallback((): void => {
@@ -124,25 +127,27 @@ const PrayerLinks = () => {
               pathname: "/knowledge/prayers/tasbih",
             }
           : prayerLink.value === "Names"
-          ? {
-              pathname: "/knowledge/prayers/names",
-              params: { prayerLink: prayerLink.value },
-            }
-          : {
-              pathname: "/knowledge/prayers/prayerCategory",
-              params: { prayerCategory: prayerLink.value },
-            }
+            ? {
+                pathname: "/knowledge/prayers/names",
+                params: { prayerLink: prayerLink.value },
+              }
+            : {
+                pathname: "/knowledge/prayers/prayerCategory",
+                params: { prayerCategory: prayerLink.value },
+              },
       );
     },
-    []
+    [],
   );
 
   const handleSelectDay = useCallback((dayIndex: number): void => {
     setSelectedDay(dayIndex);
   }, []);
 
+  const openPrayerTimes = async () => {
+    await WebBrowser.openBrowserAsync("https://prayertime.ir");
+  };
   const { width, height } = useWindowDimensions();
-
   const { elementSize, fontSize, iconSize } = returnSize(width, height);
 
   return (
@@ -198,39 +203,79 @@ const PrayerLinks = () => {
               </View>
             </TouchableOpacity>
           ))}
-          <TouchableOpacity
-            onPress={() => {
-              handleCategoryPress(tasbihCategory[0]);
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              flex: 1,
+              gap: 10,
             }}
-            style={[
-              styles.element,
-              {
-                backgroundColor: Colors[colorScheme].contrast,
-                width: "96%",
-                height: elementSize / 2,
-              },
-            ]}
           >
-            <View
+            <TouchableOpacity
+              onPress={() => {
+                handleCategoryPress(tasbihCategory[0]);
+              }}
               style={[
-                styles.categoryButtonContainer,
-                { gap: iconSize / 10 - 1 },
+                styles.element,
+                {
+                  backgroundColor: Colors[colorScheme].contrast,
+                  height: elementSize / 2,
+                  width: "44%",
+                },
               ]}
             >
-              <View style={styles.tasbihContainer}>
-                <Image
-                  style={[styles.elementIcon, { width: iconSize / 1.2 }]}
-                  source={require("@/assets/images/tasbih.png")}
-                  contentFit="contain"
-                />
-                <ThemedText
-                  style={[styles.elementText, { fontSize: fontSize * 1.7 }]}
-                >
-                  {t("tasbih")}
-                </ThemedText>
+              <View
+                style={[
+                  styles.categoryButtonContainer,
+                  { gap: iconSize / 10 - 1 },
+                ]}
+              >
+                <View style={styles.tasbihContainer}>
+                  <Image
+                    style={[styles.elementIcon, { width: iconSize / 1.2 }]}
+                    source={require("@/assets/images/tasbih.png")}
+                    contentFit="contain"
+                  />
+                  <ThemedText
+                    style={[styles.elementText, { fontSize: fontSize * 1.7 }]}
+                  >
+                    {t("tasbih")}
+                  </ThemedText>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                openPrayerTimes();
+              }}
+              style={[
+                styles.element,
+                {
+                  backgroundColor: Colors[colorScheme].contrast,
+                  width: "44%",
+                  height: elementSize / 2,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.categoryButtonContainer,
+                  { gap: iconSize / 10 - 1 },
+                ]}
+              >
+                <View style={styles.tasbihContainer}>
+                  <ThemedText
+                    style={[
+                      styles.elementText,
+                      { fontSize: fontSize * 1.7, color: "#E8BC14" },
+                    ]}
+                  >
+                    {t("prayerTime")}
+                  </ThemedText>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 

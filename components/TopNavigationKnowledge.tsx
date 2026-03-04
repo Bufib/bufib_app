@@ -187,11 +187,7 @@
 // }
 
 import * as React from "react";
-import {
-  useWindowDimensions,
-  useColorScheme,
-  Animated,
-} from "react-native";
+import { useWindowDimensions, useColorScheme, Animated } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import indexPrayer from "@/app/(tabs)/knowledge/prayers/indexPrayer";
 import indexQuestion from "@/app/(tabs)/knowledge/questions/indexQuestion";
@@ -203,6 +199,7 @@ import { Colors } from "@/constants/Colors";
 import { Image } from "expo-image";
 import { useScreenFadeIn } from "@/hooks/useScreenFadeIn";
 import indexVideos from "@/app/(tabs)/knowledge/videos/indexVideos";
+import { useKnowledgeTabStore } from "@/stores/useKnowledgeTabStore";
 
 const renderScene = SceneMap({
   questionsScreen: indexQuestion,
@@ -216,9 +213,14 @@ const renderScene = SceneMap({
 export default function TopNavigationKnowledge() {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
+  const setActiveTab = useKnowledgeTabStore((s) => s.setActiveTab);
   const colorScheme = useColorScheme() || "light";
-
   const { fadeAnim, onLayout } = useScreenFadeIn(800);
+
+  const handleIndexChange = (newIndex: number) => {
+    setIndex(newIndex);
+    setActiveTab(newIndex);
+  };
   const routes = React.useMemo(
     () => [
       {
@@ -252,7 +254,7 @@ export default function TopNavigationKnowledge() {
         icon: require("@/assets/images/historyHeaderLogo.png"),
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -272,7 +274,7 @@ export default function TopNavigationKnowledge() {
       <TabView
         navigationState={{ index, routes }}
         renderScene={renderScene}
-        onIndexChange={setIndex}
+        onIndexChange={handleIndexChange}
         initialLayout={{ width: layout.width }}
         lazy
         options={{

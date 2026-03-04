@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "de.bundfuerislamischebildung.bufib",
+      "bundleIdentifier": "de.bundfuerislamischebildung.bufib2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select images.",

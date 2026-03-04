@@ -143,6 +143,7 @@ const de = {
   noSearchResult: "Kein Ergebnis gefunden",
   bottomInformationRenderPrayer: "Wird wie folgt ausgesprochen: ",
   noName: "Bitte gebe einen Namen an",
+  prayerTime: "Gebetszeiten",
   // Tasbih
   dhikrFree: "Frei",
   dhikrSubhanallah: "Subhanallah",

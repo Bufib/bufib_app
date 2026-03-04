@@ -141,6 +141,7 @@ const ar = {
   noSearchResult: "لم يتم العثور على نتيجة",
   bottomInformationRenderPrayer: "ينطق كما يلي: ",
   noName: "يرجى تقديم اسم",
+  prayerTime: "أوقات الصلاة",
 
   // Tasbih
   dhikrFree: "حر",

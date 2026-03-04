@@ -312,7 +312,6 @@
 //   return pageMeta(rows, total, limit, offset);
 // }
 
-
 // src/db/queries/search.ts
 import {
   QuestionType,
@@ -356,7 +355,7 @@ function pageMeta<T>(
   rows: T[],
   total: number,
   limit: number,
-  offset: number
+  offset: number,
 ): PagedResult<T> {
   const nextOffset = offset + rows.length < total ? offset + rows.length : null;
   return {
@@ -398,7 +397,7 @@ function quranTableFor(lang: Language) {
 export async function searchQuran(
   lang: Language,
   term: string,
-  opts?: { limit?: number; offset?: number }
+  opts?: { limit?: number; offset?: number },
 ): Promise<
   PagedResult<QuranVerseType & { id?: number; transliteration: string | null }>
 > {
@@ -453,7 +452,7 @@ export async function searchQuran(
     WHERE LOWER(${alias}.${col}) LIKE LOWER(?) ESCAPE '\\'
        OR LOWER(COALESCE(t.quran_transliteration_text,'')) LIKE LOWER(?) ESCAPE '\\'
     `,
-    [pat, pat]
+    [pat, pat],
   );
 
   // 2) Surah-title matches → return ayah 1 of each matched sūrah
@@ -473,7 +472,7 @@ export async function searchQuran(
       ON tr.sura = v.sura AND tr.aya = v.aya
     WHERE ${titleWhere}
     `,
-    titleParams
+    titleParams,
   );
 
   // 3) Merge + de-dupe by (sura, aya), then sort
@@ -486,7 +485,7 @@ export async function searchQuran(
     if (!byKey.has(k)) byKey.set(k, r);
   }
   const merged = Array.from(byKey.values()).sort(
-    (a, b) => a.sura - b.sura || a.aya - b.aya
+    (a, b) => a.sura - b.sura || a.aya - b.aya,
   );
 
   // 4) Paginate in JS
@@ -511,7 +510,7 @@ export async function searchQuran(
 export async function searchQuestions(
   language: string,
   term: string,
-  opts?: { limit?: number; offset?: number }
+  opts?: { limit?: number; offset?: number },
 ): Promise<PagedResult<QuestionType>> {
   const limit = clampLimit(opts?.limit);
   const offset = opts?.offset ?? 0;
@@ -534,7 +533,7 @@ export async function searchQuestions(
         OR COALESCE(answer_sistani,'')  LIKE ? ESCAPE '\\'
       );
     `,
-    [language, pat, pat, pat, pat, pat]
+    [language, pat, pat, pat, pat, pat],
   );
   const total = totalRow?.total ?? 0;
 
@@ -557,7 +556,7 @@ export async function searchQuestions(
       datetime(created_at) DESC
     LIMIT ? OFFSET ?;
     `,
-    [language, pat, pat, pat, pat, pat, patPrefix, pat, limit, offset]
+    [language, pat, pat, pat, pat, pat, patPrefix, pat, limit, offset],
   );
 
   return pageMeta(rows, total, limit, offset);
@@ -566,10 +565,79 @@ export async function searchQuestions(
 /* ------------------------------- PRAYERS ----------------------------- */
 
 /** Search prayers by name + localized/Arabic/transliteration text. */
+// export async function searchPrayers(
+//   language: string,
+//   term: string,
+//   opts?: { limit?: number; offset?: number; categoryId?: number | null }
+// ): Promise<PagedResult<PrayerWithCategory>> {
+//   const limit = clampLimit(opts?.limit);
+//   const offset = opts?.offset ?? 0;
+//   if (!term.trim()) return emptyResult(limit, offset);
+
+//   const db = getDatabase();
+//   const pat = likePattern(term);
+//   const patPrefix = likePattern(term, "prefix");
+
+//   const baseParams: any[] = [language, pat, pat, pat, pat];
+//   const catFilter = opts?.categoryId != null ? " AND p.category_id = ? " : "";
+//   if (opts?.categoryId != null) baseParams.push(opts.categoryId);
+
+//   const totalRow = await db.getFirstAsync<{ total: number }>(
+//     `
+//     SELECT COUNT(*) AS total
+//     FROM prayers p
+//     LEFT JOIN prayer_translations t
+//       ON t.prayer_id = p.id AND t.language_code = ?
+//     WHERE (p.name LIKE ? ESCAPE '\\'
+//            OR LOWER(COALESCE(t.translated_text,''))   LIKE LOWER(?) ESCAPE '\\'
+//            OR LOWER(COALESCE(p.arabic_text,''))       LIKE LOWER(?) ESCAPE '\\'
+//            OR LOWER(COALESCE(p.transliteration_text,'')) LIKE LOWER(?) ESCAPE '\\')
+//     ${catFilter};
+//     `,
+//     baseParams
+//   );
+//   const total = totalRow?.total ?? 0;
+
+//   const rows = await db.getAllAsync<PrayerWithCategory>(
+//     `
+//     SELECT
+//       p.id,
+//       p.name,
+//       COALESCE(t.translated_text, p.arabic_text, '') AS prayer_text,
+//       p.category_id
+//     FROM prayers p
+//     LEFT JOIN prayer_translations t
+//       ON t.prayer_id = p.id AND t.language_code = ?
+//     WHERE (p.name LIKE ? ESCAPE '\\'
+//            OR LOWER(COALESCE(t.translated_text,''))   LIKE LOWER(?) ESCAPE '\\'
+//            OR LOWER(COALESCE(p.arabic_text,''))       LIKE LOWER(?) ESCAPE '\\'
+//            OR LOWER(COALESCE(p.transliteration_text,'')) LIKE LOWER(?) ESCAPE '\\')
+//     ${catFilter}
+//     ORDER BY
+//       CASE WHEN p.name LIKE ? ESCAPE '\\' THEN 0 ELSE 1 END,
+//       p.name COLLATE NOCASE
+//     LIMIT ? OFFSET ?;
+//     `,
+//     [
+//       language,
+//       pat,
+//       pat,
+//       pat,
+//       pat,
+//       ...(opts?.categoryId != null ? [opts.categoryId] : []),
+//       patPrefix,
+//       limit,
+//       offset,
+//     ]
+//   );
+
+//   return pageMeta(rows, total, limit, offset);
+// }
+
 export async function searchPrayers(
   language: string,
   term: string,
-  opts?: { limit?: number; offset?: number; categoryId?: number | null }
+  opts?: { limit?: number; offset?: number; categoryId?: number | null },
 ): Promise<PagedResult<PrayerWithCategory>> {
   const limit = clampLimit(opts?.limit);
   const offset = opts?.offset ?? 0;
@@ -579,7 +647,7 @@ export async function searchPrayers(
   const pat = likePattern(term);
   const patPrefix = likePattern(term, "prefix");
 
-  const baseParams: any[] = [language, pat, pat, pat, pat];
+  const baseParams: any[] = [language, pat, pat, pat, pat, pat];
   const catFilter = opts?.categoryId != null ? " AND p.category_id = ? " : "";
   if (opts?.categoryId != null) baseParams.push(opts.categoryId);
 
@@ -589,13 +657,15 @@ export async function searchPrayers(
     FROM prayers p
     LEFT JOIN prayer_translations t
       ON t.prayer_id = p.id AND t.language_code = ?
-    WHERE (p.name LIKE ? ESCAPE '\\'
-           OR LOWER(COALESCE(t.translated_text,''))   LIKE LOWER(?) ESCAPE '\\'
-           OR LOWER(COALESCE(p.arabic_text,''))       LIKE LOWER(?) ESCAPE '\\'
+    WHERE (
+           COALESCE(t.translated_title,'') LIKE ? ESCAPE '\\'
+           OR COALESCE(p.arabic_title,'')  LIKE ? ESCAPE '\\'
+           OR LOWER(COALESCE(t.translated_text,''))      LIKE LOWER(?) ESCAPE '\\'
+           OR LOWER(COALESCE(p.arabic_text,''))          LIKE LOWER(?) ESCAPE '\\'
            OR LOWER(COALESCE(p.transliteration_text,'')) LIKE LOWER(?) ESCAPE '\\')
     ${catFilter};
     `,
-    baseParams
+    baseParams,
   );
   const total = totalRow?.total ?? 0;
 
@@ -603,20 +673,22 @@ export async function searchPrayers(
     `
     SELECT
       p.id,
-      p.name,
+      COALESCE(t.translated_title, p.arabic_title, p.name, '') AS name,
       COALESCE(t.translated_text, p.arabic_text, '') AS prayer_text,
       p.category_id
     FROM prayers p
     LEFT JOIN prayer_translations t
       ON t.prayer_id = p.id AND t.language_code = ?
-    WHERE (p.name LIKE ? ESCAPE '\\'
-           OR LOWER(COALESCE(t.translated_text,''))   LIKE LOWER(?) ESCAPE '\\'
-           OR LOWER(COALESCE(p.arabic_text,''))       LIKE LOWER(?) ESCAPE '\\'
+    WHERE (
+           COALESCE(t.translated_title,'') LIKE ? ESCAPE '\\'
+           OR COALESCE(p.arabic_title,'')  LIKE ? ESCAPE '\\'
+           OR LOWER(COALESCE(t.translated_text,''))      LIKE LOWER(?) ESCAPE '\\'
+           OR LOWER(COALESCE(p.arabic_text,''))          LIKE LOWER(?) ESCAPE '\\'
            OR LOWER(COALESCE(p.transliteration_text,'')) LIKE LOWER(?) ESCAPE '\\')
     ${catFilter}
     ORDER BY
-      CASE WHEN p.name LIKE ? ESCAPE '\\' THEN 0 ELSE 1 END,
-      p.name COLLATE NOCASE
+      CASE WHEN COALESCE(t.translated_title, p.arabic_title, '') LIKE ? ESCAPE '\\' THEN 0 ELSE 1 END,
+      COALESCE(t.translated_title, p.arabic_title, p.name, '') COLLATE NOCASE
     LIMIT ? OFFSET ?;
     `,
     [
@@ -625,21 +697,21 @@ export async function searchPrayers(
       pat,
       pat,
       pat,
+      pat,
       ...(opts?.categoryId != null ? [opts.categoryId] : []),
       patPrefix,
       limit,
       offset,
-    ]
+    ],
   );
 
   return pageMeta(rows, total, limit, offset);
 }
-
 /* -------------------------- QUR’AN LABELS ONLY -------------------------- */
 
 export type QuranLabelRow = {
   sura: number;
-  label: string;      // what we show to the user
+  label: string; // what we show to the user
   identifier: string; // "sura:1" for quranLink
 };
 
@@ -659,7 +731,7 @@ export type QuranLabelRow = {
 export async function searchQuranLabels(
   lang: Language,
   term: string,
-  opts?: { limit?: number; offset?: number }
+  opts?: { limit?: number; offset?: number },
 ): Promise<PagedResult<QuranLabelRow>> {
   const limit = clampLimit(opts?.limit);
   const offset = opts?.offset ?? 0;
@@ -678,7 +750,7 @@ export async function searchQuranLabels(
       OR LOWER(COALESCE(s.label_en,'')) LIKE LOWER(?) ESCAPE '\\'
       OR LOWER(COALESCE(s.label_de,'')) LIKE LOWER(?) ESCAPE '\\'
     `,
-    [pat, pat, pat]
+    [pat, pat, pat],
   );
   const total = totalRow?.total ?? 0;
   if (!total) return emptyResult(limit, offset);
@@ -706,7 +778,7 @@ export async function searchQuranLabels(
     ORDER BY s.id
     LIMIT ? OFFSET ?;
     `,
-    [pat, pat, pat, limit, offset]
+    [pat, pat, pat, limit, offset],
   );
 
   const mapped: QuranLabelRow[] = rows.map((r) => ({

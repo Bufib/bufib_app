@@ -21,7 +21,6 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/contexts/LanguageContext";
-import * as Haptics from "expo-haptics";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
@@ -92,7 +91,6 @@ export default function CategoryScreen() {
 
   // Handle subcategory selection
   const handleSubcategoryPress = async (cat: PrayerCategoryType) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     if (selectedSubcategory?.id === cat.id) {
       setSelectedSubcategory(null);

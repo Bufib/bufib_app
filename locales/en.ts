@@ -157,6 +157,7 @@ const en = {
   noSearchResult: "No result found",
   bottomInformationRenderPrayer: "is pronounced like the following: ",
   noName: "Please provide a name",
+  prayerTime: "Prayer Time",
 
   // Tasbih
   dhikrFree: "Free",
